@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>请选择单位信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <!-- 工具 -->
+    <script type="text/javascript" src="../../../js/tools/urlTools.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+<script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="../../../js/axios.min.js"></script>
+    <script type="text/javascript" src="../../../js/auth.js"></script>
+</head>
+
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="layui-form">
+                    <div class="layui-form-item" style="margin-bottom: 0px;">
+                        <label class="layui-form-label">关键字:</label>
+                        <div class="layui-input-inline" style="width: 40%;">
+                            <input type="text" id="text_fieldValue" lay-verify="text_fieldValue" autocomplete="off"
+                                placeholder="请输入单位名称" class="layui-input">
+                        </div>
+                        <button type="button" class="layui-btn" id="btn_find">查找</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <table class="layui-table" id="com_unit" lay-filter="com_unit" style="margin: 0px 0px;">
+                </table>
+            </div>
+        </div>
+
+        <div class="layui-btn-container" style="text-align: center;">
+            <button class="layui-btn" id="btn_confirm">确 定</button>
+            <button class="layui-btn layui-btn-primary layui-border-green" id="btn_close" style="margin-left: 40px;">关
+                闭</button>
+        </div>
+
+
+
+    </div>
+</body>
+
+<script>
+
+    layui.use(['table', 'form', 'jquery', 'layer'], function () {
+        var table = layui.table,
+            form = layui.form,
+            $ = layui.jquery,
+            layer = layui.layer;
+
+      
+
+        window.getUnitId = function () {
+            return localStorage.getItem("unit-id");
+        }
+        window.getCmeStandardKindId = function () {
+            if(localStorage.getItem("choose-standard-id")){
+                return localStorage.getItem("choose-standard-id")
+            }
+            return localStorage.getItem("standardkind-id");
+        }
+
+        window.initTable = function () {
+            let resource = getQueryString("resource");
+            let url="";
+            let data={};
+            if(resource == "cmeChangeDetailYearAddOrEdit"){
+                url = huayi_personorg_url + 'comunit/getUnitLitWithOldHospitalLevel';
+                data = {
+                    cmeStandardKindId: window.getCmeStandardKindId(),
+                    fieldValue: $("#text_fieldValue").val(),
+                    unitUserType: 2,
+                    inputCmeYear: getQueryString("inputCmeYear")
+                };
+            }else{
+                url = huayi_personorg_url + 'comunit/list';
+                data = {
+                    cmeStandardKindId: window.getCmeStandardKindId(),
+                    fieldValue: $("#text_fieldValue").val(),
+                    unitUserType: 2
+                };
+            }
+
+            table.render({
+                elem: '#com_unit',
+                url: url,
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                // toolbar: '#toolbarBtns', //开启头部工具栏，并为其绑定左侧模板
+                title: '用户表',
+                defaultToolbar: [],
+                where: data,
+                cols: [[
+                    { type: 'radio', fixed: 'left', title: '选择' },
+                    // { field: 'unitId', title: '单位编号', align: 'center' },
+                    { field: 'unitName', title: '单位名称', align: 'center', minWidth: 100 },
+                    { field: 'unitLevelName', title: '单位级别', align: 'center', minWidth: 200 }
+                ]],
+                cellMinWidth: 100,
+                id: 'comPerson',
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    return {
+                        'code': res.status === 200 ? 0 : res.status,  // 解析接口状态
+                        'msg': res.message,                          // 解析提示文本
+                        'count': res.data.recordsTotal,                // 解析数据长度
+                        'data': res.data.records,                     // 解析数据列表
+                        'page': res.data.pageNum,                     // 当前页
+                        'limit': res.data.pageSize,                    // 每页条数
+                    }
+                },
+                request: {
+                    pageName: 'pageNum',  // 页码的参数名称，默认：page
+                    limitName: 'pageSize'  // 每页数据量的参数名，默认：limit
+                }
+            });
+        };
+
+
+        $(function(){
+            window.initTable();
+        });
+
+
+        var selectData = {};
+        table.on('radio(com_unit)', function (obj) { //com_unit 是 table 标签对应的 lay-filter 属性
+            selectData = obj.data;
+        });
+
+        $("#btn_find").click(function () {
+            window.initTable();
+        });
+
+        $("#btn_confirm").click(function () {
+            var unitId = selectData.unitId;
+            var unitName = selectData.unitName;
+            var hospitalLevel=selectData.hospitalLevel;
+            var unitLevelName = selectData.unitLevelName;
+            if ((unitId == null || unitId == undefined || unitId == "")) {
+                layer.msg("请选择单位");
+            } else {
+                parent.getChildUnitMsg(unitId, unitName,hospitalLevel,unitLevelName);
+                window.layClose();
+            }
+
+        });
+
+        $("#btn_close").click(function () {
+            window.layClose();
+        });
+
+        window.layClose = function () {
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //再执行关闭
+        }
+
+    });
+
+</script>

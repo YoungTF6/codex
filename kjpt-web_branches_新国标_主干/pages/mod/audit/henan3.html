@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>audit.henan-3</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.4 -->
+    <!--<link rel="stylesheet" href="/js/layui-v2.6.4/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="/js/layui-v2.6.4/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+</head>
+<body style="background-color: white;">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!-- 查询区域 -->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" id="queryArea"
+             style="background-color: #f5f5f5;">
+            <div class="layui_mess">
+                <div class="layui_display">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">年度</label>
+                        <div class="layui-input-block" style="width:186px;">
+                            <select name="cmeYear" id="cmeYearSelector" lay-verify="" lay-filter="cmeYear">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">学分级别</label>
+                        <div class="layui-input-block" style="width:186px;">
+                            <select name="scoreLevelId" lay-verify="" lay-filter="scoreLevelId">
+                                <option value="06dba136-11cd-4738-a7f9-a12300e5c47d" selected>市级</option>
+                                <option value="a9ed8e28-2edf-447a-9945-a7ba00ade9dd">中医市级</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-sm btnRounded" lay-submit
+                                onclick="refreshTable()">
+                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 数据表格 -->
+        <div class="layui-card-body layui_body_box" style="padding-left: 0;padding-right: 0">
+            <table class="layui-table" id="scoreTable" lay-filter="scoreTable" style="margin: 0;"></table>
+        </div>
+    </div>
+</div>
+<div style="display: none" id="dldp">
+    <div class="layui-progress layui-progress-big" lay-showpercent="true" lay-filter="dldp">
+        <div class="layui-progress-bar" lay-percent="0%"></div>
+    </div>
+</div>
+</body>
+<!-- checkbox cell -->
+<script type="text/html" id="checkboxTpl">
+    <input type="checkbox" name="select_one" lay-filter="select_one" title="" lay-skin="primary"
+           data-id="{{ d.projId }}">
+</script>
+<!-- toolbar -->
+<script type="text/html" id="tableToolbar">
+    <div class="layui_mess">
+        <div class="layui_display">
+            <div class="layui-input-inline">
+                <input type="checkbox" name="layTableCheckbox" value="cp" title="本页全选"
+                       lay-filter="layTableAllChoose">
+            </div>
+            <li class="layui-input-inline" style="margin-left: 10px">
+                <span style="color:red">有效学分可以进行证书打印</span>
+            </li>
+            <li class="layui-input-inline" style="margin-left: 10px">
+                <a class="layui-btn layui-btn-xs btn-row a-pdf-icon" lay-event="downAuditPdfBatch">导出PDF</a>
+            </li>
+        </div>
+    </div>
+</script>
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        lat: 'lat'
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'xmSelect', 'lat'], function () {
+        let table = layui.table;
+        let layer = layui.layer;
+        let form = layui.form;
+        let laydate = layui.laydate;
+        let dropdown = layui.dropdown;
+        let element = layui.element;
+        let $ = layui.jquery;
+        let xmSelect = layui.xmSelect;
+        let lat = layui.lat;
+        let gLayerIndex = -1;
+        window.refreshTable = refreshTable;
+        $(function () {
+            lat.verifyTenancy(_isHenan);
+            watermark.set('河南省卫生健康委员会');
+            lat.renderCmeYear('#cmeYearSelector');
+            //
+            renderScoreTable();
+        });
+        function onDownload(score) {
+            // if (Number(score.maxSeq) >= 0) {
+            //     return '';
+            // }
+            // return '项目未开启下载证书功能';
+            return '';
+        }
+        function canDownload(score) {
+            if (1 !== Number(score.ifAvail)) {
+                return '只能导出有效学分';
+            }
+            return '';
+        }
+        function renderScoreTable() {
+            table.render({
+                id: 'scoreTable',
+                elem: '#scoreTable',
+                height: 'full-100',
+                toolbar: _isJiaozuo ? '#tableToolbar' : '',
+                defaultToolbar: [],
+                url: huayi_projectscore_url + 'pgsi/score/page/byperson',
+                method: 'POST',
+                contentType: 'application/json',
+                loading: true,
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                where: getSifter(),
+                request: {
+                    pageName: 'pageNum', // 页码的参数名称，默认：page
+                    limitName: 'pageSize' // 每页数据量的参数名，默认：limit
+                },
+                parseData: function (res) {
+                    return {
+                        'code': res.status === 200 ? 0 : res.status, // 解析接口状态
+                        'msg': res.message, // 解析提示文本
+                        'count': res.data.recordsTotal, // 解析数据长度
+                        'data': res.data.records, // 解析数据列表
+                        'page': res.data.pageNum, // 当前页
+                        'limit': res.data.pageSize // 每页条数
+                    };
+                },
+                cols: [[
+                    {
+                        title: '选择',
+                        width: 60,
+                        align: 'center',
+                        // fixed: 'left',
+                        hide: !_isJiaozuo,
+                        templet: (data) => {
+                            let msg = canDownload(data);
+                            if (!msg) {
+                                return '<input type="checkbox" name="layTableCheckbox" lay-skin="primary">';
+                            } else {
+                                return '<img src="/img/checkbox-disable.png" style="width:24px;" alt="' + msg + '" onmouseenter="showTips(this)" onmouseleave="closeTips()"/>';
+                            }
+                        }
+                    },
+                    {title: '选择1', width: 60, align: 'center', fixed: 'left', type: 'checkbox', hide: true},
+                    {
+                        field: 'scoreTypeVal',
+                        title: '学分类型',
+                        minWidth: 120,
+                        align: 'center',
+                        sort: true,
+                        templet: (data) => _txt.scoreTypeVal(data.scoreTypeVal) + '学分'
+                    },
+                    {field: 'projNo', title: '项目编号', minWidth: 120, align: 'center', sort: true},
+                    {field: 'projName', title: '项目名称', minWidth: 120, align: 'center', sort: true},
+                    {field: 'scoreLevelName', title: '学分级别', minWidth: 120, align: 'center', sort: true},
+                    {field: 'period', title: '学时', minWidth: 120, align: 'center', sort: true},
+                    {field: 'score', title: '学分', minWidth: 120, align: 'center', sort: true},
+                    {field: 'studyDate', title: '授分日期', minWidth: 120, align: 'center', sort: true},
+                    {field: 'teachUnitText', title: '授分单位', minWidth: 120, align: 'center', sort: true},
+                    {field: 'checkState', title: '审核状态', minWidth: 120, align: 'center', sort: true, templet: (data) => _txt.checkState(data)},
+                    {field: 'checkUnitName', title: '审核单位', minWidth: 120, align: 'center', sort: true},
+                    {field: 'checkTime', title: '审核时间', minWidth: 120, align: 'center', sort: true},
+                    {field: 'ifAvail', title: '是否有效', minWidth: 120, align: 'center', sort: true, templet: (data) => _txt.ifAvail(data)},
+                ]],
+                data: [{
+                    personNo: "123"
+                }],
+                done: function (res, curr, count) {
+                    let scoreVoList = res.data;
+                    if (scoreVoList && scoreVoList.length > 9999999) {
+                        let scoreIdArr = scoreVoList.map(s => s.scoreId);
+                        let visit = huayi_sjwh_url + 'audit/seq/proj/cert/max';
+                        postAction(visit, {scoreIdList: scoreIdArr}).then(response => {
+                            let jsonRes = response.data;
+                            let seqVoList = jsonRes.data;
+                            if (jsonRes.success && seqVoList) {
+                                let scoreIdSeq = {};
+                                seqVoList.forEach(i => scoreIdSeq[i.scoreId] = i.seq);
+                                //
+                                scoreVoList.forEach((scoreVo, idx) => {
+                                    scoreVo.maxSeq = scoreIdSeq[scoreVo.scoreId];
+                                    let msg = onDownload(scoreVo) || canDownload(scoreVo);
+                                    if (msg) {
+                                        let str = '<img src="/img/checkbox-disable.png" style="width:24px;" alt="' + msg + '" onMouseEnter="showTips(this)" onMouseLeave="closeTips()">';
+                                        $('tr[data-index=' + idx + '] .laytable-cell-1-0-0').html(str);
+                                    } else {
+                                    }
+                                });
+                            }
+                        }).catch(error => {
+                            lat.errorMsg('error:projCertSeqMax');
+                        }).finally(() => {
+                        });
+                    }
+                }
+            });
+        }
+        table.on('toolbar(scoreTable)', function (obj) {
+            let checkStatus = table.checkStatus(obj.config.id);
+            let selectedRowArr = checkStatus.data;
+            let selScoreIds = selectedRowArr.filter(row => !onDownload(row) && !canDownload(row)).map(row => row.scoreId).join(',');
+            let selComPersonIds = selectedRowArr.filter(row => !onDownload(row) && !canDownload(row)).map(row => row.comPersonId).join(',');
+            if ('downAuditPdfBatch' === obj.event) {
+                if (selScoreIds) {
+                    let visit = huayi_sjwh_url + 'audit/pdf/down'; // 河南-3 scoreIds
+                    let selYear = $('select[name=cmeYear]').val();
+                    let params = {
+                        "standardKindId": _standardKindId,
+                        "unitId": _unitId,
+                        "pdfType": 3,
+                        "scoreIds": selScoreIds,
+                        "comPersonIds": selComPersonIds,
+                        // "cmeYear": selYear,
+                        "cmeYears": selYear,
+                        "cityUnitId": '160900', // 焦作
+                    };
+                    lat.downloadWithProgress(visit, params, '继续医学教育证书.pdf');
+                } else {
+                    lat.failMsg('先选择学分');
+                }
+            }
+        });
+        function getSifter() {
+            let cmeYear = $('select[name=cmeYear]').val();
+            return {
+                scoreTypeVal: 4,
+                scoreLevel: $('select[name=scoreLevelId]').val(),
+                cmeYear: cmeYear,
+                startDate: cmeYear + '-01-01 00:00:00',
+                endDate: cmeYear + '-12-31 23:59:59',
+                comPersonId: _pid,
+            };
+        }
+        function refreshTable() {
+            table.reload('scoreTable', {
+                where: getSifter()
+            });
+        }
+    });
+</script>
+<style>
+</style>
+</html>

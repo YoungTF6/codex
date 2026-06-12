@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>远程学分补录申请</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script type="text/javascript" src="../../../js/axios.min.js"></script>
+    <script type="text/javascript" src="../../../js/api/cpt.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <script type="text/javascript" src="../../../js/jquery-3.5.1.min.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+    <script type="text/javascript" src="../../../js/common.js"></script>
+    <style>
+        .ztree li span.button {
+            vertical-align: inherit !important;
+        }
+
+    </style>
+
+
+</head>
+
+<body>
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body" style="margin:0 auto;">
+                <div class="layui-form" lay-filter="cmeDetail" style="text-align: center;">
+
+                    <fieldset class="layui-elem-field" style="margin-top: 10px; padding: 30px;">
+                        <legend style="color:rgba(55, 192, 112);text-align: left;font-weight: bold; font-size: 18px;">
+                            远程学分补录申请</legend>
+
+                        <div style="line-height: 20px;display: inline-flex;margin-bottom: 35px;">
+                            <span id="checkInfo"></span>
+                        </div>
+ 
+                    </fieldset>
+
+                    <fieldset class="layui-elem-field" style="margin-top: 30px;padding: 20px">
+                        <legend style="color:rgb(55, 192, 112);text-align: left;font-weight: bold;font-size: 18px;">基本信息
+                        </legend>
+                        <div style="color:#fb5c5c;line-height: 20px;display: inline-flex;margin-bottom: 35px;">
+                            申请原因说明：1.病休（三个月以内）：提供符合病休要求的相关证明，例如单位盖章的病休通知单或其他病休证明。2.孕产假（三个月以内）：提供符合孕产假的相关证明，例如单位盖章的孕产假审批单或其他证明。3.工作原因延误培训：提供由单位递交学员参加本单位重点工作的相关佐证材料。4.其它情况：需提供经主管部门审核认定的相关佐证材料。
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label"><span style="color: red">*</span>申请年份</label>
+                                <div class="layui-input-block">
+                                    <select name="applyYear" id="applyYear" lay-verify="required" lay-filter="loadReport">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label"><span style="color: red">*</span>申请原因</label>
+                                <div class="layui-input-block">
+                                    <select name="applyReason" id="applyReason" lay-verify="required" lay-search="">
+                                        <option value="">请选择</option>
+                                        <option value="1">病假（三个月以内）</option>
+                                        <option value="2">孕产假（三个月以内）</option>
+                                        <option value="3">工作原因延误培训</option>
+                                        <option value="4">其它情况</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;"><span style="color: red">*</span>上传证明材料</label>
+                                <div class="layui-input-inline">
+                                    <div class="fileshow" id="div_show" style="display: none;">
+                                        
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;"></label>
+                                <div class="layui-input-inline">
+                                    <button class="layui-btn layui-btn-sm js-upload-btn" id="upload" style="display: none;">上传</button>
+                                    <button class="layui-btn layui-btn-sm" id="delete" style="display: none;">移除</button>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    
+                    <div class="layui-btn-container">
+                        <button type="submit" class="layui-btn" lay-submit="" lay-filter="btnSave" id="btnSave" style="display: none;">保存并上报</button>
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+<script>
+
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        treeSelect: 'treeSelect'
+    });
+
+    layui.use(['form', 'jquery', 'layer', "laydate", 'xmSelect', 'treeSelect', 'upload'], function () {
+        var $ = layui.jquery;
+        var form = layui.form;
+        var layer = layui.layer;
+        var laydate = layui.laydate;
+        var xmSelect = layui.xmSelect;
+        var treeSelect = layui.treeSelect;
+        var upload = layui.upload;
+
+        window.loading;
+        window.ajaxNum = 0;
+        let userStandardkindId = localStorage.getItem("standardkind-id");
+        let userUnitId = localStorage.getItem("unit-id");
+        let userId = localStorage.getItem("user-id");
+
+        var endTime = new Date().getFullYear() + "-06-30";
+        var filePath = "";
+        var applyScoreId = "";
+        let configMap = {};
+        let configName1 = "cme_remote_apply_limit"
+
+
+        $(function () {
+            var date = new Date();
+            var year = date.getFullYear() -1;
+            $('#applyYear').append('<option value="' + year + '">' + year + '</option>');
+            form.render('select');
+
+            // ddlList();
+            uploadFile();
+            getTabConfig();
+        });
+
+        //下拉框值改变
+        // form.on('select(loadReport)', function (data) {
+        //     loadReport();
+        // });
+
+        //加载审核状态
+        function loadReport() {
+            var date = new Date();
+            var year = date.getFullYear();
+            var month = date.getMonth() + 1;
+            var day = date.getDate();
+            var now = year + '-' + month + '-' + day;
+            var limitTime = configMap[configName1];
+            var nowDate = new Date(now);
+            var endDate = new Date(endTime);
+            var checkInfo = "审核状态：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;审核意见：";
+            
+            
+            var url = huayi_projectscore_url + "/cmeApplyRemoteScore/getScoreApply";
+            $.ajax({
+                url: url,
+                type: 'post',
+                data: { 
+                    applyYear: $("#applyYear").val(),
+                    comPersonId: userId
+                },
+                success: function (res) {
+                    if (res.status === 200) {
+                        //form.val全部字段填写
+                        if (res.data == null) {
+                            $("#btnSave").show();
+                            $("#upload").show();
+                            $("#delete").show();
+                        } else {
+                            form.val("cmeDetail",  res.data);
+                            
+                            applyScoreId = res.data.applyScoreId;
+                            if (res.data.filePath) {
+                                filePath = res.data.filePath;
+                                $("#div_show").show();
+                                $("#div_show").html('<a class="layui-btn layui-btn-xs btn-normal-row js-file-name" onclick="showFile(\'' + res.data.filePath + '\',\'' + res.data.fileName + '\')"  onmouseover="mouseoverImageName(this)" onmouseout="mouseoutImageName(this)">' + res.data.fileName + '</a>');
+                                //隐藏上传按钮
+                                $("#upload").hide();
+                            } else {
+                                $("#upload").show();
+                            }
+                            if (res.data.checkState == -1) {
+                                checkInfo = "审核状态：待提交&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;审核意见：";
+                                $("#btnSave").show();
+                                $("#delete").show();
+                            } else if (res.data.checkState == 0) {
+                                checkInfo = "审核状态：审核中&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;审核意见：";
+                                $("#checkOption").html('');
+                                $('input,select,textarea').attr('disabled', 'disabled');
+                                layui.form.render();
+                                
+                            } else if (res.data.checkState == 1) {
+                                checkInfo = "审核状态：审核通过&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;审核意见：" + res.data.checkOpinion;
+                                $('input,select,textarea').attr('disabled', 'disabled');
+                                layui.form.render();
+                            } else if (res.data.checkState == 2) {
+                                checkInfo = "审核状态：审核不通过&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;审核意见：" + res.data.checkOpinion;
+                                $('input,select,textarea').attr('disabled', 'disabled');
+                                layui.form.render();
+                            } else if (res.data.checkState == 3) {
+                                checkInfo = "审核状态：退回修改&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;审核意见：" + res.data.checkOpinion;
+                                $("#btnSave").show();
+                                $("#delete").show();
+                            }
+                        }
+                        $("#checkInfo").html(checkInfo);
+                        if (limitTime) {
+                            var limitDate = new Date(limitTime);
+                            if (nowDate > limitDate) {
+                                $('input,select,textarea').attr('disabled', 'disabled');
+                                layui.form.render();
+                                $("#btnSave").hide();
+                                $('#upload').hide();
+                                $("#delete").hide();
+                                return;
+                            }
+                        } else if (nowDate > endDate) {
+                            $('input,select,textarea').attr('disabled', 'disabled');
+                            layui.form.render();
+                            $("#btnSave").hide();
+                            $('#upload').hide();
+                            $("#delete").hide();
+                            return;
+                        }
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                },
+                fail: function () {
+                    layer.msg("加载失败");
+                }
+            });
+
+        }
+
+        //保存
+        form.on('submit(btnSave)', function (data) {
+            if (filePath == "") {
+                layer.msg("请上传相关材料");
+                return false;
+            }
+            $.ajax({
+                async: false,
+                url: huayi_projectscore_url + "/cmeApplyRemoteScore/saveCmeApplyRemoteScore",
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                type: "post",
+                data: { 
+                    applyYear: $("#applyYear").val(), 
+                    applyReason: $("#applyReason").val(), 
+                    comPersonId: userId,
+                    applyScoreId: applyScoreId,
+                    checkState: 0,
+                    checkUnit: localStorage.getItem("unit-id")
+                },
+                success: function (res) {
+                    if (res.status === 200) {
+                        layer.msg("上报成功", { time: 1000 }, function () {
+                            window.location.reload();
+                        });
+                    }
+                    else {
+                        layer.msg(res.msg);
+                    }
+                },
+                error: function () {
+                    layer.msg("发送请求失败");
+                }
+            });
+        });
+
+         //打开加载
+         let openLoading = function () {
+            if (ajaxNum == 0) loading = layer.msg('加载中', { icon: 16, shade: 0.3, time: 0 });
+            ajaxNum++;
+        }
+         //关闭closeLoading的判断
+         let closeLoading = function () {
+            ajaxNum--;
+            if (ajaxNum <= 0 && loading) layer.close(loading);
+        }
+
+        //上传相关材料
+        let uploadFile = function () {
+            let url = huayi_upload_url + 'uploadApi/upload';
+            let extsType = "jpg|png|pdf";
+            let upType = 1;
+            let fileName = "";
+            let uploadBtns = $(".js-upload-btn");
+            upload.render({
+                elem: uploadBtns,
+                url: url,
+                exts: extsType,
+                size: 10 * 1024,//大小小于10M
+                accept: 'file',
+                multiple: false,
+                before: function (obj) {
+                    var fileType = "IMAGE";
+                    let files = this.files = obj.pushFile();
+                    for (let key in files) {
+                        fileName = files[key].name;
+                        let fileNameArr = files[key].name.split(".");
+                        let tempFileType = fileNameArr[fileNameArr.length - 1];
+                        if (tempFileType.indexOf("docx") >= 0 ||
+                            tempFileType.indexOf("doc") >= 0 ||
+                            tempFileType.indexOf("xls") >= 0 ||
+                            tempFileType.indexOf("xlsx") >= 0 ||
+                            tempFileType.indexOf("excel") >= 0||
+                            tempFileType.indexOf("pdf")>=0) {
+                            fileType = "DOC";
+                        }
+                    }
+                    this.data = {
+                        fileType: fileType,
+                        path: `/scoreapply/${userStandardkindId}/${userUnitId}/${userId}/`,
+                        scale:0.6,outputQuality:0.6
+                    }
+                },
+                choose: function (obj) {
+                    openLoading();
+                },
+                done: function (res, index, upload) {
+                    delete this.files[index];
+                    closeLoading();
+                    if (res.code == 200) {
+                        saveFilePath(res.data.picUrl, upType, fileName);
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                },
+                error: function (index, upload) {
+                    openLoading();
+                }
+            })
+
+        };
+
+        //保存文件路径
+        function saveFilePath(picUrl, upType, fileName) {
+            $.ajax({
+                url: huayi_projectscore_url + "cmeApplyRemoteScore/saveCmeApplyRemoteScore",
+                type: 'post',
+                data: { 
+                    applyYear: $("#applyYear").val(), 
+                    applyReason: $("#applyReason").val(), 
+                    filePath: picUrl, 
+                    fileName: fileName,
+                    comPersonId: userId,
+                    applyScoreId: applyScoreId,
+                    checkUnit: localStorage.getItem("unit-id")
+                },
+                success: function (res) {
+                    closeLoading();
+                    if (res.status === 200) {
+                        filePath = res.data.filePath;
+                        applyScoreId = res.data.applyScoreId;
+                        layer.msg(res.msg);
+                        window.location.reload();
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                },
+                fail: function () {
+                    closeLoading();
+                    layer.msg("删除失败");
+                }
+            });
+            
+        }
+
+        //删除相关材料
+        $("#delete").click(function () {
+            if (filePath == "") {
+                layer.msg("请先上传文件");
+                return;
+            }
+            $.ajax({
+                url: huayi_projectscore_url + "cmeApplyRemoteScore/deleteFile",
+                type: 'post',
+                data: { applyScoreId: applyScoreId },
+                success: function (res) {
+                    if (res.status === 200) {
+                        window.location.reload();
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                },
+                fail: function () {
+                    layer.msg("删除失败");
+                }
+            });
+
+        });
+        
+
+        //在线预览
+        window.showFile = function (url, fileName) {
+            let fileType = fileName.split(".")[fileName.split(".").length - 1];
+            if (fileType == "pdf") {
+                window.open(url);
+            } else {
+                window.open(url);
+            }
+
+        }
+        
+
+        function ddlList(){
+            //加载申报年度
+            $.ajax({
+                type: "post",
+                url: huayi_projectscore_url +"projectDicRegionLevel/getHoldYear",
+                data: {cmeStandardKind:localStorage.getItem("standardkind-id"),unitId:localStorage.getItem("unit-id")},
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                    for(var year of data.data.entries()){
+                        $('#applyYear').append(new Option(year[1],year[1]));//往下拉菜单里添加元素
+                    }
+                    form.render('select'); //刷新select选择框渲染
+                },
+                error: function (data) {
+                    layer.msg("响应失败1");
+                }
+            });
+
+        }
+
+        //公共ajax
+        let commonAjax = function (type = "get", url, data, failFun, successFun) {
+            openLoading();
+            $.ajax({
+                type: type,
+                url: url,
+                data: data,
+                success: function (res) {
+                    closeLoading();
+                    if(res.status != 200) {
+                        layer.msg(res.msg);
+                        return;
+                    }
+                    successFun(res);
+                },
+                error: function (res) {
+                    closeLoading();
+                    failFun();
+                }
+            });
+        }
+
+        //ajax获取配置信息
+        let getTabConfig = function () {
+            let tempConfigUrl = huayi_sjwh_url + `cmeCommonConfig/getConfigByUnitFromRedis?unitId=${userUnitId}&configNames=${configName1}`;
+            commonAjax("post",tempConfigUrl,{},function(){},
+                function(res) {
+                    if(res.status == 200) {
+                        configMap = res.data;
+                        loadReport();
+                    }else{
+                        layer.msg("加载配置信息失败");
+                    }
+                }
+            )
+        }
+
+
+    });
+
+</script>
+
+</html>

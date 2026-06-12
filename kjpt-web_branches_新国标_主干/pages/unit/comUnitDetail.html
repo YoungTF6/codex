@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>编辑单位</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script type="text/javascript" src="https://v8.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body" style="padding: 15px;">
+            <form class="layui-form" style = "padding: 30px;" lay-filter = 'user-form-alert-edit' id ='user-form-alert-edit'>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">单位编号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="unitId"  disabled = "" style="background-color:#efefef;color:#666666"  placeholder="请输入单位编号" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">组织机构码</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="unitCode"  placeholder="请输入组织机构码" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-block">
+                        <label class="layui-form-label"><span style="color: red">*&nbsp;</span>单位名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" style="width: 700px" name="unitName" lay-verify="notBlank" placeholder="请输入单位名称" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-block">
+                        <label class="layui-form-label">单位简称</label>
+                        <div class="layui-input-block">
+                            <input type="text" style="width: 700px" name="shortName"  placeholder="请输入单位简称" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span style="color: red">*&nbsp;</span>单位类型</label>
+                        <div id = "unitTypeSelect" class="layui-input-inline" ></div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span style="color: red">*&nbsp;</span>单位级别</label>
+                        <div id = "unitLevelSelect" class="layui-input-inline" ></div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span style="color: red">*&nbsp;</span>区域级别</label>
+                        <div id = "unitAreaLevelSelect" class="layui-input-inline" ></div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span style="color: red">*&nbsp;</span>单位区县</label>
+                        <div id = "unitAreaSelect" class="layui-input-inline"></div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">上级单位</label>
+                        <div id = "unit-form-select-parent" class="layui-input-inline" data-name="userRole"></div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span style="color: red">*&nbsp;</span>套标准</label>
+                        <div id = "unitStandardSelect" class="layui-input-inline" data-name="userRole"></div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-block">
+                        <label class="layui-form-label">单位地址</label>
+                        <div class="layui-input-block">
+                            <input type="text" style="width: 700px" name="address"  placeholder="请输入单位地址" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">联系人</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="contact"  placeholder="请输入联系人姓名" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">电话</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="telephone"  placeholder="请输入电话" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">邮编</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="postcode"  placeholder="请输入邮编" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" >
+                    <div class="layui-inline">
+                        <div class="layui-input-block">
+                            <button type="submit" id = "unit-form-edit-submit" class="layui-btn" lay-filter = 'unit-form-edit-submit' lay-submit >提交</button>
+                            <button onclick="return goToBack()" class="layui-btn"  >返回</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style=" display:none">
+                    <div class="layui-inline">
+                        <div class="layui-input-block">
+                            <input type="text" name="unitMainId" placeholder="单位主键" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style=" display:none">
+                    <div class="layui-inline">
+                        <div class="layui-input-block">
+                            <input type="text" name="unitUserType" placeholder="机构账号类型" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+
+<script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+<script src="../../js/common.js"></script>
+<script src="../../js/constant.js"></script>
+<script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+<script>
+
+    var format_url=/\\|\/$/gi;
+    var sjwhUrl  =huayi_sjwh_url.replace(format_url,"");
+    var personorgUrl = huayi_personorg_url.replace(format_url,"");
+    var unitDetailUrl = personorgUrl + '/comunit/detail';
+    var unitDictUrl = sjwhUrl + '/comdictionary/unit/dict';
+    var unitEditUrl = personorgUrl + '/comunit/update';
+
+    var unitTop10Url = personorgUrl + "/comunit/search/top10";
+    var unitAreaUrl = personorgUrl + '/comunit/area';
+    var standardKindListUrl = sjwhUrl +"/cmestandardkind/list/all";
+
+    window.goToBack = function(){
+        window.history.back();
+        return false;
+    };
+
+    var formSnapShot = null;
+
+    //防止表单重复提交
+    var noRepeatLock = true;
+    var noRepeat = function(fun ){
+        if(noRepeatLock){
+            noRepeatLock = false;
+            try {
+                fun();
+            } catch (e) {
+                console.log(e);
+            }
+            setTimeout(function(){
+                noRepeatLock = true;
+            },3000);
+        }
+    };
+
+    var formValue = function(formId){
+        var formObj = {};
+        var dataArr = $(formId).serializeArray();
+        if(dataArr == null || dataArr.length == 0){
+            return formObj;
+        }
+        for (var i = 0 ; i <  dataArr.length; i++){
+            formObj[dataArr[i].name] = dataArr[i].value;
+        }
+        return formObj;
+    }
+
+    layui.config({
+        base:'../../js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select'
+    }).use(['xmSelect','form','authtree','layer'],function(){
+        var form = layui.form;
+
+        var xmSelectAreaLevel = null;
+        var xmSelectLevel = null;
+        var xmSelectType = null;
+        var xmSelectStandard = null;
+        var xmSelectUnitArea = null;
+
+        //加载各种各样的码表（下拉框）
+        $.ajax({
+            url: unitDictUrl,
+            type: 'get',
+            //同步，避免用户绑定角色信息返显失败
+            async:false,
+            dataType: 'json',
+            contentType: 'application/json;charset=UTF-8',
+            success: function (res) {
+                if (res.status == 200) {
+
+                    //加载单位类型
+                    xmSelectType = layui.xmSelect.render({
+                        el: '#unitTypeSelect',
+                        radio: true,
+                        layVerify:"required",
+                        autoRow:true,
+                        name: 'unitType',
+                        data: res.data.type,
+                    });
+
+                    //加载单位区域级别
+                    xmSelectAreaLevel = layui.xmSelect.render({
+                        el: '#unitAreaLevelSelect',
+                        radio: true,
+                        layVerify:"required",
+                        autoRow:true,
+                        name: 'unitAreaId',
+                        data: res.data.area,
+                    });
+
+                    //加载单位等级
+                    xmSelectLevel = layui.xmSelect.render({
+                        el: '#unitLevelSelect',
+                        radio: true,
+                        layVerify:"required",
+                        autoRow:true,
+                        name: 'unitLevelId',
+                        data: res.data.level,
+                    });
+
+                    //加载单位套
+                    xmSelectStandard = layui.xmSelect.render({
+                        el: '#unitStandardSelect',
+                        radio: true,
+                        layVerify:"required",
+                        autoRow:true,
+                        filterable: true,
+                        name: 'cmeStandardKindId',
+                        data: res.data.standard,
+                    });
+
+                } else {
+                    layui.layer.msg(res.msg || '系统繁忙，请稍后重试', {
+                        time: 1000, //1s后自动关闭
+                        end: function (o) {
+                            layui.layer.closeAll();
+                        }
+                    });
+                }
+            },
+            error: function (req, msg) {
+                layui.layer.msg('系统繁忙，请稍后重试', {
+                    time: 1000, //1s后自动关闭
+                    end: function (o) {
+                        layui.layer.closeAll();
+                    }
+                });
+            }
+        });
+
+        //省市县下拉级联框
+        xmSelectUnitArea = layui.xmSelect.render({
+            el: '#unitAreaSelect',
+            name:"areaCode",
+            autoRow: true,
+            cascader:{
+                show: true,
+                indent: 200,
+                strict:true
+            },
+            layVerify:"required",
+            radio: true,
+            iconfont: {
+                parent: 'hidden'
+            },
+            load: function(item, cb){
+                //item: 点击的节点, cb: 回调函数
+                //这里模拟ajax
+                setTimeout(function(){
+                    var name = item.name + 1;
+                    cb([
+                        {name: item.name + 1, value: item.value + '1', children: [] },
+                        {name: item.name + 2, value: item.value + '2' },
+                    ])
+                }, 500)
+            },
+            data(){
+                var dataTree = [];
+                $.ajax({
+                    url: unitAreaUrl,
+                    type: 'get',
+                    //同步，避免用户绑定角色信息返显失败
+                    async:false,
+                    dataType: 'json',
+                    contentType: 'application/json;charset=UTF-8',
+                    success: function (res) {
+                        if (res.status == 200) {
+                            dataTree = res.data;
+                        } else {
+                            layui.layer.msg(res.msg || '系统繁忙，请稍后重试', {
+                                time: 1000, //1s后自动关闭
+                                end: function (o) {
+                                    layui.layer.closeAll();
+                                }
+                            });
+                        }
+                    },
+                    error: function (req, msg) {
+                        layui.layer.msg('系统繁忙，请稍后重试', {
+                            time: 1000, //1s后自动关闭
+                            end: function (o) {
+                                layui.layer.closeAll();
+                            }
+                        });
+                    }
+                });
+                return dataTree;
+            }
+        });
+
+        //上级单位下拉框
+        window.loadParentUnitSelect = function (initData) {
+
+            layui.xmSelect.render({
+                el: '#unit-form-select-parent',
+                name:"parentUnit",
+                radio: true,
+                filterable: true,
+                remoteSearch: true,
+                tips:"请选择单位",
+                searchTips:'请输入单位名称',
+                // data:initData,
+                remoteMethod: function(val, reload, show){
+                    if(!val ){
+                        return reload(initData);
+                    }
+                    $.ajax({
+                        url:unitTop10Url+"?unitName="+val,
+                        type:'get',
+                        success:function (res) {
+                            if(res.status == 200){
+                                reload(res.data);
+                            }
+                        },
+                        error:reload([])
+                    })
+                }
+            });
+        }
+
+        // ===============  获取单位详情，回显数据 ==================
+        var unitId = getUrlParam('unitId');
+        $.ajax({
+            url: unitDetailUrl + '?unitId=' + unitId,
+            type: 'get',
+            dataType: 'json',
+            contentType: 'application/json;charset=UTF-8',
+            success: function (res) {
+                if (res.status == 200) {
+
+                    xmSelectAreaLevel.setValue(res.data.unitAreaId == null ?[]:[res.data.unitAreaId]);
+                    xmSelectLevel.setValue(res.data.unitLevelId == null ?[]:[res.data.unitLevelId]);
+                    xmSelectType.setValue(res.data.unitType == null ?[]:[res.data.unitType]);
+                    xmSelectStandard.setValue(res.data.cmeStandardKindId == null ?[]:[res.data.cmeStandardKindId]);
+                    xmSelectUnitArea.setValue(res.data.areaCode == null ?[]:[res.data.areaCode]);
+
+                    window.loadParentUnitSelect(res.data.parentUnit == null ? []:[{"name":res.data.parentUnitName,"value":res.data.parentUnit,"selected":true}]);
+                    form.val('user-form-alert-edit',res.data);
+                } else {
+                    layui.layer.msg(res.msg || '系统繁忙，请稍后重试', {
+                        time: 1000, //1s后自动关闭
+                        end: function (o) {
+                            layui.layer.closeAll();
+                        }
+                    });
+                }
+            },
+            error: function (req, msg) {
+                layui.layer.msg('系统繁忙，请稍后重试', {
+                    time: 1000, //1s后自动关闭
+                    end: function (o) {
+                        layui.layer.closeAll();
+                    }
+                });
+            }
+        });
+
+        //监听form修改
+        form.on('submit(unit-form-edit-submit)', function(data){
+
+            noRepeat(function(){
+
+                var formParam =data.field;
+
+                if(formSnapShot == JSON.stringify(formParam)){
+                    layui.layer.msg('没有需要更新的内容！', {
+                        time: 1000, //1s后自动关闭
+                        end:function(o){
+                            layui.layer.closeAll();
+                        }
+                    });
+                }else{
+                    $.ajax({
+                        url:unitEditUrl,
+                        type:'post',
+                        dataType:'json',
+                        contentType:'application/json;charset=UTF-8',
+                        data:JSON.stringify(formParam),
+                        success:function(res){
+                            if(res.status == 200){
+                                layui.layer.msg('操作成功！', {
+                                    time: 1000, //1s后自动关闭
+                                    end:function(o){
+                                        goToBack();
+                                    }
+                                });
+                            }else{
+                                layui.layer.msg(res.msg || '系统繁忙，请稍后重试', {
+                                    time: 1000, //1s后自动关闭
+                                    end:function(o){
+                                        layui.layer.closeAll();
+                                    }
+                                });
+                            }
+                        },
+                        error:function(req,msg){
+                            layui.layer.msg('系统繁忙，请稍后重试', {
+                                time: 1000, //1s后自动关闭
+                                end:function(o){
+                                    layui.layer.closeAll();
+                                }
+                            });
+                        }
+                    });
+                }
+                formSnapShot = null;
+            });
+            return false;
+        });
+    });
+
+</script>
+</html>

@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> 考勤记录分析</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../../js/jquery-3.5.1.min.js"></script>
+    <script src="../../../js/common.js"></script>
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="../../../js/constantPage/projectConstant.js"></script>
+    <style>
+        /* 新增代码 */
+        html,body{
+            background: #fff;
+        }
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+        .no-click {
+            pointer-events: none;
+        }
+
+    </style>
+
+
+</head>
+<body>
+<div class="layui-fluid" >
+    <table style="width: 80%;float: left;display: none ">
+        <tr>
+            <td>1</td>
+            <td>2</td>
+            <td>2</td>
+            <td>2</td>
+            <td>2</td>
+            <td>2</td>
+            <td>2</td>
+            <td>2</td>
+            <td>2</td>
+            <td>2</td>
+            <td>2</td>
+            <td>2</td>
+        </tr>
+    </table>
+    <button style="width: 15%; float: left;display: none" type="button" class="layui-btn" onclick="toGivingForProjPosDownload()">返回授分</button>
+
+    <div class="layui-card" style="text-align: center">
+        <!--        表格区域-->
+        <div class="layui-card-body layui_body_box">
+            <table class="layui-table" id="teachList" lay-filter="teachListFilter" style="margin: 0px 0px;">
+            </table>
+        </div>
+        <div style="padding-bottom: 15px;">
+            <button type="button" id="btnFilterScorePerson" class="layui-btn layui-btn-sm" onclick="creditAnalysisFunction()">筛选授分人员</button>
+            <button type="button" class="layui-btn layui-btn-sm" onclick="closeMyMSG()">返回</button>
+        </div>
+    </div>
+    <div id="creditAnalysisDiv" style="display: none" class="layui-card">
+        <!--    搜索栏-->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="searchForQualifiedPersonnel" style="background: #f5f5f5;">
+            <div class="layui_mess">
+                <div class="layui_display">
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span style="color: red">*</span>授分策略</label>
+                    <div class="layui-input-block">
+                        <select name="creditStrategy" id="creditStrategy_id" lay-filter="creditStrategy_id" lay-verify="required">
+                            <option value="4">有考勤就授予全部学分</option>
+                            <option value="0">任意课程考勤有效就授予全部学分</option>
+                            <option value="1">所有课程考勤有效就授予全部学分</option>
+                            <option value="2">按所参加课程的学时比例授予学分</option>
+                            <option value="5">海南省国家级省级项目授分策略</option>
+                            <option value="6">按考勤次数授分</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">项目评价</label>
+                    <div class="layui-input-block">
+                        <select name="evaluationResults" id="evaluationResults_id" lay-verify="required">
+                            <option value="">请选择</option>
+                            <option value="0">完成</option>
+                            <option value="1">未完成</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">考试</label>
+                    <div class="layui-input-block">
+                        <select name="passResult" id="passResult_id" lay-verify="required">
+                            <option value="">请选择</option>
+                            <option value="1">通过</option>
+                            <option value="0">不通过</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">姓名</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="personName" id="personName_id" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">所在单位</label>
+                    <div class="layui-input-block" >
+                        <input type="text" name="unitName" id="unitName_id" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">科室</label>
+                    <div class="layui-input-block" >
+                        <input type="text" name="deptName" id="deptName_id" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">职称</label>
+                    <div class="layui-input-block" >
+                        <input type="text" name="titleName" id="titleName_id" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">专业</label>
+                    <div class="layui-input-block" >
+                        <input type="text" name="personSpecName" id="personSpecName_id" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline" style="display: none">
+                    <label class="layui-form-label">考勤地址</label>
+                    <div class="layui-input-block" >
+                        <input type="text" name="attendanceAddress" id="attendanceAddress_id" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline" id="attendTimesDiv" style="display: none">
+                    <label class="layui-form-label">考勤次数 ≥</label>
+                    <div class="layui-input-block" >
+                        <input type="number" step="1" name="attendTimes" id="attendTimes_id" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                </div>
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="searchToScorePersons()"
+                            lay-filter="LAY-app-order-search"
+                            data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+        <div style="padding:15px 15px 0 15px;">
+            <button type="button" class="layui-btn layui-btn-sm" onclick="openAwardDate()">授分</button>
+            <button type="button" id="allChooseBtn" class="layui-btn layui-btn-sm" onclick="openAllChoose()">已选中(0)人</button>
+            <button type="button" id="TableCheckOff" class="layui-btn layui-btn-sm" >取消全部选中人员</button>
+            <button type="button" id="exportAll" class="layui-btn layui-btn-sm" style="float: right;" >导出本批次全部考勤</button>
+            <label style="color:red; padding-left: 20px;display: none;" class="guangxi-show" >授分后必须填写相应的执行情况反馈，以完成学习记录。无反馈将影响上级部门审核。感谢配合！</label>
+        </div>
+        <!--        表格区域-->
+        <div class="layui-card-body layui_body_box">
+            <table class="layui-table" id="creditAnalysis" lay-filter="creditAnalysisFilter" style="margin: 0px 0px;">
+            </table>
+        </div>
+
+    </div>
+    
+    <!-- 已选择待授分人员 -->
+    <div style="display: none" id="creditAnalysisCheckedDiv" class="layui-card-body layui_body_box">
+        <table class="layui-table" id="creditAnalysisChecked" lay-filter="creditAnalysisCheckedFilter"
+             style="margin: 0px 0px;" >
+        </table>
+    </div>
+    <form class="layui-form" style="display: none" id="fromForCreditStrategy">
+        <div class="layui-form-item">
+            <label class="layui-form-label">请选择授分日期</label>
+            <div class="layui-input-block">
+                <input type="text" name="title" id="creditStrategyDate_ids" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" readonly="readonly"  style="cursor:pointer;">
+            </div>
+        </div>
+        
+    </form>
+
+</div>
+
+<!--分析列-->
+<script type="text/html" id="rowBar">
+    {{# if(d.isAnalyze) { }}
+    <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="analyzedForStudent">已分析</a>
+    {{#   }else {     }}
+    <a class="layui-btn layui-btn-xs  layui-btn-danger btn-danger-row" lay-event="pendingPointsForStudent">待分析</a>
+    {{#     }          }}
+</script>
+<!--教师列-->
+<script type="text/html" id="rowBar1">
+    {{# if(d.teachAttendance) {  }}
+    <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="awarded">已授分</a>
+    {{#  }else { }}
+    <a class="layui-btn layui-btn-xs layui-btn-danger btn-danger-row" lay-event="pendingPointsForTeach">待授分</a>
+    {{# } }}
+</script>
+<script type="text/html" id="rowBar3">
+    {{# if(d.isAnalyze) { }}
+    <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="effectivAttendance">查看</a>
+    {{# } }}
+</script>
+
+<script type="text/html" id="rowBar4">
+    <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="attendanceList">查看</a>
+</script>
+
+<script type="text/html" id="rowBar5">
+    <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="effectivAttendance">考勤信息</a>
+</script>
+
+<script type="text/html" id="rowBar6">
+    <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="exportAttendance">导出EXECL</a>
+    <label style="font-size:15px;float: right;padding-right: 40%;color: #1E9FFF;" id="peopleScoreTitle"></label>
+</script>
+<script>
+
+    var pro_id=getUrlParam("projectId");
+    var down_id=getUrlParam("downId");
+    var startDate=getUrlParam("startDate")
+    var endDate=getUrlParam("endDate")
+    var scoreLevel = getUrlParam("scoreLevel")
+    var projNo = getUrlParam("projNo")
+    var projName = getUrlParam("projName");
+    var cmeStandardKindId = localStorage.getItem("standardkind-id");
+    const HENAN = "a6280900-a9c2-11ec-84d6-fa163e9b64fb";
+    const HUBEI = "73ba18db-33fd-4746-ab41-9beb009f69a1";
+    var btnFilterScorePerson = document.getElementById("btnFilterScorePerson");
+    if (btnFilterScorePerson) btnFilterScorePerson.textContent = (cmeStandardKindId === StandardKind.GUANG_DONG) ? "筛选预授分人员" : "筛选授分人员";
+    // 全局配置及引入相关的模块
+    layui.config({
+            base: '../../../js/layui/ext/'
+        }).extend({
+            myTable: 'table',
+            excel: 'excel'
+        }).use(['myTable', 'form', 'laydate', 'excel'], function () {
+        var table = layui.myTable;
+        var form = layui.form;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var laydate=layui.laydate;
+        var openChannelId= false;
+        var excel=layui.excel;
+        var checkedPersonIds = [], isReload = false, checkedTableInfo = new Map();
+        var allTeachData = null;
+        var _isGuangxi = cmeStandardKindId == StandardKind.GUANG_XI;
+
+        if(_isGuangxi) {
+            $(".guangxi-show").show();
+        }
+        table.render({
+            elem: '#teachList',
+            url: huayi_projectscore_url + 'cmeCmeProjTeach/getTeachListForGiving',
+            title: '课程列表',
+            defaultToolbar: [],
+            where: {
+                downId: down_id
+            },
+            cols: [[
+                // {align: 'center',  toolbar: '#rowBar1', title: '主讲人授分'},
+                {align: 'center', toolbar: '#rowBar4', title: '考勤明细'},
+                {align: 'center',  toolbar: '#rowBar', title: '考勤分析'},
+                {align: 'center', toolbar: '#rowBar3',title: '考勤有效人员'},
+                {field: 'projTeachId', align: 'center',title: '课程主键',hide: true},
+                {field: 'teachSubject',align: 'center', title: '课程题目', },
+                {field: 'teachName', align: 'center',title: '授课教师', },
+                {field: 'score', align: 'center',title: '学分',hide: true },
+                {field: 'period', align: 'center',title: '学时', },
+                {field: 'isAnalyze',align: 'center', title: '考勤是否已分析',hide: true},
+                {field: 'teachAttendance',align: 'center', title: '教师是否已授分', hide: true},
+            ]],
+            cellMinWidth: 100,
+            id: "teachListTable",
+            page: false,
+            limit: 10,
+            limits: [10, 50, 100, 150, 200],
+            parseData: function (res) {
+                return {
+                    "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "data": res.data, //解析数据列表
+                }
+
+            },
+            request: {
+                pageName: 'pageNum', //页码的参数名称，默认：page
+                limitName: 'pageSize' //每页数据量的参数名，默认：limit
+            }
+        })
+
+        // 监听行内按钮
+        table.on('tool(teachListFilter)',function (obj) {
+            if (obj.event === 'pendingPointsForStudent' || obj.event === 'analyzedForStudent'){
+                layer.open({
+                    closeBtn  : false,
+                    title: false,
+                    type: 2,
+                    content: 'attendanceAnalysis.html?teachId='+obj.data.projTeachId,
+                    area: ['100%', '100%'],
+                    cancel: function (index ,layero) {
+                        table.reload("teachListTable");
+                    }
+                })
+            }else if (obj.event === 'pendingPointsForTeach' || obj.event === 'awarded') {
+                layer.open({
+                    type: 2,
+                    content: 'GivingForTeachers.html?teachId='+obj.data.projTeachId+'&downId='+down_id+'&projNo='+projNo+'&projName='+projName,
+                    area: ['100%', '100%'],
+                    title: '给讲师授分页面',
+                    cancel: function (index ,layero) {
+                        table.reload("teachListTable");
+                    }
+                });
+            }else if (obj.event === 'effectivAttendance'){
+                layer.open({
+                    type: 2,
+                    content: 'teachIdAttendanceResult.html?teachId='+obj.data.projTeachId+'&downId='+down_id,
+                    area: ['100%', '100%'],
+                    title: '考勤有效人员',
+                    cancel: function (index ,layero) {
+                        table.reload("teachListTable");
+                    }
+                })
+
+            }else if (obj.event === 'attendanceList'){
+                layer.open({
+                    type: 2,
+                    content: 'attendanceDetails.html?teachId='+obj.data.projTeachId+'&downId='+down_id,
+                    area: ['100%', '100%'],
+                    title: '考勤人员列表',
+                    cancel: function (index ,layero) {
+                        table.reload("teachListTable");
+                    }
+                })
+            }
+
+        })
+
+        // 按钮{已完成全部课程考勤分析，进入下一步}
+        window.creditAnalysisFunction =function () {
+            $("#creditAnalysisDiv").show();
+            searchToScorePersons();
+        }
+         // 返回刀考勤周期页面
+        window.closeMyMSG = function(){
+            // window.parent.layer.closeAll();
+            // let tempUrl = 'givingForProjPosDownload.html?pro_id='+pro_id + '&scoreLevel=' + scoreLevel;
+            // var index = window.parent.layer.open({
+            //     type: 2,
+            //     title: '授分',
+            //     content: tempUrl,
+            //     skin: '',
+            //     area: ['100%', '100%'],
+            //     maxmin    : true,
+            // });
+              var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+              parent.layer.close(index); //再执行关闭   
+        }
+        // 授分有效人员列表
+        window.searchToScorePersons=function() {
+
+            //按照考勤次数授分
+            if($("#creditStrategy_id").val() == "6") {
+                if($("#attendTimes_id").val() == "") {
+                    layer.msg("请输入考勤次数底值");
+                    initTeachTable([]);
+                    return false;
+                } else {
+                    if(checkAttendTimes() == false) {
+                        initTeachTable([]);
+                        return false;
+                    } 
+                }
+            }
+
+            var data1 = form.val("searchForQualifiedPersonnel");
+            $.ajax({
+                type 		: 'GET',
+                contentType : 'application/json',
+                url 		: huayi_projectscore_url + 'cmeProjAttendanceResult/getQualifiedPersonnel',
+                data 		: {
+                    downId: down_id,
+                    creditStrategy: $('#creditStrategy_id').val(),
+                    evaluationResults: $('#evaluationResults_id').val(),
+                    passResult: $('#passResult_id').val(),
+                    personName: $('#personName_id').val(),
+                    unitId: localStorage.getItem("unit-id"),
+                    unitName: $('#unitName_id').val(),
+                    deptName: $('#deptName_id').val(),
+                    titleName: $('#titleName_id').val(),
+                    attendanceAddress: $('#attendanceAddress_id').val(),
+                    personSpecName: $('#personSpecName_id').val(),
+                    scoreLevelId: getUrlParam("scoreLevel"),
+                    attendTimes: $("#attendTimes_id").val()
+                },
+                success 	: (res) => {
+                    if (res.status == 200) {
+                        allTeachData = res.data;
+                        allTeachData.sort(
+                            function compareFunction(param1, param2) {
+                                let sortIndex = param1.personName.localeCompare(param2.personName, 'zh-Hans-CN', {sensitivity: 'accent'});
+                                return sortIndex;
+                            }
+                        );
+                        initTeachTable(res.data);
+                    }else {
+                        layer.msg(res.msg)
+                    }
+                },
+                error       :  (XMLHttpRequest, textStatus, errorThrown) => {
+                    layer.msg("请求失败")
+                }
+            })
+            
+        }
+
+        let initTeachTable = function(data) {
+            table.render({
+                elem: '#creditAnalysis',
+                title: '符合授分人员',
+                defaultToolbar: [],
+                toolbar: '#rowBar6',
+                data: data,
+                cols: [[
+                    {align: 'center', type: 'checkbox', title: '选择'},
+                    {field: 'comPersonId',align: 'center', width: 250, title: '主键',hide: true},
+                    {field: 'personNo',align: 'center', width: 250, title: '人员编号'},
+                    {field: 'personName',align: 'center', width: 200, title: '姓名', sort: true},
+                    {field: 'unitName', align: 'center', title: '所在单位', sort: true},
+                    {field: 'deptName', align: 'center', title: '科室', sort: true},
+                    {field: 'titleName', align: 'center', title: '职称', sort: true},
+                    {field: 'passResult', align: 'center', title: '考试结果', templet: function(data){
+                        if(data.passResult == '1'){
+                            return '通过';
+                        }else{
+                            return '未通过';
+                        }
+                        }
+                    },
+                    {field: 'evaluationResults', align: 'center', title: '评价结果', templet: function(data){
+                        if(data.evaluationResults == '0'){
+                            return '完成';
+                        }else{
+                            return '未完成';
+                        }
+                    }},
+                    {field: 'playDurations', align: 'center', title: '观看时长',sort:true,hide: !((localStorage.getItem("standardkind-id") == "6427ddba-c02f-4229-bd73-49fc1c5d21f6") && openChannelId)},
+                    {field: 'posTime', align: 'center', width: 200, title: '首次考勤时间', sort: true},
+                    {field: 'attendTimes', align: 'center', title: '考勤次数', sort: true,hide:$("#creditStrategy_id").val() != "6"},
+                    {align: 'center', title: '考勤信息', templet: '#rowBar5'},
+                ]],
+                cellMinWidth: 100,
+                id: "comPersonIdListTable",
+                page: false,
+                limit: 10000,
+                autoSort: false,
+                parseData: function (res) {
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.msg, //解析提示文本
+                        "data": res.data, //解析数据列表
+                    }
+
+                },
+                done : function(res, curr, count){
+                    $("#peopleScoreTitle").html(`待授分人数: (${res.data.length}人)`);
+                    if( checkedPersonIds != undefined ){
+                        //遍历集合
+                        layui.each(res.data, function(index,item){
+                            //将获取的选中行数据进行遍历
+                            if( checkedPersonIds.indexOf('' + item.comPersonId + '') > -1 ){ 
+                                //点击去属性 lay-id='表格id'； index：要回显的行数下标，从0开始
+                                $("div[lay-id='comPersonIdListTable'] td .layui-form-checkbox").eq(index).click();
+                            } 
+                        });
+                    }
+                }
+            })
+        }
+
+        $("#attendTimes_id").blur(function() {
+            checkAttendTimes();
+        });
+
+        function checkAttendTimes() {
+            var intvalue = /^[1-9]\d*$/g;
+            let result = intvalue.test($("#attendTimes_id").val().toString());
+            if(result == false ) {
+                layer.alert("考勤次数底值只能是正整数",{icon:2});
+                return false;
+            }
+        }
+
+        table.on('sort(creditAnalysisFilter)', function(obj){
+            if(allTeachData==null || allTeachData.length==0) return;
+            let type = obj.type;
+            allTeachData.sort(
+                function compareFunction(param1, param2) {
+                    let sortIndex = param1[obj.field].toString().localeCompare(param2[obj.field.toString()], 'zh-Hans-CN', {sensitivity: 'accent'});
+                    if(type=="asc") return 0-sortIndex;
+                    return sortIndex;
+                }
+            );
+            table.reload('comPersonIdListTable', {
+                data:allTeachData,
+                initSort: obj,
+            });
+        })
+
+
+        //以复选框事件为例
+        table.on('checkbox(creditAnalysisFilter)', function(obj){
+            
+            debugger
+            // 全选
+            if(obj.type == 'all'){
+                var checkStatus = table.checkStatus('comPersonIdListTable');
+                if(obj.checked == true){
+                    for (var i = 0; i < checkStatus.data.length; i++) {
+                        let indx =  checkedPersonIds.indexOf(checkStatus.data[i].comPersonId);
+                        // let indxObj =  checkedTableInfo.indexOf(checkStatus.data[i]);
+                        let indxObj =  checkedTableInfo.has(checkStatus.data[i].comPersonId);
+                        if(indx < 0 ){ 
+                            // 插入选中数组
+                            checkedPersonIds.push(checkStatus.data[i].comPersonId);
+                            // checkedTableInfo.push(checkStatus.data[i]);
+                            checkedTableInfo.set(checkStatus.data[i].comPersonId, checkStatus.data[i]);
+                        }
+                    }
+                }else if(obj.checked == false){
+                    var datas = table.cache["comPersonIdListTable"]
+                    for (var i = 0; i < datas.length; i++) {
+                        let indx =  checkedPersonIds.indexOf(datas[i].comPersonId);
+                        // let indxObj =  checkedTableInfo.indexOf(datas[i]);
+                        let indxObj =  checkedTableInfo.has(checkStatus.data[i].comPersonId);
+                        if(indx >= 0 && indxObj){ 
+                            // 从选中数组中去除
+                            checkedPersonIds.splice(indx, 1);
+                            // checkedTableInfo.splice(indxObj, 1);
+                            checkedTableInfo.delete(checkStatus.data[i].comPersonId);
+                        }
+                    }
+                }
+            }else{
+                let indx =  checkedPersonIds.indexOf(obj.data.comPersonId);
+                // let indxObj =  checkedTableInfo.indexOf(obj.data);
+                let indxObj =  checkedTableInfo.has(obj.data.comPersonId);
+                if(obj.checked){
+                    if(indx < 0 ){ 
+                        checkedPersonIds.push(obj.data.comPersonId);
+                        // checkedTableInfo.push(obj.data);
+                        checkedTableInfo.set(obj.data.comPersonId, obj.data);
+                    }
+                }else{
+                    if(indx >= 0){ 
+                        checkedPersonIds.splice(indx, 1);
+                        // checkedTableInfo.splice(indxObj, 1);
+                        checkedTableInfo.delete(obj.data.comPersonId);
+                    }
+                }
+            }
+            
+            var chooseBtn = $("#allChooseBtn");
+            chooseBtn[0].innerHTML = '已选中(' + checkedPersonIds.length + ')人';
+        });
+
+        window.openAllChoose = function(){
+            // $("#creditAnalysisCheckedDiv").show();
+            layer.open({
+                type: 1,
+                title: '所有选中人员',
+                content: $('#creditAnalysisCheckedDiv'),
+                area: ['90%', '90%'],
+                shadeClose: true
+            });
+            table.render({
+                elem: '#creditAnalysisChecked',
+                data: [...checkedTableInfo.values()],
+                title: '符合授分人员',
+                defaultToolbar: [],
+                toolbar: '#rowBar6',
+                cols: [[
+                    // {align: 'center', type: 'checkbox', title: '选择'},
+                    {field: 'comPersonId',align: 'center', width: 250, title: '主键',hide: true},
+                    {field: 'personNo',align: 'center', width: 250, title: '卡号',hide: true},
+                    {field: 'personName',align: 'center', width: 250, title: '姓名', sort: true},
+                    {field: 'unitName', align: 'center', title: '所在单位', sort: true},
+                    {field: 'deptName', align: 'center', title: '科室', sort: true},
+                    {field: 'titleName', align: 'center', title: '职称', sort: true},
+                    {field: 'playDurations', align: 'center', title: '观看时长',hide: !((localStorage.getItem("standardkind-id") == "6427ddba-c02f-4229-bd73-49fc1c5d21f6") && openChannelId)},
+                    {field: 'attendTimes', align: 'center', title: '考勤次数', sort: true,hide:$("#creditStrategy_id").val() != "6"},
+                    {align: 'center', title: '考勤信息', templet: '#rowBar5'},
+                ]],
+                cellMinWidth: 100,
+                id: "checkedComPersonIdListTable",
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.msg, //解析提示文本
+                        "data": res.data, //解析数据列表
+                    }
+
+                },
+                request: {
+                    pageName: 'pageNum', //页码的参数名称，默认：page
+                    limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                },
+            })
+        }
+
+         // 所有选中人员表格
+         table.on('tool(creditAnalysisCheckedFilter)',function (obj) {
+            var comPersonId=obj.data.comPersonId;
+            if (obj.event === 'effectivAttendance'){
+                layer.open({
+                    title: '考勤详细信息',
+                    content: 'attendanceInfo.html?comPersonId='+comPersonId+'&downId='+down_id+'&type=1',
+                    type: 2,
+                    area: ['500px', '300px'],
+                    shadeClose: true
+                })
+            }
+        })
+         // 所有选中人员表格导出
+         table.on('toolbar(creditAnalysisCheckedFilter)',function (obj) {
+            if (obj.event === 'exportAttendance'){
+                // 获取表格的全部数据。
+                var personIds='';
+                var datas = checkedPersonIds;
+                if (datas.length<=0){
+                    layer.msg("当前数据为空");
+                    return;
+                }
+                for(i=0; i<datas.length; i++){
+                    personIds=personIds+datas[i]+',';
+                }
+                exportByDown(down_id, 1, personIds);
+            }
+        })
+
+        // 变更授分策略时清空已选中人员
+        form.on('select(creditStrategy_id)', function(data){
+            if(data.value == "6") {
+                $("#attendTimesDiv").show()
+            } else {
+                $("#attendTimesDiv").hide()
+            }
+            document.getElementById("TableCheckOff").click(); 
+        });
+
+        // 取消全选
+        $("#TableCheckOff").click(function () {
+           
+            $("input:checkbox").each(function () {
+                $(this).removeAttr('checked');
+            });
+            $(".layui-form-checkbox").each(function () {
+                $(this).removeClass('layui-form-checked');
+            });
+            var chooseBtn = $("#allChooseBtn");
+            chooseBtn[0].innerHTML = '已选中(0)人';
+            // 清空数据
+            checkedPersonIds = [];
+            checkedTableInfo = new Map();
+
+            searchToScorePersons();
+        })
+        
+        // 导出本批次全部考勤
+        $("#exportAll").click(function () {
+            exportByDown(down_id, 1, '');
+        })
+
+        // （行内按钮）查看考勤详细信息
+        table.on('tool(creditAnalysisFilter)',function (obj) {
+            var comPersonId=obj.data.comPersonId;
+            if (obj.event === 'effectivAttendance'){
+                layer.open({
+                    title: '考勤详细信息',
+                    content: 'attendanceInfo.html?comPersonId='+comPersonId+'&downId='+down_id+'&type=1',
+                    type: 2,
+                    area: ['500px', '300px'],
+                })
+            }
+        })
+        // 监听表头按钮
+        table.on('toolbar(creditAnalysisFilter)',function (obj) {
+            if (obj.event === 'exportAttendance'){
+                // 获取表格的全部数据。
+                var personIds='';
+                var datas = table.cache["comPersonIdListTable"]
+                if (datas.length<=0){
+                    layer.msg("当前数据为空");
+                    return;
+                }
+                for(i=0; i<datas.length; i++){
+                    personIds=personIds+datas[i].comPersonId+',';
+                }
+                exportByDown(down_id, 1, personIds);
+            }
+        })
+
+
+        window.exportByDown = function(downId, projectType, personIds){
+            $.ajax({
+                type 		: 'POST',
+                contentType : 'application/json',
+                url 		: huayi_projectscore_url + 'attendance/ExportExeclForAttendanceByDownVO',
+                data 		: JSON.stringify({"downId": downId, "personIds": personIds, "projectType": projectType}),
+                success 	: (data, textStatus, xhr) => {
+                    if (data.status == 200) {
+                        
+                        // 导出execl
+                        var datas= data.data
+                        var aa= ['name','personNo','unit','dept','title','posTime','isPassExam','isEvaluation']
+                        var bb= { name: '人员姓名',personNo: '人员编号',unit: '单位',dept: '科室', title: '职称', posTime: '考勤时间', appAddress: '考勤地址', isPassExam: '考试结果', isEvaluation: '评价结果'}
+                        if(openChannelId) {
+                            aa= ['name','personNo','unit','dept','title','posTime','playDurations','isPassExam','isEvaluation']
+                            bb= { name: '人员姓名', personNo: '人员编号', unit: '单位',dept: '科室', title: '职称', posTime: '考勤时间', appAddress: '考勤地址', playDurations: '观看时长', isPassExam: '考试结果', isEvaluation: '评价结果'}
+                        }
+                        datas=excel.filterExportData(datas,aa);
+                        datas.unshift(bb);
+                        
+                        excel.exportExcel(datas,'考勤详情.xlsx','xlsx');
+                    }else {
+                        layer.msg(data.msg)
+                    }
+                },
+                error       :  (XMLHttpRequest, textStatus, errorThrown) => {
+                    layer.msg("请求失败")
+                }
+            })
+        }
+        
+        window.toGivingForProjPosDownload= function (){
+
+        }
+
+        laydate.render({
+            elem: '#creditStrategyDate_ids', //指定元素
+            min: startDate.substring(0, 10),
+            max: endDate.substring(0,10),
+            value:startDate.substring(0, 10),
+            btns: ['clear', 'confirm']
+        });
+
+        window.getDownChannel= function () {
+            $.ajax({
+					    type 		: 'GET',
+					    contentType : 'application/json',
+					    url 		: huayi_projectscore_url + 'projPolyv/getDownIdChannel?downId='+down_id,
+					    // data 		: {"downId": datas.downId},
+					    success 	: (data, textStatus, xhr) => {
+                            ;
+                            if (data.status == 200) {
+                                openChannelId= data.data
+                            }else {
+                                layer.msg(data.msg)
+                            }
+                        },
+                        error       :  (XMLHttpRequest, textStatus, errorThrown) => {
+                            layer.msg("周期是否开启直播失败")
+                        }
+                    })
+        }
+        // 授分按钮
+        window.openAwardDate=function (){
+
+            var comPersonId=[];
+            var checkStatus = table.checkStatus('comPersonIdListTable');
+            if (checkedPersonIds.length <= 0) {
+                layer.msg("请选择授分人员");
+                return;
+            }
+            var data1 = form.val("formTest");
+          
+            layer.open({
+                title: '授分',
+                content: $('#fromForCreditStrategy'),
+                type: 1,
+                area: ['500px', '300px'],
+                btn: ['授分','取消'],
+                yes: function () {
+                    $(".layui-layer-btn0").prop("disabled","disabled").addClass("layui-disabled").addClass("no-click");
+                    $.ajax({
+                        type: 'post',
+                        url: huayi_projectscore_url + 'cmeProjScore/giving',
+                        data: JSON.stringify({
+                            // 周期id
+                            downId: down_id,
+                            // 授分策略
+                            creditStrategy: $("#creditStrategy_id").val(),
+                            // 授分人员
+                            comPersonIds: checkedPersonIds,
+                            // 授分日期
+                            creditStrategyDate: $("#creditStrategyDate_ids").val(),
+                            studyDate: $("#creditStrategyDate_ids").val(),
+                            unitId: localStorage.getItem("unit-id"),
+                            cmeStandardKindId: cmeStandardKindId
+                        }),
+                        contentType : "application/json",
+                        success: function (res) {
+                            if(res.success == true){
+                                $("#TableCheckOff").click(); 
+                                layer.closeAll();
+                                layer.msg(res.data);
+                            }else{
+                                layer.msg(res.msg);
+                                $(".layui-layer-btn0").removeAttr("disabled","disabled").removeClass("layui-disabled").removeClass("no-click");
+                            }
+                        },
+                        error: function (res) {
+                            layer.msg("请求失败");
+                            $(".layui-layer-btn0").removeAttr("disabled","disabled").removeClass("layui-disabled").removeClass("no-click");
+                        }
+                    })
+                },
+                btn2: function () {
+                    layer.close();
+                }
+            })
+        }
+
+        /* 获取配置 */
+        window.getConfig = function (configNames, scoreLevel) {
+            $.ajax({
+                async: false,
+                type: 'post',
+                url: huayi_sjwh_url + 'cmeCommonConfig/getConfigByUnitFromRedis',
+                data: {
+                    unitId: localStorage.getItem("unit-id"),
+                    configNames: configNames,
+                    scoreLevelId: scoreLevel
+                },
+                success: function (res) {
+                    if (res.success == true) {
+                        window[configNames] = res.data[configNames];
+                    } else {
+                        layer.msg('获取配置失败');
+                    }
+                },
+                error: function () {
+                    layer.msg('获取配置失败');
+                }
+            });
+        }
+        layer.ready(function () {
+           
+            getDownChannel();
+
+            //获取授分策略配置
+            getConfig("range_give_score_policy",scoreLevel);
+            $("#creditStrategy_id").html(window["range_give_score_policy"]);
+
+            getConfig("fun_exam_must_pass_when_award_score");
+            getConfig("fun_proj_exam"); // 是否开通继教项目的考试功能
+            getConfig("fun_proj_exam_force"); // 是否开通继教项目的考试强制功能
+            if(window["fun_exam_must_pass_when_award_score"] == "1" 
+                    || (window["fun_proj_exam"] == "1" && window["fun_proj_exam_force"] == "1")){
+                $("#passResult_id").find("option[value=1]").prop("selected","selected");
+                $("#passResult_id").prop("disabled","disabled");
+            }
+
+            getConfig("fun_proj_evaluate"); // 是否开通继教项目评价功能
+            getConfig("fun_proj_evaluate_force"); // 是否开通继教项目评价强制功能
+            if(window["fun_proj_evaluate"] == "1" && window["fun_proj_evaluate_force"] == "1"){
+                $("#evaluationResults_id").find("option[value=0]").prop("selected","selected");
+                $("#evaluationResults_id").prop("disabled","disabled");
+            }
+            form.render("select");
+        });
+
+        window.closeAllForgivingForTeachers =function () {
+            layer.closeAll();
+        }
+    })
+
+</script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>单位级别管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+        media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+
+</head>
+
+<body class="body-area">
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <!-- 搜索框区域 -->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+                <blockquote class="layui-form layui-form-item layui-elem-quote one-btn" lay-filter="query-form">
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 100px;">单位级别名称</label>
+                    <div class="layui-input-block" style="margin-left: 130px;">
+                        <input type="text" id="unitLevelSearch" placeholder="请输入" autocomplete="off"
+                            class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <a class="layui-btn layui-btn-sm btn-search" id="searchBtn" onclick="loaderTable()"
+                        lay-filter="table-search" data-type="reload">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </a>
+                </div>
+                </blockquote>
+            </div>
+
+            <!-- 表格区域 -->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="unitLevelTable" lay-filter="unitLevelTable" style="margin: 0px 0px;">
+                </table>
+            </div>
+        </div>
+    </div>
+
+            <!-- 添加/编辑弹窗 -->
+            <div id="add-unitLevel" style="display: none; text-align: center;">
+                <form class="layui-form" style="padding: 30px;" id="form-unitLevel" lay-filter="add-filter">
+                    <div class="layui-form-item" style="display: none;">
+                        <div class="layui-inline">
+                            <label class="layui-form-label"></label>
+                            <div class="layui-input-block">
+                                <input type="text" name="unitLevelId" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><font color="red">*&nbsp;</font>单位级别名称</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="unitLevelName" id="unitLevelName" lay-verify="notBlank" placeholder="请输入或选择类别名称" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><font color="red">*&nbsp;</font>显示顺序</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="listOrder"  lay-verify="number|notBlank" placeholder="请输入排序值" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <div class="layui-input-block" style="margin-left: 0%;">
+                                <button class="layui-btn" lay-submit lay-filter="submit">提交</button>
+                                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+    <!-- 表头新增按钮 -->
+    <script type="text/html" id="bar">
+        <a class="layui-btn layui-btn-sm" lay-event="add">
+            <!-- <i class="layui-icon">&#xe654;</i> -->
+            新增</a>
+            <span style="padding-left: 40%; color: blue;font-size: larger;">当前套: {{localStorage.getItem("choose-standard-name")}}</span>
+    </script>
+    <!-- 表格内数据编辑、删除按钮 -->
+    <script type="text/html" id="rowBar">
+        <a class="layui-btn layui-btn-xs btn-row" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-xs btn-row" style="color:red;" lay-event="del">删除</a>
+    </script>
+    <script type="text/javascript" src="js/standard.js"></script>
+    <script>
+        layui.config({
+            base: '/js/layui/ext/'
+        }).extend({
+            xmSelect: 'xm-select'
+        });
+
+        // 全局配置及引入相关的模块
+        layui.use(['table', 'form', 'jquery', 'layer', 'xmSelect', 'laydate'], function () {
+            var table = layui.table,
+                form = layui.form,
+                $ = layui.jquery,
+                layer = layui.layer,
+                xmSelec = layui.xmSelect;
+
+
+            /** 表格相关操作 */
+            // 表格配置
+            window.loaderTable = function () {
+                if(!chooseStandard()) return;
+
+                table.render({
+                    elem: '#unitLevelTable',
+                    url: huayi_sjwh_url + 'cmeUnitLevel/listNoPage',
+                    headers: {
+                        'Authorization': localStorage.getItem('token'),
+                        'KJPT-USER-ID': localStorage.getItem('user-id')
+                    },
+                    title: '用户表',
+                    defaultToolbar: [],
+                    where: {
+                        unitLevelName: $('#unitLevelSearch').val(),
+                        cmeStandardKindId: localStorage.getItem('choose-standard-id')
+                    },
+                    cols: [[
+                        { type: 'numbers', title: '序号' },
+                        { align: 'center', minWidth: 150, toolbar: '#rowBar', title: '操作' },
+                        { field: 'unitLevelName', title: '单位级别名称', sort: true, minWidth: 180 },
+                        { field: 'listOrder', title: '显示顺序', sort: true, align: 'center', minWidth: 130 },
+                    ]],
+                    toolbar: '#bar',
+                    cellMinWidth: 100,
+                    id: 'unitLevelTable',
+                    height: 'full-175',
+                    page: false,
+                    parseData: function (res) {
+                        if (res.status == 200) {
+                            return {
+                                "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                                "msg": res.message, //解析提示文本
+                                "data": res.data, //解析数据列表
+                            }
+                        } else {
+                            layer.msg(res.msg);
+                            return false;
+                        }
+                    },
+                    request: {
+                        pageName: 'pageNum',    // 页码的参数名称，默认：page
+                        limitName: 'pageSize'    // 每页数据量的参数名，默认：limit
+                    }
+                });
+            };
+
+            // 监听头部新增按钮
+            table.on('toolbar(unitLevelTable)', function (obj) {
+                var datas = obj.data;
+                document.getElementById("form-unitLevel").reset();
+
+                if (obj.event === 'add') {
+                    layer.open({
+                        type: 1,
+                        title: '新增举办方式',
+                        content: $('#add-unitLevel'),
+                        skin: '',
+                        area: ['500px', '500px'],
+                    });
+                }
+            });
+
+            // 监听行内按钮
+            table.on('tool(unitLevelTable)', function (obj) {
+                var datas = obj.data;
+                if (obj.event === 'edit') {
+                    form.val('add-filter', datas);
+                    layer.open({
+                        type: 1,
+                        title: '编辑',
+                        content: $('#add-unitLevel'),
+                        skin: '',
+                        area: ['500px', '400px'],
+                    });
+                }
+                else if (obj.event === 'del') {
+                    layer.confirm('确认删除?', { icon: 3, title: '提示' }, function () {
+                        $.ajax({
+                            url: huayi_sjwh_url + 'cmeUnitLevel/deleted?cmeUnitLevelId=' + datas.unitLevelId,
+                            type: 'get',
+                            dataType: 'json',
+                            contentType: 'application/json;charset=UTF-8',
+                            success: function (res) {
+                                if (res.status == 200) {
+                                    layui.layer.closeAll();
+                                    $('#searchBtn').click();
+                                    layer.msg('删除成功')
+                                } else {
+                                    layui.layer.msg(res.msg || '系统繁忙，请稍后重试', {
+                                        time: 1000, //1s后自动关闭
+                                        end: function (o) {
+                                            layui.layer.closeAll();
+                                        }
+                                    });
+                                }
+                            },
+                            error: function (req, msg) {
+                                layui.layer.msg('系统繁忙，请稍后重试', {
+                                    time: 1000, //1s后自动关闭
+                                    end: function (o) {
+                                        layui.layer.closeAll();
+                                    }
+                                });
+                            }
+                        });
+                    })
+                }
+            });
+
+
+
+            /** form 表单相关操作 */
+            // 新增/修改表单提交
+            form.on('submit(submit)', function (data) {
+
+                // 用于判断是新增还是修改
+                var formTableId = $('#add-unitLevel input[name=\"unitLevelId\"]').val();
+                var URL = huayi_sjwh_url + 'cmeUnitLevel/';
+                var datas = data.field;
+
+                // 开关默认值
+                if (datas.ifRealtimeComputePass == null || datas.ifRealtimeComputePass == '') {
+                    datas.ifRealtimeComputePass = 0;
+                }
+                datas.cmeStandardKindId = localStorage.getItem('choose-standard-id');
+
+                var flag = formTableId === null || formTableId === '';
+                if (flag) {     // 走新增逻辑
+                    URL += 'save';
+                } else {        // 走修改逻辑
+                    URL += 'update';
+                }
+                axios({
+                    method: 'post',
+                    url: URL,
+                    data: JSON.stringify(datas),
+                    headers: { 'Content-Type': 'application/json;charset=UTF-8' }
+                }).then(response => {
+                    if (response.status == 200 && response.data.status == 200) {
+
+                        layer.closeAll();
+                        layer.msg('操作成功');
+
+                        loaderTable();
+                    } else {
+                        layer.msg(response.data.msg);
+                    }
+                }).catch(err => {
+                    layer.msg('网络异常，请稍后再试');
+                });
+                return false;
+            });
+
+            // layer.ready(function () {
+            //     if (localStorage.getItem('choose-standard-id')) {
+            //         loaderTable();
+            //     } else {
+            //         layer.msg('请选择套标准')
+            //     }
+            // })
+
+        });
+
+    </script>
+
+</body>
+
+</html>

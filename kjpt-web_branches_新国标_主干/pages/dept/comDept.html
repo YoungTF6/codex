@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>科室管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="../../js/layui-v2.6.4/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css">
+    <link rel="stylesheet" href="../../css/icon.css">
+
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script src='../../js/jquery-3.5.1.min.js'></script>
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+
+    <script src="../../js/common.js"></script>
+    <script type="text/javascript" src="../../js/axios.min.js"></script>
+
+    <style>
+        .layui-card-body.content-right {
+            padding: 0 0 0 10px !important;
+        }
+        .layui-card-body.content-left {
+            margin: 0 !important;
+        }
+
+        .color-default {
+            color: #27b1a2;
+        }
+        .color-disabled {
+            color: #a6a6a6;
+        }
+        .color-danger {
+            color: #f25643;
+        }
+        .color-warm {
+            color: #ffb82e;
+        }
+        .color-normal {
+            color: #1E9FFF;
+        }
+        .layui-icon-edit, .layui-icon-add-circle, .layui-icon-reduce-circle {
+            font-weight: bold;
+        }
+        .eleTree-title {
+            width: 230px;
+        }
+        .tree-item {
+            display: inline-block;
+            width: 210px;
+        }
+        .tree-edit, .tree-delete, .tree-add {
+            float: right;
+        }
+        .content-left {
+            display: inline-block;
+            width: 270px;
+            margin-left: 18px;
+            border: #eee solid 1px;
+            vertical-align: top;
+        }
+        .content-right {
+            display: inline-block;
+            width: calc(100% - 317px);
+            vertical-align: top;
+        }
+        .hide {
+            display: none;
+        }
+        .layui-layer-content {
+            overflow: visible !important;
+        }
+    </style>
+</head>
+<body class="body-area">
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+
+            <!-- 搜索框区域 -->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area">
+                <!-- <blockquote class="layui-form layui-form-item layui-elem-quote one-btn" lay-filter="query-form"> -->
+                    <div class="layui-inline">
+                        <label class="layui-form-label">科室名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="deptName" id="deptId" placeholder="请输入"
+                                    autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline" style="margin-left: 5px;">
+                        <a class="layui-btn layui-btn-sm" id="searchBtn" lay-filter="table-search"
+                                onclick="window.treeMethods.search()" data-type="reload">
+                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                        </a>
+
+                    </div>
+
+                    <!-- <div class="layui-inline" style="float: right">
+                        <div class="layui-input-block">
+                            <a class="layui-icon" id="hint"><span style="color: red;">&#xe60b;</span></a>
+                        </div>
+                    </div> -->
+                <!-- </blockquote> -->
+            </div>
+
+
+            <!-- 机构树 -->
+            <div class="layui-card-body content-left" style="overflow: auto;">
+                <div id="deptTree" class="eleTree deptTree"></div>
+                <!-- <div style="min-height: 300px; max-height: 600px; width: 100%;
+                        overflow: scroll; padding: 10px; border: 1px solid #ddd">
+                    <div id="deptTree" class="eleTree deptTree"></div>
+                </div> -->
+            </div>
+
+
+            <!-- 表格区域-->
+            <div class="layui-card-body content-right">
+                <table class="layui-table" id="comDept" lay-filter="comDept" style="margin: 0px 0px;">
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 重置密码弹窗 -->
+    <iframe src="passWordReset.html"
+            onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);this.remove();">
+    </iframe>
+
+    <script type="text/html" id="rowAdmin">
+        <a class="layui-btn layui-btn-xs" lay-event="viewAdminInfo" style="color: #ffb82e;background-color: transparent;">查看</a>
+    </script>
+
+    <!-- 添加、编辑科室弹窗 -->
+    <div id="form-dept-add" class="hide">
+        <form class="layui-form" style="padding-top: 20px;"
+                lay-filter="form-dept-add-filter" id="user-form-alert-bind">
+            <div class="layui-form-item">
+                <label class="layui-form-label">上级科室</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="parentDeptName" disabled=""
+                            style="background-color:#efefef; color:#666666;"
+                            placeholder="上级科室" autocomplete="off" class="layui-input">
+                </div>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal parent-dept-tool" id="choose-parent-dept" style="display: none;">选择</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-primary parent-dept-tool" id="clear-parent-dept" style="display: none;">清空</button>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*&nbsp;</span>科室名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="deptName" title="科室名称" lay-verify="required"
+                            placeholder="请输入科室名称" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">科室简称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="shortName" title="科室简称"
+                            placeholder="请输入科室简称" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item hide">
+                <div class="layui-inline">
+                    <div class="layui-input-block">
+                        <input type="text" name="parentId" >
+                        <input type="text" name="deptId" >
+                        <input type="text" name="unitId" >
+                        <input type="text" name="type" >
+                        <button type="submit" id="form-dept-add-submit" class="layui-btn"
+                                lay-filter="form-dept-add-submit" lay-submit>提交</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+    <!-- 合并科室弹窗 -->
+    <div id="dept-merge-form-area" class="hide">
+        <form class="layui-form" style="padding-top: 20px; padding-left: 10px;"
+                lay-filter="dept-merge-form" id="dept-merge-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px;">合并后保留科室</label>
+                <div class="layui-input-inline">
+                    <select id="deptSelect" lay-filter="deptSelect"></select>
+                </div>
+            </div>
+            <!-- <div class="layui-form-item hide">
+                <div class="layui-inline">
+                        <button type="submit" id="dept-merge-form-submit" class="layui-btn"
+                                lay-filter="dept-merge-form-submit" lay-submit>提交</button>
+                    </div>
+                </div>
+            </div> -->
+        </form>
+    </div>
+
+
+    <!--表格内数据编辑、删除按钮-->
+    <script type="text/html" id="rowBar">
+        <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="updatePassWord">
+            <!-- <i class="layui-icon layui-icon-edit"></i> -->重置密码</a>
+    </script>
+
+    <!-- 头部工具 -->
+    <script type="text/html" id="headerToolBars">
+        <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm" lay-event="mergeDept">合并科室</button>
+        </div>
+
+    </script>
+
+
+    <script type="text/javascript">
+        var format_url           = /\\|\/$/gi,
+            deptUrl              = huayi_personorg_url.replace(format_url, ''),
+            deptTreeUrl          = deptUrl + '/comdept/tree',
+            deptListUrl          = deptUrl + '/comdept/list/children',
+            deptAddUrl           = deptUrl + '/comdept/save',
+            deptPasswordResetUrl = deptUrl + '/comdept/password/reset',
+            deptEditUrl          = deptUrl + '/comdept/update',
+            deptMergeUrl         = deptUrl + '/comdept/merge',
+            deptDeleteUrl        = deptUrl + '/comdept/deleted',
+            dragDeptNodeUrl          = deptUrl + '/comdept/dragDeptNode';
+
+        var deptDict             = {};
+
+        //海南套,河南(一体化), 科室登录名添加"J"前缀
+        const standardKindId = localStorage.getItem("standardkind-id");
+        const henanStandardKindId = 'a6280900-a9c2-11ec-84d6-fa163e9b64fb';
+        const isHenanStandardKind = standardKindId === henanStandardKindId;
+        const targetIds = ['6eec6713-670a-43cc-ad4d-9bd700a92928', 'a6280900-a9c2-11ec-84d6-fa163e9b64fb'];
+
+
+        window.treeParser = function (tree, parser) {
+            if (!tree || tree.length == 0) {
+                return ;
+            }
+            tree.forEach(function (item) {
+                item = parser(item);
+                treeParser(item.children, parser);
+            });
+        }
+
+
+        layui.config({
+            base: '../../js/layui/ext/'
+        }).extend({
+            eleTree: 'eleTree'
+        }).use([ 'table', 'form', 'eleTree' ], function () {
+            var table   = layui.table,
+                form    = layui.form,
+                $       = layui.jquery,
+                layer   = layui.layer,
+                eleTree = layui.eleTree;
+
+            var eleTreeDept = null,
+                unitId      = CurrentUser.getUnitId(),
+                eleTreeDept,
+                rootNode,
+                rootKey     = ''; // 虚拟root节点deptId
+
+            if (isHenanStandardKind) {
+                $('.parent-dept-tool').show();
+            }
+
+
+            // 左侧科室树
+            window.treeMethods = {
+                search: () => {
+                    var treeNodeName = $('#deptId').val();
+                    eleTreeDept.search(treeNodeName, function (value, data) {
+                        if (!value) return true;
+                        return data.name.indexOf(value) != -1;
+                    })
+                },
+                init:   () => {
+
+                    setRootNode();
+                    let option = getOption(rootNode);
+                    eleTreeDept = eleTree(option);
+                    window.treeClickEvent();
+                    window.treeDragEvent();
+                },
+                remove: () => {
+                    $('#deptTree').html('');
+                }
+            }
+
+            window.setRootNode = function () {
+                $.ajax({
+                    async       : false,
+                    type        : 'get',
+                    url         : deptTreeUrl + '?unitId=' + unitId,
+                    contentType : 'application/json;charset=UTF-8',
+                    dataType    : 'json',
+                    success     : function (res) {
+                        data = [{ name: '所有科室', id: rootKey }];
+                        data[0].children = res.data;
+                        rootNode = data;
+                    }
+                });
+            }
+
+            window.getOption = function () {
+
+                var option = {
+                    el                  : '#deptTree',
+                    defaultExpandedKeys : [ rootKey ],
+                    expandOnClickNode   : false,
+                    highlightCurrent    : true,
+                    data                : rootNode,
+                    sort                : true,
+                    draggable           : true,
+                    initSort            : {
+                        field : 'order',
+                        type  : 'asc'
+                    },
+
+                    
+                    request: { // 对于树形数据字段名重定义
+                        name     : 'name',
+                        key      : 'id',
+                        children : 'children',
+                        pid      : 'pid'
+                    },
+                    customText: function (data) {
+                        var s = data.name;
+                        s = '<span class="tree-item">' + s;
+                        if (data.id != rootKey) {
+                            s += '&nbsp;&nbsp;<i class="layui-icon layui-icon-edit color-normal tree-edit" ' +
+                                    'title="编辑科室信息" />';
+                            s += '&nbsp;<i class="layui-icon layui-icon-reduce-circle color-danger tree-delete" ' +
+                                    'title="删除科室" href="javasrcipt:void(0);" />';
+                        }
+                        s += '&nbsp;<i class="layui-icon layui-icon-add-circle color-default tree-add" ' +
+                                'title="添加子科室" href="javasrcipt:void(0);" /></span>';
+
+                        if (!data.isLeaf) {
+                            // s += '<i class = "layui-icon-slider tree-sort" ></i>';
+                        }
+
+                        deptDict[data.id] = data.name;
+                        return s;
+                    }
+                };
+
+                return option;
+            }
+
+            window.treeClickEvent = function () {
+                
+                // 监听树按钮
+                eleTreeDept.on('click', function (data) {
+                    let layer = layui.layer,
+                    datas = data.data;
+
+                    if (this.target.classList.contains('tree-add')) {
+                        form.val('form-dept-add-filter', {
+                            unitId          : unitId,
+                            parentId        : datas.id,
+                            deptName        : null,
+                            deptId          : null,
+                            shortName       : null,
+                            parentDeptName  : datas.id == rootKey ? '-' : datas.name + ' [ ' + datas.id + ' ]',
+                            type            : 'add'
+                        });
+                        layer.open({
+                            type     : 1,
+                            title    : '添加科室',
+                            area     : [ '520px', '285px' ],
+                            content  : $('#form-dept-add'),
+                            btn      : [ '确定', '取消' ],
+                            btnAlign : 'c',
+                            yes      : function (index, layero) {
+                                var c = $('#form-dept-add-submit').click();
+                            }
+                        });
+
+                    } else if (this.target.classList.contains('tree-edit')) {
+                        form.val('form-dept-add-filter', {
+                            unitId          : unitId,
+                            parentId        : datas.pid,
+                            deptName        : datas.deptName,
+                            deptId          : datas.deptId,
+                            shortName       : datas.shortName,
+                            parentDeptName  : datas.pid == rootKey ? '-' : deptDict[datas.pid] + ' [ ' + datas.pid + ' ]',
+                            type            : 'edit'
+                        });
+                        layer.open({
+                            type    : 1,
+                            title   : '编辑科室',
+                            area    : [ '520px', '285px' ],
+                            content : $('#form-dept-add'),
+                            btn     : [ '确定', '取消' ],
+                            btnAlign : 'c',
+                            yes     : function (index, layero) {
+                                var c = $('#form-dept-add-submit').click();
+                            }
+                        });
+
+                    } else if (this.target.classList.contains('tree-delete')) {
+                        layer.confirm('您确认要删除吗？', function (index) {
+                                $.ajax({
+                                    url     : deptDeleteUrl + '?deptId=' + datas.deptId + '&unitId=' + unitId,
+                                    type    : 'get',
+                                    success : function (res) {
+                                        if (res.status == 200) {
+                                            window.reload(0);
+                                            layui.layer.msg('删除成功', { time: 1500, icon: 1 });
+                                        } else {
+                                            layui.layer.msg(res.msg || '删除失败', { time: 1500, icon: 2 });
+                                        }
+                                    },
+                                    error   : function (req, msg) {
+                                        layui.layer.msg('网络异常，请稍后再试', { time: 1500, icon: 7 });
+                                    }
+                                });
+                            }
+                        );
+
+                    } else {
+                        // 查询
+                        window.tableKeyWordsSearch(unitId, datas.id);
+                    }
+                });
+
+            }
+
+            window.treeDragEvent = function () {
+                
+                eleTreeDept.on('drag', function(data) {
+
+                    if(data.data.pid != data.endData.pid) {
+                        layer.msg("科室只能在同级科室下进行拖拽排序");
+                        setTimeout(() => {
+                            data.stop();
+                        }, 100);
+                        
+                        return;
+                    }
+
+                    saveToDatabaseAfterDrag(data.data,data.endData);
+                    setRootNode();
+                    let option = getOption(rootNode);
+                    eleTreeDept.reload(option);
+
+                    setTimeout(() => {
+                        data.stop();
+                    }, 100);
+                        
+                });
+
+            }
+
+            window.saveToDatabaseAfterDrag = function (fromNode,toNode) {
+                let fromDeptId = fromNode.id;
+                let toDeptId = toNode.id;
+                $.ajax({
+                    async       : false,
+                    type        : 'get',
+                    url         : dragDeptNodeUrl + "?fromDeptId=" + fromDeptId + '&toDeptId=' + toDeptId,
+                    contentType : 'application/json;charset=UTF-8',
+                    dataType    : 'json',
+                    success     : function (res) {
+                        if(res.success == true) {
+
+
+                        } else {
+                            layer.msg(res.msg);
+                        }
+                    }
+                });
+
+            }
+
+            window.chooseParentDeptInfo = function (deptId, dept) {
+                var currentDeptId = $('input[name="deptId"]').val();
+                var deptName = dept && dept.deptName ? dept.deptName : deptDict[deptId];
+                if (currentDeptId && deptId == currentDeptId) {
+                    layer.msg('不能选择当前科室作为上级科室', { time : 1500, icon : 7 });
+                    return;
+                }
+                form.val('form-dept-add-filter', {
+                    parentId       : deptId,
+                    parentDeptName : deptName ? deptName + ' [ ' + deptId + ' ]' : deptId
+                });
+            }
+
+            $('#choose-parent-dept').on('click', function () {
+                if (!isHenanStandardKind) return;
+                var currentDeptId = $('input[name="deptId"]').val();
+                layer.open({
+                    type    : 2,
+                    title   : '选择上级科室',
+                    area    : [ '760px', '520px' ],
+                    content : 'deptsMessage.html?callback=chooseParentDeptInfo&excludeDeptId=' + (currentDeptId || '')
+                });
+            });
+
+            $('#clear-parent-dept').on('click', function () {
+                if (!isHenanStandardKind) return;
+                form.val('form-dept-add-filter', {
+                    parentId       : '',
+                    parentDeptName : '-'
+                });
+            });
+
+            /* 表格配置 */
+            window.loaderTable = function () {
+                table.render({
+                    elem            : '#comDept',
+                    url             : deptListUrl,
+                    method          : 'post',
+                    title           : '科室信息',
+                    // 'filter',
+                    defaultToolbar: [ 'exports'],
+                    toolbar         : '#headerToolBars',
+                    contentType     : 'application/json',
+                    where           : {
+                        unitId : unitId,
+                        deptId : $('#deptId').val(),
+                    },
+                    cols: [[
+                        {type: 'checkbox', title: '全选', width: 65},
+                        {field: 'deptName', title: '科室名称', minWidth: 140, sort: true},
+                        {field: 'shortName', title: '科室简称', minWidth: 150},
+                        {field: 'deptId', title: '登录名', minWidth: 150, align: 'center',
+                            templet: function (data) {
+                                // 如果是海南套(一体化), 科室登录名添加"J"前缀
+                                if (targetIds.includes(standardKindId)) {
+                                    return 'J' + data.deptId;
+                                }
+                                return data.deptId;
+                            }
+                        },
+                        // {field: 'passWord', title: 'MD5(密码)', minWidth: 150, hide: true},
+                        {field: 'addTime', title: '添加日期', minWidth: 80, align: 'center',sort: true,
+                            templet: "<div>{{  d.addTime.substring(0, 11) }}</div>"
+                        },
+                        {field: 'center',width: 130,toolbar: '#rowAdmin',title: '管理员信息',align: 'center'},
+                        {align: 'center', minWidth: 90, toolbar: '#rowBar', title: '操作'}
+                    ]],
+                    cellMinWidth    : 100,
+                    id              : 'comDept',
+                    height          : 'full-122',
+                    page            : false,
+                    limit           : 10,
+                    limits          : [10, 50, 100, 150, 200],
+                    parseData       : function (res) {
+                        return {
+                            'code'  : res.status === 200 ? 0 : res.status, // 解析接口状态
+                            'msg'   : res.message, // 解析提示文本
+                            'data'  : res.data // 解析数据列表
+                            // 'page'  : res.data.pageNum, // 当前页
+                            // 'limit' : res.data.pageSize, // 每页条数
+                            // 'count' : res.data.recordsTotal, // 解析数据长度
+                        }
+                    },
+                    request: {
+                        pageName    : 'pageNum', // 页码的参数名称，默认：page
+                        limitName   : 'pageSize' // 每页数据量的参数名，默认：limit
+                    },
+                    done: function () {
+                        $(':checkbox[lay-filter="layTableAllChoose"]+').hide();
+                        $(':checkbox[lay-filter="layTableAllChoose"]+').next().hide();
+                        $(':checkbox[lay-filter="layTableAllChoose"]+').parent().append('选择');
+                    }
+                });
+            };
+
+            window.tableKeyWordsSearch = function (unitId, deptId) {
+                layui.table.reload('comDept', {
+                    where:{
+                        'unitId' : unitId,
+                        'deptId' : deptId
+                    }
+                });
+            }
+
+            /* 全部刷新 */
+            window.reload = (scope) => {
+                switch (scope) {
+                    case 1:
+                        window.treeMethods.remove();
+                        window.treeMethods.init();
+                        break;
+                    case 2:
+                        table.reload('comDept');
+                        break;
+                    default:
+                        window.treeMethods.remove();
+                        window.treeMethods.init();
+                        table.reload('comDept');
+                }
+            }
+
+
+            /* 初始化科室树 */
+            window.treeMethods.init();
+            /* 初始化表格 */
+            loaderTable();
+
+
+            /* 表头工具栏 */
+            table.on('toolbar(comDept)', function (obj) {
+
+                if (obj.event === 'mergeDept') {
+                    let cData         = layui.table.checkStatus('comDept');
+                    let selectedDepts = cData.data;
+
+                    if (selectedDepts.length < 2) {
+                        layer.msg('请选择至少两个科室', { icon : 7, time : 1500 });
+                        return;
+                    }
+                    layer.open({
+                        type     : 1,
+                        title    : '请选择要保留的科室',
+                        content  : $('#dept-merge-form-area'),
+                        area     : [ '350px', '180px' ],
+                        btnAlign : 'c',
+                        btn      : [ '确认', '取消' ],
+                        success  : (index, layero) => {
+                            $('#deptSelect').html('');
+                            let optionStr = '';
+                            for (let i = 0; i < selectedDepts.length; i++) {
+                                optionStr += '<option value="' + selectedDepts[i].deptId + '">' +
+                                        selectedDepts[i].deptName + '</option>';
+                            }
+                            $('#deptSelect').append(optionStr);
+                            form.render('select', 'dept-merge-form');
+                        },
+                        yes      : (index, layero) => {
+                            let deptIds    = [],
+                                saveDeptId = $('#deptSelect').val();
+                            if (null == saveDeptId || '' == saveDeptId) {
+                                layer.msg('请选择要保留的科室', { icon : 7, time : 1500 });
+                            }
+                            let index_1 = layer.msg('正在合并...', { icon: 16, shade: 0.3, time:0 });
+                            deptIds.push(saveDeptId);
+                            for (let i = 0; i < selectedDepts.length ; i++) {
+                                if (saveDeptId != selectedDepts[i].deptId) {
+                                    deptIds.push(selectedDepts[i].deptId);
+                                }
+                            }
+                            $.ajax({
+                                type        : 'post',
+                                url         : deptMergeUrl,
+                                data        : JSON.stringify({ deptIds:deptIds, unitId: unitId }),
+                                contentType : 'application/json;charset=UTF-8',
+                                dataType    : 'json',
+                                success     : function (res) {
+                                    if (res.status === 200) {
+                                        window.reload(0);
+                                        layer.closeAll();
+                                        layer.msg('合并成功', { icon : 1, time : 1500 });
+                                    } else {
+                                        layer.msg(res.msg || '合并失败', { icon : 2, time : 1500 });
+                                    }
+                                },
+                                error       :function (e) {
+                                    layer.msg('网络异常，请稍后再试', { icon : 7, time : 1500 });
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+
+            /* 行工具栏 */
+            table.on('tool(comDept)', function (obj) {
+                var formData = obj.data;
+                if (obj.event === 'updatePassWord') {
+                    formData.oldPassword     = null;
+                    formData.newPassword     = null;
+                    formData.confirmPassword = null;
+                    form.val('form-dept-password-reset', formData);
+                    layer.open({
+                        type     : 1,
+                        title    : '重置密码',
+                        content  : $('#form-dept-password-reset'),
+                        skin     : '',
+                        area     : [ '450px', '230px' ],
+                        btn      : [ '确定', '取消' ],
+                        btnAlign : 'c',
+                        yes      : function (index, layero) {
+                            var c = $('#form-dept-password-reset-submit').click();
+                        }
+                    });
+                } else if (obj.event === 'del') {
+                    layer.confirm('确认删除', {icon: 3, title: '提示'}, function () {
+                        $.ajax({
+                            type        : 'get',
+                            url         : kjpt_url + 'comDept/deleted',
+                            data        : { deptId : datas.deptId },
+                            contentType : 'application/json;charset=UTF-8',
+                            dataType    : 'json',
+                            success     : function (res) {
+                                if (res.status == 200) {
+                                    layer.msg('删除成功', { icon : 1, time : 1500 });
+                                    window.reload(0);
+                                } else {
+                                    layer.msg('删除失败', { icon : 2, time : 1500 });
+                                }
+                            },
+                            error       : () => {
+                                layer.msg('网络异常，请稍后再试', { icon : 7, time : 1500 });
+                            }
+                        });
+                    });
+                }
+                else if( obj.event ==='viewAdminInfo'){
+                    layer.open({
+                        type: 2,
+                        title: '',
+                        content: '../unit/comUnitManager.html?userId=' + formData.userId,
+                        area: ['660px', '380px'],
+                    })
+                }
+            });
+
+
+            /* 表单验证 */
+            form.verify({
+                pwd_strength : [
+                    // /^(?=^.{8,25}$)(?=(?:.*?\d) {1})(?=.*[a-z])(?=(?:.*?[A-Z]) {1})(?=(?:.*?[!@#$%*()_+^&}{:;?.]) {1})(?!.*\s)[0-9a-zA-Z!@#$%*()_+^&]*$/,
+                    /^(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(?=.*[^a-zA-Z0-9]).{8,25}$/,
+                    '密码必须8~25位，且包含数字、大小写和特殊符号'
+                ],
+                pwd_confirm  : function (value, items) {
+                    if ($('#new-password-input').val() != value) {
+                        return '两次输入的密码不一致';
+                    }
+                }
+            });
+
+            /* form表单相关操作 */
+            form.on('submit(form-dept-add-submit)', function (data) { // 添加科室
+                noRepeat(function () {
+                    $.ajax({
+                        type        : 'post',
+                        url         : data.field.type == 'add'? deptAddUrl :deptEditUrl ,
+                        data        : JSON.stringify(data.field),
+                        contentType : 'application/json;charset=UTF-8',
+                        dataType    : 'json',
+                        success     : function (res) {
+                            if (res.status == 200) {
+                                window.reload(0);
+                                layer.closeAll();
+                                let operate = data.field.type == 'add'?"添加"+ '成功,默认密码是 abcABC123?':"编辑成功";
+                                layer.alert(operate, {  icon : 1 });
+                            } else {
+                                layer.msg(res.msg || '操作失败', { time : 1500, icon : 2 });
+                            }
+                        },
+                        error       : function () {
+                            layer.msg('网络异常，请稍后再试', { time : 1500, icon : 7 });
+                        }
+                    });
+                });
+                return false;
+            });
+            form.on('submit(form-dept-password-reset-submit)', function (data) { // 重置密码
+                noRepeat(function () {
+                    $.ajax({
+                        type        : 'post',
+                        url         : deptPasswordResetUrl ,
+                        data        : JSON.stringify(data.field),
+                        contentType : 'application/json;charset=UTF-8',
+                        dataType    : 'json',
+                        success     : function (res) {
+                            if (res.status == 200) {
+                                layer.closeAll();
+                                layer.msg('重置密码成功', { time : 1500, icon : 1 });
+                            } else {
+                                layer.msg(res.msg || '重置密码失败', { time : 1500, icon : 2 });
+                            }
+                        },
+                        error       : function () {
+                            layer.msg('网络异常，请稍后再试', { time : 1500, icon : 7 });
+                        }
+                    })
+                });
+                return false;
+            });
+
+
+            $(window).resize(e => {
+                let height = $('.content-right').height();
+                $('.content-left').css('height', height - 22);
+            });
+            $(() => {
+                let height = $('.content-right').height();
+                $('.content-left').css('height', height - 22);
+            });
+
+
+            /* 提示 */
+            $('#hint').hover(function () {
+                openMsg();
+            }, function () {
+                layer.close(subtips);
+            });
+            function openMsg() {
+                subtips = layer.tips('提示信息', '#hint', {tips: [1, '#ff512c' ], time: 30000});
+            }
+
+            dynamicCss: {}
+
+        });
+
+
+    </script>
+</body>
+</html>

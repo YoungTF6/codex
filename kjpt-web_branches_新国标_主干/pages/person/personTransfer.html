@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>人员调动管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="../../js/axios.min.js"></script>
+    <script type="text/javascript" src="../../js/auth.js"></script>
+    <!-- 工具 -->
+    <script type="text/javascript" src="../../js/base64.js"></script>
+    
+    <style>
+        .layui-card-body.layui_body_box {
+            padding: 0 !important;
+        }
+        .layui-tab-content {
+            padding: 0 !important;
+        }
+        .layui-form.layui-border-box.layui-table-view {
+            margin: 0 !important;
+        }
+        .layui-icon-ok {
+            color: green;
+            font-weight: bold;
+        }
+        .layui-icon-close.notok,
+        .require,
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .layui-layer-content {
+            overflow: visible !important;
+        }
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+
+        #tab_2 {
+            display: none;
+        }
+    </style>
+</head>
+<body class="body-area">
+    <div class="layui-fluid">
+        <div class="layui-card">
+
+            <div class="layui-tab" lay-filter="demo">
+
+                <ul class="layui-tab-title">
+                    <li id="tab_1" class="tab-default layui-this">人员调动</li>
+                    <li id="tab_2" class="tab-default">查看调入人员</li>
+                    <li id="tab_3" class="tab-default">查看人员调出日志</li>
+                </ul>
+
+                <div class="layui-tab-content padding-0">
+
+                    <!-- tab 1 人员调动 -->
+                    <div class="layui-tab-item layui-show" id="tabbody1">
+                        <!-- 搜索框区域 -->
+                        <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area">
+                            <!-- <blockquote class="layui-form layui-form-item layui-elem-quote one-btn" lay-filter="query-form"> -->
+                            <div class="layui_mess">
+                                <div class="layui_display">
+                                    <div class="layui-inline layui-form">
+                                        <label class="layui-form-label">证件号码</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" autocomplete="off" class="layui-input" id="certId" placeholder="请输入">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline layui-form">
+                                        <label class="layui-form-label">人员编号</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" autocomplete="off" class="layui-input" id="personNo" placeholder="请输入">
+                                        </div>
+                                    </div>
+                                    <!-- <div class="layui-inline layui-form">
+                                        <label class="layui-form-label">姓名</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" autocomplete="off" class="layui-input" id="personName" placeholder="请输入">
+                                        </div>
+                                    </div> -->
+                                    <div class="layui-inline layui-form" style="display: none; height: 43px;"
+                                            id="transferCycleArea">
+                                        <label class="layui-form-label">调动时间</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" autocomplete="off" class="layui-input" id="minTransferDate" placeholder="请选择"
+                                                    style="display: inline-block; width:35%; position: relative; bottom: 1.5px;">
+                                            <span style="display: inline-block; width: 4%; text-align: center; position: relative; bottom: 1.5px;">-</span>
+                                            <input type="text" autocomplete="off" id="maxTransferDate" placeholder="请选择"
+                                                    class="layui-input" style="display: inline-block; width: 35%; position: relative; bottom: 1.5px;">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="layui_display">
+                                    <div class="layui-inline btn-search-positon">
+                                        <a class="layui-btn layui-btn-sm" onclick="loaderTable()" id="searchBtn" lay-filter="table-search" data-type="reload">
+                                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- </blockquote> -->
+                        </div>
+
+                        <!-- 表格区域 -->
+                        <div class="layui-card-body layui_body_box">
+                            <table class="layui-table" style="margin: 0px 0px;" id="comPerson" lay-filter="comPerson"></table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div style="display: none; padding-top: 33px;" id="deptSelectArea">
+        <div class="layui-inline layui-form" lay-filter="deptSelectArea">
+            <label class="layui-form-label"><span class="require">* </span>调入科室</label>
+            <div class="layui-input-block">
+                <input type="text" autocomplete="off" class="layui-input" disabled lay-filter="deptSelect" id="deptSelect" name="deptId" placeholder="请选择">
+            </div>
+            <input type="hidden" id="tab2_hidden_dept_id" />
+        </div>
+    </div>
+
+
+    <!--表格内数据编辑、删除按钮 -->
+    <script type="text/html" id="rowBar_1">
+        {{# if (tabId == 'tab_1') { }} 
+            {{# if (IS_GUANGDONG && flag_unit) { }}
+                {{# if (d.unitId != unitId && d.transferState != 1) { }}
+                    <a class="layui-btn layui-btn-xs layui-btn-disabled btn-disabled-row">调出</a>
+                    <a class="layui-btn layui-btn-xs layui-btn-disabled btn-disabled-row">调入</a> 
+                {{# } else if (d.unitId != unitId && d.transferState == 1) { }}
+                    <a class="layui-btn layui-btn-xs layui-btn-disabled btn-disabled-row">调出</a>
+                    <a class="layui-btn layui-btn-xs layui-btn-warm btn-warm-row" lay-event="transferIn">调入</a> 
+                {{# } else if (d.unitId == unitId && d.transferState != 1) { }}
+                    <a class="layui-btn layui-btn-xs layui-btn-warm btn-warm-row" lay-event="transferOut">调出</a>
+                    <a class="layui-btn layui-btn-xs layui-btn-disabled btn-disabled-row">调入</a> 
+                {{# } else if (d.unitId == unitId && d.transferState == 1) { }}
+                    <a class="layui-btn layui-btn-xs layui-btn-disabled btn-disabled-row">调出</a>
+                    <a class="layui-btn layui-btn-xs layui-btn-warm btn-warm-row" lay-event="transferIn">调入</a> 
+                {{# } }}
+            {{# } else if (IS_GUANGDONG && !flag_unit) { }}
+                {{# if (d.transferState == 1) { }}
+                    <a class="layui-btn layui-btn-xs layui-btn-disabled btn-disabled-row">调出</a>
+                {{# } else { }}
+                    <a class="layui-btn layui-btn-xs layui-btn-disabled btn-disabled-row">调出</a>
+                {{# } }}
+            {{# } else if (flag_unit) { }}
+                {{# if (d.transferState == 1) { }}
+                    <a class="layui-btn layui-btn-xs layui-btn-disabled btn-disabled-row">调出</a>
+                    <a class="layui-btn layui-btn-xs layui-btn-warm btn-warm-row" lay-event="transferIn">调入</a> 
+                {{# } else if (d.unitId == unitId && (d.transferState == 0 || d.transferState == 2)) { }}
+                    <a class="layui-btn layui-btn-xs layui-btn-warm btn-warm-row" lay-event="transferOut">调出</a>
+                    <a class="layui-btn layui-btn-xs layui-btn-disabled btn-disabled-row">调入</a> 
+                {{# } else if (d.unitId != unitId && (d.transferState == 0 || d.transferState == 2)) { }}
+                    <a class="layui-btn layui-btn-xs layui-btn-disabled btn-disabled-row">调出</a>
+                    <a class="layui-btn layui-btn-xs layui-btn-disabled btn-disabled-row">调入</a> 
+                {{# } }} 
+            {{# } else { }}
+                {{# if (d.flagSubordinate == 't' && (d.transferState == 0 || d.transferState == 2)) { }}
+                    <a class="layui-btn layui-btn-xs layui-btn-warm btn-warm-row" lay-event="transferOut">调出</a>
+                {{# } else { }}
+                    <a class="layui-btn layui-btn-xs layui-btn-disabled btn-disabled-row">调出</a>
+                {{# } }} 
+            {{# } }}
+        {{# } else { }}
+            <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="browse">查看</a> 
+            <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="log">操作日志</a> 
+        {{# } }}
+    </script>
+    <!-- <script type="text/html" id="bar">
+        <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="add"><i class="layui-icon">&#xe654;</i>新增</a>
+    </script> -->
+    <!-- <script type="text/html" id="checkbox">
+        {{# if (d.checkState == 0) { }}
+            <input type="checkbox" name="select_one" title="" lay-skin="primary" data-id = "{{ d.comPersonId }}">
+        {{# } else { }}
+            <input type="checkbox" name="select_one" title="" lay-skin="primary" disabled data-id = "{{ d.comPersonId }}">
+        {{# } }}
+    </script> -->
+    <script>
+        let unitId              = localStorage.getItem('unit-id'),
+            unitName            = localStorage.getItem('unit-name'),
+            username            = localStorage.getItem('user-name'),
+            cmeStandardKindId   = localStorage.getItem('standardkind-id'),
+            unitUserType        = localStorage.getItem('unit-user-type'),
+            flag_unit           = unitUserType && unitUserType == 2,
+            IS_GUANGDONG        = cmeStandardKindId == '289bf0ca-52cb-4b19-b737-9bd200a69ce1',
+            tabId               = 'tab_1';
+
+        layui.config({
+            base: '../../js/layui/ext/'
+        }).extend({
+            treeSelect: 'treeSelect'
+        });
+
+
+        /** 全局配置及引入相关的模块 */
+        layui.use([ 'table', 'form', 'jquery', 'layer', 'treeSelect', 'element', 'laydate' ], () => {
+            let { table, form, layer, treeSelect, element, laydate } = layui; 
+
+
+            /** 页面初始化 */
+            $(() => {
+                /* 日期选择 */
+                laydate.render({ elem: '#minTransferDate' });
+                laydate.render({ elem: '#maxTransferDate' });
+    
+                /* 科室选择初始化 */
+                let deptTreeSelect = treeSelect.render({
+                    elem    : '#deptSelect',
+                    data    : huayi_personorg_url + 'comdept/tree/unit?unitId=' + unitId,
+                    type    : 'get',
+                    search  : true,
+                    style   : {
+                        folder  : { enable: true }, // 父节点图标
+                        line    : { enable: true } // 连接线
+                    }
+                });
+
+                /* 加载表格 */
+                // loaderTable();
+            });
+
+
+            /** 选项卡 */
+            element.on('tab(demo)', function (data) {
+                tabId = this.getAttribute('id');
+
+                // 清空表格
+                $('#comPerson').next().remove();
+                // 重置筛选条件
+                $('#minTransferDate, #maxTransferDate, #certId, #personNo, #personName').val('');
+
+                // 2. 准备时间数据 (当年1月1日 ~ 今天)
+                let now = new Date();
+                let year = now.getFullYear();
+                let month = (now.getMonth() + 1).toString().padStart(2, '0');
+                let day = now.getDate().toString().padStart(2, '0');
+
+                let todayStr = year + '-' + month + '-' + day;
+                let startYearStr = year + '-01-01';
+
+                switch (tabId) {
+                    case 'tab_1':
+                        $('#transferCycleArea').hide();
+                        break;
+                    case 'tab_2':
+                        $('#transferCycleArea').show();
+                        $('#minTransferDate').val(startYearStr);
+                        $('#maxTransferDate').val(todayStr);
+                        loaderTable()
+                        break;
+                    case 'tab_3':
+                        laydate.render({ elem: '#minTransferDate', value: now.getFullYear() + '-01-01' });
+                        laydate.render({ elem: '#maxTransferDate', value: new Date() });
+                        $('#transferCycleArea').show();
+                        $('#minTransferDate').val(startYearStr);
+                        $('#maxTransferDate').val(todayStr);
+                        loaderTable()
+                        break;
+                }
+            });
+            flag_unit && $('#tab_2').css('display', 'inline-block');
+
+
+            /** 表格 */
+            window.loaderTable = () => {
+                let certId          = $('#certId').val(),
+                    personNo        = $('#personNo').val(),
+                    minTransferDate = $('#minTransferDate').val(),
+                    maxTransferDate = $('#maxTransferDate').val(),
+                    personName      = $('#personName').val(),
+                    queryData       = {};
+
+                switch (tabId) {
+                    case 'tab_1':
+                        if (!certId && !personNo && !personName) queryData.certId = '-1';
+                        else {
+                            queryData = { ...queryData,
+                                certId              : certId,
+                                personNo            : personNo,
+                                personName          : personName,
+                                mobilize            : unitId,
+                                cmeStandardKindId   : cmeStandardKindId,
+                                includeChild        : IS_GUANGDONG ? false : true
+                            };
+                        }
+                        break;
+                    case 'tab_2':
+                        queryData = { ...queryData,
+                            transferState   : '2',
+                            unitId          : unitId,
+                            certId          : certId,
+                            personNo        : personNo,
+                            minTransInDate  : minTransferDate,
+                            maxTransInDate  : maxTransferDate,
+                            personName      : personName
+                        };
+                        break;
+                    case 'tab_3':
+                        queryData = { ...queryData,
+                            transferState   : '1',
+                            unitId          : unitId,
+                            certId          : certId,
+                            personNo        : personNo,
+                            minTransOutDate : minTransferDate,
+                            maxTransOutDate : maxTransferDate,
+                            personName      : personName
+                        };
+                        break;
+                }
+
+                table.render({
+                    elem            : '#comPerson',
+                    url             : huayi_personorg_url + 'comperson/list',
+                    headers         : {
+                        'Authorization' : localStorage.getItem('token'),
+                        'KJPT-USER-ID'  : localStorage.getItem('user-id')
+                    },
+                    title           : '用户表',
+                    defaultToolbar  : [],
+                    where           : queryData,
+                    cols            : [ [
+                        // { align: 'center', width: 50, fixed: 'left', templet: '#checkbox',
+                        //     title: '<input type="checkbox" name="select_all" lay-skin="primary" lay-filter="select_all">' },
+                        { align: 'center', title: '操作', toolbar: '#rowBar_1', minWidth: 150, fixed: 'left' },
+                        { field: 'personName', title: '姓名', align: 'center', minWidth: 100, sort: true },
+                        { field: 'personNo', title: '人员编号', align: 'center', minWidth: 130, sort: true },
+                        { field: 'certId', title: '证件号码', align: 'center', minWidth: 160, sort: true },
+                        { field: 'sex', title: '性别', align: 'center', minWidth: 80, sort: true },
+                        { field: 'birthday', title: '出生日期', align: 'center', minWidth: 130, sort: true,
+                            hide: tabId == 'tab_1' },
+                        { field: 'unitName', title: '单位', align: 'center', minWidth: 160, sort: true },
+                        { field: 'deptName', title: '科室', align: 'center', minWidth: 130, sort: true },
+                        { field: 'titleName', title: '当前职称', align: 'center', minWidth: 130, sort: true },
+                        { field: 'personStateName', title: '人员状态', align: 'center', minWidth: 100, sort: true,
+                            hide: tabId != 'tab_1' },
+                        { field: 'tranInTime', title: '调入时间', align: 'center', minWidth: 180, sort: true,
+                            hide: tabId != 'tab_2' },
+                        { field: 'tranOutTime', title: '调出时间', align: 'center', minWidth: 180, sort: true,
+                            hide: tabId != 'tab_3' },
+                        { field: 'transferState', title: '调动状态', align: 'center', minWidth: 100, sort: true, templet: d => {
+                                if (tabId == 'tab_3') return '调出';
+                                else {
+                                    if (d.transferState == null) return '';
+                                    if (d.transferState == 0) return '未调动';
+                                    if (d.transferState == 1) return '调出';
+                                    if (d.transferState == 2) return '调入';
+                                }
+                            } }
+                    ] ],
+                    // toolbar         : '#bar',
+                    cellMinWidth    : 100,
+                    id              : 'comPerson',
+                    height          : 'full-165',
+                    page            : true,
+                    limit           : 10,
+                    limits          : [ 10, 50, 100, 150, 200 ],
+                    parseData       : res => {
+                        return {
+                            'code'  : res.status === 200 ? 0 : res.status, // 解析接口状态
+                            'msg'   : res.message, // 解析提示文本
+                            'count' : res.data.recordsTotal, // 解析数据长度
+                            'data'  : res.data.records, // 解析数据列表
+                            'page'  : res.data.pageNum, // 当前页
+                            'limit' : res.data.pageSize, // 每页条数
+                        }
+                    },
+                    request         : {
+                        pageName  : 'pageNum', // 页码的参数名称，默认：page
+                        limitName : 'pageSize' // 每页数据量的参数名，默认：limit
+                    }
+                });
+            };
+
+            /* 监听头部新增按钮 */
+            table.on('toolbar(comPerson)', obj => {
+                let datas = obj.data;
+
+                switch (obj.event) {
+                    case '':
+                        break;
+
+                    default:
+                }
+            });
+
+            /* 监听行内按钮 */
+            table.on('tool(comPerson)', obj => {
+                let datas           = obj.data,
+                    msg             = '',
+                    transferState   = 0;
+
+                switch (obj.event) {
+                    case 'transferOut':
+                        layer.confirm('确认将 <span style="font-weight: bold">' + datas.personName + '</span> 调出当前单位吗？',
+                            { btn: [ '确认', '取消' ], btnAlign: 'c' }, () => {
+                                let index = layer.load(2, { shade: [ 0.3, '#000000' ] });
+                                axios({
+                                    method       : 'post',
+                                    url          : huayi_personorg_url + 'comperson/transfer',
+                                    responseType : 'json',
+                                    data         : {
+                                        comPersonId         : datas.comPersonId,
+                                        transferState       : 'TRANS_OUT',
+                                        srcUnitId           : datas.unitId,
+                                        srcUnitName         : datas.unitName,
+                                        srcDeptName         : datas.deptName,
+                                        srcStandardKindId   : datas.cmeStandardKindId,
+                                        operateUsername     : username,
+                                        operateUnitId       : unitId
+                                    }
+                                }).then(response => {
+                                    layer.close(index);
+                                    if (response.status == 200 && response.data.status == 200) {
+                                        layer.msg('调出成功', { icon: 1, time: 1500 });
+                                        loaderTable();
+                                    } else layer.msg('调出失败', { icon: 2, time: 1500 });
+                                }).catch(error => {
+                                    layer.close(index);
+                                    layer.msg('网络异常，请稍后再试', { icon: 7, time: 1500 });
+                                    console.log(error);
+                                });
+                            });
+                        break;
+
+                    case 'transferIn':
+                        treeSelect.revokeNode('deptSelect');
+                        layer.open({
+                            area    : [ '370px', '190px' ],
+                            type    : 1,
+                            title   : '选择科室',
+                            content : $('#deptSelectArea'),
+                            btn     : [ '确认', '取消' ],
+                            yes     : (index, layero) => {
+                                let desDeptId = $('#deptSelect').val();
+                                if ($('#deptSelect').val() == '') {
+                                    layer.msg('请选择要调入的科室', { icon: 2, time: 1500 });
+                                    return false;
+                                }
+
+                                let desDeptName = $('#deptSelect').next().find('input').val(),
+                                    msg         = '确认将 <span style="font-weight: bold">' + datas.personName + '</span> ' +
+                                    '调入本单位 <span style="font-weight: bold">' + desDeptName + '</span> 吗？'
+                                layer.confirm(msg, { btnAlign: 'c' }, () => {
+                                    let index = layer.load(2, { shade: [0.3, '#000000'] });
+                                    axios({
+                                        method          : 'post',
+                                        url             : huayi_personorg_url + 'comperson/transfer',
+                                        responseType    : 'json',
+                                        data            : {
+                                            comPersonId         : datas.comPersonId,
+                                            transferState       : 'TRANS_IN',
+                                            srcUnitId           : datas.unitId,
+                                            desUnitId           : unitId,
+                                            srcStandardKindId   : datas.cmeStandardKindId,
+                                            desStandardKindId   : cmeStandardKindId,
+                                            desDeptId           : desDeptId,
+                                            desUnitName         : unitName,
+                                            desDeptName         : desDeptName,
+                                            operateUsername     : username,
+                                            operateUnitId       : unitId
+                                        }
+                                    }).then(response => {
+                                        layer.close(index);
+                                        if (response.status == 200 && response.data.status == 200) {
+                                            loaderTable();
+                                            layer.closeAll();
+                                            layer.msg('调入成功', { icon: 1, time: 1500 });
+                                        } else layer.msg('调入失败', { icon: 2, time: 1500 });
+                                    }).catch(error => {
+                                        layer.close(index);
+                                        layer.msg('网络异常，请稍后再试', { icon: 7, time: 1500 });
+                                        console.log(error);
+                                    });
+                                });
+                            }
+                        });
+                        break;
+
+                    case 'browse':
+                        layer.open({
+                            area        : [ '100%', '100%' ],
+                            type        : 2,
+                            title       : '查看',
+                            content     : 'cmePerson.html?personid=' + datas.comPersonId,
+                            shadeClose  : true
+                        });
+                        break;
+
+                    case 'log':
+                        let userInfoStr = '姓名：' + datas.personName + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
+                                '人员编号：' + datas.personNo + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
+                                '证件号码：' + datas.certId;
+                        layer.open({
+                            type    : 2,
+                            title   : '人员调动操作日志',
+                            content : 'personOperateLogDetail.html' +
+                                    '?pid=' + Base64.encode(datas.comPersonId) +
+                                    '&info=' + Base64.encode(userInfoStr) +
+                                    '&type=' + Base64.encode(4),
+                            skin    : '',
+                            area    : [ '100%', '100%' ]
+                        });
+                        break;
+
+                    default:
+                }
+            });
+
+
+            /** 职称选择 */
+            window.getChildTitles = (hidden_title_ids, titleNames) => {
+                $('#text_title_names').val(titleNames);
+                $('#hidden_title_ids').val(hidden_title_ids);
+            }
+
+        });
+    </script>
+</body>
+</html>

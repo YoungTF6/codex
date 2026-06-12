@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <title>年度个人活动学分考核 - 湖南（个人）</title>
+
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- 请求路径配置-->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <!-- ajax全局配置-->
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script><script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+    <style>
+        html {
+            background-color: #ffffff;
+        }
+        .layui-card {
+            box-shadow: none;
+        }
+        .layui-card-body {
+            margin: 0 auto;
+            max-width: 1000px;
+            min-width: 650px;
+            padding: 0;
+        }
+        .content-left, .content-right {
+            float: left;
+        } 
+        .content-left {
+            width: 60%;
+        }
+        .content-right {
+            width: calc(40% - 20px);
+            margin-left: 15px;
+        }
+        .layui-elem-field {
+            height: 100%;
+            overflow-y: auto;
+            border-radius: 5px;
+        }
+        .content-left .layui-field-box {
+            text-align: center;
+        }
+        #box-cmeYear .layui-form-radio div {
+            width: 285px;
+            text-align: left;
+        }
+        .layui-badge {
+            color: #ffffff !important;
+            border-radius: 5px;
+            text-align: center;
+            width: 40px;
+            float: right;
+            top: 5px;
+        }
+        .content-right .layui-elem-field {
+            height: 100%;
+        }
+        .content-right .layui-btn + .layui-btn {
+            margin-left: 0;
+        }
+        .content-right .layui-btn {
+            margin-top: 15px;
+        }
+        .a-pdf-icon {
+            background: transparent url(/img/icon_pdf.gif) center left no-repeat;
+            padding-left: 18px;
+            margin-right: 3px;
+        }
+        .clear {
+            clear: both;
+        }
+
+        #dldp {
+            display: none;
+            padding: 15px;
+        }
+    </style>
+</head>
+<body class="body-area">
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="layui-form content-left">
+                    <fieldset class="layui-elem-field">
+                        <legend>年度</legend>
+                        <div class="layui-field-box" id="box-cmeYear">
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="content-right">
+                    <fieldset class="layui-elem-field">
+                        <legend>操作</legend>
+                        <div class="layui-field-box" id="box-export">
+                            <a class="layui-btn layui-btn-fluid layui-btn-primary layui-border-green" 
+                                lay-event="downAuditScorePdfBatch" id="downAuditScorePdf"><i class="a-pdf-icon"></i>导出PDF</a>
+                            <a class="layui-btn layui-btn-fluid layui-btn-primary layui-border-green" 
+                                lay-event="downAuditPdfBatch" id="downAuditPdf"><i class="a-pdf-icon"></i>导出“年度合格证明”</a>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+    <div id="dldp">
+        <div class="layui-progress layui-progress-big" lay-showpercent="true" lay-filter="dldp">
+            <div class="layui-progress-bar" lay-percent="0%"></div>
+        </div>
+    </div>
+</body>
+
+
+<script>
+    layui.config({
+        base        : '/js/layui/ext/'
+    }).extend({
+        xmSelect    : 'xm-select',
+        treeSelect  : 'treeSelect',
+        lat         : 'lat'
+    }).use([ 'table', 'layer', 'jquery', 'form', 'laydate', 'element', 'xmSelect', 'lat', 'treeSelect' ], () => {
+        let table = layui.table,
+            layer       = layui.layer,
+            form        = layui.form,
+            laydate     = layui.laydate,
+            dropdown    = layui.dropdown,
+            element     = layui.element,
+            $           = layui.jquery,
+            xmSelect    = layui.xmSelect,
+            treeSelect  = layui.treeSelect,
+            lat         = layui.lat;
+
+        let gTitleTreeData      = [],
+            gTitleTreeSelector,
+            gLayerIndex         = -1,
+            gDeptTreeData,
+            gDeptTreeSelector,
+            personId;
+            
+
+        $(() => {
+            pageResize();
+            $(window).resize(e => pageResize());
+
+            lat.verifyTenancy('13e2e203-7fdd-47ab-b90f-a1480112b5e5' === _standardKindId);
+
+            /* 年度 */
+            renderCmeYear();
+        });
+
+        
+        function renderCmeYear() {
+            $.ajax({
+                url      : huayi_sjwh_url + 'option/cmeYear/list/' + _standardKindId + '/person',
+                type     : 'get',
+                async    : false,
+                dataType : 'json',
+                success  : res => {
+                    if (200 === res.status) {
+                        let data = res.data,
+                            $opt = $('<input>').attr('type', 'radio').attr('name', 'cmeYear');
+                        data.forEach((item, idx) => {
+                            if (0 === idx) personId = item.comPersonId;
+                            let passResult = 1 == item.passResult 
+                                ? '<span class="layui-badge layui-bg-green">达标</span>' 
+                                : '<span class="layui-badge">不达标</span>';
+                            $('#box-cmeYear')
+                                .append($opt.clone()
+                                    .attr('value', item.cmeYear)
+                                    .attr('title', item.cmeYear + '&nbsp;（' + item.startDate + ' 至 ' + item.endDate + '）' + passResult)
+                                    .attr('disabled', 1 !== item.passResult))
+                                .append('<br>');
+
+                        });
+                        form.render();
+                    } else layer.msg('Error：加载cmeYear', { icon: 7, time: 1500 });
+                },
+                error    : () => layer.msg('Error：加载cmeYear', { icon: 7, time: 1500 })
+            });
+        };
+
+        function downloadAuditPdf(comPersonIds, cmeYear) {
+            let visit = huayi_sjwh_url + 'audit/pdf/down';
+            let params = {
+                'pdfType': 5, // year
+                'standardKindId': _standardKindId,
+                'comPersonIds': comPersonIds,
+                'cmeYear': cmeYear,
+                'cmeYears': cmeYear,
+                'personCmeYear': cmeYear,
+                'unitId': _unitId,
+                'depth': _depth
+            }
+            lat.downloadWithProgress(visit, {
+                'pdfType'           : 5, // year
+                'standardKindId'    : _standardKindId,
+                'comPersonIds'      : comPersonIds,
+                'cmeYear'           : cmeYear,
+                'cmeYears'          : cmeYear,
+                'personCmeYear'     : cmeYear,
+                'unitId'            : _unitId,
+                'depth'             : _depth
+            }, '年度学分合格证明.pdf');
+        }
+
+        $('#downAuditPdf').click(function () {
+            var selectedValue = $('input[name="cmeYear"]:checked').val();
+            if (!selectedValue) {
+                layer.msg('请选择年度', { icon: 7, time: 1500 });
+                return;
+            }
+            gLayerIndex = layer.confirm('确认导出' + selectedValue + '年度学分证书？', {
+                title       : '提示',
+                btn         : ['确定', '取消'],
+                btnAlign    : 'c'
+            }, 
+            () => {
+                downloadAuditPdf(personId, selectedValue);
+                layui.layer.close(gLayerIndex);
+            }, 
+            () => {});
+        });
+
+        $('#downAuditScorePdf').click(function () {
+            var selectedValue = $('input[name="cmeYear"]:checked').val();
+            if (!selectedValue) {
+                layer.msg('请选择年度', { icon: 7, time: 1500 });
+                return;
+            }
+            gLayerIndex = layer.confirm('确认导出' + selectedValue + '年度电子学分表？', {
+                title       : '提示',
+                btn         : ['确定', '取消'],
+                btnAlign    : 'c'
+            }, 
+            () => {
+                downloadScorePdf(personId, selectedValue);
+                layui.layer.close(gLayerIndex);
+            }, 
+            () => {});
+        });
+        
+        function downloadScorePdf(comPersonIds, cmeYear) {
+            let visit = huayi_sjwh_url + 'audit/pdf/down';
+            lat.downloadWithProgress(visit, {
+                'pdfType'           : 6, // year
+                'standardKindId'    : _standardKindId,
+                'comPersonIds'      : comPersonIds,
+                'cmeYear'           : cmeYear,
+                'cmeYears'          : cmeYear,
+                'personCmeYear'     : cmeYear,
+                'unitId'            : _unitId,
+                'depth'             : _depth
+            }, '年度电子学分表.pdf');
+        }
+
+        window.pageResize = () => {
+            let height = $(window).height() - 35;
+            $('.content-left, .content-right').css('height', height);
+            watermark.set('湖南省卫生健康委员会');
+        }
+
+    });
+</script>
+</html>

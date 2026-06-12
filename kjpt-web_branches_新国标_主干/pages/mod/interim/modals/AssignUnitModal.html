@@ -1,0 +1,31 @@
+<div id="assignUnitModal" style="display:none;">
+    <form class="layui-form" style="padding: 30px;" id="assignUnitForm" lay-filter="assignUnitForm">
+        <!-- row0 -->
+        <input type="hidden" name="projId">
+        <input type="hidden" name="startDate">
+        <input type="hidden" name="endDate">
+
+        <!-- row1 -->
+        <div class="layui-form-item" style="width: 380px;">
+            <label class="layui-form-label"><span style="color:red">*&nbsp;</span>单位</label>
+            <div class="layui-input-block">
+                <div id="unitIdSelector2" data-name=""></div>
+            </div>
+            <!--<div class="input-with-icon">-->
+            <!--    <i class="layui-icon layui-icon-search"></i>-->
+            <!--    <input type="text" name="unitName" autocomplete="off" placeholder="输入关键字" class="icon-input"-->
+            <!--           style="text-align: center;">-->
+            <!--</div>-->
+        </div>
+
+        <!-- row2 -->
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <a class="layui-btn layui-btn-primary layui-layer-close" style="position: relative" href="javascript:;">取消</a>
+                <button class="layui-btn" type="submit" lay-submit lay-filter="aufSubmit">确定分配</button>
+            </div>
+        </div>
+
+    </form>
+</div>
+

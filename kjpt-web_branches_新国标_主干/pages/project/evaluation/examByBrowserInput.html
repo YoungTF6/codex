@@ -1,0 +1,297 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta name="format-detection" content="email=no" />
+    <meta name="format-detection" content="address=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="css/mobile/base.css" type="text/css">
+    <link rel="stylesheet" href="css/mobile/layout.css" type="text/css">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="/js/qrcode.js"></script>
+    <script type="text/javascript" src="/js/qrcode/jquery.qrcode.js"></script>
+    <script type="text/javascript" src="/js/qrcode/jquery.qrcode.min.js"></script>
+
+    <script type="text/javascript" src="/js/layer/layer.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script src="/js/common.js"></script>
+
+
+   <style type="text/css">
+       a,input,span,label,li,button,dl,div,table {
+            -webkit-tap-highlight-color:transparent;
+            -webkit-appearance: none;
+        }
+        .tit
+        {
+            font-size: 0.6rem;
+            line-height: 1.5rem;
+            text-align: center;
+        }
+        .input_list
+        {
+            border-bottom: 1px solid #e5e5e5;
+        }
+        .input_list li
+        {
+            overflow: hidden;
+            border-top: 1px solid #e5e5e5;
+        }
+        .input_list li input
+        {
+            float: left;
+            width: 100%;
+            border: none;
+            text-indent:0.3rem;
+            font-size: 0.4rem;
+            line-height: 1.5rem;
+            outline: none;
+        }
+        .m_btm_btn
+        {
+            float:left;
+            width:80%;
+            padding:6% 10%;
+        }
+        .m_btm_btn input
+        {
+            background: #49B3FE;
+            display: block;
+            border: none;
+            width: 100%;
+            border-radius: 5px;
+            text-align: center;
+            color: #fff;
+            height: 1rem;
+            font-size: 0.45rem;
+            outline: none;
+        }
+        
+        .laybel_box
+        {
+            width: 92%;
+            margin: 4%;
+            float: left;
+            border: 0.01rem solid #e5e5e5;
+            background-color: #ffffff;
+            position: absolute;
+            top: 1.5rem;
+            padding-bottom: 0.4rem;
+            display: none;
+        }
+        
+        
+        .laybel_box p
+        {
+            width: 92%;
+            margin: 4%;
+            font-size: 0.35rem;
+        }
+        
+        .laybel_button1
+        {
+            width: 2.5rem;
+            height: 0.8rem;
+            font-size: 0.4rem;
+            text-align: center;
+            outline: none;
+            background: #49B3FE;
+            border: none;
+            border-radius: 0.05rem;
+            float: left;
+            margin-top: 0.5rem;
+            margin-left: 1.5rem;
+            margin-right: 0.2rem;
+            color: #ffffff;
+        }
+        
+        .laybel_button2
+        {
+            width: 2.5rem;
+            outline: none;
+            height: 0.8rem;
+            text-align: center;
+            font-size: 0.4rem;
+            background: #49B3FE;
+            border: none;
+            border-radius: 0.05rem;
+            float: left;
+            margin-top: 0.5rem;
+            margin-left: 1rem;
+            margin-right: 0.2rem;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="m_login_waperr">
+        <div class="tit">
+            人员信息认证
+        </div>
+        <ul class="input_list">
+            <li>
+                <input type="text" id="txt_certid" placeholder="请输入证件号" />
+            </li>
+            <li>
+                <input type="text" id="txt_username" placeholder="请输入姓名" />
+            </li>
+            <li>
+                <input type="text" id="txt_personno" placeholder="请输入医通卡号" style="display: none;" />
+            </li>
+            <li>
+                <input type="text" id="txt_phone" placeholder="请输入手机号" />
+            </li>
+        </ul>
+      
+        <div class="m_btm_btn">
+            <input type="button" value="提交" onclick="return checkLogin();" />
+        </div>
+        <div class="laybel_box">
+            <p>
+                您的个人信息未在系统中录入，将会影响您的学分查询与审核，请尽快联系本单位将您个人信息录入系统，录入成功后此次考勤得分将会自动同步至您名下。</p>
+            <input type="button" name="name" value="继续考试" onclick="onSaveAnyway()" class="laybel_button1" />
+            <input type="button" name="name" value="取消" onclick="onCancel()" class="laybel_button2" />
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    var scaleNum = window.screen.width / 1000;
+    document.getElementsByTagName('html')[0].style.fontSize = (100 * scaleNum) + 'px';
+
+    var projId = getUrlParam("proj_id"); //项目id
+    var downId =  getUrlParam("down_id"); 
+    var projTeachId = getUrlParam("teach_id");  //课程id
+    var activeSecond = getUrlParam("active_second"); //有效时间
+    var typeId = getUrlParam("type_id"); //项目类型1继教项目  2集体活动
+    var miao = getUrlParam("miao"); //时间戳
+    
+    function checkLogin() {
+
+        if (!checkString("txt_certid", "", "证件号")) return false;
+        if (!checkString("txt_username", "", "姓名")) return false;
+        //if (!checkString("txt_phone", "", "手机号")) return false;
+        var mobile = $("#txt_phone").val();
+        if (mobile != "" && mobile.length != 11) {
+            layer.alert('请输入有效的手机号码！');
+            $("#txt_phone").focus();
+            return false;
+        }
+        var myreg = /^(1\d{10})$/;
+        if (mobile != "" && !myreg.test(mobile)) {
+            layer.alert('请输入有效的手机号码！');
+            $("#txt_phone").focus();
+            return false;
+        }
+
+        saveAttend();
+    }
+
+    function checkString(id, errorStr,fieldName) {
+        if($("#"+id).val() == errorStr) {
+            layer.alert("请输入"+fieldName);
+            return false;
+        }
+        return true;
+    }
+
+    function saveAttend(isOn) {
+        $.ajax({
+            url: huayi_personorg_url + "comperson/doesCertIdExists",
+            data: { certId: $("#txt_certid").val().toUpperCase() },
+            success: function (result) {
+                if (result.success == true) {
+                    if (result.data.does_exists == 1 && result.data.cme_standard_kind_id == '7068a5c0-2cd3-471a-90b9-9bf100aec95a' ) {
+                        // 打开考试页面
+                        layer.open({
+                            type: 2,
+                            title: '考试',
+                            content: 'examPaper.html?proj_id=' + projId + '&teach_id=' + projTeachId + 
+                                    '&active_second=' + activeSecond + '&type_id=' + typeId + 
+                                    '&miao=' + miao + '&down_id=' + downId + '&cert_id=' + $("#txt_certid").val(),
+                            area: ['100%', '100%'],
+                        closeBtn: 0
+                        });
+                        return;
+                    } else if (result.data.does_exists == 0) {
+                        layer.alert('系统不存在这个人的账号！');
+                        return;
+                    } else {
+                        layer.alert('查无此人，请确认证件号输入是否正确。如确认无误，请您联系所在单位继教管理员。');
+                        return;
+                    }
+                }else{
+                    layer.alert(result.msg);
+                }
+            }
+        });
+
+        // $.ajax({
+        //     url: huayi_personorg_url + "comperson/doesCertIdExists",
+        //     type: "post",
+        //     data : JSON.stringify(obj),
+        //     contentType: "application/json;charset=UTF-8",
+        //     dataType: "json",
+        //     success: function(result) {
+        //         if(result.success) {
+        //             layer.alert("考勤成功",{icon:1,time:1500},function(){
+        //                 goback();
+        //             });
+                   
+        //         } else {
+        //             if(result.msg =="人员不存在") {
+        //                 $(".laybel_box").css("display", "block");
+        //             } else {
+        //                 layer.alert(result.msg)
+        //             }
+        //         }
+        //     },
+        //     error: function(re) {
+        //         layer.alert("访问异常！");
+        //         return false;
+        //     }
+        // });
+
+
+    }
+
+    function onCancel() {
+        $(".laybel_box").css("display", "none");
+    }
+
+    function isWeiXin() {
+        var ua = window.navigator.userAgent.toLowerCase();
+        if (ua.match(/MicroMessenger/i) == 'micromessenger') {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    function goback() {
+        if (isWeiXin()) {
+            WeixinJSBridge.call('closeWindow');
+        } else {
+            var userAgent = navigator.userAgent;
+            if (userAgent.indexOf("Firefox") != -1 || userAgent.indexOf("Chrome") != -1) {
+                window.location.href = "about:blank";
+            } else if (userAgent.indexOf('Android') > -1 || userAgent.indexOf('Linux') > -1) {
+                window.opener = null; window.open('about:blank', '_self', '').close();
+            } else {
+                window.opener = null;
+                window.open("about:blank", "_self");
+                window.close();
+            }
+        }
+    }
+</script>

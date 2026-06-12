@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>henan.step</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!-- 1.2.1 -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+          media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <!-- 2.6.4 -->
+    <!--<link rel="stylesheet" href="/js/layui-v2.6.4/layui/css/layui.css" media="all">-->
+    <!--<script src="/js/layui-v2.6.4/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <!--<link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">-->
+    <!--<script src="/js/layui-v2.6.8/layui/layui.js"></script>-->
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <link rel="stylesheet" href="/css/project/timeline.css" media="all">
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+</head>
+<body style="background-color: white;">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div style="width: fit-content; margin: auto;">
+            <table class="layui-table" id="log_table" lay-filter="log_table"></table>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        lat: 'lat'
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'xmSelect', 'lat'], function () {
+        let layer = layui.layer, table = layui.table, $ = layui.jquery, lat = layui.lat;
+        const _cmeYear = getUrlParamByName('cmeYear', '2020');
+        const _personNo = getUrlParamByName('personNo', '1601482307');
+        layer.ready(function () {
+            renderTable();
+        });
+        $(function () {
+            let a = 'http://222.143.64.114:8016/henanrs';
+            // if (_pdp.includes('testkjpt.wsglw.net') || _pdp.includes('192.168.1.166') || _pdp.includes('localhost')) a = 'http://192.168.1.166:10086';
+            postAction(`${a}/henan/test/log/list`, {'cmeYear': _cmeYear, 'personNo': _personNo}).then(response => {
+                let jsonRes = response.data;
+                if (jsonRes.success) {
+                    let arr = jsonRes.result;
+                    let n = arr.length;
+                    if (n > 0) {
+                        if (99 === arr[n - 1].state) {
+                            arr[n - 1].unitId = arr[n - 2].unitId;
+                            arr[n - 1].unitName = arr[n - 2].unitName;
+                        }
+                        table.reload('log_table', {data: arr});
+                    }
+                } else {
+                    lat.failMsg('fail');
+                }
+            }).catch(error => {
+                lat.errorMsg('error:加载日志');
+            });
+        });
+        function renderTable() {
+            table.render({
+                id: 'log_table',
+                elem: '#log_table',
+                height: '310',
+                cols: [[
+                    {
+                        field: 'unitId', title: '单位编号', width: 90, align: 'center', templet: data => {
+                            return (data.unitId || '').replace('999999', '')
+                        }
+                    },
+                    {field: 'unitName', title: '单位名称', width: 200, align: 'center',},
+                    {field: 'state', title: '状态', width: 240, align: 'center', templet: data => stateTxt(data),},
+                    {field: 'createTime', title: '时间', width: 164, align: 'center',},
+                ]],
+                data: [],
+            });
+        }
+        function stateTxt(data) {
+            let state = data.state;
+            if (91 === state) return '上报';
+            if (92 === state) return '撤回';
+            if (1 === state) return '退回';
+            if (2 === state) return '审核不通过';
+            if (3 === state) return '审核通过';
+            if (4 === state) return '审核通过'; // 审核中
+            if (98 === state) return '推送失败';
+            if (99 === state) return '推送成功';
+            return '';
+        }
+    });
+</script>
+<style>
+</style>
+</html>

@@ -1,0 +1,2496 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>举办前申请审核</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <script type="text/javascript" src="../../js/tools/verification.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/constantPage/projectConstant.js"></script>
+    <style>
+        .btn-apply {
+            color: #70B603;
+        }
+
+        #implementationFeedback .layui-card {
+            margin-bottom: 0px;
+            width: 96%;
+            margin: auto;
+        }
+
+        #implementationFeedback .tab-default {
+            width: 55px;
+        }
+
+        #tabPage {
+            width: 96%;
+            margin: 0px auto 20px;
+            min-height: 380px;
+            border: 1px solid #e6e6e6;
+            border-top: 0px;
+            padding-top: 25px;
+        }
+
+        #implementationFeedback .project-form {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        #implementationFeedback .project-form .layui-form-item {
+            min-width: 300px;
+            max-width: 460px;
+            width: 45%;
+        }
+
+        #implementationFeedback .project-form .layui-form-item1 {
+            width: 88%;
+            margin-bottom: 15px;
+        }
+
+        #implementationFeedback .project-form .layui-input-block {
+            display: flex;
+            align-items: center;
+            text-align: left;
+        }
+
+        .js-project-image>div,
+        .js-project-textbook>div {
+            width: 90%;
+            margin: 0px auto 15px;
+            padding: 8px 0px;
+            border: 1px solid;
+            min-height: 70px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .js-project-textbook>div {
+            min-height: 350px;
+        }
+
+        .js-project-image span {
+            display: inline-block;
+            margin-right: 7px;
+        }
+
+        .meeting-notice>div,
+        .meeting-overrall-view>div,
+        .student-signin-table>div,
+        .exem-questions>div,
+        .feedback-table>div {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        #tabPage .meeting-notice::after {
+            content: "会议通知和议程";
+        }
+
+        #tabPage .meeting-overrall-view::after {
+            content: "会议全景照片";
+        }
+
+        #tabPage .student-signin-table::after {
+            content: "学员签到表";
+        }
+
+        #tabPage .exem-questions::after {
+            content: "考试考题";
+        }
+
+        #tabPage .feedback-table::after {
+            content: "执行情况反馈表";
+        }
+
+        .js-project-textbook>div::after {
+            content: "教材明细";
+        }
+
+        .js-project-image>div::after,
+        .js-project-textbook>div::after {
+            position: absolute;
+            padding: 0px 2px 0px 4px;
+            left: 0px;
+            top: -11px;
+            background: #FFF;
+        }
+
+        .meeting-notice>ul,
+        .meeting-overrall-view>ul,
+        .student-signin-table>ul,
+        .exem-questions>ul,
+        .feedback-table>ul {
+            margin: 0px auto;
+            width: 96%;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .meeting-notice>ul>li,
+        .meeting-overrall-view>ul>li,
+        .student-signin-table>ul>li,
+        .exem-questions>ul>li,
+        .feedback-table>ul>li {
+            width: 20%;
+            float: left;
+        }
+
+        .meeting-notice>ul>li>a:nth-child(1),
+        .meeting-overrall-view>ul>li>a:nth-child(1),
+        .student-signin-table>ul>li>a:nth-child(1),
+        .exem-questions>ul>li>a:nth-child(1),
+        .feedback-table>ul>li>a:nth-child(1) {
+            width: 150px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .meeting-notice>ul>li>a:nth-child(2),
+        .meeting-overrall-view>ul>li>a:nth-child(2),
+        .student-signin-table>ul>li>a:nth-child(2),
+        .exem-questions>ul>li>a:nth-child(2),
+        .feedback-table>ul>li>a:nth-child(2) {
+            margin-left: 0px;
+        }
+
+        .js-project-tab>div {
+            width: 90%;
+            margin: 0px auto;
+        }
+
+        .js-hidden,
+        .js-project-image>.js-hidden {
+            display: none;
+        }
+
+        .flow-detail-window {
+            padding: 10px;
+        }
+
+        .flow-detail-window>div {
+            font-weight: 900;
+            font-size: 20px;
+            text-align: center;
+            margin: 15px auto 35px;
+        }
+
+        .flow-detail-window>ul>li {
+            min-height: 60px;
+            position: relative;
+        }
+
+        .flow-detail-window>ul>li:not(:last-child)::before {
+            content: "";
+            border-left: 1px solid #3c3c3c;
+            position: absolute;
+            left: 105px;
+            height: 100%;
+        }
+
+        .flow-detail-window>ul>li::after {
+            content: "";
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1px solid #3c3c3c;
+            background: #FFF;
+            position: absolute;
+            left: 95px;
+        }
+
+        .flow-detail-window>ul>.approval-pass::after {
+            content: "";
+            border-radius: 50%;
+            border: 1px solid #70B603;
+            background: #70B603;
+            position: absolute;
+        }
+
+        .flow-detail-window>ul>.approval-pass:nth-child(n-1):before {
+            /* border-left: 1px solid #70B603; */
+            border-color: #70B603;
+        }
+
+        .flow-detail-window>ul>li>div {
+            display: block;
+            min-width: 65px;
+            max-width: 190px;
+            margin: 0px 20px;
+            float: left;
+            min-height: 10px;
+        }
+
+        div.aaa {
+            width: 100%;
+            height: 100%;
+            padding: 5px 5px;
+            margin-bottom: 30px;
+            /* margin-top:50px; */
+            /* margin-left:150px; */
+            border: 2px solid #CCCCCC;
+            border-radius: 0.5em;
+        }
+
+        span.title {
+            display: block;
+            width: 150px;
+            /* height:50px; */
+            position: relative;
+            top: -15px;
+            text-align: center;
+            background: white;
+        }
+
+        span.title2 {
+            display: block;
+            width: 330px;
+            /* height:50px; */
+            position: relative;
+            top: -15px;
+            text-align: center;
+            background: white;
+        }
+        
+        .file-title{
+            display: inline-block;
+            position: absolute;
+            padding: 0px 2px 0px 4px;
+            left: 30px;
+            top: -11px;
+            background: #FFF;
+        }
+        
+        @media only screen and (max-width: 1200px) and (min-width:1000px) {
+
+            .meeting-notice>ul>li,
+            .meeting-overrall-view>ul>li,
+            .student-signin-table>ul>li,
+            .exem-questions>ul>li,
+            .feedback-table>ul>li {
+                width: 25%;
+            }
+        }
+
+        @media only screen and (max-width: 999px) and (min-width:650px) {
+
+            .meeting-notice>ul>li,
+            .meeting-overrall-view>ul>li,
+            .student-signin-table>ul>li,
+            .exem-questions>ul>li,
+            .feedback-table>ul>li {
+                width: 33%;
+            }
+        }
+
+        @media only screen and (max-width: 649px) {
+
+            .meeting-notice>ul>li,
+            .meeting-overrall-view>ul>li,
+            .student-signin-table>ul>li,
+            .exem-questions>ul>li,
+            .feedback-table>ul>li {
+                width: 50%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+
+            <!--        表格区域-->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="applyBeforeHold" lay-filter="applyBeforeHold" style="margin: 0px 0px;">
+                </table>
+            </div>
+
+            <!--        申请弹窗-->
+            <div id="add-applyBeforeHold" style=" display:none;">
+                <!-- 湖北省厅审核举办前申请时, 显示申报时的项目基本信息及教师信息 -->
+                <div class=""  id="appl_proj"  style="display: none; width: 100%;">
+                    <form class="layui-form" style="padding: 30px;" id="form-appl_proj" lay-filter="form-appl_proj">
+                        <div class="aaa" >
+                            <span class="title" id="" style="font-size: 20px; color: #05ac21;">项目公布信息</span>
+                            <div class="row">
+                                <div class="layui-form-item">
+                                    <div class="layui-inline" style="display: block;">
+                                        <label class="layui-form-label">项目编号</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="publishCode" autocomplete="off" disabled="true"
+                                                class="layui-input layui-disabled">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline" style="display: block;">
+                                        <label class="layui-form-label">项目名称</label>
+                                        <div class="layui-input-inline" style="width: 500px;">
+                                            <input type="text" name="projectName" autocomplete="off" disabled="true"
+                                                class="layui-input layui-disabled">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline" style="display: block;">
+                                        <label class="layui-form-label">项目负责人</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="projManager" autocomplete="off" disabled="true"
+                                                class="layui-input layui-disabled">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline" style="display: block;">
+                                        <label class="layui-form-label">主办单位</label>
+                                        <div class="layui-input-inline" style="width: 500px;">
+                                            <input type="text" name="unitName" autocomplete="off" disabled="true"
+                                                class="layui-input layui-disabled">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline" style="display: block;">
+                                        <label class="layui-form-label">举办方式</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="holdTypeName" autocomplete="off" disabled="true"
+                                                class="layui-input layui-disabled">
+                                            <input type="text" name="appl_holdType" autocomplete="off" class="layui-input" style="display: none;">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline" style="display: block;">
+                                        <label class="layui-form-label">举办天数</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="days" autocomplete="off" disabled="true"
+                                                class="layui-input layui-disabled">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline" style="display: block;">
+                                        <label class="layui-form-label">授予学分</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="score" autocomplete="off" disabled="true"
+                                                class="layui-input layui-disabled">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline" style="display: block;">
+                                        <label class="layui-form-label">联系人</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="unitLinkman" autocomplete="off" disabled="true"
+                                                class="layui-input layui-disabled">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline" style="display: block;">
+                                        <label class="layui-form-label">联系电话</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="unitPhone" autocomplete="off"
+                                                disabled="true" class="layui-input layui-disabled">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline" style="display: block;">
+                                        <label class="layui-form-label">举办地点</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="holdPlace" autocomplete="off" disabled="true"
+                                                class="layui-input layui-disabled">
+                                        </div>
+                                    </div>
+                                </div>
+        
+                                <div class="layui-form-item">
+                                    <div class="layui-inline" style="display: block;">
+                                        <label class="layui-form-label">学时</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="period" autocomplete="off" disabled="true"
+                                                class="layui-input layui-disabled"  lay-verify="period|required">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline" style="display: block;">
+                                        <label class="layui-form-label">拟授分人数</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="number" autocomplete="off" placeholder="请输入拟授分人数" disabled="true"
+                                                class="layui-input layui-disabled" lay-verify="number" onkeyup="value=value.replace(/[^\d]/g,'')">
+                                            <!-- <span style="color: red;">设置为0，招收人数为无限制</span> -->
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline" style="display: block;">
+                                        <label class="layui-form-label">备注</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="remark" autocomplete="off" disabled="true"
+                                                class="layui-input layui-disabled">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="aaa">
+                            <span class="title" id="applTeachInfo" style="font-size: 20px; color: #05ac21;">教师和授课信息</span>
+                            <div class="row">
+                                <div class="layui-card-body layui_body_box">
+                                    <table class="layui-table" id="courseTable" lay-filter="courseTable" lay-size="sm"
+                                   style="margin: 0;"></table>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+
+                <form class="layui-form" style="padding: 30px;" id="form-applyBeforeHold" lay-filter="add-filter">
+                    <div class="aaa" id="projInfoDiv">
+                        <span class="title" id="projectInfo" style="font-size: 20px; color: #05ACAC;">项目基本信息</span>
+                        <div class="row">
+                            <div class="layui-form-item" style="display: none">
+                                <div class="layui-inline layui-inline-660">
+                                    <label class="layui-form-label">主键</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="keyId" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline" id="projNoBlock" style="display: block;">
+                                    <label class="layui-form-label">项目编号</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="projNo" autocomplete="off" disabled="true"
+                                            class="layui-input layui-disabled">
+                                    </div>
+                                </div>
+                                <div class="layui-inline" id="projNameBlock" style="display: block;">
+                                    <label class="layui-form-label">项目名称</label>
+                                    <div class="layui-input-inline" style="width: 500px;">
+                                        <input type="text" name="projName" autocomplete="off" disabled="true"
+                                            class="layui-input layui-disabled">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline" id="projManagerBlock" style="display: block;">
+                                    <label class="layui-form-label">项目负责人</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="projManager" autocomplete="off" disabled="true"
+                                            class="layui-input layui-disabled">
+                                    </div>
+                                </div>
+                                <div class="layui-inline" id="unitNameBlock" style="display: block;">
+                                    <label class="layui-form-label">主办单位</label>
+                                    <div class="layui-input-inline" style="width: 500px;">
+                                        <input type="text" name="unitName" autocomplete="off" disabled="true"
+                                            class="layui-input layui-disabled">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline" id="holdTypeBlock" style="display: block;">
+                                    <label class="layui-form-label">举办方式</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="holdTypeName" autocomplete="off" disabled="true"
+                                            class="layui-input layui-disabled">
+                                        <input type="text" name="holdType" autocomplete="off" class="layui-input layui-disabled" style="display: none;">
+                                    </div>
+                                </div>
+                                <div class="layui-inline" id="holdDayBlock" style="display: block;">
+                                    <label class="layui-form-label">举办天数</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="holdDay" autocomplete="off" disabled="true"
+                                            class="layui-input layui-disabled">
+                                    </div>
+                                </div>
+                                <div class="layui-inline" id="scoreBlock" style="display: block;">
+                                    <label class="layui-form-label">授予学分</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" id="planScore" name="planScore" autocomplete="off" disabled="true"  lay-verify="number|applScore"
+                                            class="layui-input layui-disabled">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline" id="contactBlock" style="display: block;">
+                                    <label class="layui-form-label">联系人</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="linkman" autocomplete="off" disabled="true"
+                                            class="layui-input layui-disabled">
+                                    </div>
+                                </div>
+                                <div class="layui-inline" id="linkmanPhoneBlock" style="display: block;">
+                                    <label class="layui-form-label">联系电话</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="linkmanPhone" autocomplete="off"
+                                            disabled="true" class="layui-input layui-disabled">
+                                    </div>
+                                </div>
+                                <div class="layui-inline" id="studyAddressBlock" style="display: block;">
+                                    <label class="layui-form-label">举办地点</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="studyAddress" autocomplete="off" disabled="true"
+                                            class="layui-input layui-disabled">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <div class="layui-inline" id="periodBlock" style="display: block;">
+                                    <label class="layui-form-label">学时</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" id="planPeriod" name="planPeriod" autocomplete="off" disabled="true"
+                                            class="layui-input layui-disabled"  lay-verify="period|required">
+                                    </div>
+                                </div>
+                                <div class="layui-inline" id="limitPersonBlock" style="display: block;">
+                                    <label class="layui-form-label">拟授分人数</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" id="limitPerson" name="limitPerson" autocomplete="off" placeholder="请输入拟授分人数" disabled="true"
+                                            class="layui-input layui-disabled" lay-verify="number|required" onkeyup="value=value.replace(/[^\d]/g,'')">
+                                        <!-- <span style="color: red;">设置为0，招收人数为无限制</span> -->
+                                    </div>
+                                </div>
+                                <div class="layui-inline" id="remarkBlock" style="display: block;">
+                                    <label class="layui-form-label">备注</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="remark" autocomplete="off" disabled="true"
+                                            class="layui-input layui-disabled">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 举办地市、协办单位、举办地址 -->
+                            <div class="layui-form-item diffHold" style="display: none;">
+                                <div class="layui-inline" style="display: block;">
+                                    <label class="layui-form-label">举办地市</label>
+                                    <div class="layui-input-inline">
+                                        <select name="diffHoldCity" id="diffHoldCity" lay-filter="diffHoldCity" disabled="true" lay-search="">
+                                            <option value="">请选择举办地市</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-inline" style="display: block;">
+                                    <label class="layui-form-label">协办单位</label>
+                                    <div class="layui-input-inline">
+                                        <select name="diffHoldUnit" id="diffHoldUnit" lay-filter="diffHoldUnit" disabled="true" lay-search="">
+                                            <option value="">请选择协办单位</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-inline" id="diffHoldPlaceBlock" style="display: block;">
+                                    <label class="layui-form-label">举办地址</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="diffHoldPlace" autocomplete="off" disabled="true"
+                                            class="layui-input layui-disabled">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <div class="layui-inline qinghai-item" id="emceeBlock" style="display: none;">
+                                    <label class="layui-form-label">主持人</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="emcee" autocomplete="off" placeholder="请输入主持人" disabled="true"
+                                         class="layui-input layui-disabled">
+                                    </div>
+                                </div>
+                                <div class="layui-inline qinghai-item" id="teachObjectBlock" style="display: none;">
+                                    <label class="layui-form-label">教学对象</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="teachObject" autocomplete="off" placeholder="请输入教学对象"   disabled="true"
+                                        class="layui-input layui-disabled">
+                                    </div>
+                                </div>
+                                <div class="layui-inline" id="setTemplateDiv" style="display: none;">
+                                    <label class="layui-form-label">直播类型</label>
+                                    <div class="layui-input-inline">
+                                        <select name="setTemplate" id="setTemplate" lay-verify="required" disabled="true">
+                                            <option value="ppt" selected>三分屏</option>
+                                            <option value="alone">纯视频</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-inline" id="maxWatchNumBlock" style="display: none;">
+                                    <label class="layui-form-label">直播观看人数上限</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="maxWatchNum" id="maxWatchNum" autocomplete="off" disabled="true"
+                                            placeholder="请输入直播观看人数上限" class="layui-input"
+                                            onkeyup="value=value.replace(/[^\d]/g,'')">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-item layui-form-text qinghai-item" style="display: none;">
+                                    <label class="layui-form-label">主要内容</label>
+                                    <div class="layui-input-block">
+                                        <textarea placeholder="请输入" name="mainContent" class="layui-textarea" lay-verify="content" disabled="true"
+                                        class="layui-textarea layui-disabled">
+                                        </textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="aaa" id="batchInfoDiv">
+                        <span class="title" style="font-size: 20px; color: #05ACAC;">批次信息</span>
+                        <div class="row">
+                            <div class="layui-form-item">
+                                <div class="layui-inline" style="display: block;">
+                                    <label class="layui-form-label" style="width: 120px;">项目举办开始日期</label>
+                                    <div class="layui-input-inline">
+                                        <input id="batchStartDt" type="text" name="startDt" autocomplete="off" class="layui-input"
+                                            disabled="true">
+                                    </div>
+                                </div>
+                                <div class="layui-inline" style="display: block;">
+                                    <label class="layui-form-label" style="width: 120px;">项目举办结束日期</label>
+                                    <div class="layui-input-inline">
+                                        <input id="batchEndDt" type="text" name="endDt" autocomplete="off" class="layui-input"
+                                            disabled="true">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="aaa" id="teachInfoDiv">
+                        <span class="title" id="teachInfo" style="font-size: 20px; color: #05ACAC;">课程信息</span>
+                        <div class="row">
+                            <div class="layui-card-body layui_body_box" >
+                                <table class="layui-table" id="cmeProjPosDownList" lay-filter="cmeProjPosDownList"
+                                    style="margin: 0px 0px;">
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="aaa" id="filesDiv">
+                        <span class="title title2" id="filesTitle" style="font-size: 20px; color: #05ACAC;">会议通知及日程</span>
+                        <div class="row">
+                            <div class="js-project-image js-tab-page">
+                                <!-- <div class="meeting-notice js-hidden"> -->
+                                <!-- <div class="meeting-notice">
+                                    <div class="js-upload-btn-box">
+                                        <a class="layui-btn layui-btn-sm layui-btn-radius js-upload-btn"
+                                            data-type="1">上传</a>
+                                    </div>
+                                    <ul class="js-meeting-notice"></ul>
+                                </div> -->
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="layui-form-item" id="submitAndResetApproval" style="width: 100%;">
+                        <div class="layui-input-block" style="padding-left: 30%; padding-top: 10px;">
+                            <button class="layui-btn" lay-submit lay-filter="pass" type="button">审核通过</button>
+                            <button class="layui-btn" lay-submit lay-filter="back">退回修改</button>
+                            <button class="layui-btn" lay-submit lay-filter="notPass">审核不通过</button>
+                        </div>
+                    </div>
+                    
+                    <div class="layui-form-item" id="submitAndResetApply" style="width: 100%;">
+                        <div class="layui-input-block" style="text-align: center;">
+                            <button class="layui-btn" lay-submit lay-filter="saveInfo">保存并返回列表</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--        添加课程弹窗-->
+    <div id="addTeach" style=" display:none;">
+        <form class="layui-form" style="padding: 30px;" id="form-addTeach" lay-filter="add-teach">
+            <div class="layui-form-item" style="display: none">
+                <div class="layui-inline layui-inline-660">
+                    <label class="layui-form-label">主键</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="projTeachId" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-inline" style="display: block;">
+                    <label class="layui-form-label">课程开始日期</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="startDate" id="startDate" autocomplete="off" class="layui-input"
+                            placeholder="请选择">
+                    </div>
+                </div>
+                <div class="layui-inline" style="display: block;">
+                    <label class="layui-form-label">课程结束日期</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="endDate" id="endDate" autocomplete="off" class="layui-input"
+                            placeholder="请选择">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline" style="display: block;">
+                    <label class="layui-form-label">讲授题目</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="teachSubject" id="teachSubject" autocomplete="off" class="layui-input"
+                            placeholder="讲授题目">
+                    </div>
+                </div>
+                <div class="layui-inline" style="display: block;">
+                    <label class="layui-form-label" id="periodLabel">学时</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="period" id="period" autocomplete="off" class="layui-input"
+                            placeholder="" lay-verify="period|required">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" id="submitAndResetTeach">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="submitTeach">提交</button>
+                    <button id="resetBtn" type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <!--        添加教师弹窗-->
+    <div id="addTeacher" style=" display:none;">
+        <form class="layui-form" style="padding: 30px;" id="form-addTeacher" lay-filter="add-teacher">
+            <div class="layui-form-item" style="display: none">
+                <div class="layui-inline layui-inline-660">
+                    <label class="layui-form-label">主键</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="projTeacherId" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline layui-inline-660">
+                    <label class="layui-form-label">课程id</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="projTeachId" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline" style="display: block;">
+                    <label class="layui-form-label">授课教师</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="teachName" id="teachName" autocomplete="off" class="layui-input"
+                            placeholder="授课教师">
+                    </div>
+                </div>
+                <div class="layui-inline" style="display: block;">
+                    <label class="layui-form-label">授课教师证件号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="teachNo" id="teachNo" autocomplete="off" class="layui-input"
+                            placeholder="授课教师证件号">
+                    </div>
+                </div>
+                <div class="layui-inline" id="sexBlock" style="display: block;">
+                    <label class="layui-form-label">性别</label>
+                    <div class="layui-input-inline">
+                        <select name="sex" lay-verify="required">
+                            <option value="">请选择性别</option>
+                            <option value="1">男</option>
+                            <option value="0">女</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline" style="display: block;">
+                    <label class="layui-form-label">出生日期</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="birthday" id="birthday" autocomplete="off" class="layui-input"
+                            placeholder="请选择">
+                    </div>
+                </div>
+                <div class="layui-inline" style="display: block;">
+                    <label class="layui-form-label">学历</label>
+                    <div class="layui-input-inline" style="text-align: left;">
+                        <select name="education" id="select_education">
+                            <option value="">请选择学历</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline layui-form" lay-filter="specSelectArea" style="display: block;">
+                    <label class="layui-form-label">专业</label>
+                    <div class="layui-input-inline">
+                        <input type="text" autocomplete="off" class="layui-input" lay-filter="specSelect"
+                            id="specSelect" placeholder="请选择专业">
+                    </div>
+                    <input type="hidden" id="hidden_spec" name="dept">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-inline" style="display: block;">
+                    <label class="layui-form-label">职称</label>
+                    <div class="layui-input-inline">
+                        <input id="text_title_name" autocomplete="off" class="layui-input">
+                        <input type="hidden" name="title" id="hidden_title_id" />
+                    </div>
+                </div>
+                <div class="layui-inline" id="ifProjManagerBlock" style="display: block;">
+                    <label class="layui-form-label">是否为项目负责人</label>
+                    <div class="layui-input-inline">
+                        <select name="ifProjManager" lay-search lay-verify="required">
+                            <option value="">请选择</option>
+                            <option value="0">否</option>
+                            <option value="1">是</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline" style="display: block;">
+                    <label class="layui-form-label">职务</label>
+                    <div class="layui-input-inline" style="text-align: left;">
+                        <select name="duty" id="select_hospital_duty">
+                            <option value="">请选择院内职务</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline" style="display: block;">
+                    <label class="layui-form-label">单位</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="unitName" id="unit" autocomplete="off" class="layui-input"
+                            placeholder="单位">
+                    </div>
+                </div>
+                <div class="layui-inline" style="display: block;">
+                    <label class="layui-form-label">联系方式</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="telephone" id="telephone" autocomplete="off" class="layui-input"
+                            placeholder="联系方式">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline" id="remarkBlock" style="display: block;">
+                    <label class="layui-form-label">备注</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="remark" placeholder="备注" autocomplete="off" class="layui-input"
+                            lay-verify="required" style="width: 500px;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item" id="submitAndResetTeacher">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="submitTeacher">提交</button>
+                    <button id="resetBtn" type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <!-- 审批意见的弹窗 -->
+    <div id="approvalText" style="display: none;text-align: center;">
+        <div style="margin: 20px 30px 45px 0px;">
+            <label class="layui-form-label">
+                <font color="red">*&nbsp;</font>审批意见
+            </label>
+            <div class="layui-input-block">
+                <textarea name="approvalContent" class="layui-textarea js-approval-content" autocomplete="off"
+                    maxlength="400"></textarea>
+            </div>
+        </div>
+        <a class="layui-btn layui-btn-sm layui-btn-radius js-submit-approval">提交</a>
+    </div>
+
+    <!--   添加课程    -->
+    <div class="layui-form" style="background-color: #f5f5f5;display: none; text-align: center; " id="div_addPos">
+        <input type="hidden" id="pop_operate" />
+        <input type="hidden" id="pop_downId" />
+        <div class="layui-inline" style="padding: 20px;">
+            <div class="layui-input-inline">
+                <input type="text" name="startDt" id="startDt" placeholder="举办开始日期" autocomplete="off"
+                    class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline" style="padding: 20px;">
+            <div class="layui-input-inline">
+                <input type="text" name="endDt" id="endDt" placeholder="举办结束日期" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <br />
+        <div class="layui-btn-container">
+            <button type="button" class="layui-btn" id='btnCmeProjPosSave'>保存</button>
+            <button type="button" class="layui-btn" id='btnCmeProjPosCancel'>取消</button>
+        </div>
+    </div>
+
+    <!-- 动态调整操作按钮 -->
+
+    <!-- 表格内按钮，当前只有查看和待审批 -->
+    <script type="text/html" id="rowBar">
+    <!-- 待审批，是机构号是自己的时候 -->
+    {{# if(d.canApproval == 1){ }}
+        {{# if(d.holdQualification){ }}
+    <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row btn-approval" lay-event="approval">待审批</a>
+        {{# }else{ }}
+    <a class="layui-btn layui-btn-xs layui-btn-disabled" disabled="true">待审批</a>
+        {{# } }}
+    {{# }else{ }}
+
+    <!-- 只有查看的情况 -->
+    {{# if(d.holdQualification){ }}
+    <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="detail">查看</a>
+        {{# }else{ }}
+    <a class="layui-btn layui-btn-xs layui-btn-disabled" disabled="true">查看</a>
+        {{# } }}
+    {{# } }}
+    
+    <!-- 根据角色和学分级别配置，是否可修改项目信息 -->
+    {{# if(window['fn_city_update_apply_before'] || window['fn_province_update_apply_before']){ }}
+        <a class="layui-btn layui-btn-xs" lay-event="edit" style="color: #27b1a2;background-color: transparent;">编辑</a>
+    {{# } }}
+
+    </script>
+
+    <!-- 下载举办备案表 -->
+    <script type="text/html" id="downloadBar">
+        {{# if(d.checkState > 0){ }}
+        <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="download">下载</a>
+        {{# }else{ }}
+        <a class="layui-btn layui-btn-xs layui-btn-disabled" disabled="true">下载</a>
+        {{# } }}
+    </script>
+    <!--教师表格内数据查看按钮-->
+    <script type="text/html" id="cmeProjTeacherRowBar">
+        <a class="layui-btn layui-btn-xs" lay-event="viewTeacher" style="color: #27b1a2;background-color: transparent;">查看</a>
+    </script>
+    <script type="text/html" id="viewBar">
+        {{# if(d.checkState !=null && d.checkState != 0) {  }}
+            {{# if(d.holdQualification){ }}
+        <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="viewProgress">查看</a>
+            {{# }else{ }}
+        <a class="layui-btn layui-btn-xs layui-btn-disabled" disabled="true">查看</a>
+            {{# } }}
+        {{# } }}
+        
+        {{# if(taoId == '73ba18db-33fd-4746-ab41-9beb009f69a1') {  }}
+            <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="viewProgressLog">日志</a>
+        {{# } }}
+    </script>
+    <script>
+        const userType = localStorage.getItem("user-type");
+        const userName = localStorage.getItem("user-name");
+        const myUnitId = localStorage.getItem("unit-id");
+        const myDeptId = localStorage.getItem("dept-id");
+        const taoId = localStorage.getItem("standardkind-id");
+    </script>
+    <script>
+        layui.config({
+            base: '/js/layui/ext/'
+        }).extend({
+            treeSelect: 'treeSelect',
+            xmSelect: 'xm-select',
+            opTable: '/opTable/opTable'
+        });
+        // 全局配置及引入相关的模块
+        layui.use(['table', 'form', 'laydate', 'element', 'upload', 'opTable', 'tool', 'treeSelect'], function () {
+            var table = layui.table
+                , form = layui.form
+                , layer = layui.layer
+                , laydate = layui.laydate
+                , element = layui.element //Tab的切换功能
+                , upload = layui.upload
+                , util = layui.util
+                , xmSelect = layui.xmSelect
+                , treeSelect = layui.treeSelect
+                , tool = layui.tool
+                , opTable = null;
+
+            var downId, projId; // 非国家级
+            // var projId = '233389a6-ddc6-4e2a-b477-46317653dc92';  // 国家级
+            var projTeachId = '';
+            // localStorage.setItem('unit-id', '060014')
+            var nowFlowChainState;
+            var unitUserType = 0;
+            var standardkindId = localStorage.getItem("standardkind-id")
+                , userType = localStorage.getItem("user-type")
+                , unitId = localStorage.getItem("unit-id");   
+            var setTemplate, maxWatchNum, defaultHoldType = '7f3d28dd-1a63-4bbc-8b3d-d5ca8312d707'
+                , qing_hai_tao_id = '6427ddba-c02f-4229-bd73-49fc1c5d21f6'
+                , hu_bei_tao_id = '73ba18db-33fd-4746-ab41-9beb009f69a1'
+                , he_nan_tao_id = 'a6280900-a9c2-11ec-84d6-fa163e9b64fb'
+                , hu_nan_tao_id = '13e2e203-7fdd-47ab-b90f-a1480112b5e5'
+                , guang_xi_tao_id = '4a6d91fb-8ba4-4560-a801-9c6f00e6d999'
+                , nei_meng_tao_id = '08e44437-5789-44e0-8ff8-9ecb00a6348a'
+                , IS_GUANG_DONG = StandardKind.GUANG_DONG == standardkindId
+                , isLoadApplProj = false
+                , isHoldeFormPlus = false
+                , f_proj_apply_beian = 0
+                , applScore = 0
+                , applPeriod = 0
+                , applLimitPerson = 0
+                , projectPublishId = '';
+            
+            let tempDeptId = (userType == 13) ? myDeptId : "";
+            let tempUnitId = (userType == 12) ? myUnitId : "";
+            let configName1 = "fun_apply_file_upload";
+            let configMap = {};
+            let fileUpObj = [{"fileName":"","require":false,"fileType":1}]; 
+
+            if(standardkindId == guang_xi_tao_id){
+                $("#periodLabel").text("时长");
+            }
+             if(IS_GUANG_DONG){
+                 // 显示异地举办表单
+                 $(".diffHold").show();
+            }
+              //公共ajax
+            let commonAjax = function (type = "get", url, data, failFun, successFun) {
+                $.ajax({
+                    async: false,
+                    type: type,
+                    url: url,
+                    data: data,
+                    success: function (res) {
+                        successFun(res);
+                    },
+                    error: function (res) {
+                        failFun();
+                    }
+                });
+            }
+            // 湖北套修改表头文案
+            if (standardkindId == hu_bei_tao_id){
+                // $('#projectInfo').text('项目公布信息');
+                $('#teachInfo').text('课程及教师信息');
+                $('#filesTitle').text('会议通知、会议日程及异地备案表');
+            }
+            //解析url参数
+            let getParamFromUrl = function (paramName) {
+                let urlStr = location.search;
+                if (urlStr.indexOf(paramName) < 0 || urlStr.indexOf("?") < 0) return;
+                let paramKV = urlStr.substr(1).split("&");
+                for (let i = 0; i < paramKV.length; i++) {
+                    if (paramKV[i].indexOf(paramName) >= 0) {
+                        return paramKV[i].split("=")[1];
+                    }
+                }
+            }
+            let scoreLevel = getParamFromUrl('scoreLevel');
+            var nowProjectId = getParamFromUrl("projectId");
+            var cmeYear = getParamFromUrl("cmeYear");
+            if (nowProjectId != null && nowProjectId != "" && nowProjectId != undefined) {
+                projId = nowProjectId;
+            }
+
+            /* 获取配置 */
+            window.getConfig = function (config_name, scoreLevel) {
+                $.ajax({
+                    async: false,
+                    type: 'post',
+                    url: huayi_sjwh_url + 'cmeCommonConfig/getConfigByUnitFromRedis',
+                    data: {
+                        unitId: unitId,
+                        configNames: config_name,
+                        scoreLevelId: scoreLevel
+                    },
+                    success: function (res) {
+                        if (res.success == true) {
+                            window[config_name] = res.data[config_name];
+                        } else {
+                            layer.msg('获取配置失败');
+                        }
+                    },
+                    error: function () {
+                        layer.msg('获取配置失败');
+                    }
+                });
+            }
+            // 根据角色和学分级别配置，是否可修改项目信息
+            if(localStorage.getItem('unit-user-type') == 4){
+                window.getConfig('fn_city_update_apply_before', scoreLevel);
+            }else if (localStorage.getItem('unit-user-type') == 5){
+                window.getConfig('fn_province_update_apply_before', scoreLevel);
+            }
+
+            laydate.render({
+                elem: '#startDate',
+                type: 'datetime'
+            });
+            laydate.render({
+                elem: '#endDate',
+                type: 'datetime'
+            });
+            // laydate.render({
+            //     elem: '#batchStartDt',
+            //     type: 'date'
+            // });
+            // laydate.render({
+            //     elem: '#batchEndDt',
+            //     type: 'date'
+            // });
+            laydate.render({
+                elem: '#birthday',
+                type: 'date'
+            });
+
+            // 表格配置
+            window.loaderTable = function () {
+                table.render({
+                    elem: '#applyBeforeHold',
+                    url: huayi_projectscore_url + 'cmeProjCycleApplication/getApprovalApplListForProj',
+                    method: 'get',
+                    title: '项目批次',
+                    defaultToolbar: [],
+                    where: {
+                        projId: projId,
+                        userType: localStorage.getItem('user-type'),
+                        unitUserType: localStorage.getItem('unit-user-type'),
+                        unitId: tempUnitId ? tempUnitId : unitId,
+                        deptId  :   tempDeptId
+                    },
+                    cols: [[
+                        { field: 'downId', title: '主键', hide: true },
+                        { field: 'row', type: "numbers", width: 50, fixed: 'left', title: '序号' },
+                        { align: 'center', width: 150, toolbar: '#rowBar', title: '操作'},
+                        {field: 'status', title: '审批步骤', align: 'center',toolbar: '#viewBar', width: 120},
+                        { field: 'checkMemo', title: '审核意见', sort: true, align: "center" ,
+                            templet: function (data) {
+                                let textVal = '';
+                                if(data.checkState == 1 || data.checkState == 2 ){
+                                    if(data.checkMemo){
+                                        textVal = data.checkMemo;
+                                    }else if(data.approvalContent){
+                                        textVal = data.approvalContent;
+                                    }
+                                }
+                                return textVal;
+                            }
+                        },
+                        { field: 'download', title: '下载举办备案表', align: 'center', toolbar: '#downloadBar', width: 130
+                            , hide: standardkindId != qing_hai_tao_id || f_proj_apply_beian == 0 },
+                        {
+                            field: 'batch', title: '举办批次', sort: true, align: "center", width: 110,
+                            templet: function (data) {
+                                unitUserType = data.unitUserType;
+                                return "第" + data.batch + "批次";
+                            }
+                        },
+                        { field: 'projNo', title: '项目编号', sort: true, align: "center" ,width:200 },
+                        { field: 'projName', title: '项目名称', sort: true, align: "center" ,width:200 },
+                        { field: 'startDt', title: '开始日期', sort: true, align: "center" ,width:120 },
+                        { field: 'endDt', title: '结束日期', sort: true, align: "center" ,width:120 },
+                        // {
+                        //     field: 'checkState', title: '审核状态', sort: true, align: "center", width:140,
+                        //     templet: function (data) {
+                        //         let checkStateText;
+                        //         switch (data.checkState) {
+                        //             case 1:
+                        //             case null:
+                        //             case undefined:
+                        //                 checkStateText = "未申请";
+                        //                 break;
+                        //             case 2:
+                        //                 checkStateText = "未审核";
+                        //                 break;
+                        //             case 3:
+                        //                 checkStateText = "审核中";
+                        //                 break;
+                        //             case 4:
+                        //                 checkStateText = "已退回";
+                        //                 break;
+                        //             case 5:
+                        //                 checkStateText = "审核(不通过)";
+                        //                 break;
+                        //             case 6:
+                        //                 checkStateText = "审核通过";
+                        //                 break;
+                        //             default:
+                        //                 break;
+                        //         }
+                        //         return checkStateText;
+                        //     }
+                        // },
+                    ]],
+                    toolbar: '#bar',
+                    cellMinWidth: 100,
+                    id: "applyBeforeHold",
+                    height: 'full-60',
+                    parseData: function (res) {
+                        if (res.status != 200) {
+                            layer.msg(res.msg)
+                            return;
+                        }
+                        if(ableOperateLastYearData(cmeYear) == false) {
+                            res.data.forEach(d => { d.canApproval=0 });
+                        }
+                        return {
+                            "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                            "msg": res.message, //解析提示文本
+                            "data": res.data, //解析数据列表
+                        }
+                    },
+                    request: {
+                        pageName: 'pageNum', //页码的参数名称，默认：page
+                        limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                    },
+                    done: function (res, curr, count) {
+                        bindViewFlowBtn();
+                    },
+                });
+            };
+
+
+            window.initTable = function (tableId, toolbarId, isHidenTool) {
+                let cellWidth = isLoadApplProj ? '31%' : '23%';
+                let opTableThis = layui.opTable.render({
+                    elem: '#' + tableId
+                    , id: tableId
+                    , url: huayi_projectscore_url + 'cmeCmeProjTeach'
+                    , where: {
+                        downId: downId
+                    }
+                    , cols: [[
+                        { field: 'startDate', title: '课程开始时间', align: "center", width: cellWidth, hide: isLoadApplProj },
+                        { field: 'endDate', title: '课程结束时间', align: "center" , width: cellWidth, hide: isLoadApplProj},
+                        { field: 'teachSubject', title: '讲授题目', align: "center" , width: cellWidth},
+                        // { field: 'score', title: '学分', align: "center" },
+                        { field: 'period', title: standardkindId == guang_xi_tao_id ? '时长' : '学时', align: "center", width: cellWidth },
+                        { field: 'teachingMethod', title: '教学方法', align: "center",sort:true, width: cellWidth
+                            , templet:function (data) {
+                                if(data.teachingMethod == '面授'){
+                                    return '理论';
+                                }
+                                if(!data.teachingMethod){
+                                    return '';
+                                }
+                                return data.teachingMethod;
+                            }
+                        }
+                    ]],
+                    // toolbar: toolbarId,
+                    cellMinWidth: 200,
+                    // height: 'full-450',
+                    page: false,
+                    parseData: function (res) {
+                        return {
+                            'code': res.status === 200 ? 0 : res.status,  // 解析接口状态
+                            'msg': res.msg,                          // 解析提示文本
+                            // 'count': res.data.records.length,                // 解析数据长度
+                            'data': res.data                    // 解析数据列表
+                        }
+                    },done:function(){
+                        opTableThis.openAll();
+                        console.log('openall-' + tableId)
+                    }, onOpen: function (itemData, itemIndex, dom, childTable) {
+                        console.log("onOpen", '行数据：', itemData, "行下标：" + itemIndex, "行dom元素", dom, "子表实例：", childTable)
+                        //保存展开行的数据
+                        openRoWData = itemData;
+                        //监听子表的行工具栏
+                        table.on('tool(' + childTable.config.id + ')', function (obj) {
+                            var data = obj.data;
+                            if (obj.event === 'addCourse') {
+                               // alert(JSON.stringify(obj.data));
+                            } else if (obj.event === 'viewTeacher') {
+                                form.val('add-teacher', obj.data);
+                                specTreeSelect.checkNode('specSelect', obj.data.dept);
+                                form.render('select');
+                                layer.open({
+                                    type: 1,
+                                    title: '修改教师',
+                                    content: $('#addTeacher'),
+                                    skin: '',
+                                    area: ['80%', '80%'],
+                                })
+                            }
+                        });
+                    }
+                    , openTable: function (itemData) {
+                        var projTeachId = itemData.projTeachId;
+                        return {
+                            elem: '#'+ tableId +'cmeCmeProjTeach_' + itemData.LAY_INDEX
+                            , id: tableId + 'cmeCmeProjTeach_' + itemData.LAY_INDEX
+                            , url: huayi_projectscore_url + 'cmeCmeProjTeach/selectAllTeachers'
+                            , page: false
+                            , openVisible: false
+                            , cellMinWidth: 100
+                            , where: {
+                                projTeachId: projTeachId
+                            }
+                            //授课教师,授课教师证件号,性别,出生日期,最高学历,专业,职称,是否为项目负责人,职务,所在单位,联系方式,备注
+                            , cols: [[
+                                // { title: '操作', toolbar: '#cmeProjTeacherRowBar', width: "200", align: "center" , hide: isHidenTool},
+                                { field: 'projTeacherId', title: '主键', hide: true },
+                                { field: 'projTeachId', title: '课程id', hide: true },
+                                { field: 'teachName', title: '授课教师', align: "center" },
+                                { field: 'teachNo', title: '授课教师证件号', align: "center" },
+                                {
+                                    field: 'sex', title: '性别', align: "center",
+                                    templet: function (data) {
+                                        let sexText = '';
+                                        if (data.sex == 1) {
+                                            sexText = "男";
+                                        } else if (data.sex == 0) {
+                                            sexText = "女";
+                                        }
+                                        return sexText;
+                                    }
+                                },
+                                // { field: 'birthday', title: '出生日期', align: "center" },
+                                { field: 'educationName', title: '最高学历', align: "center", hide: standardkindId == hu_bei_tao_id },
+                                { field: 'personSpecName', title: '专业', align: "center" },
+                                { field: 'titleName', title: '职称', align: "center" },
+                                {
+                                    field: 'ifProjManager', title: '是否为项目负责人', align: "center",
+                                    templet: function (data) {
+                                        let ifProjManagerText = '否';
+                                        if (data.ifProjManager == 1) {
+                                            ifProjManagerText = "是";
+                                        }
+                                        return ifProjManagerText;
+                                    }
+                                },
+                                { field: 'dutyName', title: '职务', align: "center" },
+                                { field: 'unitName', title: '所在单位', align: "center" },
+                                { field: 'telephone', title: '联系方式', align: "center" },
+                                { field: 'remark', title: '备注', align: "center" }
+                            ]]
+                            , parseData: function (res) {
+                                return {
+                                    'code': res.status === 200 ? 0 : res.status,  // 解析接口状态
+                                    'msg': res.msg,                          // 解析提示文本
+                                    'count': res.data.length,                // 解析数据长度
+                                    'data': res.data                    // 解析数据列表
+                                }
+                            }
+
+                        }
+                    }
+                })
+            }
+
+            // 上传文件
+            var uploadInst = upload.render({
+                elem: '#test1' //绑定元素
+                , url: '/upload/' //上传接口
+                , done: function (res) {
+                    //上传完毕回调
+                }
+                , error: function () {
+                    //请求异常回调
+                }
+            });
+
+            // 监听行内按钮
+            table.on('tool(applyBeforeHold)', function (obj) {
+               
+                var datas = obj.data;
+                if(obj.event === "viewProgress"){
+                    viewFlowProgress(datas);
+                    return;
+                }
+                obj.event === "viewProgressLog" && viewFlowProgressLog(datas);
+                projectPublishId = datas.projectPublishId;
+
+                downId = obj.data.downId;
+                getPolyvSetById();
+                datas.maxWatchNum = maxWatchNum;
+                datas.setTemplate = setTemplate;
+                // 青海直播, 显示直播类型及人数上线
+                if (standardkindId == qing_hai_tao_id
+                    && datas.holdType == defaultHoldType) {
+                    $('#setTemplateDiv').css("display", "block");
+                } else {
+                    $('#setTemplateDiv, #maxWatchNumBlock').css("display", "none");
+                }
+                // 附件渲染
+                var fileUrls = obj.data.fileUrls;
+                var fileUrlArr;
+                if (fileUrls != undefined && fileUrls != null) {
+                    fileUrlArr = fileUrls.split('|');
+                }
+                nowFlowChainState = datas["flowChainState"];
+
+                // 如果有举办地市数据，加载对应的协办单位列表
+                if (datas.diffHoldCity) {
+                    debugger
+                    loaddiffHoldUnits(datas.diffHoldCity);
+                    // 等待协办单位加载完成后，设置选中值
+                    setTimeout(function() {
+                        if (datas.diffHoldUnit) {
+                            $('#diffHoldUnit').val(datas.diffHoldUnit);
+                        }
+                        form.render('select');
+                    }, 300);
+                }
+
+                // createImageTab(datas.fileUrls, datas.fileNames);
+                commonAjax("post", huayi_projectscore_url + "cmeProjCycleApplication/getFilesByDownId", { downId: downId }, function () { },
+                        function (res) { createTabPage(res.data) });
+                // 加载课程列表
+                initTable('cmeProjPosDownList','#addTeachBar', false);
+                $('#batchStartDt,#batchEndDt').addClass("layui-disabled").attr("disabled", "true");
+                    // 禁用可编辑项目信息
+                $("#holdType,#setTemplate,#maxWatchNum,#linkman,#linkmanPhone,#studyAddress,#limitPerson,#planScore,#planPeriod,#holdDay")
+                    .addClass("layui-disabled").attr("disabled", "true");
+
+                if (obj.event === 'approval') {
+                    $('#submitAndResetApproval').css("display", "inline-block");
+                    $('#submitAndResetApply').css("display", "none");
+                    form.val('add-filter', datas);
+                    $(".js-upload-btn-box").addClass("js-hidden");
+                    $(".remove-image").addClass("js-hidden");
+                    // 青海省厅账号可以直接修改“拟授分人数”，修改后，审核通过，该字段生效，并更新正式项目表。
+                    if (standardkindId == qing_hai_tao_id && userType == 11){
+                        $("#limitPerson").removeClass("layui-disabled").removeAttr("disabled");
+                    }
+                    // 湖北省厅审核举办前申请时, 显示申报时的项目基本信息及教师信息
+                    if(isLoadApplProj && IS_GUANG_DONG){
+                        debugger
+                        if(datas.projectPublishId){
+                            $('#appl_proj').css("display", "inline-block");
+                            applProjDetail(datas.projectPublishId,datas);
+                        } else {
+                            loadApplProj(datas);
+                        }
+                    }
+                    layer.open({
+                        type: 1,
+                        title: '审核',
+                        content: $('#add-applyBeforeHold'),
+                        skin: '',
+                        area: ['100%', '100%'],
+                    })
+                } else if (obj.event === 'detail') {
+                    // 禁用所有表单
+                    $('input, select, textarea').addClass("layui-disabled").attr("disabled", "true");
+                    // 湖北省厅审核举办前申请时, 显示申报时的项目基本信息及教师信息
+                    if(isLoadApplProj && IS_GUANG_DONG){
+                       
+                        debugger
+                        if(datas.projectPublishId){
+                            $('#appl_proj').css("display", "inline-block");
+                            applProjDetail(datas.projectPublishId, datas);
+                        } else {
+                            loadApplProj(datas);
+                        }
+                    }
+                    $('#filesDiv,#teachInfoDiv').css("display", "inline-block");
+
+                    // 禁用操作按钮
+                    $('#submitAndResetApproval,#submitAndResetApply').css("display", "none");
+                    $('#addTeachBar').css("display", "none");
+                    $(".js-upload-btn-box").addClass("js-hidden");
+                    $(".remove-image").addClass("js-hidden");
+                    form.val('add-filter', datas);
+
+                    layer.open({
+                        type: 1,
+                        title: '查看',
+                        content: $('#add-applyBeforeHold'),
+                        skin: '',
+                        area: ['100%', '100%'],
+                    })
+                    
+                }else if (obj.event === 'edit') {
+                    debugger
+                    $('#submitAndResetApply').css("display", "inline-block");
+                    $('#submitAndResetApproval,#appl_proj,#filesDiv,#teachInfoDiv').css("display", "none");
+                    // 设置可编辑项
+                    //  配置可更新字段 window['fn_city_update_apply_before']='limitPerson,planScore,planPeriod'
+                    let updateFieldsCity = window['fn_city_update_apply_before'] ? window['fn_city_update_apply_before'].split(',') : [];
+                    updateFieldsCity.forEach(field => {
+                        $(`#${field}`).removeClass("layui-disabled").removeAttr("disabled");
+                    });
+
+                    //  配置可更新字段 window['fn_province_update_apply_before']='planScore,planPeriod'
+                    let updateFieldsProvince = window['fn_province_update_apply_before'] ? window['fn_province_update_apply_before'].split(',') : [];
+                    updateFieldsProvince.forEach(field => {
+                        $(`#${field}`).removeClass("layui-disabled").removeAttr("disabled");
+                    });
+                    form.val('add-filter', datas);
+                    layer.open({
+                        type: 1,
+                        title: '申请',
+                        content: $('#add-applyBeforeHold'),
+                        skin: '',
+                        area: ['100%', '100%'],
+                        success: function (layero, index) {
+                        },
+                        cancel: function () {
+                            table.reload('applyBeforeHold');
+                        }
+                    });
+                    form.render();
+                } else if (obj.event === 'download') {
+                    // layer.confirm('确认导出', { icon: 3, title: '提示' }, function () {
+                        // layer.msg("正在导出");
+                        let visit = huayi_projectscore_url + 'cmeProjCycleApplication/exportBeianPdf';
+                        downloadFile(visit, { keyId: obj.data.keyId });
+                    // });
+                    }
+            });
+
+            form.on('submit(saveInfo)', function (data) {
+                debugger
+                var limitPerson = $('#limitPerson').val();
+                if (limitPerson <= 0) {
+                    layer.msg('拟授分人数必须大于0')
+                    return false;
+                }
+
+                let updateProjInfo = {
+                    keyId: data.field.keyId,
+                    projId: projId,
+                    downId: downId
+                };
+
+                // if(standardkindId == he_nan_tao_id){
+                //     // 河南：市级行政修改市级项目的拟授分人数
+                //     updateProjInfo.limitPerson = data.field.limitPerson;
+                // }else if(standardkindId == hu_nan_tao_id){
+                //     // 湖南：省级行政机构修改：学时、学分、拟授分人数
+                //     updateProjInfo.planScore = data.field.planScore;
+                //     updateProjInfo.planPeriod = data.field.planPeriod;
+                //     updateProjInfo.limitPerson = data.field.limitPerson;
+                // }
+                // TODO 配置可更新字段 window['fn_city_update_apply_before']='limitPerson,planScore,planPeriod'
+                if (window['fn_city_update_apply_before']) {
+                    // 河南：市级行政修改市级项目的拟授分人数
+                    let updateFields = window['fn_city_update_apply_before'].split(',');
+                    updateFields.forEach(field => {
+                        updateProjInfo[field] = data.field[field];
+                    });
+                }
+                if (window['fn_province_update_apply_before']) {
+                    // 湖南：省级行政机构修改：学时、学分、拟授分人数
+                    let updateFields = window['fn_province_update_apply_before'].split(',');
+                    updateFields.forEach(field => {
+                        updateProjInfo[field] = data.field[field];
+                    });
+                }
+                
+                layer.confirm('确定修改项目周期信息吗?', { icon: 3, title: '提示' }, function (index) {
+                    $.ajax({
+                        type: 'post',
+                        url: huayi_projectscore_url + 'cmeProjCycleApplication/saveInfo',
+                        data: JSON.stringify(updateProjInfo),
+                        dataType: 'json',
+                        contentType: 'application/json;charset=UTF-8',
+                        success: function (res) {
+                            if (res.status === 200) {
+                                layer.closeAll();
+                                table.reload('applyBeforeHold');
+                                layer.msg("修改项目周期信息成功")
+                            } else if (res.status === 500) {
+                                layer.msg(res.msg);
+                            }
+                        },
+                        error: function () {
+                            layer.msg("发送请求失败");
+                        }
+                    })
+                });
+                return false;
+            });
+
+            // 导入的项目无申报信息时, 根据项目基本信息加载项目公布信息
+            function loadApplProj(datas){
+                
+                let projInfo = {};
+                projInfo.projectName = datas.projName;
+                projInfo.projManager = datas.projManager;
+                projInfo.unitName = datas.unitName;
+                projInfo.publishCode = datas.projNo;
+                projInfo.holdTypeName = datas.holdTypeName;
+                projInfo.appl_holdType = datas.holdType;
+                projInfo.days = datas.holdDay;
+                projInfo.planScore = datas.planScore;
+                projInfo.applyLinkman = datas.projManager;
+                projInfo.applyUnitPhone = datas.projManagerTelephone;
+                projInfo.holdPlace = datas.studyAddress;
+                projInfo.planPeriod = datas.planPeriod;
+                projInfo.number = datas.limitPerson;
+                projInfo.remark = datas.remark;
+                form.val('form-appl_proj', projInfo);
+                initTable('courseTable','#courseTable', false);
+            }
+
+            // 获取申报项目信息
+            function applProjDetail(projectPublishId, nowData){
+                // 申报学分
+                debugger
+                $.ajax({
+                    async: false,
+                    type: "get",
+                    url: huayi_projectscore_url + "declare/detail/" + projectPublishId,
+                    dataType: 'json',
+                    success: function (data) {
+                        let projDetail = data.data;
+                        console.log(projDetail);
+                        if(projDetail){
+                            applScore = projDetail.score;
+                            applPeriod = projDetail.period;
+                            applLimitPerson = projDetail.limitPerson;
+                            if(projDetail.principalVO){
+                                projDetail.projManager = projDetail.principalVO.personName;
+                            }
+                            projDetail.holdTypeName = nowData.holdTypeName;
+                        }
+                        form.val('form-appl_proj', projDetail);
+                        echoCourse(projDetail.courseVOList);
+                    },
+                    error: function (data) {
+                        layer.msg("响应失败");
+                    }
+                });
+                return applScore;
+            }
+
+            // 项目申报时的教师课程信息
+            function echoCourse(gCourseArr) {
+                debugger
+                let courseTableColArr = [
+                    { type: 'numbers', title: '序号', width: 80, fixed: 'left' },
+                    {
+                        field: 'teacherName',
+                        title: '姓名',
+                        align: 'center',
+                        width: 90,
+                        sort: false,
+                        hide: false,
+                    },
+                    {
+                        field: 'titleName',
+                        title: '职称',
+                        align: 'center',
+                        width: 123,
+                        sort: false,
+                        hide: false,
+                        templet: '#courseTitleIdCell'
+                    },
+                    {
+                        field: 'workUnit',
+                        title: '所在单位',
+                        align: 'center',
+                        width: 120,
+                        sort: false,
+                        hide: false
+                    },
+                    {
+                        field: 'teachTopic',
+                        title: '讲授题目',
+                        align: 'center',
+                        width: 200,
+                        sort: false,
+                        hide: false
+                    },
+                    {
+                        field: 'content',
+                        title: '讲授内容',
+                        align: 'center',
+                        width: 200,
+                        sort: false,
+                        hide: false
+                    },
+                    {
+                        field: 'period',
+                        title: standardkindId == guang_xi_tao_id ? '时长' : '学时',
+                        align: 'center',
+                        width: 95,
+                        sort: false,
+                        hide: false
+                    },
+                    {
+                        field: 'teachingMethod',
+                        title: '教学方法',
+                        align: 'center',
+                        width: 143,
+                        sort: false,
+                        hide: false,
+                        templet: '#courseTeachingMethodCell'
+                    }
+            
+                ];
+                table.render({
+                    id: 'courseTable',
+                    elem: '#courseTable',
+                    // height: 'full-200',
+                    // toolbar: '#courseToolbar',
+                    defaultToolbar: [],
+                    headers: {
+                        'Authorization': localStorage.getItem('token'),
+                        'KJPT-USER-ID': localStorage.getItem('user-id')
+                    },
+                    page: false,
+                    limit: 50,
+                    cols: [courseTableColArr],
+                    data: gCourseArr ? gCourseArr : [],
+                    done: function (res, curr, count) {
+                        // gProjCouRendered = true;
+                        // if (gCourseArr && gCourseArr.length > 0) {
+                        //     gCourseArr.forEach((courseVo, index) => {
+                        //         // render teachingMethod selector
+                        //         echoRowSel('teachingMethod', index);
+
+                        //         // render title treeSelector
+                        //         (!courseVo.titleId) && (courseVo.titleId = 'ad054866-5331-4546-98bc-9b2f0124b22e');
+                        //         renderRowTreeSel('#titleTreeSelector' + index, gTitleTreeData, index, 'titleId', courseVo.titleId);
+                        //     });
+                        // }
+                    }
+                });
+            }
+             // 获取直播类型和直播观看人数上限
+            var getPolyvSetById = function () {
+                $.ajax({
+                    type: 'post',
+                    async: false,
+                    url: huayi_projectscore_url + 'polyvProjApplyBefore/getPolyvSetById',
+                    data: { downId: downId },
+                    success: function (re) {
+                        if (re && re.status == 200) {
+                            let data = re.data;
+                            if(data){
+                                maxWatchNum = data.maxWatchNum;
+                                setTemplate = data.setTemplate;
+                            }else{
+                                maxWatchNum = '';
+                            }
+                        } else {
+                            layer.msg('获取直播类型和直播观看人数上限失败', { icon: 7 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg('获取直播类型和直播观看人数上限失败', { icon: 7 });
+                    }
+                });
+            }
+
+            //创建项目上传图片的tab页
+            let createTabPage = function ( datas) {
+                 //ajax请求获取该页面的数据
+                 let hiddenHtml = "";
+                var isSubmit = 0;
+                if (isSubmit == 0) {
+                    $(".js-choose-file").addClass("js-hidden");
+                    $(".js-upload-btn-box").addClass("js-hidden");
+                    hiddenHtml = " js-hidden ";
+                } else {
+                    $(".js-choose-file").removeClass("js-hidden");
+                    $(".js-upload-btn-box").removeClass("js-hidden");
+                }
+                let meetingNoticeHtml = "";
+                $(".js-meeting-notice").html(meetingNoticeHtml);
+                $(`.js-feedback0`).html('');
+                $(`.js-feedback1`).html('');
+                $(`.js-feedback2`).html('');
+                $(`.js-feedback3`).html('');
+                $(`.js-feedback4`).html('');
+                if (datas == null) return;
+                //图片渲染
+                
+                for (let i = 0; i < datas.length; i++) {
+                    let htmlText = `<li file-id="${datas[i]["fileId"]}">` +
+                            `<a class="layui-btn layui-btn-xs btn-normal-row js-file-name" msg="${datas[i]["fileName"]}" filePath="${datas[i]["filePath"]}" \
+                            onmouseover="mouseoverImageName(this)" onmouseout="mouseoutImageName(this)" onclick="downloadFeedFile(this)">${datas[i]["fileName"]}</a>`;
+                        $(`.js-feedback${datas[i].fileType}`).append(htmlText);
+                }
+                // for (let i = 0; i < datas.length; i++) {
+                //     let fileUrl = datas[i].filePath;
+                //     fileUrl = fileUrl.replace("\n", "").replace('\r', '');
+                //     if ('' != fileUrl) {
+                //         let ext = fileUrl.substring(fileUrl.lastIndexOf('.') + 1);
+                //         let fileName = null != datas[i].fileName ? datas[i].fileName : '会议通知.' + ext;
+                //         meetingNoticeHtml += '<li file-url="' + fileUrl + '" ' +
+                //             'file-id="'+ datas[i].fileId + '">' +
+                //             '<a class="layui-btn layui-btn-xs btn-normal-row js-file-name"' +
+                //             ' msg="' + fileUrl + '" msg2="' + fileName + '"' +
+                //             ' onmouseover="mouseoverImageName(this)"' +
+                //             ' onmouseout="mouseoutImageName(this)" onclick="downloadFileT(this)">' +
+                //             fileName + '</a>' +
+                //             // '<a class="layui-btn layui-btn-xs btn-danger-row remove-image' +
+                //             // hiddenHtml + '" onclick="deleteImage(this)">移除</a>' +
+                //             '<input type="hidden" name="meetNoticeUrl" value="' + fileUrl + '">' +
+                //             '<input type="hidden" name="meetNoticeName" value="' + fileName + '">' +
+                //             '</li>';
+                //     }
+                // }
+                // $(".js-meeting-notice").html(meetingNoticeHtml);
+            }
+            window.downloadFeedFile = function (elem) {
+                let filePath = elem.getAttribute("filePath");
+                let fileName = elem.innerText;
+                //下载模板
+                if (fileName.indexOf(".jpg") > 0 || fileName.indexOf(".jpeg") > 0 || fileName.indexOf(".png") > 0 || fileName.indexOf(".bmp") > 0 || fileName.indexOf(".JPG")>0 || fileName.indexOf(".PNG")>0 || fileName.indexOf(".BMP")>0||fileName.indexOf(".pdf")>0) {
+                    window.open(filePath);
+                } else {
+                    tool.downloadUseIfram(filePath);
+                }
+            }
+            let viewFlowProgress = function(data){
+                layer.open({
+                    type: 2,
+                    title: '',
+                    content: 'projectProgress/projApplyBeforeHoldProgress.html?downId=' + data.downId,
+                    area: ['560px', '380px'],
+                })
+            }
+            let viewFlowProgressLog = function (data) {
+                layer.open({
+                    type: 2,
+                    title: '',
+                    content: 'projectProgress/projApplyBeforeHoldProgressLog.html?downId=' + data.downId,
+                    area: ['560px', '500px'],
+                })
+            }
+
+            // 审核通过
+            form.on('submit(pass)', function (data) {
+                console.log(data)
+                const tempFlowChainState = unitUserType*10 +3;
+                debugger
+                if(standardkindId == nei_meng_tao_id){
+                    console.log("审核通过")
+                    approvalAjax(data.field.keyId, downId, 6, tempFlowChainState, "", data.field.holdType);
+                    parent.layer.close(index)
+                }else{
+                    parent.layer.confirm('确认通过', { icon: 3, title: '提示' }, function (index) {
+                        // parent.layer.close(index)
+                        console.log("审核通过")
+                        // 青海套，省级审核通过后时需要录入备案号，四位数字
+                        // if(standardkindId == qing_hai_tao_id && f_proj_apply_beian == 1){
+                        //     layer.prompt({
+                        //         formType: 0,
+                        //         title: '请输入备案号',
+                        //         maxlength: 4,
+                        //     }, function (value, index, elem) {
+                        //         // 校验备案号是否为1~4位数字
+                        //         if(!/^\d{1,4}$/.test(value)){
+                        //             layer.msg("备案号最高4位数字");
+                        //             return;
+                        //         }
+                                
+                        //         approvalAjax(data.field.keyId, downId, 6, tempFlowChainState, '', data.field.holdType, value);
+                        //         parent.layer.close(index)
+                        //     })
+                        // }else{
+                            approvalAjax(data.field.keyId, downId, 6, tempFlowChainState, "", data.field.holdType, '');
+                            parent.layer.close(index)
+                        // }
+                    })
+                }
+               
+            });
+            // 审核不通过
+            form.on('submit(notPass)', function (data) {
+                console.log(data)
+                var approvalType = unitUserType*10 +2;
+                layer.prompt({
+                    formType: 2,
+                    title: '审核意见',
+                }, function (value, index, elem) {
+                    console.log(value);
+                    approvalAjax(data.field.keyId, downId, 5, approvalType, value, '', '' );
+                });
+                return false;
+            });
+            // 退回修改
+            form.on('submit(back)', function (data) {
+                debugger
+                console.log(data)
+                var approvalType = unitUserType*10 +1;
+                layer.prompt({
+                    formType: 2,
+                    title: '审核意见',
+                }, function (value, index, elem) {
+                    console.log(value);
+                    approvalAjax(data.field.keyId, downId, 4, approvalType, value, '', '' );
+                });
+                return false;
+            });
+
+            //审批通过，不通过，或者退回需要添加
+            let approvalAjax = function (keyId, downId, checkState, flowChainState, checkMemo, holdType, beianNo) {
+                debugger
+                $.ajax({
+                    type: 'post',
+                    url: huayi_projectscore_url + 'cmeProjCycleApplication/approval',
+                    data: {
+                        keyId: downId,
+                        flowChainState: flowChainState,
+                        approvalContent: checkMemo,
+                        unitId: localStorage.getItem("unit-id"),
+                        standardkindId: standardkindId,
+                        beianNo: beianNo,
+                        holdType: holdType,
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.status === 200) {
+                            // 保存审核意见
+                            if (checkMemo != ''){
+                                $.ajax({
+                                    type: 'post',
+                                    url: huayi_projectscore_url + 'cmeProjCycleApplication/update',
+                                    data: JSON.stringify({
+                                        keyId: keyId,
+                                        checkMemo: checkMemo
+                                    }),
+                                    contentType: 'application/json;charset=UTF-8',
+                                    dataType: 'json',
+                                    success: function (res) {
+                                        if (res.status === 200) {
+                                            console.log("保存成功");
+                                            layer.closeAll();
+                                        } else if (res.status === 500) {
+                                            layer.msg(res.msg);
+                                        }
+                                    },
+                                    error: function () {
+                                        layer.msg("发送请求失败");
+                                    }
+                                })
+                            }
+                            
+                            // 青海省厅账号可以直接修改“拟授分人数”，修改后，审核通过，该字段生效，并更新正式项目表。
+                            if (standardkindId == qing_hai_tao_id && userType == 11){
+                                saveLimitPerson();
+                            }
+                            // 审核成功后保存
+                            if (standardkindId == qing_hai_tao_id && userType == 11){
+                                saveLimitPerson();
+                            }
+                            // parent.layer.closeAll();
+                            layer.msg("提交审核成功");
+                            layer.closeAll();
+                            table.reload('applyBeforeHold');
+                        } else if (res.status === 500) {
+                            layer.msg(res.msg, {icon: 0});
+                        }
+                    },
+                    error: function () {
+                        layer.msg("发送请求失败");
+                    }
+                })
+                return false;
+            }
+
+            
+            // 初始化举办地市下拉框（加载广东省下辖地市）
+            var initdiffHoldCity = function () {
+                $.ajax({
+                    async: false,
+                    url: huayi_personorg_url + '/comunit/childByUnitUserType',
+                    type: 'get',
+                    dataType    : 'json',
+                    data: {
+                                parentUnit: '190000',
+                                unitUserType: '4'
+                            },
+                    success: function (re) {
+                        if (re && re.status == 200) {
+                            let data = re.data;
+                            $('#diffHoldCity').empty();
+                            $('#diffHoldCity').append('<option value="">请选择举办地市</option>');
+                            for (let i = 0; i < data.length; i++) {
+                                let cityName = data[i].unitName;
+                                let cityId = data[i].unitId;
+                                let option = $('<option value="' + cityId + '">' + cityName + '</option>');
+                                $('#diffHoldCity').append(option);
+                            }
+                            form.render('select');
+                        } else {
+                            layer.msg('举办地市加载失败', { icon: 7 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg('举办地市加载失败', { icon: 7 });
+                    }
+                });
+            }
+
+            // 初始化协办单位下拉框（根据选择的地市加载下辖单位）
+            var loaddiffHoldUnits = function (cityId) {
+                if (!cityId) {
+                    $('#diffHoldUnit').empty();
+                    $('#diffHoldUnit').append('<option value="">请选择协办单位</option>');
+                    form.render('select');
+                    return;
+                }
+                $.ajax({
+                    async: false,
+                    type: 'get',
+                    url: huayi_personorg_url + '/comunit/childByUnitUserType',
+                    dataType    : 'json',
+                    data: {
+                                parentUnit: cityId,
+                                unitUserType: '2',
+                                // unitName: '协办单位'
+                            },
+                    success: function (re) {
+                        if (re && re.status == 200) {
+                            let data = re.data;
+                            $('#diffHoldUnit').empty();
+                            $('#diffHoldUnit').append('<option value="">请选择协办单位</option>');
+                            for (let i = 0; i < data.length; i++) {
+                                let unitName = data[i].unitName;
+                                let unitId = data[i].unitId;
+                                let option = $('<option value="' + unitId + '" >' + unitName + '</option>');
+                                $('#diffHoldUnit').append(option);
+                            }
+                            form.render('select');
+                        } else {
+                            layer.msg('协办单位加载失败', { icon: 7 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg('协办单位加载失败', { icon: 7 });
+                    }
+                });
+            }
+
+            // 青海省厅账号可以直接修改“拟授分人数”，修改后，审核通过，该字段生效，并更新正式项目表。
+            var saveLimitPerson = function(){
+                $.ajax({
+                    type: 'post',
+                    url: huayi_projectscore_url + 'cmeCmeProj/update',
+                    data: JSON.stringify({
+                        projId: projId,
+                        limitPerson: $("#limitPerson").val()
+                    }),
+                    dataType: 'json',
+                    contentType: 'application/json;charset=UTF-8',
+                    success: function (res) {
+                        if (res.status === 200) {
+                            console.log("修改拟授分人数成功")
+                        } else if (res.status === 500) {
+                            layer.msg(res.msg);
+                        }
+                    },
+                    error: function () {
+                        layer.msg("发送请求失败");
+                    }
+                })
+            }
+            
+            let bindViewFlowBtn = function () {
+                $('.js-view-flow').click(function (e) {
+                    let downId = this.getAttribute("data-id");
+                    let unitId = this.getAttribute("apply-unit-id");
+                    loading = layer.msg('加载中', { icon: 16, shade: 0.3, time: 0 });
+                    // ajaxNum++
+                    $.ajax({
+                        url: huayi_projectscore_url + "cmeProjCycleApplication/getApprovalStep",
+                        type: 'post',
+                        data: {
+                            downId: downId,
+                            unitId: unitId
+                        },
+                        success: function (res) {
+                            layer.close(loading);
+                            if (res.status === 200) {
+                                createFlowStep(res.data);
+                            } else {
+                                layer.msg("获取流程步骤失败");
+                            }
+                        },
+                        fail: function () {
+                            layer.close(loading);
+                        }
+                    });
+
+                })
+            }
+            //创建审批步骤弹窗
+            let createFlowStep = function (data) {
+                if (data == null || data == "" || data.length == 0) {
+                    layer.msg("获取数据为0");
+                    return;
+                }
+                let tipHtml = '<div class="flow-detail-window"><div>审批步骤</div><ul>';
+                for (let i = 0; i < data.length; i++) {
+                    let stateText = "";
+                    let goApprovalText = "";
+                    let passClass = "";
+                    let tipMsg = "";
+                    if (data[i]["approvalContent"] != null && data[i]["approvalContent"] != "") {
+                        tipMsg = 'msg="' + data[i]["approvalContent"] + '" onmouseover="mouseoverImageName(this)" onmouseout="mouseoutImageName(this)"';
+                    }
+                    if (data[i]["flowChainState"] == 1) {
+                        passClass = "approval-pass";
+                        stateText = "已提交";
+                    } else if (data[i]["flowChainState"] % 10 == 0) {
+                        stateText = "进行中";
+                        goApprovalText = "审批中";
+                    } else if (data[i]["flowChainState"] % 10 == 1) {
+                        passClass = "approval-pass";
+                        stateText = "已退回";
+                    } else if (data[i]["flowChainState"] % 10 == 2) {
+                        passClass = "approval-pass";
+                        stateText = "审批不通过";
+                    } else if (data[i]["flowChainState"] % 10 == 3) {
+                        passClass = "approval-pass";
+                        stateText = "审批通过";
+                    } else if (data[i]["flowChainState"] == 99) {
+                        passClass = "approval-pass";
+                        stateText = "审批通过";
+
+                    }
+                    if (data[i]["updateTime"] == null || data[i]["updateTime"] == "null") {
+                        data[i]["updateTime"] = "";
+                    }
+                    tipHtml += '<li class="' + passClass + '"><div>' + stateText + '</div><div ' + tipMsg + '>' + data[i]["updateTime"] + '  ' + data[i]["unitName"] + goApprovalText + '</div></li>';
+                }
+                tipHtml += '</ul></div>';
+                layer.open({
+                    type: 1,
+                    title: false,
+                    closeBtn: 0,
+                    shadeClose: true,
+                    skin: 'yourclass',
+                    content: tipHtml
+                });
+            }
+
+
+            //创建项目上传图片的tab页
+            let createImageTab = function (fileUrls, fileNames) {
+                //ajax请求获取该页面的数据
+                let hiddenHtml = "";
+                var isSubmit = 1;
+                if (isSubmit == 0) {
+                    $(".js-choose-file").addClass("js-hidden");
+                    $(".js-upload-btn-box").addClass("js-hidden");
+                    hiddenHtml = " js-hidden ";
+                } else {
+                    $(".js-choose-file").removeClass("js-hidden");
+                    $(".js-upload-btn-box").removeClass("js-hidden");
+                }
+                let meetingNoticeHtml = "";
+
+                $(".js-meeting-notice").html(meetingNoticeHtml);
+
+                if (fileUrls == null) return;
+                var fileUrlArr, fileNameArr;
+                if (fileUrls != undefined || fileUrls != null) {
+                    // fileUrls = fileUrls.substring(0, fileUrls.length - 1)
+                    fileUrlArr = fileUrls.split('|');
+                }
+                if (fileNames != undefined || fileNames != null) {
+                    // fileNames = fileNames.substring(0, fileUrls.length - 1)
+                    fileNameArr = fileNames.split('|');
+                }
+
+                //图片渲染
+                for (let i = 0; i < fileUrlArr.length; i++) {
+                    let fileUrl = fileUrlArr[i];
+                    if ('' != fileUrl) {
+                        let ext = fileUrl.substring(fileUrl.lastIndexOf('.') + 1);
+                        let fileName = (null != fileNameArr && fileNameArr.length > i)
+                                ? fileNameArr[i] : '会议通知.' + ext;
+                        meetingNoticeHtml += '<li file-url="' + fileUrl + '">' +
+                                '<a class="layui-btn layui-btn-xs btn-normal-row js-file-name"' + 
+                                ' msg="' + fileUrl + '" msg2="' + fileName + '"' + 
+                                ' onmouseover="mouseoverImageName(this)"' + 
+                                ' onmouseout="mouseoutImageName(this)" onclick="downloadFileT(this)">' + 
+                                fileName + '</a>' + 
+                                '<a class="layui-btn layui-btn-xs btn-danger-row remove-image' + 
+                                hiddenHtml + '" onclick="deleteImage(this)">移除</a>' +
+                                '<input type="hidden" name="meetNoticeUrl" value="' + fileUrl + '">' + 
+                                '<input type="hidden" name="meetNoticeName" value="' + fileName + '">' + 
+                                '</li>';
+                    }
+                }
+                // for (let i = 0; i < datas.length; i++) {
+
+                //     var fileurl = datas[i];
+                //     var fileName = fileurl.substring(fileurl.lastIndexOf('/') + 1);
+                //     meetingNoticeHtml += '<li file-url="' + datas[i] + '">' +
+                //         '<a class="layui-btn layui-btn-xs btn-normal-row js-file-name" msg="'
+                //         + fileName + '" onmouseover="mouseoverImageName(this)" onmouseout="mouseoutImageName(this)" onclick="downloadFileT(this)">'
+                //         + fileName + '</a>'
+                //         + '<a class="layui-btn layui-btn-xs btn-danger-row remove-image'
+                //         + hiddenHtml + '" onclick="deleteImage(this)">移除</a>' +
+                //         '</li>';
+                // }
+                $(".js-meeting-notice").html(meetingNoticeHtml);
+            }
+
+            //文件上传
+            let fileUpload = function () {
+                let url = huayi_projectscore_url + 'cmeProjCycleApplication/upload';
+                let uploadBtns = $(".js-upload-btn");
+                for (let i = 0; i < uploadBtns.length; i++) {
+                    //上传文件
+                    upload.render({
+                        elem: uploadBtns[i],
+                        url: url,
+                        exts: 'jpg|png|bmp|gif|docx|xls|xlsx',
+                        size: 10 * 1024,//大小小于10M
+                        accept: 'file',
+                        multiple: false,
+                        before: function () {
+                            this.data = {
+                                downId: downId,
+                                year: '2021',
+                                cmeStandardKindId: 'tao123',
+                                projectId: projId,
+                                userId: 'yang',
+                                fileType: i
+                            }
+                        },
+                        choose: function (obj) {
+                            loading = layer.msg('加载中', { icon: 16, shade: 0.3, time: 0 });
+                        },
+                        done: function (res, index, upload) {
+                            layer.close(loading);
+                            if (res.status == 200) {
+                                let datas = res.data;
+                                if (datas != null && datas.hasOwnProperty("fileUrls")) {
+                                    let className = "js-meeting-notice";
+                                    let liFile = '<li file-id="' + datas["downId"] + '">' +
+                                        '<a class="layui-btn layui-btn-xs btn-normal-row js-file-name" msg="' + datas["fileUrls"]
+                                        + '" onmouseover="mouseoverImageName(this)" onmouseout="mouseoutImageName(this)" onclick="downloadFileT(this)">'
+                                        + datas["fileUrls"] + '</a>' + '<a class="layui-btn layui-btn-xs btn-danger-row" onclick="deleteImage(this)">移除</a>'
+                                        + '</li>';
+                                    $("." + className).append(liFile);
+                                }
+                            } else {
+                                layer.msg("上传失败");
+                            }
+                        },
+                        error: function (index, upload) {
+                            layer.close(loading);
+                        }
+                    })
+                }
+            }
+            fileUpload();
+
+            //鼠标移入弹出文件信息
+            mouseoverImageName = function (elem) {
+                showTips(elem.getAttribute("msg"), elem, '#000000', '#d3d3d3');
+            }
+            //鼠标移出关闭文件信息
+            mouseoutImageName = function (elem) {
+                closeTips();
+            }
+            window.closeTips = function () {
+                layer.close(subtips);
+            }
+            //文件下载或者文件另一个窗口打开
+            // downloadFileT = function (elem) {
+            //     let fileUrl = elem.parentElement.getAttribute("file-url");
+            //     let fileName = elem.innerText;
+            //     //下载模板
+            //     let downloadUrl = huayi_projectscore_url + 'cmeProjCycleApplication/downloadFile?fileUrl=' + fileUrl;
+            //     if (fileName.indexOf(".jpg") > 0 || fileName.indexOf(".png") > 0 || fileName.indexOf(".bmp") > 0) {
+            //         window.open(encodeURI(downloadUrl));
+            //     } else {
+            //         var iframe = document.createElement("iframe");
+            //         iframe.src = downloadUrl;
+            //         iframe.style.display = "none";
+            //         document.body.appendChild(iframe);
+            //     }
+
+            // }
+            window.downloadFileT = function (elem) {
+                let fileUrl = $(elem).attr("msg");
+                if (fileUrl.indexOf(".jpg") > 0 || fileUrl.indexOf(".png") > 0 || fileUrl.indexOf(".bmp") > 0 || fileUrl.indexOf(".jpeg") > 0) {
+                    window.open(encodeURI(fileUrl));
+                } else {
+                    // var iframe = document.createElement("iframe");
+                    // iframe.src = fileUrl;
+                    // iframe.style.display = "none";
+                    // document.body.appendChild(iframe);
+                    $(elem).attr("href", fileUrl).attr("download", "会议通知.pdf").attr("target", "_blank");
+                    $(elem).click();
+
+                }
+
+            }
+
+            deleteImage = function (elem) {
+                let fileId = elem.parentElement.getAttribute("file-id");
+                $.ajax({
+                    url: huayi_projectscore_url + "cmeProjCycleApplication/deleteFile",
+                    type: 'post',
+                    data: { fileUrl: fileId },
+                    success: function (res) {
+                        if (res.status === 200) {
+                            elem.parentElement.remove();
+                            layer.msg(res.msg);
+                        } else {
+                            layer.msg(res.msg);
+                        }
+                    },
+                    fail: function () {
+                        layer.msg("删除失败");
+                    }
+                });
+
+            }
+            window.showTips = function (msg, elem, color, bgcolor) {
+                msg = '<span style="color: ' + color + ';">' + msg + '</span>';
+                subtips = layer.tips(msg, elem, { tips: [1, bgcolor], time: 0 });
+            }
+            //关闭closeLoading的判断
+            window.closeLoading = function () {
+                ajaxNum--;
+                if (ajaxNum <= 0 && loading) {
+                    layer.close(loading);
+                }
+            }
+            
+            
+            // 文件上传配置信息
+            let getTabConfig = function () {
+                let tempConfigUrl = huayi_sjwh_url + `cmeCommonConfig/getConfigByUnitFromRedis?unitId=${myUnitId}&configNames=${configName1}&scoreLevelId=${scoreLevel}`;
+                commonAjax("post",tempConfigUrl,{},function(){},
+                    function(res) {
+                        if(res.status == 200) {
+                            configMap = res.data;
+                            createFeedback(res.data);
+                        }else{
+                            layer.msg("加载配置信息失败");
+                        }
+                    }
+                )
+            }
+            
+            //处理tab页，该可能是配置获得的，需要动态构建
+            let createFeedback = function (datas) {
+                fileUpObj = tool.createFeedbackImgUp(datas,fileUpObj,configName1);
+                fileUpload();//文件上传按钮监听
+            }
+
+            form.verify({
+                period: function (value, item) {
+                    if (value < 0) {
+                        return '学时不能小于0';
+                    }
+                    if (!IS_GUANG_DONG && value % 0.5 != 0) {
+                        return '学时必须是0.5的倍数';
+                    }
+                    if(projectPublishId){
+                        applProjDetail(projectPublishId);
+                        if(value > applPeriod){
+                            return '学时不能大于项目公布时的学时';
+                        }
+                    }
+                },
+                applScore: function (value, item) {
+                    // 若limitperson被禁用，则不进行校验
+                    if ($(item).attr("disabled")) {
+                        return;
+                    }
+                    // 修改学分时不能大于申报学分
+                    var msg = "";
+                    if (value < 0) {
+                        return msg = '授予学分不能小于0';
+                    }
+                    if (projectPublishId) {
+                        applProjDetail(projectPublishId);
+                        if (value > applScore) {
+                            msg = ("授予学分不能大于项目公布时的学分");
+                        }
+                    }
+                    return msg;
+                },
+            });
+
+          
+            // Esc关闭弹窗
+            window.onkeyup = function (ev) {
+                var key = ev.keyCode || ev.which;
+                if (key == 27) {
+                    layer.close(layer.index);
+                    console.log('layer.index = ' + layer.index)
+                }
+            }
+            //获取配置信息, 行政单位审核举办前申请时, 添加显示申报时的项目公布信息及课程教师信息
+            let getConfig = function(){
+                let configName1 = "fun_apply_approval_proj"
+                , configName2 = "fn_projapply_holdform_other"
+                , configName3 = "value_forbid_some_operate_on_last_year_data";
+                let configUrl = huayi_sjwh_url + `cmeCommonConfig/getConfigByUnitFromRedis?unitId=${unitId}&configNames=${configName1}&configNames=${configName2}&configNames=${configName3}`
+                commonAjax('post',configUrl,
+                    {},function(){layer.msg("配置信息加载失败");},
+                    function(res){
+                        if(res.status == 200 || tool.isEmpty(res.data)){
+                            if(res.data.hasOwnProperty(configName1) && res.data[configName1] == 1){
+                                isLoadApplProj = true;
+                            }
+                            if (res.data.hasOwnProperty(configName2) && res.data[configName2] == 1) {
+                                isHoldeFormPlus = true;
+                            }
+                            if (res.data.hasOwnProperty(configName3)) {
+                                window[configName3] = res.data[configName3];
+                            }
+                        }else{ layer.msg("配置信息加载失败"); }
+                    });
+            }
+            getConfig();
+            getTabConfig();//请求config,并初始化tab页
+
+            // 根据学分级别获取配置信息,
+            let getConfigByScoreLevle = function () {
+                let configName1 = "f_proj_apply_beian";
+                let configUrl = huayi_sjwh_url + `cmeCommonConfig/getConfigByUnitFromRedis?unitId=${unitId}&configNames=${configName1}&scoreLevelId=${scoreLevel}`
+                commonAjax('post', configUrl,
+                    {}, function () { layer.msg("配置信息加载失败"); },
+                    function (res) {
+                        if (res.status == 200 || tool.isEmpty(res.data)) {
+                            if (res.data.hasOwnProperty(configName1) && res.data[configName1] == 1) {
+                                f_proj_apply_beian = 1;
+                                // 显示青海备案表相关字段 .qinghai-item
+                                $(".qinghai-item").css("display", "block");
+                            }
+                        } else { layer.msg("配置信息加载失败"); }
+                    });
+            }
+
+            window.ableOperateLastYearData = function(dataYear) {
+                let cgv = window["value_forbid_some_operate_on_last_year_data"];
+                if(cgv == null || cgv == "" || localStorage.getItem("unit-user-type") == 5) {
+                    return true;
+                }
+            
+                let able = true;
+                let deadline = new Date(cgv);
+                let now = new Date();
+                if(parseInt(dataYear) < now.getFullYear()){
+                    if(deadline < now) {
+                        able = false;
+                    }
+                }
+                return able;
+            }
+
+
+            let initHtml = function(){
+                getConfigByScoreLevle();
+                // 初始化表格
+                loaderTable();
+                if(standardkindId == qing_hai_tao_id){
+                    $("#linkmanLabel").text("经办人");
+                }else{
+                    $("#linkmanLabel").text("联系人");
+                }
+                
+                if(IS_GUANG_DONG){
+                    initdiffHoldCity();
+                    getCurrentUnitInfo(); // 获取当前单位信息
+                }
+            }
+            initHtml();
+        });
+
+    </script>
+</body>

@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>权限模板表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <link rel="stylesheet" type="text/css" href="/js/disk/gridstack.css">
+    <link rel="stylesheet" href="/front/css/layout.css" />
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <!-- <script type="text/javascript" src="/js/jquery-migrate-3.4.0.min.js"></script> -->
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script src="/front/js/jquery-ui.min.js"></script>
+	<script src="/front/js/lodash.min.js"></script>
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <script src="/js/disk/gridstack.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    
+    <style>
+        #addBoardModuleRoleBox .layui-inline {
+            width: 80%;
+        }
+        #addBatchBoard .lay-ext-mulitsel .layui-form-select dl dd div span{
+            padding-left: 24px;
+        }
+        .board-grid-box{
+            overflow: auto;
+            overflow-x: hidden;
+            padding-top: 10px;
+            background: #f2f2f2;
+        }
+        .grid-stack-item-content .clo{
+            z-index: 1000;
+            background: url(/img/clo_icon.png) no-repeat center center;
+            top: 10px;
+        }
+        .board-grid-box .grid-stack-item-content:hover .clo{
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!--        搜索框区域-->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <blockquote class="layui-form layui-form-item layui-elem-quote one-btn" lay-filter="query-form">
+                <div class="layui-inline">
+                    <label class="layui-form-label">套</label>
+                    <div class="layui-input-block">
+                        <select name="standardId" id="standardIdSearch" lay-search >
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">模块</label>
+                    <div class="layui-input-block module-box">
+                        <select name="moduleId" id="moduleIdSearch" lay-filter="module-search">
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">用户类型</label>
+                    <div class="layui-input-block">
+                        <select name="roleType" id="roleTypeSearch">
+                            <option value="">请选择</option>
+                            <option value="115">省卫健委</option>
+                            <option value="114">市卫健委</option>
+                            <option value="113">区县卫健委</option>
+                            <option value="12">机构用户</option>
+                            <option value="13">科室用户</option>
+                            <option value="14">个人用户</option>
+                            <option value="15">专家用户(专家评审)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <a class="layui-btn layui-btn-sm btn-search" id="searchBtn" onclick="loaderTable()" lay-filter="table-search" data-type="reload">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </a>
+                </div>
+            </blockquote>
+        </div>
+
+        <!--表格区域-->
+        <div class="layui-card-body layui_body_box">
+            <table class="layui-table" id="boardModuleRoleTable" lay-filter="boardModuleRoleTable" style="margin: 0px 0px;"></table>
+        </div>
+
+        <!--        添加弹窗-->
+        <div id="addBoardModuleRoleBox" style="display:none;text-align: center">
+            <form class="layui-form" style="padding: 30px;" id="boardModuleRoleForm" lay-filter="add-filter">
+                <input type="hidden" name="moduleRoleId" autocomplete="off" class="layui-input">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>套</label>
+                        <div class="layui-input-block">
+                            <select name="standardId" id="standardIdForm" lay-verify="required" lay-search >
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>模块</label>
+                        <div class="layui-input-block module-box">
+                            <select name="moduleId" id="moduleIdForm" lay-verify="required" lay-filter="module-form">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>横坐标</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="locationx" placeholder="请填写模块横坐标" autocomplete="off" class="layui-input" lay-verify="locationxVerify">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>纵坐标</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="locationy" placeholder="请填写模块纵坐标" autocomplete="off" class="layui-input" lay-verify="locationyVerify">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>排列序号</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="listOrder" placeholder="请填写排列序号" autocomplete="off" class="layui-input" lay-verify="listOrderVerify">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>用户类型</label>
+                        <div class="layui-input-block">
+                            <select name="roleType" lay-verify="required">
+                                <option value="">请选择</option>
+                                <option value="115">省卫健委</option>
+                                <option value="114">市卫健委</option>
+                                <option value="113">区县卫健委</option>
+                                <option value="12">机构用户</option>
+                                <option value="13">科室用户</option>
+                                <option value="14">个人用户</option>
+                                <option value="15">专家用户(专家评审)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-sm" lay-submit lay-filter="submit">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- 批量操作弹窗 -->
+        <div id="addBatchBoard" style="display:none;">
+            <blockquote class="layui-form layui-form-item layui-elem-quote one-btn  js-batch-search">
+                <div class="layui-inline">
+                    <label class="layui-form-label">模块</label>
+                    <div class="layui-input-block module-box">
+                        <select name="moduleId" id="moduleIdAdd" lay-filter="module-batch-search" lay-search>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <a class="layui-btn layui-btn-sm layui-btn-radius" id="saveAllBtn">保存</a>
+                </div>
+            </blockquote>
+            <div class="board-grid-box js-grid-box">
+                <div class="grid-box">
+                    <!-- 里面是展示的模块 -->
+                    <div class="grid-stack"></div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<!--表格内数据编辑、删除按钮-->
+<script type="text/html" id="rowBar">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger btn-danger-row" lay-event="del">删除</a>
+</script>
+<script type="text/html" id="bar">
+    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="add">添加</a>
+    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="addBatch">批量操作</a>
+</script>
+<script>
+    var options = {
+        float: true,
+        animate: true,
+        cell_height: 25,
+        vertical_margin: 15
+    };
+
+    $('.grid-stack').gridstack(options);
+    let homeGridSets = $('.grid-stack').data('gridstack');
+
+    // 全局配置及引入相关的模块
+    layui.config({
+        base : '/js/layui/ext/'
+    }).extend({
+        tool    :   'tool'
+    });
+
+    layui.use(['table', 'form','tool'], function () {
+        var table = layui.table,form = layui.form,$ = layui.jquery;
+        var layer = layui.layer,tool=layui.tool;
+        let ajaxNum =0,loading=null,optionTip=null;
+        let boardModuleObj = {},standardKindIdObj={},boardModules=[];
+        let gridModuleObj = {};
+        const userId = localStorage.getItem('user-id');
+
+        //关闭closeLoading的判断
+        let closeLoading = function(){
+            ajaxNum--;
+            if(ajaxNum<=0 && loading) layer.close(loading);
+        }
+        //打开加载
+        let openLoading = function(){
+            if(ajaxNum == 0) loading = layer.msg('加载中', {icon: 16, shade: 0.3, time:0});
+            ajaxNum ++;
+        }
+        //公共ajax
+        let commonAjax = function(type="get",url,data,failFun,successFun){
+            openLoading();
+            $.ajax({
+                type    :   type,
+                url     :   url,
+                data    :   data,
+                success :   function (res) {
+                    closeLoading();
+                    if(res.status != 200) {
+                        layer.msg(res.msg);
+                        return;
+                    }
+                    successFun(res);
+                },
+                error    :   function(res){
+                    closeLoading();
+                    failFun();
+                }
+            });
+        }
+
+        //弹出提示
+        let showTip = function(elem,msg){
+            msg = '<span style="color: #000000;">' + msg + '</span>';
+            optionTip = layer.tips(msg, elem, { tips: [1, '#d3d3d3'], time: 0 });
+        }
+
+        //开启监听
+        let bindModuleBox = function(){
+            let optionElems = $('.module-box>div>dl>dd');
+            for(let i=0;i<optionElems.length;i++){
+                let id = optionElems[i].getAttribute("lay-value");
+                if(tool.isEmpty(id)) continue;
+                if(!boardModuleObj.hasOwnProperty(id)) continue;
+                if(tool.isEmpty(boardModuleObj[id].remark)) continue;
+                optionElems[i].setAttribute("title",boardModuleObj[id].remark);
+            }
+        }
+
+        // 表格配置
+        window.loaderTable = function () {
+            table.render({
+                elem: '#boardModuleRoleTable',
+                url: huayi_sjwh_url + 'boardModuleRole/list',
+                title: '配置字典表',
+                defaultToolbar: [],
+                where: {
+                    moduleId: $('#moduleIdSearch').val(),
+                    standardId: $('#standardIdSearch').val(),
+                    roleType: $('#roleTypeSearch').val(),
+                },
+                cols: [[
+                    {align: 'center',minWidth:120,toolbar: '#rowBar', title: '操作', fixed: 'left'},
+                    {field: 'moduleId', title: '模块名称',align: 'center',templet:function(d){
+                        if(boardModuleObj.hasOwnProperty(d.moduleId)) return boardModuleObj[d.moduleId].moduleName;
+                        return "";
+                    }}, 
+                    {field: 'standardId', title: '套',align: 'center',templet:function(d){
+                        if(!standardKindIdObj.hasOwnProperty(d.standardId)) return "";
+                        return standardKindIdObj[d.standardId].description;
+                    }},
+                    {field: 'locationx', title: '横坐标',align: 'center'},
+                    {field: 'locationy', title: '纵坐标',align: 'center'}, 
+                    {field: 'listOrder', title: '排序序号',align: 'center'}, 
+                    {field: 'roleType', title: '用户类型',align: 'center',templet:function(d){
+                        if(d.roleType==null) return "";
+                        if(d.roleType==115) return "省卫健委";
+						if(d.roleType==114) return "市卫健委";
+                        if(d.roleType==113) return "区县卫健委";
+                        if(d.roleType==12) return "机构用户";
+                        if(d.roleType==13) return "科室用户";
+                        if(d.roleType==14) return "个人用户";
+                        if(d.roleType==15) return "专家用户(专家评审)";
+                        return d.roleType;
+                    }},
+                    {field: 'addTime', title: '创建时间',minWidth:160,align: 'center'},
+                ]],
+                toolbar: '#bar',
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "count": res.data.recordsTotal, //解析数据长度
+                        "data": res.data.records, //解析数据列表
+                        "page": res.data.pageNum, //当前页
+                        "limit": res.data.pageSize, //每页条数
+                    }
+                },
+                request: {
+                    pageName: 'pageNum', //页码的参数名称，默认：page
+                    limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                },
+                done:function(res,curr,count){
+                    curr > 1 && res.data.length === 0 && loaderTable();
+                    bindModuleBox();
+                }
+            });
+        };
+        
+        //模块
+        let boardModuleInit = function(){
+            commonAjax('get',huayi_sjwh_url +"boardModule",{},
+                function(){layer.msg("模块加载失败");},
+                function(res){
+                    boardModules = res.data;
+                    for(let tempObj of res.data){
+                        boardModuleObj[tempObj.moduleId] = tempObj; 
+                    }
+                    tool.appendSelect("#moduleIdSearch",res.data,"moduleId","moduleName");
+                    tool.appendSelect("#moduleIdForm",res.data,"moduleId","moduleName");
+                    tool.appendSelect("#moduleIdAdd",res.data,"moduleId","moduleName");
+                    setTimeout(()=>{ bindModuleBox();},500);
+                });
+        }
+
+        //套
+        let standardKindInit = function(){
+            commonAjax('get',huayi_sjwh_url +"cmestandardkind/list/all",{},
+                function(){layer.msg("套加载失败");},
+                function(res){
+                    let options = '<option value="" > 请选择套标准 </option>';
+                    for(let tempObj of res.data){
+                        standardKindIdObj[tempObj.cmeStandardKindId] = {
+                            description:tempObj.description};
+                        options += '<option value="' + tempObj.cmeStandardKindId + '">'+tempObj.description+'</option>';
+                    }
+                    $('#standardIdSearch').append(options);
+                    $('#standardIdForm').append(options);
+                    form.render('select');
+                });
+        }
+
+        // 监听头部按钮
+        table.on('toolbar(boardModuleRoleTable)', function (obj) {
+            obj.event == "add" && openFormWindow();
+            obj.event == "addBatch" && addBatchModule();
+        });
+
+        // 监听行内按钮
+        table.on('tool(boardModuleRoleTable)', function (obj) {
+            obj.event == "del" && deleteModelRole(obj.data.moduleRoleId);
+            obj.event == "edit" && openFormWindow(obj.data);
+        });
+
+        //监听保存全部按钮
+        $("#saveAllBtn").on('click', function () {
+            const tempStandardId = $('#standardIdSearch').val();
+            const tempRoleType = $('#roleTypeSearch').val();
+            layer.confirm('确认保存', {icon: 3, title: '提示'}, function () {
+                let moduleData = _.map($('.grid-stack > .grid-stack-item:visible'), function (el) {
+                    homeGridSets.movable(el, false)
+                        el = $(el);
+                        var node = el.data('_gridstack_node');
+                        return {
+                            locationx: node.x,
+                            locationy: node.y,
+                            moduleId : $(el).attr('data-gs-moduleid'),
+                            standardId:tempStandardId,
+                            roleType:tempRoleType,
+                            listOrder:0,
+                        };
+                    }, this);
+                $.ajax({
+                    type: 'post',
+                    url: huayi_sjwh_url + "boardModuleRole/saveBatch",
+                    data:JSON.stringify(moduleData),
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        if(res.status == 200){
+                            layer.msg("保存成功");
+                            loaderTable();
+                        }else{
+                            layer.msg("保存失败");
+                        }
+                    },
+                    error: function () {
+                        layer.msg("保存失败");
+                    }
+                })
+            })
+        })
+
+        //监听模块，点击模块时添加进入页面
+        let bindModuleSelect = function(){
+            form.on('select(module-batch-search)', function (data) {
+                if(!tool.isEmpty(data.value)){
+                    if($('[data-gs-moduleid=' + data.value + ']').length > 0){
+                        layer.msg("已有该模块，请勿重复添加");
+                        return;
+                    }
+                    const obj = {moduleId:data.value,locationx:0,locationy:0};
+                    createModule(obj);
+                }
+            });
+        }
+
+        let addBatchModule = function(){
+            //查询条件必须先加上套和用户角色
+            const tempStandardId = $('#standardIdSearch').val();
+            const tempRoleType = $('#roleTypeSearch').val();
+            if(tool.isEmpty(tempStandardId) || tool.isEmpty(tempRoleType)){
+                layer.msg("请先在查询条件里选择上套和用户角色");
+                return;
+            }
+            layer.open({
+                type: 1,
+                title: "批量操作",
+                content: $('#addBatchBoard'),
+                area: ['100%', '100%'],
+                cancel: function(index, layero){ 
+                    gridModuleObj={};
+                    let elems = $(".clo"); 
+                    for (let i = 0; i < elems.length; i++) {
+                        bindCloseModel(elems[i]);
+                    }
+                }
+            })
+            
+            $('.js-grid-box').height($(window).height()-$(".js-batch-search")[0].offsetHeight-100);
+            commonAjax('get',huayi_sjwh_url +"boardModuleRole",{standardId:tempStandardId,roleType:tempRoleType},
+                function(){layer.msg("模块加载失败");},
+                function(res){
+                    if(res.status != 200){
+                        layer.msg("模块加载失败");
+                        return;
+                    }
+                    for(let obj of res.data){
+                        createModule(obj);
+                    }
+                    _.map($('.grid-stack > .grid-stack-item:visible'), function (el) {
+                        homeGridSets.movable(el, true)
+                    });
+                });
+            setTimeout(()=>{ bindModuleBox();},500);
+        }
+
+        //创建模块
+        let createModule =  function(obj){
+            if(!boardModuleObj.hasOwnProperty(obj.moduleId)) return;
+            const tempModule = boardModuleObj[obj.moduleId]
+            let tempModel = `<div class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide" data-gs-moduleid="${obj.moduleId}">
+            <div class="grid-stack-item-content">
+                <div class="clo" onclick="bindCloseModel(this)"></div>
+                <div>${tempModule.moduleName}</div>
+            </div></div>`;
+            homeGridSets.add_widget(tempModel,obj.locationx, obj.locationy, tempModule.moduleWidth, tempModule.moduleHeight,false);
+        }
+
+        //新增，编辑时打开弹窗
+        let openFormWindow = function(data=null){
+            if(data == null) {
+                $("#boardModuleRoleForm")[0].reset();
+                $("#addBoardModuleRoleBox input[name='moduleRoleId']").val('');
+            } else {
+                form.val("add-filter",data);
+            }
+            layer.open({
+                type: 1,
+                title: (data==null) ? "新增":"修改",
+                content: $('#addBoardModuleRoleBox'),
+                area: ['600px', '90%'],
+                cancel: function(index, layero){ $("#boardModuleRoleForm")[0].reset(); }
+            })
+            setTimeout(()=>{ bindModuleBox();},500);
+        }
+
+        //监听关闭模块
+        window.bindCloseModel = function(elem){
+            var module_1 = $(elem.parentElement.parentElement).data('_gridstack_node');
+            var module_2 = $(elem.parentElement.parentElement.parentElement).data('_gridstack_node');
+            if (module_1 != undefined) {
+                homeGridSets.remove_widget(elem.parentElement.parentElement, "undefined");
+            }
+            if (module_2 != undefined) {
+                homeGridSets.remove_widget(elem.parentElement.parentElement.parentElement, "undefined");
+            }
+        }
+
+        //删除配置
+        let deleteModelRole = function(moduleRoleId){
+            layer.confirm('确认删除', {icon: 3, title: '提示'}, function () {
+                $.ajax({
+                    type: 'get',
+                    url: huayi_sjwh_url + 'boardModuleRole/deleted',
+                    data: { moduleRoleId: moduleRoleId },
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.status === 200) {
+                            layer.msg("删除成功");
+                            loaderTable();
+                        }else{
+                            layer.msg(res.msg);
+                        }
+                    }
+                });
+            })
+        }
+
+        // form表单相关操作
+        // 新增/修改表单提交
+        form.on('submit(submit)', function (data) {
+            var moduleRoleId = $("#boardModuleRoleForm input[name='moduleRoleId']").val();
+            let URL = huayi_sjwh_url + 'boardModuleRole/update';
+            if(moduleRoleId=="" || moduleRoleId==null) {
+                URL = huayi_sjwh_url + 'boardModuleRole/save';
+            }
+            $.ajax({
+                type: 'post',
+                url: URL,
+                data:JSON.stringify(data.field),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    if(res.status == 200){
+                        layer.closeAll();
+                        loaderTable();
+                        $("#boardModuleRoleForm")[0].reset()
+                        layer.msg("保存成功");
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                },
+                error: function () {
+                    layer.msg("发送请求失败");
+                }
+            })
+            return false;
+        });
+
+        //自定义验证规则
+        form.verify({
+            locationxVerify : function(value){
+                if(value.length == 0) return '必填项不能为空';
+            },
+            locationyVerify: function(value){
+                if(value.length == 0) return '必填项不能为空';
+            },
+            listOrderVerify: function(value){
+                if(value.length == 0) return '必填项不能为空';
+            }
+
+        });
+
+        //页面初始化，通过查看参数是否都在来进行是否加载页面ed646370-a5f3-4f88-a640-d62fda36c4b8
+        let htmlInit = function(){
+            boardModuleInit();//配置字典初始化
+            standardKindInit();//套初始化
+            bindModuleSelect();
+        }
+
+        htmlInit();
+
+    });
+
+</script>
+</body>
+</html>

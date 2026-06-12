@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>设置补录报备时间段</title>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script  type="text/javascript"  src="../../js/layui-v2.6.8/layui/layui.js"></script>
+
+    <!--  -->
+    <script src="../../js/common.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+
+    <script type="text/javascript" src="../../js/base64.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="../../js/axios.min.js"></script>
+    <script type="text/javascript" src="../../js/auth.js"></script>
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div id="viewMode" style="padding: 10px 0;">
+    <span style="font-size: 14px; font-weight: bold; color: #333; margin-right: 15px;">
+        当前补录年度：<span id="staticYearVal" style="color: #009688;">加载中...</span>
+    </span>
+        <button type="button" class="layui-btn layui-btn-sm" id="btnEditYear">
+            <i class="layui-icon layui-icon-edit"></i> 编辑
+        </button>
+    </div>
+
+    <div id="editMode" style="display: none;">
+        <form class="layui-form" lay-filter="yearForm">
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 120px;">补录归属年度</label>
+                <div class="layui-input-inline">
+                    <select id="configYear" name="configYear" lay-filter="configYear">
+                        <option value="">请选择年度</option>
+                    </select>
+                </div>
+                <div class="layui-input-inline" style="width: auto;">
+                    <button class="layui-btn layui-btn-sm" lay-submit lay-filter="submitYear">保存</button>
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" id="btnCancelEdit">取消</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="layui-card">
+        <div class="layui-card-body layui_body_box">
+            <form class="layui-form" lay-filter="timeForm">
+                <table class="layui-table" id="projectTopUnitApplyDate" lay-filter="project-apply-date" style="margin: 0px 0px;">
+                    <tr>
+                        <th style="background-color: #f2f2f2;font-weight: bold;text-align: center;">开始时间</th>
+                        <th style="background-color: #f2f2f2;font-weight: bold;text-align: center;">截止时间</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="text" id="startTime" name="startTime" class="layui-input" placeholder="请选择开始时间">
+                        </td>
+                        <td>
+                            <input type="text" id="endTime" name="endTime" class="layui-input" placeholder="请选择截止时间">
+                        </td>
+                    </tr>
+                </table>
+                <div id="bottomSaveBtnBox" style="text-align: center;padding: 0px 10px 10px;">
+                    <button class="layui-btn layui-btn-sm" lay-submit lay-filter="submit" id="submit">提交</button>
+                </div>
+            </form>
+        </div>
+
+
+    </div>
+</div>
+
+
+    <script>
+        layui.use(['form', 'laydate'], function(){
+            var form = layui.form;
+            var laydate = layui.laydate;
+            var $ = layui.jquery;
+            var now = new Date();
+            var year = now.getFullYear();
+            var minDate = year + '-01-01 00:00:00';
+            var maxDate = year + '-12-31 23:59:59';
+            var userid= localStorage.getItem("unit-id"),
+            standardkindId=localStorage.getItem("standardkind-id");
+
+
+            laydate.render({
+                elem: '#startTime',
+                type: 'datetime',
+                min: minDate,
+                max: maxDate
+            });
+            laydate.render({
+                elem: '#endTime',
+                type: 'datetime',
+                min: minDate,
+                max: maxDate
+            });
+
+            $(function() {
+                 //查询补录报备时间段
+                $.ajax({
+                    url: huayi_personorg_url + 'makeUpScoreRecord/getByStandardKindId',
+                    type: 'GET',
+                    data: { cmeStandardKindId: standardkindId },
+                    success: function(response) {
+                        if (response.success && response.data) {
+                            var record = response.data;
+                            $('#startTime').val(record.startTime);
+                            $('#endTime').val(record.endTime);
+                            window.recordId = record.id; // 保存记录ID以便后续更新
+                        }
+                    },
+                    error: function() {
+                        layer.msg('网络错误，请稍后再试');
+                    }
+                });
+
+            })
+
+            $.ajax({
+                url: huayi_personorg_url + 'cmeUnitConfig/getByStandardKindId',
+                type: 'GET',
+                data: { cmeStandardKindId: standardkindId },
+                success: function(response) {
+                    if (response.status === 200 && response.data) {
+                        var data = response.data;
+                        var ruleCount = parseInt(data.ruleValue) || 2;
+                        var selectedYear = parseInt(data.configValue);
+                        var currentYear = new Date().getFullYear();
+
+                        // A. 【核心改动】更新查看模式的文字
+                        $('#staticYearVal').text(selectedYear + '年');
+
+                        // B. 生成下拉框 (为编辑模式准备)
+                        var html = '';
+                        for (var i = 0; i < ruleCount; i++) {
+                            var yearOption = currentYear - i;
+                            var isSelected = (yearOption === selectedYear) ? 'selected' : '';
+                            html += '<option value="' + yearOption + '" ' + isSelected + '>' + yearOption + '年</option>';
+                        }
+                        $('#configYear').html(html);
+                        form.render('select');
+                    } else {
+                        $('#staticYearVal').text('暂无配置');
+                    }
+                }
+            });
+
+
+            $('#btnEditYear').click(function(){
+                $('#viewMode').hide();
+                $('#editMode').show();
+            });
+
+            $('#btnCancelEdit').click(function(){
+                $('#editMode').hide();
+                $('#viewMode').show();
+            });
+
+
+            form.on('submit(submitYear)', function(data){
+                var selectedYear = data.field.configYear;
+                if(!selectedYear){
+                    layer.msg('请选择年度');
+                    return false;
+                }
+
+                var ajaxData = {
+                    cmeStandardKindId: standardkindId,
+                    unitId: userid,
+                    configValue: selectedYear
+                };
+
+                $.ajax({
+                    url: huayi_personorg_url + 'cmeUnitConfig/saveConfig',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(ajaxData),
+                    success: function(response) {
+                        if (response.status === 200) {
+                            layer.msg('保存成功');
+
+
+                            $('#staticYearVal').text(selectedYear + '年');
+                            $('#editMode').hide();
+                            $('#viewMode').show();
+                        } else {
+                            layer.msg(response.msg || '保存失败');
+                        }
+                    },
+                    error: function() {
+                        layer.msg('网络请求错误');
+                    }
+                });
+                return false;
+            });
+            // 提交按钮事件
+            form.on('submit(submit)', function(data){
+                var startTime = data.field.startTime;
+                var endTime = data.field.endTime;
+                var recordId = data.field.recordId || window.recordId; // 可通过隐藏域或全局变量传递
+
+                if (!startTime || !endTime) {
+                    layer.msg('请填写完整的时间段');
+                    return false;
+                }
+
+                if (new Date(startTime) >= new Date(endTime)) {
+                    layer.msg('开始时间必须早于截止时间');
+                    return false;
+                }
+                //只能选择当年时间
+                var currentYear = new Date().getFullYear();
+                var startYear = new Date(startTime).getFullYear();
+                var endYear = new Date(endTime).getFullYear();
+                if (startYear !== currentYear || endYear !== currentYear) {
+                    layer.msg('只能选择当前年份的时间段');
+                    return false;
+                }
+
+                var url = huayi_personorg_url + '/makeUpScoreRecord/add';
+                var ajaxData = {
+                    startTime: startTime,
+                    endTime: endTime,
+                    standardKindId: standardkindId
+                };
+                if (recordId) {
+                    url = huayi_personorg_url + '/makeUpScoreRecord/update';
+                    ajaxData.id = recordId;
+                }
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(ajaxData),
+                    success: function(response) {
+                        if (response.success) {
+                            layer.msg((recordId ? '修改' : '设置') + '成功');
+                        } else {
+                            layer.msg((recordId ? '修改' : '设置') + '失败');
+                        }
+                    },
+                    error: function() {
+                        layer.msg('网络错误，请稍后再试');
+                    }
+                });
+                return false; // 阻止表单提交
+            });
+
+        });
+
+    </script>
+</body>
+</html>

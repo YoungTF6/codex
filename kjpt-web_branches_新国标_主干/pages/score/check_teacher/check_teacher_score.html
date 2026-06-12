@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>主讲人授分审核</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <link rel="stylesheet" href="/css/project/checkTeacherScore.css" media="all">
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/common.js"></script>
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <script type="text/javascript" src="/js/api/number.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+
+    <script type="text/javascript" src="/js/constantPage/projectConstant.js"></script>
+    <style>
+        .layui-treeSelect .ztree li {
+            line-height: 19.5px !important;
+        }
+    </style>
+</head>
+<body style="background: #fff;">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!--        搜索框区域-->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="background: #f5f5f5;">
+            <div class="layui_mess">
+                <div class="layui_display">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">年度</label>
+                        <div class="layui-input-block">
+                            <select name="cmeYear1" id="cmeYear1" lay-filter="cmeYear1">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">开始时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="startDtSearch"  autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">结束时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="endDtSearch" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">主讲人姓名</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="teacherSearch" placeholder="请填写主讲人姓名" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="width:88px;padding-left: 3px;padding-right: 5px;">项目/活动名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="projNameSearch" placeholder="请填写项目/活动名称" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+    
+                    <div class="layui-inline">
+                        <label class="layui-form-label" id="lblProjectLevel"></label>
+                        <div class="layui-input-block">
+                            <input type="text" autocomplete="off" class="layui-input" lay-filter="scoreLevel" id="scoreLevel" name="scoreLevel" placeholder="请选择">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">审核状态</label>
+                        <div class="layui-input-block">
+                            <select id="checkStateSearch">
+                                <option value="">全部</option>
+                                <option value="0">未审核</option>
+                                <option value="3">审核通过</option>
+                                <option value="2">审核不通过</option>
+                                <option value="4">审核中</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- <div class="layui-inline">
+                        <label class="layui-form-label">项目类型</label>
+                        <div class="layui-input-block">
+                            <select id="projectTypeSearch">
+                                <option value="">全部</option>
+                                <option value="2">院内活动</option>
+                                <option value="1">继教项目</option>
+                            </select>
+                        </div>
+                    </div> -->
+                </div>
+                <div class="layui_display">
+                    <div class="layui-inline">
+                        <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="loaderTable()" lay-filter="table-search" data-type="reload">
+                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                        </a>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        <!--        表格区域-->
+        <div class="layui-card-body layui_body_box">
+            <table class="layui-table" id="teacherScoreTable" lay-filter="teacherScoreTable" style="margin: 0px 0px;"></table>
+        </div>
+
+        <!-- 填写审核意见弹窗 -->
+        <div id="approvalScoreWindow" style="display: none;margin: 20px auto;">
+            <div style="width: 90%;margin:0px auto">
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>审核意见</label>
+                        <div class="layui-input-block">
+                            <textarea name="approvalText" class="layui-textarea js-approval-text" autocomplete="off" maxlength="200"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <a class="layui-btn js-submit-approval">提交</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<!--表格内数据编辑、删除按钮-->
+<script type="text/html" id="rowBar">
+    <!-- {{# if((d.checkState == 0 || d.checkState == 4) && d.myDisableStatus == false && ableOperateLastYearData(d.studyDate) == true ){ }}
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="pass">审核通过</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger btn-danger-row" lay-event="noPass">审核不通过</a>
+    {{# } }} -->
+
+   {{#  let flowUnitUserType = parseInt(d.flowChainState/10);
+        let flowState = d.flowChainState % 10; 
+        let showBtn=true;
+        if(ableOperateLastYearData(d.studyDate) ==  false) {
+            showBtn=false;
+        }
+        if(d.flowChainId == null) {
+            showBtn=false;
+        }
+        if(d.flowChainState == '20') {
+            showBtn=false;
+        } 
+        if(d.flowChainState == '21' || d.flowChainState == '22') {
+            showBtn=false;
+        } 
+        if(StandardKind.HE_NAN == _standardId) {
+            if(_userType < 5) {
+                if(flowUnitUserType < parseInt(_userType)  && flowState == 0 ) {
+                    showBtn=false;
+                }
+                if(flowUnitUserType < parseInt(_userType)  && flowState > 0 ) {
+                    showBtn=false;
+                }
+                if(flowUnitUserType > parseInt(_userType)  && flowState > 0 ) {
+                    showBtn=false;
+                }
+            }
+        } else {
+            if(flowUnitUserType > parseInt(_userType)  && flowState > 0 ) {
+                showBtn=false;
+            }
+        }
+    }}
+
+    {{# if(showBtn == true ){ }}
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="pass">审核通过</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger btn-danger-row" lay-event="noPass">审核不通过</a>
+    {{# } }}
+
+   
+
+</script>
+<script type="text/html" id="bar">
+    <input type="checkbox" name="selectFlag" value="cp" title="本页全选" lay-filter="selectFlag">
+    <div style="float: right;">
+        <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="passBatch" >审核通过</a>
+        <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="noPassBatch" >审核不通过</a>
+    </div>
+</script>
+
+<script type="text/html" id="rank">
+    {{d.LAY_TABLE_INDEX+1}}
+</script>
+<script>
+    // 全局配置及引入相关的模块
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        tool: 'tool',
+        xmSelect: 'xm-select'
+    })
+    var _standardId  = localStorage.getItem("standardkind-id");
+    var _userType = localStorage.getItem("unit-user-type");
+
+    layui.use(['table', 'form', 'laydate', 'tool','xmSelect','treeSelect'], function () {
+        var table = layui.table,form = layui.form,laydate = layui.laydate;
+        var $ = layui.jquery,layer = layui.layer,tool = layui.tool,treeSelect = layui.treeSelect;
+        let ajaxNum = 0,loading=null,nowScoreIds;
+        let flagEnum = {'select': 'select', 'cp': 'cp'};
+        let _unitId = localStorage.getItem("unit-id");
+       
+        var xmlSelectScoreLevel;
+        let nowYear = new Date().getFullYear();
+        
+        //初始化搜索lable
+        $("label").each(function() {
+            const id = $(this).attr("id");
+            if (projectLabels[id] !== undefined) {
+                $(this).text(projectLabels[id]);
+            }
+        });
+        //关闭closeLoading的判断
+        let closeLoading = function(){
+            ajaxNum--;
+            if(ajaxNum<=0 && loading) layer.close(loading);
+        }
+        //打开加载
+        let openLoading = function(){
+            if(ajaxNum == 0) loading = layer.msg('加载中', {icon: 16, shade: 0.3, time:0});
+            ajaxNum ++;
+        }
+        //公共ajax
+        let commonAjax = function(type="get",url,data,failFun,successFun){
+            openLoading();
+            $.ajax({
+                async   :   false,
+                type    :   type,
+                url     :   url,
+                contentType: 'application/json',
+                data    :   data,
+                success :   function (res) {
+                    closeLoading();successFun(res);
+                },
+                error    :   function(res){
+                    closeLoading();failFun();
+                }
+            });
+        }
+
+        let getTableParams = function() {
+            let startDtTmpt = $('#startDtSearch').val();
+            if(!tool.isEmpty(startDtTmpt)) startDtTmpt += " 00:00:00";
+            let endDtTmpt = $('#endDtSearch').val();
+            if(!tool.isEmpty(endDtTmpt)) endDtTmpt += " 23:59:59";
+            return {
+                startDt: startDtTmpt,
+                endDt: endDtTmpt,
+                teacherName: $("#teacherSearch").val(),
+                projName: $("#projNameSearch").val(),
+                scoreLevelIds: $("#scoreLevel").val(),
+                checkState: $("#checkStateSearch").val(),
+                projectType: $("#projectTypeSearch").val(),
+                searchUnitId: (tool.isEmpty(localStorage.getItem("menu-unit-id"))) ? _unitId: localStorage.getItem("menu-unit-id"),
+                unitId: _unitId
+            }
+        }
+
+        // 表格相关操作
+        // 表格配置
+        window.loaderTable = function () {
+            table.render({
+                elem: '#teacherScoreTable',
+                url: huayi_projectscore_url + 'cmeSingleprojScore/getCheckTeacherScoreList',
+                title: '主讲人授分',
+                defaultToolbar: [],
+                where: getTableParams(),
+                cols: [[
+                    {align: 'center', width: 60, title: '选择', templet: '#rank', fixed: 'left',
+                        templet:function(d){
+                            let flowUnitUserType = parseInt(d.flowChainState/10);
+                            let flowState = d.flowChainState % 10;
+                            if(ableOperateLastYearData(d.studyDate) ==  false) {
+                                return `<img src="/img/score/disableIcon.png" alt="无法审核过往年度学分" onmouseenter="showTips(this)" onmouseleave="closeTips()">`;
+                            }
+                            if(d.flowChainId == null) {
+                                return  '<img src="/img/score/disableIcon.png" style="width:20px;" alt="等待学分后台提交" onmouseenter="showTips(this)" onmouseleave="closeTips()">';
+                            }
+                            if(d.flowChainState == '20') {
+                                return '<img src="/img/score/disableIcon.png" style="width:20px;" alt="待单位审核" onmouseenter="showTips(this)" onmouseleave="closeTips()">';
+                            } 
+                            if(d.flowChainState == '21' || d.flowChainState == '22') {
+                                return '<img src="/img/score/disableIcon.png" style="width:20px;" alt="单位审核完结" onmouseenter="showTips(this)" onmouseleave="closeTips()">';
+                            } 
+                            if(StandardKind.HE_NAN == _standardId) {
+                                if(_userType < 5) {
+                                    if(flowUnitUserType < parseInt(_userType)  && flowState == 0 ) {
+                                        return '<img src="/img/score/disableIcon.png" style="width:20px;" alt="下级还未审核" onmouseenter="showTips(this)" onmouseleave="closeTips()">';
+                                    }
+                                    if(flowUnitUserType < parseInt(_userType)  && flowState > 0 ) {
+                                        return '<img src="/img/score/disableIcon.png" style="width:20px;" alt="下级审核完结" onmouseenter="showTips(this)" onmouseleave="closeTips()">';
+                                    }
+                                    if(flowUnitUserType > parseInt(_userType)  && flowState > 0 ) {
+                                        return '<img src="/img/score/disableIcon.png" style="width:20px;" alt="上级审核完结" onmouseenter="showTips(this)" onmouseleave="closeTips()">';
+                                    }
+                                }
+                            } else {
+                                if(flowUnitUserType > parseInt(_userType)  && flowState > 0 ) {
+                                    return '<img src="/img/score/disableIcon.png" style="width:20px;" alt="上级审核完结" onmouseenter="showTips(this)" onmouseleave="closeTips()">';
+                                }
+                            }
+                            return `<input type="checkbox" name="select_one" lay-filter="select_one" title="" lay-skin="primary" data-id="${d.scoreId}">`;
+                            //return `<input type="checkbox" name="layTableCheckbox" lay-skin="primary" value="${d.scoreId}" flowChainId="${d.flowChainId}" flowChainState="${d.flowChainState}" teacherScore="${d.teacherScore}" ><i class="layui-icon"></i>`;
+
+                        }},
+                    {field: 'scoreCheck',align: 'center', width: 180, toolbar: '#rowBar', title: '操作', fixed: 'left'},
+                    {field: 'personName', minWidth:110, align: 'center', title: '主讲人姓名'},
+                    {field: 'certId', minWidth:160, align: 'center', title: '主讲人证件号'},
+                    {field: 'teachSubject', minWidth:200,title: '讲授课程', align: 'center'},
+                    {field: 'projName', minWidth:200, title: '项目/活动名称', align: 'center'},
+                    {field: 'scoreLevelName', minWidth:190, title: projectLabels['lblProjectLevel'], align: 'center',},
+                    {field: 'holdTypeName',minWidth:120, title: projectLabels['lblActivityForm'], align: 'center'},
+                    {field: 'checkUnitName',minWidth:150, title: '审核单位', align: 'center'},
+                    {field: 'checkState',minWidth:120, title: '审核状态', align: 'center',
+                        templet:function(d){
+                            if(d.checkState==0) return "未审核";
+                            if(d.checkState==4) return "审核中";
+                            if(d.checkState==2) return "审核不通过";
+                            if(d.checkState==3) return "审核通过";
+                            if(d.checkState==1) return "审核不通过";
+                        }},
+                    {field: 'checkMemo', minWidth:150,title: '审核意见', align: 'center',},  
+                    {field: 'score', width:70,title: '学分', align: 'center',},
+                    {field: 'period',width:70, title: '学时', align: 'center',},
+                    {field: 'unitName',minWidth:160, title: '举办单位', align: 'center'},
+                    {field: 'studyDate',width:110, title: '授分日期', align: 'center'},
+                    {field: 'flowChainId', hide:true },
+                    {field: 'flowChainState', hide:true }
+                ]],
+                toolbar: '#bar',
+                cellMinWidth: 120,
+                id: "teacherScoreTable",
+                height: 'full-215',
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "count": res.data.recordsTotal, //解析数据长度
+                        "data": res.data.records, //解析数据列表
+                        "page": res.data.pageNum, //当前页
+                        "limit": res.data.pageSize, //每页条数
+                    }
+                },
+                request: {
+                    pageName: 'pageNum', //页码的参数名称，默认：page
+                    limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                },
+                done: function(res, curr, count) {
+                    
+
+
+                },
+                error: function(res, curr, count) {  }
+            });
+        };
+
+        //获取项目级别
+        // let getScoreLevel = function() {
+        //     let tempUrl = huayi_sjwh_url +"option/scoreLevel/list/"+_standardId+"/__1";
+        //     commonAjax('get',tempUrl,
+        //         {},
+        //         function(){layer.msg("项目级别加载失败");},
+        //         function(res){
+        //             if(res.status !=  200) {
+        //                 layer.msg("项目级别加载失败"); return;
+        //             }
+        //             scoreLevels = res.data;
+        //             xmlSelectScoreLevel =  xmSelect.render({
+        //                     el: '#scoreLevelSearch',
+        //                     name: 'scoreLevels',
+        //                     data: function () {
+        //                         var scoreLevelLevelsArray = new Array();
+        //                         let obj = {"name": "全部","value":""};
+        //                         scoreLevels.forEach(e => {
+        //                             let obj = {"name": e.scoreLevelName,"value":e.scoreLevelId};
+        //                             scoreLevelLevelsArray.push(obj);
+        //                         });
+        //                         return scoreLevelLevelsArray;
+        //                     }
+        //                 });
+        //         });
+        // }
+        window.getScoreLevel = () => {
+            window.scoreLevelSel && (treeSelect.destroy('scoreLevel'), $('#scoreLevel').val(''));
+            window.scoreLevelSel = treeSelect.render({
+                elem    : '#scoreLevel',
+                data    : huayi_sjwh_url + 'option/scoreLevel/tree/' + _standardId + '/' + nowYear + '/11_',
+                type    : 'get',
+                search  : true,
+                style   : {
+                    folder  : { enable: false }, // 父节点图标
+                    line    : { enable: true} // 连接线
+                }
+            });
+        }
+
+        window.getSelectedScoreLevels = function() {
+            var scoreLevelCheck =  xmlSelectScoreLevel.getValue();
+            var scoreLevelIds = '';
+            $.each(scoreLevelCheck, function (index, item) {
+                scoreLevelIds += item.value + ',' ;
+            });
+            return scoreLevelIds;
+        }
+
+        
+        let setOptions = function(data,idParam,valueParam,id) {
+            let option = '<option value="">全部</option>';
+            for (let obj of data) {
+                option += `<option value="${obj[idParam]}">${obj[valueParam]}</option>`;
+            }
+            $(`#${id}`).html(option);
+            form.render();
+        }
+
+        //时间组件初始化
+        let dateInit = function() {
+            let startDt = new Date();
+            let endDt = new Date();
+            startDt.getMonth(1);
+            startDt.setDate(1);
+            // 搜索栏开始时间结束时间
+            laydateStart1 = laydate.render({elem: '#startDtSearch',type: 'date',value:startDt});
+            laydateEnd1 = laydate.render({elem: '#endDtSearch',type: 'date',value:endDt});
+        }
+
+         //获取举办年度，格式化开始结束时间
+        let getCmeYearStartEnd = function(cmeYear,startObjId,endObjId,index){
+            let minMaxObj ;
+            startDate = cmeYear + "-01-01";
+            endDate = cmeYear + "-12-31";
+            $("#"+startObjId).val(startDate);
+            $("#"+endObjId).val(endDate);
+            startD = new Date(startDate);
+            endD = new Date(endDate);
+            minMaxObj = {
+                min:{ year: startD.getFullYear(),month: startD.getMonth(), date: startD.getDate()}, 
+                max:{ year: endD.getFullYear(),month: endD.getMonth(), date:  endD.getDate()+1}
+            };
+            window["laydateStart"+index].config.min =  minMaxObj.min;
+            window["laydateStart"+index].config.max =  minMaxObj.max;
+            window["laydateEnd"+index].config.min =  minMaxObj.min;
+            window["laydateEnd"+index].config.max =  minMaxObj.max;
+        }
+
+        //获取举办年度
+        let cmeYearInit = function() {
+            var currentYear = (new Date()).getFullYear();
+            for (var i = currentYear; i >= currentYear - 8; i--) {
+                let option = "";
+                if (i == currentYear) {
+                    option = "<option value='" + i + "' selected>" + i + "</option>";
+                } else {
+                    option = "<option value='" + i + "'>" + i + "</option>";
+                }
+                $("#cmeYear1").append($(option));
+            }
+            form.render("select");
+        }
+
+        //监听举办年度
+        form.on('select(cmeYear1)', function(data){
+            nowYear = data.value;
+            getScoreLevel();
+            getCmeYearStartEnd(nowYear,"startDtSearch","endDtSearch",1);
+        });
+
+        let passBatch = function(scoreObjArr=[]) {
+            layer.confirm('确定审核通过该学分吗?', {icon: 3, title: '提示'}, function (index) {
+                scoreObjArr.forEach(function(e){
+                    e.approvalContext = '';
+                    e.checkState = 3;
+                    e.checkUser = _unitId;
+                    e.cmeStandardKindId = _standardId;
+                });
+                let data =JSON.stringify(scoreObjArr);
+                let tempUrl = huayi_projectscore_url + 'cmeSingleprojScore/checkTeacherScore';
+                commonAjax('post',tempUrl,data,function(){layer.msg("操作失败");},
+                    function(res){
+                        if (res.status === 200) {
+                            layer.msg("操作成功");
+                            loaderTable();
+                        }else{  layer.msg(res.msg); }
+                    }
+                );
+            })
+            
+        }
+
+        let noPassBatch = function() {
+            layer.open({
+                type: 1,
+                title: '请填写审核意见',
+                content: $('#approvalScoreWindow'),
+                area: ['550px', '270px'],
+                cancel: function(index, layero){ $(".js-approval-text").val("");}
+            })
+        }
+
+        // 监听
+        let bindToolbar =function() {
+            table.on('toolbar(teacherScoreTable)', function (obj) {
+                let scoreIds = [];
+                $.each($(".layui-table-fixed input[name=select_one]"), function (i, value) {
+                    if ($(this).prop('checked') === true && this.getAttribute("data-id").length>0) {
+                        scoreIds.push(this.getAttribute("data-id"));
+                    }
+                });
+                if(scoreIds.length == 0){
+                    layer.msg("请至少勾选一个");
+                    return;
+                }
+                let scoreObjArr = [];
+                let rowDatas = table.getData("teacherScoreTable");
+                rowDatas.forEach(function(rowData){
+                    if(scoreIds.indexOf(rowData.scoreId) > -1) {
+                        let scoreObj = {
+                            scoreId: rowData.scoreId,
+                            flowChainId: rowData.flowChainId,
+                            flowChainState: rowData.flowChainState,
+                            unitUserType:_userType
+                        };
+                        scoreObjArr.push(scoreObj);
+                    }
+                });
+                nowScoreObjArr = scoreObjArr;
+                obj.event == "passBatch" && passBatch(scoreObjArr);
+                obj.event == "noPassBatch" && noPassBatch();
+            });
+
+            // 监听行内按钮
+            table.on('tool(teacherScoreTable)', function (obj) {
+                const rowData = obj.data;
+                let scoreIds = [rowData.scoreId];
+                //score_id,flow_chain_id,flow_chain_state,check_state,approvalContext,unit_user_type
+                let scoreObjArr = [];
+                let scoreObj = {
+                    scoreId: rowData.scoreId,
+                    flowChainId: rowData.flowChainId,
+                    flowChainState: rowData.flowChainState,
+                    unitUserType:_userType
+                };
+                scoreObjArr.push(scoreObj);
+                nowScoreObjArr = scoreObjArr;
+                obj.event == "pass" && passBatch(scoreObjArr);
+                obj.event == "noPass" && noPassBatch();
+            });
+            
+            bindSelectAll();
+            bindSubBtn();
+
+        }
+
+        //监听本页全选
+        let bindSelectAll = function() {
+            form.on('checkbox(selectFlag)', function (data) {
+                let isChecked = data.elem.checked;
+                exportFlag = isChecked ? data.elem.value : flagEnum.select;
+                if (isChecked) {
+                    let that = data.elem;
+                    $.each($("input[name=selectFlag]"), function () {
+                        if (this !== that) {
+                            $(this).prop('checked', !isChecked);
+                        }
+                    })
+                }
+
+                $.each($("input[name=select_one]"), function (i, value) {
+                    if ($(this).prop('disabled') === false) {
+                        $(this).prop("checked", isChecked);
+                    }
+                });
+                form.render();
+            });
+
+            form.on('checkbox(select_one)',function(data){
+                let isChecked = data.elem.checked;
+                if(isChecked) {
+                    let isHasSelectAll = true;
+                    $.each($("input[name=select_one]"), function (i, value) {
+                        if ($(this).prop('checked') === false) {
+                            isHasSelectAll = false;
+                            return false;
+                        }
+                    });
+                    if(isHasSelectAll) {
+                        $.each($("input[name=selectFlag]"), function (e) {
+                            $(this).prop('checked', true);
+                        })
+                        form.render();
+                    }
+                    return;
+                }
+                $.each($("input[name=selectFlag]"), function (e) {
+                    $(this).prop('checked', false);
+                })
+                form.render();
+            })
+
+        }
+
+        //监听审批不通过提交按钮
+        let bindSubBtn = function() {
+            $(".js-submit-approval").click(function(){
+                const approvalValue = $(".js-approval-text").val();
+                if(approvalValue == ""){
+                    layer.msg("请填写审批意见！",{icon:5});
+                    return;
+                }
+                if(approvalValue.length > 100) {
+                    layer.msg("审批意见不可超过100个字符",{icon:5});
+                    return;
+                }
+                nowScoreObjArr.forEach(function(e){
+                    e.approvalContext = approvalValue;
+                    e.checkState = 2;
+                    e.checkUser = _unitId;
+                    e.cmeStandardKindId = _standardId;
+                });
+                let data =JSON.stringify(nowScoreObjArr);
+                let tempUrl = huayi_projectscore_url + 'cmeSingleprojScore/checkTeacherScore';
+                layer.confirm('确定审核不通过该学分吗?', {icon: 3, title: '提示'}, function (index) {
+                    commonAjax('post',tempUrl,data,function(){layer.msg("操作失败");},
+                        function(res){
+                            if (res.status === 200) {
+                                layer.msg("操作成功");
+                                layer.closeAll();
+                                $(".js-approval-text").val("");
+                                nowScoreIds = null;
+                                loaderTable();
+                            }else{  layer.msg("操作失败"); }
+                        }
+                    );
+                })
+                
+            })
+        }
+
+        let gLayerIndex;
+        window.showTips = function (curDom){
+            let that = curDom;
+            let msg = $(that).attr('alt');
+            gLayerIndex = layer.tips(msg, that, {
+                tips: [2, '#808080'],
+            });
+        };
+        window.closeTips = function (){
+            layer.close(gLayerIndex);
+        };
+
+        let htmlInit = function() {
+            dateInit();
+            getCmeYearStartEnd(nowYear,"startDtSearch","endDtSearch",1);
+            getScoreLevel();
+            loaderTable();
+            bindToolbar();
+            getConfig("value_forbid_some_operate_on_last_year_data",localStorage.getItem("unit-id"),null);
+            cmeYearInit(); 
+        }
+
+        htmlInit();
+
+        window.ableOperateLastYearData = function(studyDate) {
+            let cgv = window["value_forbid_some_operate_on_last_year_data"];
+            if(cgv == null || cgv == "" || localStorage.getItem("unit-user-type") == 5) {
+                return true;
+            }
+
+            let able = true;
+            let studyDateYear =  new Date(studyDate).getFullYear();
+            let deadline = new Date(cgv);
+            let now = new Date();
+            if(parseInt(studyDateYear) < now.getFullYear()){
+                if(deadline < now) {
+                    able = false;
+                }
+            }
+            return able;
+        }
+
+    });
+</script>
+</html>

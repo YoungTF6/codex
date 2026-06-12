@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>远程学分统计</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/js/layui-v2.6.4/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <!--<link rel="stylesheet" href="/css/layui/ext/eleTree.css">-->
+    <link rel="stylesheet" href="/css/communal.css">
+    <link rel="stylesheet" href="/css/icon.css">
+
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script src='/js/jquery-3.5.1.min.js'></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/tools/form_validation_tool.js"></script>
+
+    <script src="/js/common.js"></script>
+    
+</head>
+<body class="body-area">
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+
+            <!-- 搜索框区域 -->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area">
+                <!-- <blockquote class="layui-form layui-form-item layui-elem-quote one-btn" lay-filter="query-form"> -->
+                    <div class="layui-inline">
+                        <label class="layui-form-label">请选择地区</label>
+                        <!-- <div class="layui-input-block">
+                            <select name="standardKindId" id="standardKindSearch" lay-filter="standard-kind-search">
+                            </select>
+                        </div> -->
+                        
+                        <div class="layui-input-block">
+                            <div style="width: 200px;" id="standardKindSearch" class="layui-input-inline"
+                                data-name="unitLevels"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 截止日期，月日 -->
+                     <div class="layui-inline">
+                        <label class="layui-form-label">截止日期</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" id="endDate" placeholder="MM-dd">
+                        </div>
+                    </div>
+
+                   
+
+                    <div class="layui-inline" style="padding-left: 20px;">
+                        <a class="layui-btn layui-btn-sm" id="statisticsBtn" onclick="statisticsBtn()">统计</a>
+                    </div>
+                    <div class="layui-inline" style="padding-left: 20px;">
+                        <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="loaderTable()"
+                            lay-filter="table-search" data-type="reload">
+                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                        </a>
+                    </div>
+
+                    <!-- 操作提示：先点击统计按钮，等待几分钟后再点击查询按钮查看统计结果 -->
+                     <div class="layui-inline">
+                        <p class="layui-word-aux">
+                            <span style="color: red;">操作提示：选择统计地区及统计截止时间，然后点击统计按钮，等待几分钟后再点击查询按钮查看统计结果，仅保留最近一次统计结果。</span>
+                        </p>
+                     </div>
+            </div>
+
+            <!-- 表格区域-->
+            <div class="layui-card-body content-right">
+                <table class="layui-table" id="comTable" lay-filter="comTable" style="margin: 0px 0px;">
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+    layui.config({
+            base: '/js/layui/ext/'
+        }).extend({
+            xmSelect: 'xm-select'
+        }).use(['form', 'table', 'layer', 'xmSelect', 'laydate'], function () {
+            var table = layui.table;
+            var form = layui.form;
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var xmSelect = layui.xmSelect;
+            var laydate = layui.laydate;
+
+            var unitId = localStorage.getItem("unit-id")
+                    , standardkindId = localStorage.getItem("standardkind-id")
+                    , userId = localStorage.getItem("user-id")
+                    ;
+            // standardkindId = '13e2e203-7fdd-47ab-b90f-a1480112b5e5,4a6d91fb-8ba4-4560-a801-9c6f00e6d999,73ba18db-33fd-4746-ab41-9beb009f69a1,6427ddba-c02f-4229-bd73-49fc1c5d21f6,8b1e9418-47ff-4ff7-9dd9-a9e0009a6951,190c480d-d43c-450b-8472-a6fd00a6729d,a6280900-a9c2-11ec-84d6-fa163e9b64fb';
+            let standardKindIdObj = [];
+            let xmSelectStandardKindSearch;
+            
+            laydate.render({
+                elem: '#endDate',
+                format: 'MM-dd',
+            });
+
+            // 统计方法
+            window.statisticsBtn = function () { 
+                layer.msg('统计中，短时间内请勿重复统计');
+                var standardKindSearch = xmSelectStandardKindSearch.getValue('valueStr');
+                var endDate = $("#endDate").val();
+                if(endDate == null || endDate == ""){
+                    endDate = '12-30';
+                }
+                // 查询条件为空不加载
+                if (strTool.isBlank(standardkindId)) {
+                    layer.msg('该账号未配置套权限');
+                    return false;
+                }
+                // TODO 查询条件必输, 开发时关闭
+                if(strTool.isBlank(standardKindSearch)){
+                    layer.msg('请输入查询条件');
+                    return false;
+                }
+                $.ajax({
+                    url: huayi_sjwh_url + 'projectScoreStatistis/remoteScoreSummary',
+                    type: 'get',
+                    data: {
+                        standardKindId: standardKindSearch,
+                        endDt: endDate,
+                    },
+                    success: function (res) {
+                        if (res.code == 200) {
+                            layer.msg('统计成功');
+                        }
+                    }
+                })
+            }
+
+                // 表格配置
+            window.loaderTable = function () {
+                layer.msg('查询中', {icon: 16, shade: 0.3, time:0});
+                var standardKindSearch = xmSelectStandardKindSearch.getValue('valueStr');
+                var endDate = $("#endDate").val();
+                if(endDate == null || endDate == ""){
+                    endDate = '12-30';
+                }
+                // 查询条件为空不加载
+                if (strTool.isBlank(standardkindId)) {
+                    layer.msg('该账号未配置套权限');
+                    return false;
+                }
+                // TODO 查询条件必输, 开发时关闭
+                // if(strTool.isBlank(standardKindSearch)){
+                //     layer.msg('请输入查询条件');
+                //     return false;
+                // }
+                table.render({
+                    elem: '#comTable',
+                    url: huayi_sjwh_url + 'projectScoreStatistis/getRemoteScoreSummary',
+                    title: '用户表',
+                    defaultToolbar: [],
+                    where: {
+                        standardKindId: standardkindId,
+                        endDt: endDate,
+                    },
+                    cols: [[
+                        { field: 'key_id', title: 'id', width: 110, sort: true },
+                        { field: '省', title: '省', width: 110, sort: true },
+                        { field: 'end_date', title: '统计截止日期', width: 130, sort: true },
+                        { field: 'add_time', title: '统计时间', width: 180, sort: true },
+                        { field: 'cme_year', title: '年度', width: 110, sort: true },
+                        { field: '继教总分', title: '继教总分', width: 110, sort: true },
+                        { field: '远程总分', title: '远程总分', width: 110, sort: true },
+                        { field: '华医', title: '华医网', width: 110, sort: true },
+                        { field: '好医生', title: '好医生', width: 110, sort: true },
+                        { field: '医博士', title: '医博士', width: 110, sort: true },
+                        { field: '双卫', title: '双卫', width: 110, sort: true },
+                        { field: '举名', title: '举名', width: 110, sort: true },
+                        { field: '远程其他', title: '其他', width: 110, sort: true },
+                    ]],
+                    toolbar: '#bar',
+                    cellMinWidth: 100,
+                    id: "comTable",
+                    height: 'full-155',
+                    // page: true,
+                    limit: 30,
+                    limits: [10, 50, 100, 150, 200],
+                    parseData: function (res) {
+                        layer.closeAll();
+                        if (res.status == 200) {
+                            let data = [];
+                            let records = res.data.records
+                            records.forEach(function (item) {
+                                // 将 result_json 字符串转换为对象数组，并展开到 data 数组中
+                                let parsedData = JSON.parse(item.result_json);
+                                if (Array.isArray(parsedData)) {
+                                    // 为数组中的每个对象添加 end_date 和 add_time 字段
+                                    parsedData.forEach(function(record) {
+                                        record.end_date = item.end_date;
+                                        record.add_time = item.add_time;
+                                        record.key_id = item.key_id;
+                                    });
+                                    data = data.concat(parsedData);
+                                } else {
+                                     // 为单个对象添加 end_date 和 add_time 字段
+                                    parsedData.end_date = item.end_date;
+                                    parsedData.add_time = item.add_time;
+                                    data.push(parsedData);
+                                }
+                            });
+                            return {
+                                "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                                "msg": res.message, //解析提示文本
+                                "count": data.length, //解析数据长度
+                                "data": data, //解析数据列表
+                                "page": res.data.pageNum, //当前页
+                                "limit": res.data.pageSize, //每页条数
+                            }
+                        } else {
+                            layer.msg(res.msg);
+                            return false;
+                        }
+
+                    },
+                    request: {
+                        pageName: 'pageNum', //页码的参数名称，默认：page
+                        limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                    }
+                });
+                return false;
+            };
+
+
+                //套
+            let standardKindInit = function () {
+                var standardkindIdArr = standardkindId.split(",");
+                console.log(standardkindIdArr);
+                commonAjax('get', huayi_sjwh_url + "cmestandardkind/list/all", {},
+                    function () { layer.msg("套加载失败"); },
+                    function (res) {
+                        let options = '<option value="" > 请选择套标准 </option>';
+                        for (let tempObj of res.data) {
+                            if (standardkindIdArr.includes(tempObj.cmeStandardKindId)) {
+                                standardKindIdObj.push( {
+                                    cmeStandardKindId: tempObj.cmeStandardKindId,
+                                    description: tempObj.description,
+                                    topUnitId: tempObj.topUnitId
+                                });
+                                options += '<option top-unit-id="' + tempObj.topUnitId + '" value="' + tempObj.cmeStandardKindId + '">' + tempObj.description + '</option>';
+                            }
+                        }
+                        // $('#standardKindSearch').append(options);
+                        
+                        // 复选框
+                        xmSelectStandardKindSearch = xmSelect.render({
+                            el: '#standardKindSearch',
+                            // autoRow: true,
+                            name: 'standardKindSearch',
+                            data: function () {
+                                var unitLevels = new Array();
+                                if (standardKindIdObj != null && standardKindIdObj.length > 0) {
+                                    for (var i = 0; i < standardKindIdObj.length; i++) {
+                                        unitLevels.push({ "name": standardKindIdObj[i].description, "value": standardKindIdObj[i].cmeStandardKindId });
+                                    }
+                                }
+                                return unitLevels;
+                            },
+                        });
+
+                        // // TODO 测试 默认选中第一个
+                        // let firstOption = $('#standardKindSearch option:eq(1)').val(); // 第一个是空选项，选第二个
+                        // if (firstOption) {
+                        //     $('#standardKindSearch').val(firstOption);
+                        // }
+                        form.render('select');
+                    });
+            }
+
+
+                    //公共ajax
+            let commonAjax = function (type = "get", url, data, failFun, successFun) {
+                $.ajax({
+                    type: type,
+                    url: url,
+                    data: data,
+                    async: false,
+                    success: function (res) {
+                        if (res.status != 200) {
+                            layer.msg(res.msg);
+                            return;
+                        }
+                        successFun(res);
+                    },
+                    error: function (res) {
+                        failFun();
+                    }
+                });
+            }
+            // Esc关闭弹窗
+            window.onkeyup = function (ev) {
+                var key = ev.keyCode || ev.which;
+                if (key == 27) {
+                    layer.close(layer.index);
+                    console.log('layer.index = ' + layer.index)
+                }
+            }
+
+
+                // 初始化函数
+            layer.ready(function () {
+                standardKindInit();//套初始化
+                // loaderTable();
+            })
+        })
+
+</script>

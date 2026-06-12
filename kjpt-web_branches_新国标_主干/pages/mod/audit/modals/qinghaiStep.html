@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>qinghai.step</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!-- 1.2.1 -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+          media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <!-- 2.6.4 -->
+    <!--<link rel="stylesheet" href="/js/layui-v2.6.4/layui/css/layui.css" media="all">-->
+    <!--<script src="/js/layui-v2.6.4/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <!--<link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">-->
+    <!--<script src="/js/layui-v2.6.8/layui/layui.js"></script>-->
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <link rel="stylesheet" href="/css/project/timeline.css" media="all">
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="https://kjpt.wsglw.net/pages/mod/js/mng.js"></script>
+    <!--<script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>-->
+    <script type="text/javascript" src="https://kjpt.wsglw.net/pages/mod/js/kjpt.js"></script>
+</head>
+<body style="background-color: white;">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div style="width: fit-content; margin: auto;">
+            <table class="layui-table" id="log_table" lay-filter="log_table"></table>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        lat: 'lat'
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'xmSelect', 'lat'], function () {
+        let layer = layui.layer, table = layui.table, $ = layui.jquery;
+        // 统一读取 URL 参数并做默认值兜底，避免依赖外部工具函数导致弹窗初始化失败。
+        function getQueryParamOrDefault(name, defaultValue) {
+            const value = new URLSearchParams(window.location.search).get(name);
+            return (value === null || value === '') ? defaultValue : value;
+        }
+        // 统一 GET 请求入口：兼容全局 getAction 缺失时回退到 axios，保障弹窗可独立运行。
+        function doGet(url) {
+            if (typeof window.getAction === 'function') {
+                return window.getAction(url);
+            }
+            return axios({
+                url: url,
+                method: 'get'
+            });
+        }
+        const _cmeYear = getQueryParamOrDefault('cmeYear', '2024');
+        const _comPersonId = getQueryParamOrDefault('comPersonId', 'fffbb97d-c009-4975-a13f-ae0101045238');
+        const _courseId = getQueryParamOrDefault("courseId", 'fffbb97d-c009-4975-a13f-ae0101045238');
+        layer.ready(function () {
+            renderTable();
+        });
+        $(function () {
+            doGet(`${huayi_sjwh_url}audit/qinghai/checkStep/${_courseId}/${_comPersonId}`).then(response => {
+                let jsonRes = response.data;
+                if (jsonRes.success) {
+                    table.reload('log_table', {data: jsonRes.data});
+                }
+            }).catch(error => {
+                layer.msg('error:加载审核步骤');
+            }).finally(() => {
+            });
+        });
+        const _scoreStateEnum = {
+            '0': '未提交',
+            '123': '已提交',
+            '143': '地市审核通过',
+            '153': '省委审核通过',
+            '122': '审核不通过',
+            '161': '推送成功',
+            '162': '推送失败',
+            '171': '提交人社成功',
+            '172': '提交人社失败',
+            Z_NOT: 0,
+            Z_YET: 123,
+            Z_CITY_OK: 143,
+            Z_PROVINCE_OK: 153,
+            Z_REJECT: 122,
+        };
+        function stateTxt(state, desc) {
+            if ('162,172'.includes(state)) {
+                return desc;
+            }
+            let ss;
+            if (undefined === state) {
+                ss = '0';
+            } else {
+                ss = String(state);
+            }
+            return _scoreStateEnum[ss];
+        }
+        function renderTable() {
+            table.render({
+                id: 'log_table',
+                elem: '#log_table',
+                page: false,
+                limit: 99,
+                cols: [[
+                    {field: 'unitId', title: '单位编号', width: 90, align: 'center',},
+                    {field: 'unitName', title: '单位名称', width: 200, align: 'center',},
+                    {field: 'checkState', title: '审核状态', width: 240, align: 'center', templet: data => stateTxt(data.checkState, data.stateDesc)},
+                    {field: 'checkDate', title: '时间', width: 164, align: 'center',},
+                ]],
+            });
+        }
+    });
+</script>
+<style>
+</style>
+</html>

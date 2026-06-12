@@ -1,0 +1,118 @@
+.layui-tab .page-tab-content {
+  padding-top: 28px;
+}
+form.page-form .page-row-item {
+  width: 49%;
+  display: inline-block;
+  float: left;
+  padding-left: 10px;
+}
+form.page-form .page-row-item label {
+  display: block;
+  text-align: center;
+}
+form.page-form .page-row-item div {
+  display: block;
+}
+form.page-form .layui-textarea {
+  min-height: 136px;
+}
+form.page-form .layui-input,
+form.page-form .layui-textarea {
+  border-color: lightgrey;
+}
+form.page-form .layui-input:hover,
+form.page-form .layui-textarea:hover {
+  border-color: darkgrey !important;
+}
+form.page-form .icon_tip {
+  position: absolute;
+  top: 10px;
+  right: 1px;
+  font-size: 20px;
+  background-color: white !important;
+  color: #009688 !important;
+}
+#projectDetailPage2 xm-select {
+  width: 99%;
+  border-color: lightgrey !important;
+}
+#projectDetailPage3 .layui-row label {
+  line-height: 46px;
+  text-align: center;
+}
+#projectDetailPage3 .layui-table-header .layui-table-cell:before {
+  content: '* ';
+  color: red;
+}
+#projectDetailPage3 .laytable-cell-1-0-1,
+#projectDetailPage3 .laytable-cell-2-0-1,
+#projectDetailPage3 .laytable-cell-3-0-1,
+#projectDetailPage3 .laytable-cell-1-0-9,
+#projectDetailPage3 .laytable-cell-2-0-9,
+#projectDetailPage3 .laytable-cell-3-0-9 {
+  overflow: visible;
+}
+#projectDetailPage3 td .layui-input {
+  border-style: none;
+}
+#projectDetailPage3 td .layui-form-select {
+  margin-top: -10px;
+  margin-left: -15px;
+  margin-right: -15px;
+  border-style: none;
+}
+#projectDetailPage3 td .titleTreeSelector,
+#projectDetailPage3 td .specTreeSelector {
+  margin-top: -10px;
+  margin-left: -15px;
+  margin-right: -15px;
+}
+#projectDetailPage3 td xm-select {
+  border: none;
+  padding: 0 !important;
+  height: 38px !important;
+  line-height: 38px !important;
+}
+#projectDetailPage3 td xm-select .xm-select-default {
+  width: 20% !important;
+}
+#projectDetailPage3 td xm-select > .xm-body .xm-search > i {
+  right: 20px;
+}
+#projectDetailPage3 td xm-select[size='small'] .xm-label .scroll .label-content {
+  line-height: 32px !important;
+}
+#projectDetailPage4 label {
+  white-space: nowrap;
+}
+#projectDetailPage4 #addCycleBtn {
+  display: block;
+  width: 40%;
+  margin-left: 30px;
+}
+#projectDetailPage4 .layui-disabled,
+#projectDetailPage4 .layui-disabled:hover {
+  color: slategray !important;
+  cursor: not-allowed !important;
+}
+#projectDetailPage4 .layui-table-header .layui-table-cell:before {
+  content: '* ';
+  color: red;
+}
+#projectDetailPage4 input.cycle-date {
+  width: 100%;
+  height: 38px;
+  margin-top: -5px;
+  border: none;
+  text-align: center;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+/*# sourceMappingURL=declare.css.map */

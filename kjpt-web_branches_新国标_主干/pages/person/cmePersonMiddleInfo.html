@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+
+    <link rel="stylesheet" href="../../css/communal.css">
+
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+
+    <!-- 工具 -->
+    <script type="text/javascript" src="../../js/base64.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="../../js/axios.min.js"></script>
+    <script type="text/javascript" src="../../js/auth.js"></script>
+    <script  type="text/javascript"  src="../../js/layui-v2.6.8/layui/layui.js"></script>
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+
+    <style>
+        .layui-table-cell {
+            height:auto;
+        }
+        .layui-layer-content {
+            overflow: visible !important;
+        }
+
+        .tab_others {
+            width: 100px !important;
+        }
+
+        .tab_this {
+            width: 100px !important;
+        }
+
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .layui_display {
+            flex: 1 auto;
+        }
+
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+        .tab_others {
+            background-color: #009688;
+            color: #ffffff;
+            margin-left: 6px;
+        }
+
+        .tab_this {
+            background-color: #f5f5f5;
+            color: #404040;
+            margin-left: 6px;
+            border-bottom: 1px solid #F5F5F5;
+        }
+        .layui-table-tool-temp {
+            padding-right: 10px;
+        }
+    </style>
+</head>
+
+<body style="background-color: white;">
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+            
+            <!--        搜索框区域-->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+                <blockquote class="layui-form layui-form-item layui-elem-quote one-btn" lay-filter="query-form">
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">申请年度</label>
+                        <div class="layui-input-inline"  style="float: left;">
+                            <select name="applyYear" id="applyYear">
+                                <!-- 年份选项将通过JavaScript动态生成 -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">姓名</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="personName" class="layui-input" placeholder="请输入姓名">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">职称</label>
+                        <div class="layui-input-block">
+                            <input type="text" autocomplete="off" class="layui-input" lay-filter="text_title_names" id="text_title_names" placeholder="请选择">
+                            <input type="hidden" autocomplete="off" class="layui-input" lay-filter="hidden_title_ids " id="hidden_title_ids">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">审核状态</label>
+                        <div class="layui-input-block">
+                            <select name="checkStatus" id="checkStatus">
+                                <option value="">全部</option>
+                                <option value="0">未审核</option>
+                                <option value="3">审核通过</option>
+                                <option value="2">审核不通过</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">单位</label>
+                        <div class="layui-input-inline" style="float: left;">
+                            <select name="queryUnitId" id="queryUnitId" lay-search>
+                                <option value="">全部</option>
+                            </select>
+                        </div>
+                    </div>
+ 
+                     
+                    <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" lay-submit lay-filter="search">
+                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                    </div> 
+                </blockquote>
+            </div>
+
+            <!--        表格区域-->
+            <div class="layui-card-body layui_body_box">
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <table class="layui-table" id="comPerson" lay-filter="comPerson" style="margin: 0px 0px;"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 联合体申请弹窗 -->
+    <div id="unitedApplyModal" style="display:none; position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); background:#fff; z-index:9999; padding:24px 32px; border-radius:8px; box-shadow:0 2px 16px rgba(0,0,0,0.2); min-width:400px;">
+        <div style="margin-bottom:16px;">
+            <label id="checkMsgLabel">意见:</label>
+            <input type="text" id="checkMsg" class="layui-input" placeholder="请输入意见">
+        </div>
+        <div style="text-align:right;">
+            <button class="layui-btn layui-btn-primary" id="unitedApplyClose" style="margin-right:8px;">关闭</button>
+            <button class="layui-btn layui-btn-normal" id="unitedApplySubmit">提交</button>
+        </div>
+    </div>
+
+    <script type="text/html" id="bar">
+        <button class="layui-btn layui-btn-sm btnRounded" lay-event="checkPass">审核通过</button>
+        <button class="layui-btn layui-btn-sm btnRounded" lay-event="checkNoPass">审核不通过</button>
+    </script>
+
+
+    <script>
+        // 全局配置及引入相关的模块
+        layui.use(['table', 'form', 'element'], function() {
+            var table = layui.table;
+            var form = layui.form,laydate = layui.laydate;
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var element = layui.element;
+            var userid= localStorage.getItem("unit-id"),
+            standardkindId=localStorage.getItem("standardkind-id"), 
+            unitId= localStorage.getItem("unit-id"),unitUserType=localStorage.getItem("unit-user-type");
+            var unitUnitedIdList="";
+     
+            var MakeIds = '';
+            var isZhejiangAdminReadonly = (standardkindId === '190c480d-d43c-450b-8472-a6fd00a6729d' && String(unitUserType) !== '2');
+
+            $(function() {
+
+                // 职称
+                $('#text_title_names').focus(() => {
+                    layer.open({
+                        type      : 2,
+                        content   : '../controls/selectTitle/selectTitles.html',
+                        area      : [ '610px', '380px' ],
+                        scrollbar : false
+                    });
+                });
+                //给年赋值
+                var currentYear = new Date().getFullYear();
+                //获取当前年度 并给年度赋最近3年的值
+                var yearOptions = '';
+                for (var i = 0; i < 3; i++) {
+                    yearOptions += `<option value="${currentYear - i}">${currentYear - i}</option>`;
+                }
+                $('#applyYear').html(yearOptions);
+                $.ajax({
+                    url: huayi_personorg_url + 'comunit/getUnitChilds',
+                    type: 'GET',
+                    data: { unitId: unitId },
+                    success: function (response) {
+                        if (response && response.status === 200 && Array.isArray(response.data)) {
+                            var optionHtml = '<option value="">全部</option>';
+                            response.data.forEach(function (item) {
+                                optionHtml += '<option value="' + item.value + '">' + item.name + '</option>';
+                            });
+                            $('#queryUnitId').html(optionHtml);
+                        }
+                        form.render('select', 'query-form');
+                    }
+                });
+                form.render('select', 'query-form');
+
+                // 获取配置的年度并覆盖默认选值
+                $.ajax({
+                    url: huayi_personorg_url + 'cmeUnitConfig/getByStandardKindId',
+                    type: 'GET',
+                    data: { cmeStandardKindId: standardkindId },
+                    success: function(response) {
+                        if (response.status === 200 && response.data && response.data.configValue) {
+                            var configYear = response.data.configValue;
+                            // 检查配置的年度是否在选项中
+                            var $select = $('#applyYear');
+                            var hasOption = $select.find(`option[value="${configYear}"]`).length > 0;
+                            if (hasOption) {
+                                $select.val(configYear);
+                            } else {
+                                // 如果不在选项中，插入并选中
+                                $select.append(`<option value="${configYear}" selected>${configYear}</option>`);
+                            }
+                            form.render('select', 'query-form');
+                        }
+                        // 主动调用查询
+                        window.initTable();
+                    }
+                });
+
+                window.initTable();
+                //点击关闭时
+                $('#unitedApplyClose').on('click', function() {
+                     //清空checkMsg
+                    $('#checkMsg').val('');
+                    $('#unitedApplyModal').hide();
+                });
+
+                // 提交按钮
+                $('#unitedApplySubmit').on('click', function() {
+                    var checkMsg = $('#checkMsg').val().trim();
+                    if (unitedApplyType === 'nopass') {
+                        if (checkMsg === '') {
+                            layer.msg('请输入审核不通过原因');
+                            return;
+                        }
+                        if (checkMsg.length > 200) {
+                            layer.msg('审核不通过原因不能超过200字');
+                            return;
+                        }
+                    }
+                    if (MakeIds === '') {
+                        layer.msg('请先选择要审核的人员');
+                        return;
+                    }
+                    var status = unitedApplyType === 'nopass' ? 2 : -1;
+                    $.get(huayi_personorg_url + 'comperson/checkMakeStudyByMakeIds', {
+                        makeIds: MakeIds,
+                        checkMsg: checkMsg,
+                        checkStatus: status,
+                        checkUnitId: unitId
+                    }).then(function(response) {
+                        if (response.status === 200) {
+                            layer.msg(unitedApplyType === 'nopass' ? '审核不通过成功' : '删除成功');
+                            $('#unitedApplyModal').hide();
+                            MakeIds = '';
+                            $('#checkMsg').val('');
+                            window.initTable();
+                        } else {
+                            layer.msg('操作失败: ' + response.data.message);
+                        }
+                    }).catch(function(error) {
+                        console.error('Error:', error);
+                        layer.msg('网络错误，请稍后再试');
+                    });
+                });
+                
+               
+
+
+            }); 
+            //职称选择
+            window.getChildTitles = (hidden_title_ids, titleNames) => {
+                $('#text_title_names').val(titleNames);
+                $('#hidden_title_ids').val(hidden_title_ids);
+            }
+
+            // 表格相关操作
+            // 表格配置
+            window.initTable = function ()  {
+                table.render({
+                    elem: '#comPerson',
+                    url: huayi_personorg_url + 'comperson/getMakeStudyByUnitId',
+                    method: 'get',
+                    where: (function () {
+                        var where = {
+                            unitId: unitId,
+                            titleIds: $('#hidden_title_ids').val(),
+                            applyYear: $('#applyYear').val(),
+                            isPass: $('#checkStatus').val(),
+                            personName: $('#personName').val(),
+                            queryUnitId: $('#queryUnitId').val(),
+                            standardkindId: standardkindId
+                        };
+                        if (!isZhejiangAdminReadonly) {
+                            where.chainStatus = unitUserType * 10;
+                        }
+                        return where;
+                    })(),
+                    toolbar: isZhejiangAdminReadonly ? false : '#bar',
+                    defaultToolbar: [],
+                    cols: [[
+                        {   //这里使用layui给我们提供的自定义模版功能来达到checkbox控制效果
+                            field:'CheckCustom' ,title:'操作',align:'center',width:100,hide:isZhejiangAdminReadonly,templet:function (d) {
+                                 var templateHtml = ' <input type="checkbox" name="layTableCheckbox" lay-skin="primary" value="'+d.makeId+'"><i class="layui-icon"></i>';
+                                 if(d.isPass == null){
+                                     return templateHtml;
+                                 }else if( d.isPass==3){
+                                     return '审核通过'
+                                 }else if(d.isPass==2){
+                                     return '审核不通过'
+                                 }else if(d.isPass==-1){
+                                     return '已删除';
+                                 }
+                            }
+                            
+                        },
+                        { field: 'makeId', align: 'center', title: 'makeId', hide:true},
+                        { field: 'applyYear', align: 'center', title: '申请年度'},
+                        { field: 'personName', align: 'center', title: '姓名'},
+                        { field: 'unitName', align: 'center', title: '单位'},
+                        { field: 'titleName', align: 'center', title: '职称'},
+                        { field: 'personNo', align: 'center', title: '人员编号'},
+                        {
+                            field: 'applyTime',
+                            title: '申请时间',
+                            align: 'center',
+                            minWidth: 200,
+                            sort: true,
+                            templet: function(d) {
+                                if (!d.applyTime) return '';
+                                var date = new Date(d.applyTime);
+                                var y = date.getFullYear();
+                                var m = (date.getMonth() + 1).toString().padStart(2, '0');
+                                var day = date.getDate().toString().padStart(2, '0');
+                                return y + '-' + m + '-' + day;
+                            }
+                        },
+                        { field: 'content', align: 'center', title: '申请说明'},
+                        {
+                            //相关附件
+                            field: 'aplyFile',
+                            title: '相关附件',
+                            align: 'center',
+                            minWidth: 120,
+                            templet: function (data) {
+                                return '<a class="layui-btn layui-btn-xs" lay-event="seachFile">查看</a>';
+                            }
+                        },
+                        {
+                            field: 'isPass',
+                            title: '审核状态',
+                            align: 'center',
+                            minWidth: 80,
+                            sort: true,
+                            templet: function (d) {
+                                const map = {
+                                    null: '<span style="color:#FFB800;">待审核</span>',
+                                    1: '<span style="color:#FF5722;">退回</span>',
+                                    2: '<span style="color:#FF0000;">不通过</span>',
+                                    3: '<span style="color:#009688;">审核通过</span>'
+                                };
+                                return map[d.isPass] || d.isPass || '';
+                            }
+                        },
+
+                        { field: 'checkUnitName', align: 'center', title: '审核用户', minWidth: 160 },
+                        { field: 'unitContent', align: 'center', title: '审核意见', minWidth: 160}
+                    ]],
+                    page:true,
+                    limit : 10,
+                    limits : [10,20,30,50],
+                    height: 'full-255',
+                    done: function () {
+                        // layui表格单元格设置高度自适应后, 设置为fixed的表格列的高度无法自适应的处理
+                        $(".layui-table-main tr").each(function(index, val) {
+                            $($(".layui-table-fixed .layui-table-body tbody tr")[index]).height($(val).height());
+                        });
+                    },
+                    parseData: function(res) {
+                        return {
+                            "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                            "msg": res.message, //解析提示文本
+                            "count": res.data.recordsTotal, //解析数据长度
+                            "data": res.data.records, //解析数据列表
+                            "page": res.data.pageNum, //当前页
+                            "limit": res.data.pageSize, //每页条数
+                        }
+
+                    },
+                    request: {
+                        pageName: 'pageNum', //页码的参数名称，默认：page
+                        limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                    }
+                });
+            };
+  
+
+            table.on('sort(comPerson)', function(obj){ //sort 是工具条事件名
+                //如果你的表格列表里有设置排序sort, 需要添加一个sort监听事件, 根据单元格内容的高度重新计算表格的行高
+                $(".layui-table-main tr").each(function(index, val) {
+                    $($(".layui-table-fixed .layui-table-body tbody tr")[index]).height($(val).height());
+                });
+            });
+
+            table.on('toolbar(comPerson)', function(obj) {
+                const checkStatus = table.checkStatus(obj.config.id);
+                const data = checkStatus.data;
+                if (['checkNoPass', 'checkPass', 'delUnitUnited', 'enabledUnitUnited'].includes(obj.event)) {
+                    if (data.length === 0) {
+                        let msg = {
+                            checkNoPass: '请选择要审核不通过的人员',
+                            checkPass: '请选择要审核通过的人员'
+                        }[obj.event];
+                        layer.msg(msg);
+                        return;
+                    }
+                    MakeIds = data.map(item => item.makeId).join(',');
+                }
+
+                const request = (status, successMsg) => {
+                    $.get(huayi_personorg_url + 'comperson/checkMakeStudyByMakeIds', {
+                        makeIds: MakeIds,
+                        checkStatus: status,
+                        checkMsg: $('#checkMsg').val().trim(),
+                        checkUnitId: unitId
+                    }).then(function(response) {
+                        if (response.status === 200) {
+                            layer.msg(successMsg);
+                            window.initTable();
+                        } else {
+                            layer.msg(response.msg);
+                        }
+                    }).catch(function(error) {
+                        console.error('Error:', error);
+                        layer.msg('网络错误，请稍后再试');
+                    });
+                };
+
+                switch (obj.event) {
+                    case 'checkNoPass':
+                        unitedApplyType = 'nopass';
+                        $('#checkMsgLabel').html('<span style="color:red;">*</span>审核不通过原因:');
+                        $('#checkMsg').attr('placeholder', '请输入审核不通过原因');
+                        $('#unitedApplyModal').show();
+                        $('#checkMsg').val('');
+                        break;
+                    case 'checkPass':
+                        request(3, '审核通过成功');
+                        break;
+                }
+            });
+
+            // 监听查询
+            form.on('submit(search)', function (data) {
+                window.initTable();
+            });
+    
+            // 监听行内按钮
+            table.on('tool(comPerson)', function (obj) {
+                console.log(obj)
+                var data = obj.data;
+                // 监听行内按钮
+                if (obj.event === 'seachFile') {
+                    axios.get(huayi_personorg_url + 'comperson/getPersonMakeFileList', {
+                        params: {
+                            makeId: data.makeId
+                        }
+                    })
+                    .then(function (response) {
+                        if (response.data.status === 200) {
+                            var fileList = response.data.data;
+                            if (fileList.length === 0) {
+                                layer.msg("没有相关附件");
+                                return;
+                            }
+                            var contentHtml = `
+                                <table class="layui-table" style="margin:0;">
+                                    <thead>
+                                        <tr>
+                                            <th>名称</th>
+                                            <th>预览</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                            `;
+                            fileList.forEach(function (file) {
+                                var fileUrl = file.fileUrl || '';
+                                var fileName = file.fileName || '';
+                                var fileExt = fileName.split('.').pop().toLowerCase();
+                                var previewHtml = '';
+                                if (fileExt === 'pdf') {
+                                    previewHtml = `<a onclick="window.open('${fileUrl}')" style="color:#1E9FFF;">预览</a>`;
+                                } else if (['jpg', 'jpeg', 'png'].includes(fileExt)) {
+                                    previewHtml = `<a onclick="window.open('${fileUrl}')" style="color:#1E9FFF;" onclick="event.preventDefault();layer.open({type:1,area:['80%','80%'],title:'图片预览',content:'<img src=\\'${fileUrl}\\' style=\\'max-width:100%;max-height:100%\\'/>'});">预览</a>`;
+                                } else {
+                                    previewHtml = `<a onclick="window.open('${fileUrl}')" style="color:#1E9FFF;">预览</a>`;
+                                }
+                                contentHtml += `
+                                    <tr>
+                                        <td title="${fileName}">${fileName}</td>
+                                        <td>${previewHtml}</td>
+                                    </tr>
+                                `;
+                            });
+                            contentHtml += `
+                                    </tbody>
+                                </table>
+                            `;
+                            layer.open({
+                                type: 1,
+                                title: '相关附件',
+                                area: ['600px', '400px'],
+                                content: contentHtml
+                            });
+                        } else {
+                            layer.msg(response.data.message || "获取附件失败");
+                        }
+                    })
+                }
+
+            });
+        
+        });
+    </script>
+
+</body>
+
+</html>

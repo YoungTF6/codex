@@ -1,0 +1,257 @@
+<div id="projectDetailPage4">
+    <form class="page-form layui-form" action="" id="page4-form" lay-filter="page4-form">
+        <input type="hidden" name="pageNum" value=4>
+
+        <!-- row0 -->
+        <div class="layui-form-item">
+            <div class="layui-col-md10">
+                <div class="layui-tab-content" style="padding: 0;border: 1px dashed #009688">
+                    <div class="layui-tab-item layui-show">
+                        <table class="layui-table" id="cycleTable" lay-filter="cycleTable" lay-size="sm"
+                               style="margin: 0;">
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <a id="addCycleBtn" class='layui-btn layui-btn-sm' lay-event='addCycle'
+                   onclick="addCycle()">添加周期</a>
+            </div>
+        </div>
+
+        <!-- row1 -->
+        <div class="layui-form-item">
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>举办方式:</label>
+                <div class="layui-input-block">
+                    <select name="holdTypeId" lay-verify="required">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>举办期限(天):</label>
+                <div class="layui-input-block">
+                    <input type="number" name="days" min="0" lay-verify="required" autocomplete="off"
+                           placeholder="添加举办周期后自动计算"
+                           class="layui-input number_ph layui-disabled" disabled>
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>申报日期:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="addDay" lay-verify="required" autocomplete="off"
+                           class="layui-input layui-disabled" disabled>
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>教学对象:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="teachObject" lay-verify="required|teachObject" autocomplete="off"
+                           class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+        </div>
+
+        <!-- row2 -->
+        <div class="layui-form-item">
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span
+                        style="color:red">*&nbsp;</span>考核方式:</label>
+                <div class="layui-input-block">
+                    <select name="checkTypeId" lay-filter="" lay-verify="required" lay-search="">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>拟招生人数:</label>
+                <div class="layui-input-block">
+                    <input type="number" name="number" min="0" step="1" lay-verify="required|number" autocomplete="off"
+                           class="layui-input number_ph" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>举办地点:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="holdPlace" lay-verify="required|holdPlace" autocomplete="off"
+                           class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>邮政编码:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="postcode" min="0" lay-verify="required|postcode" autocomplete="off"
+                           class="layui-input number_ph" placeholder="请输入">
+                </div>
+            </div>
+        </div>
+
+        <!-- row3 -->
+        <div class="layui-form-item">
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>教学总时数:</label>
+                <div class="layui-input-block">
+                    <input type="number" name="period" min="0" lay-verify="required" autocomplete="off"
+                           class="layui-input layui-disabled number_ph" disabled>
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>讲授理论时数:</label>
+                <div class="layui-input-block">
+                    <input type="number" name="theoryPeriod" min="0" lay-verify="required" autocomplete="off"
+                           class="layui-input layui-disabled number_ph" disabled>
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>实验技术时数:</label>
+                <div class="layui-input-block">
+                    <input type="number" name="experimentPeriod" min="0" lay-verify="required" autocomplete="off"
+                           class="layui-input layui-disabled number_ph" disabled>
+                </div>
+            </div>
+
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>拟授学员学分:</label>
+                <div class="layui-input-block">
+                    <input type="number" name="score" min="0" lay-verify="required|score" autocomplete="off"
+                           class="layui-input number_ph" disabled>
+                </div>
+            </div>
+        </div>
+
+        <!-- row4 -->
+        <div class="layui-form-item">
+            <div class="layui-col-md6">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>申报单位:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="applyUnit" lay-verify="required|applyUnit100" autocomplete="off"
+                           class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>联系人:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="applyLinkman" lay-verify="required|applyLinkman" autocomplete="off"
+                           class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>联系电话:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="applyUnitPhone" min="0" lay-verify="required|myPhone" autocomplete="off"
+                           class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+        </div>
+
+        <!-- row5 -->
+        <div class="layui-form-item">
+            <div class="layui-col-md6">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>主办单位:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="unitName" lay-verify="required|unitName100" autocomplete="off"
+                           class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>联系人:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="unitLinkman" lay-verify="required|unitLinkman" autocomplete="off"
+                           class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>联系电话:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="unitPhone" min="0" lay-verify="required|myPhone" autocomplete="off"
+                           class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+        </div>
+
+        <!-- row6 -->
+        <!--
+        <div class="layui-form-item">
+            <div class="layui-col-md6">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>主办单位通讯地址:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="unitMailingAddress" lay-verify="required" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>电子邮箱:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="email" lay-verify="required" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>讲师拟授学分:</label>
+                <div class="layui-input-block">
+                    <input type="number" name="lecturerScore" min="0" lay-verify="required" autocomplete="off"
+                           class="layui-input number_ph">
+                </div>
+            </div>
+        </div>
+        -->
+
+        <!-- row7 -->
+        <!--
+        <div class="layui-form-item">
+            <div class="layui-col-md6">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>项目财务收支核算单位名称:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="booksCheckUnit" lay-verify="required" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>仅限本单位人员报名:</label>
+                <div class="layui-input-block">
+                    <select name="limitInUnit" lay-filter="" lay-verify="required" lay-search="">
+                        <option value="">请选择</option>
+                        <option value="0">否</option>
+                        <option value="1">是</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>报名费:</label>
+                <div class="layui-input-block">
+                    <input type="number" name="entryFee" min="0" lay-verify="required" autocomplete="off"
+                           class="layui-input number_ph">
+                </div>
+            </div>
+        </div>
+        -->
+
+        <!-- row8 -->
+        <div class="layui-form-item">
+            <div class="layui-col-md12">
+                <label class="layui-form-label">备注:</label>
+                <div class="layui-input-block">
+                    <textarea name="remark" placeholder="最多100个汉字" class="layui-textarea" autocomplete="off"
+                              lay-verify="remark"></textarea>
+                    <!--<input type="text" name="remark" lay-verify="required" autocomplete="off"-->
+                    <!--       class="layui-input">-->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- row9 -->
+        <div class="layui-form-item">
+            <div class="layui-col-sm12">
+                <div style="text-align: center;">
+                    <button class="layui-btn" type="submit" lay-submit lay-filter="save">保存</button>
+                    <button class="layui-btn" type="submit" lay-submit lay-filter="saveToNext">保存并上报</button>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+

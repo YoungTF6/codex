@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>适宜技术申报</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.4 -->
+    <!--<link rel="stylesheet" href="/js/layui-v2.6.4/layui/css/layui.css" media="all">-->
+    <!--<script src="/js/layui-v2.6.4/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <!-- <script src="/js/layui-v2.6.8/layui/layui.js"></script> -->
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <link rel="stylesheet" href="/css/declare/syjs/declareSYJS.css">
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.p.js"></script>
+    <script type="text/javascript" src="/js/pdf/pdfobject.min.js"></script>
+
+</head>
+<body style="background-color: white;">
+<div class="layui-fluid">
+    <div class="layui-card">
+
+        <div class="layui-tab" lay-filter="declare-tab">
+            <ul class="layui-tab-title page-tab-title">
+                <li lay-id="page1" class="tab-default layui-this">适宜技术基本信息</li>
+                <li lay-id="page2" class="tab-default"><span style="color:red">*&nbsp;</span>详细信息</li>
+                <li lay-id="page3" class="tab-default">项目推广范围</li>
+                <li lay-id="page4" class="tab-default"><span style="color:red">*&nbsp;</span>项目推广</li>
+                <li lay-id="page5" class="tab-default">经费预算表</li>
+                <li lay-id="page6" class="tab-default">附件</li>
+            </ul>
+
+            <div class="layui-tab-content page-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <iframe src="modals/declare1st.html" name="ifm1"
+                            onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);console.info('onload1.....');this.remove()"></iframe>
+                </div>
+                <div class="layui-tab-item">
+                    <iframe src="modals/declare2nd.html" name="ifm2"
+                            onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);console.info('onload2.....');this.remove()"></iframe>
+                </div>
+                <div class="layui-tab-item">
+                    <iframe src="modals/declare3rd.html" name="ifm3"
+                            onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);console.info('onload3.....');this.remove()"></iframe>
+                </div>
+                <div class="layui-tab-item">
+                    <iframe src="modals/declare4th.html" name="ifm4"
+                            onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);console.info('onload4.....');this.remove()"></iframe>
+                </div>
+                <div class="layui-tab-item">
+                    <iframe src="modals/declare5th.html" name="ifm5"
+                            onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);console.info('onload5.....');this.remove()"></iframe>
+                </div>
+                <div class="layui-tab-item">
+                    <iframe src="modals/declare6th.html" name="ifm6"
+                            onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);console.info('onload6.....');this.remove()"></iframe>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div style="display: none" id="someTpl">
+
+    <!-- course.title_id cell -->
+    <div type="text/html" id="courseTitleIdCell">
+        <div class="titleTreeSelector" id="titleTreeSelector{{d.LAY_TABLE_INDEX}}" idx="{{d.LAY_TABLE_INDEX}}"
+             lay-filter="courseTitleId" data-value="{{d.titleId}}"></div>
+    </div>
+    <div type="text/html" id="courseSpecIdCell">
+        <div class="specTreeSelector" id="specTreeSelector{{d.LAY_TABLE_INDEX}}" idx="{{d.LAY_TABLE_INDEX}}"
+             lay-filter="courseSpecId" data-value="{{d.specId}}"></div>
+    </div>
+    <div type="text/html" id="courseBusinessIdCell" >
+        <!-- <div class="layui-input-block"> -->
+        <!-- <div class="businessSelector" id="businessSelector{{d.LAY_TABLE_INDEX}}" idx="{{d.LAY_TABLE_INDEX}}"
+            lay-filter="courseBusinessId" data-value="{{d.businessId}}"></div> -->
+        <select name="principalBusiness"  lay-filter="principalBusiness" lay-verify="required"
+            id="principalBusiness{{d.LAY_TABLE_INDEX}}" idx="{{d.LAY_TABLE_INDEX}}" data-value="{{d.principalBusiness}}">
+            <option >请选择</option>
+        </select>
+    </div>
+    <!-- course.teaching_method cell -->
+    <div type="text/html" id="courseTeachingMethodCell">
+        <select name="teachingMethod" id="teachingMethod{{d.LAY_TABLE_INDEX}}" idx="{{d.LAY_TABLE_INDEX}}"
+                lay-filter="teachingMethod" data-value="{{d.teachingMethod}}">
+            <option value="面授">面授</option>
+            <option value="实验技术">实验技术</option>
+        </select>
+    </div>
+
+</div>
+
+</body>
+
+<!-- 请求路径配置 -->
+<script type="text/javascript" src="/js/constant.js"></script>
+<script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+<!-- ajax全局配置 -->
+<script type="text/javascript" src="/js/axios.min.js"></script>
+<script type="text/javascript" src="/js/auth.js"></script>
+<script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+<script type="text/javascript" src="/js/moment.min.js"></script>
+<script type="text/javascript" src="/js/api/manage.js"></script>
+<script type="text/javascript" src="/js/api/number.js"></script>
+<script type="text/javascript" src="/js/api/declare_syjs.js"></script>
+
+<!-- courseTale: toolbar -->
+<script type="text/html" id="courseToolbar">
+    <a class='layui-btn layui-btn-sm' lay-event='addCourse'>添加</a>
+</script>
+
+<!-- courseTable: Operation Cell -->
+<script type="text/html" id="courseOperationCell">
+    <a class="layui-btn layui-btn-xs btn-row btn-danger-row" lay-event="delCourse">移除</a>
+</script>
+
+<!-- cycleTable: toolbar -->
+<script type="text/html" id="cycToolbar">
+    <a class='layui-btn layui-btn-sm' lay-event='addCycle'>添加周期</a>
+</script>
+
+<!-- cycleTable: Operation Cell -->
+<script type="text/html" id="cycOperCell">
+    <a class="layui-btn layui-btn-xs btn-row btn-danger-row" lay-event="delCycle">移除</a>
+</script>
+
+<!-- cycleTable: dateStart cell -->
+<script type="text/html" id="cycDsTpl">
+    <input type="text" name="dateStart" class="cycle-date" id="dateStartSel{{d.LAY_TABLE_INDEX}}" placeholder="开始日期"
+           autocomplete="off" class="layui-input">
+</script>
+
+<!-- cycleTable: dateEnd cell -->
+<script type="text/html" id="cycDeTpl">
+    <input type="text" name="dateEnd" class="cycle-date" id="dateEndSel{{d.LAY_TABLE_INDEX}}" placeholder="结束日期"
+           autocomplete="off" class="layui-input">
+</script>
+
+<!-- attachmentTable: toolbar -->
+<script type="text/html" id="attachmentToolbar">
+    <a class='layui-btn layui-btn-sm' lay-event='upload6'><i class="layui-icon">&#xe681;</i>上传真实性声明</a>
+    <!-- <a class='layui-btn layui-btn-sm' lay-event='upload7'><i class="layui-icon">&#xe67c;</i>上传申报机构执业许可证</a> -->
+    <a class='layui-btn layui-btn-sm' lay-event='upload8'><i class="layui-icon">&#xe62f;</i>上传反映技术的主要15项产出材料</a>
+    <a class='layui-btn layui-btn-sm' lay-event='upload9'><i class="layui-icon">&#xe654;</i>上传目前应用技术机构的证明材料</a>
+    <a class='layui-btn layui-btn-sm' lay-event='upload10'><i class="layui-icon">&#xe654;</i>上传其他辅助证明材料</a>
+</script>
+
+<!-- attachmentTable: operation cell -->
+<script type="text/html" id="attachmentOperationCell">
+    <a class="layui-btn layui-btn-xs btn-row" lay-event="preview">预览</a>
+    {{# if(d.category == 7 || d.category == 1) { }}
+    <a class="layui-btn layui-btn-xs btn-row" lay-event="lasted">更新</a>
+    {{# } else { }}
+    <a class="layui-btn layui-btn-xs btn-row btn-danger-row" lay-event="delete">移除</a>
+    {{# } }}
+    <!-- <a class="layui-btn layui-btn-xs btn-row btn-danger-row" lay-event="delete">移除</a> -->
+</script>
+
+<style>
+
+    .layui-col-md6, .layui-col-md3, .layui-col-md12  {
+        padding-bottom: 10px;
+    }
+
+    .font-blod {
+        font-weight: bold;
+    }
+
+    /* index */
+    .page-tab-title {
+        /*position: absolute;*/
+        /*z-index: 997*/
+    }
+
+    .page-tab-content {
+        /* padding-top: 28px; */
+        /*position: absolute;*/
+        /*top: 60px;*/
+        /*z-index: 900;*/
+        /*width: 96%;*/
+    }
+
+    .layui-input, .layui-textarea {
+        border-color: lightgrey;
+    }
+
+    .layui-input:hover, .layui-textarea:hover {
+        border-color: darkgrey !important;
+    }
+
+    /* 1-4 */
+    .page-form .page-row-item {
+        width: 80%;
+        display: inline-block;
+        float: left;
+        padding-left: 10px;
+    }
+
+    .page-form .page-row-item label {
+        display: block;
+        text-align: center;
+    }
+
+    .page-form .page-row-item div {
+        display: block;
+    }
+
+    .page-form .layui-textarea {
+        min-height: 186px;
+    }
+
+    /* page2 */
+    #projectDetailPage2 xm-select {
+        width: 99%;
+        border-color: lightgrey !important;
+    }
+
+    /* page3 */
+    #projectDetailPage3 td .layui-input {
+        border-style: none;
+    }
+
+    #projectDetailPage3 .layui-row label {
+        line-height: 46px;
+        text-align: center;
+    }
+
+    #projectDetailPage3 #grid1 {
+        border: 2px solid lightgray;
+        display: block;
+        margin: 2rem 0;
+        width: 100%;
+        min-height: 220px;
+    }
+
+    #projectDetailPage3 #grid1 > div:first-child {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        margin-top: -1.2rem;
+        margin-left: 0.5rem;
+        width: fit-content;
+        background-color: rgb(242, 242, 242);
+    }
+
+    #projectDetailPage3 #grid2 {
+        border: 2px solid lightgray;
+        display: block;
+        width: 100%;
+        height: 46px;
+    }
+
+    #projectDetailPage3 #grid34 {
+        display: flex;
+        align-items: flex-start;
+        margin-top: 20px;
+    }
+
+    #projectDetailPage3 #grid3, #grid4 {
+        display: inline-block;
+        width: 50%;
+        float: left;
+    }
+
+    #projectDetailPage3 .layui-table-header .layui-table-cell:before {
+        content: '* ';
+        color: red;
+    }
+
+    /* page3 select-cell */
+    #projectDetailPage3 .laytable-cell-1-0-8 {
+        overflow: visible;
+    }
+
+    /* #projectDetailPage3 .layui-table-box, .layui-table-body {
+        overflow-x: scroll;
+        overflow-y: visible;
+    }*/
+
+    #projectDetailPage3 td .layui-form-select {
+        margin-top: -10px;
+        margin-left: -15px;
+        margin-right: -15px;
+        border-style: none;
+    }
+
+    /* page3 tree-select-cell */
+    td .titleTreeSelector,
+    .specTreeSelector {
+        margin-top: -10px;
+        margin-left: -15px;
+        margin-right: -15px;
+    }
+
+    td xm-select {
+        border: none;
+        padding: 0 !important;
+        height: 38px !important;
+        line-height: 38px !important;
+    }
+
+    td xm-select .xm-select-default {
+        width: 20% !important;
+    }
+
+    xm-select > .xm-body .xm-search > i {
+        right: 20px;
+    }
+
+    xm-select[size='small'] .xm-label .scroll .label-content {
+        line-height: 32px !important;
+    }
+
+    /* page4 */
+    #projectDetailPage4 label {
+        white-space: nowrap;
+    }
+
+    #projectDetailPage4 #addCycleBtn {
+        display: block;
+        width: 40%;
+        margin-left: 30px;
+    }
+
+    #projectDetailPage4 .layui-disabled, .layui-disabled:hover {
+        color: slategray !important;
+        cursor: not-allowed !important;
+    }
+
+    /* page4 date-cell */
+    .cycle-date {
+        width: 100%;
+        height: 38px;
+        margin-top: -5px;
+        border: none;
+        text-align: center;
+    }
+
+</style>
+</html>
+

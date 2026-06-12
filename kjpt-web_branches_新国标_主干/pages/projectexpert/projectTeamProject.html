@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <title>分配项目</title>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <script type="text/javascript" src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="../../js/common.js"></script>
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="../../js/tools/form_validation_tool.js"></script>
+    <script type="text/javascript" src="../../js/tools/dict_tool.js"></script>
+    <script type="text/javascript" src="../../js/tools/urlTools.js"></script>
+    <script type="text/javascript" src="../../js/constantPage/projectConstant.js"></script>
+    <script type="text/javascript" src="../../js/tools/num_tool.js"></script>
+    <style>
+        body {
+            background: #fff;
+        }
+        .layui_body_box {
+            padding: 0;
+        }
+        .layui-card {
+            box-shadow: none;
+        }
+        .tab_others {
+            width: 100px !important;
+            background-color: #009688;
+            color: #ffffff;
+            margin-left: 6px;
+        }
+        .tab_this {
+            width: 100px !important;
+            background-color: #f5f5f5;
+            color: #404040;
+            margin-left: 6px;
+            border-bottom: 1px solid #F5F5F5;
+        }
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+        .layui_mess .layui-form-label {
+            width: 90px;
+        }
+        .layui_mess .layui-input-block {
+            margin-left: 120px;
+        }
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+        .condition-area .layui_display:nth-child(1)  {
+            margin-right: 15px;
+        }
+        .layui-card-body .layui-table, .layui-table-view {
+            margin: 0;
+        }
+        .layui-table-tool-temp {
+            padding-right: 10px;
+        }
+        .layui-layer-content {
+            overflow: visible !important;
+        }
+
+        #div-teamInfo {
+            margin-bottom: 15px;
+        }
+
+        .layui-disabled, .layui-disabled:hover {
+            background-color: #fafafa !important;
+            color: #000000d9 !important;
+        }
+        .layui-select-disabled .layui-edge {
+            display: none;
+        }
+        .layui-select-disabled input {
+            padding-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="layui-fluid">
+        <!-- 专家组学科 -->
+        <div class="layui-card-body layui_body_box" id="div-teamInfo">
+            <table class="layui-table" id="table-teamInfo" lay-filter="table-teamInfo"></table>
+        </div>
+
+        <div class="layui-card">
+            <!-- 标签 -->
+            <div class="layui-tab" lay-filter="tab-teamProj">
+                <ul class="layui-tab-title">
+                    <li class="tab_others tab_this tabsRounded" lay-id="allProject">选择项目</li>
+                    <li class="tab_others tabsRounded" lay-id="projectTeamProject">已分配项目<span id="projectCount"></span></li>
+                </ul>
+            </div>
+
+            <!-- 搜索 -->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area">
+                <div class="layui_mess">
+                    <div class="layui_display">
+                        <form id="form-query">
+                            <div class="layui-inline hide div-holdYear">
+                                <label class="layui-form-label">项目年度</label>
+                                <div class="layui-input-block">
+                                    <select name="holdYear" id="holdYear" lay-filter="holdYear" class="year"></select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">二级学科</label>
+                                <div class="layui-input-block">
+                                    <select name="knowledge" lay-filter="knowledge" id="knowledge" lay-verify="required" lay-search="true">
+                                        <option value="">请选择</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">三级学科</label>
+                                <div class="layui-input-block">
+                                    <select name="subjectCode" lay-filter="subjectCode" id="subjectCode" lay-verify="required" lay-search="">
+                                        <option value="">请选择</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline div-medicalType hide">
+                                <label class="layui-form-label" name="lblMedicalSystem"></label>
+                                <div class="layui-input-block">
+                                    <select name="medicalType" lay-filter="medicalType" id="medicalType" lay-search></select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">申报代码</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="projectCode" id="projectCode" placeholder="请输入" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">项目名称</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="projectName" id="projectName" placeholder="请输入" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">项目负责人</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="personName" id="personName" placeholder="请输入" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">申报单位</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="unitMainId" id="unitMainId" placeholder="请输入" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline hide">
+                                <label class="layui-form-label">是否分配</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="projectId" id="projectId" placeholder="请输入" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline div-batch hide"></div>
+                        </form>
+                    </div>
+
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="tableOp.init()" lay-filter="table-search" data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>&nbsp;查询</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 项目表 -->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="table-project" lay-filter="table-project"></table>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 表头 -->
+    <script type="text/html" id="bar">
+        <a class="layui-btn layui-btn-sm" lay-event="distribution">分配项目</a>
+    </script>
+    <script type="text/html" id="barForTwo">
+        <a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="removeTeam">移出本组</a>
+    </script>
+    <script type="text/javascript">
+        const   localSession        = layui.sessionData('ProjectTeamInfo'),
+                { teamId, teamName, year } = localSession,
+                standardKindId      = dictTool.getStandardKindId(),
+                flag_guangxi        = StandardKind.GUANG_XI == standardKindId,
+                medicalType         = dictTool.getManagerMedicalType(),
+                unitUserType        = dictTool.getUnitUserType(),
+                flag_guangDong      = StandardKind.GUANG_DONG == standardKindId,
+                flag_medicalType    = flag_guangDong && unitUserType == 5;
+
+        let     dataStatus          = '',
+                doubleForRowBar     = true,
+                expertGroup         = '',
+                toolBar             = '#bar';
+
+
+        layui.use(['table', 'element','form', 'laydate'], () => {
+            let { table, form, layer, laydate, element } = layui, loadIdx = layer.load(1, { shade: [ 0.3 ] });
+
+
+            /** 初始化页面 */
+            $(() => {
+                getTeamInfo();
+
+                renderLables();
+                initYearSel();
+                if (flag_guangDong) $('.div-medicalType').css('display', 'inline-block');
+                else $('.div-holdYear').css('display', 'inline-block');
+
+                initKnowledgeSelBatch();
+                initProjectTypeSel();
+                dictTool.initTitleSel('#titleId');
+                if (flag_guangxi) {
+                    $('.div-batch').removeClass('hide')
+                        .load('../mod/comFormItem.html .form-batch', (response, status) => form.render('select'));
+                }
+
+                tableOp.init();
+
+                form.render();
+                layer.close(loadIdx);
+            });
+
+            window.initYearSel = () => {
+                $('.year').empty();
+                let data = dictTool.getYear('年度');
+                if (data && data.length > 0) {
+                    $.each(data, (i, item) => $('.year').append(new Option(item, item)));
+                    form.on('select(holdYear)', data => initKnowledgeSelBatch());
+                }
+                form.render('select');
+            };
+
+            window.initKnowledgeSelBatch = () => {
+                dictTool.initKnowledgeSel('#knowledge', '二级学科', { ...getVerParams(), knowledgeType: 2 });
+                $('#subjectCode').find('option:gt(0)').remove();
+                let pId = $('#knowledge').val();
+                if (pId) dictTool.initKnowledgeSel('#subjectCode', '三级学科', { ...getVerParams(), knowledgeType: 3, knowledgeTwoId: pId });
+
+                form.on('select(knowledge)', data => {
+                    $('#subjectCode').find('option:gt(0)').remove();
+                    let pId = data.value;
+                    if (pId) dictTool.initKnowledgeSel('#subjectCode', '三级学科', { ...getVerParams(), knowledgeType: 3, knowledgeTwoId: pId });
+                    form.render();
+                });
+
+                form.render('select');
+            };
+
+            window.initProjectTypeSel = () => {
+                let options = '<option value="2">中医</option>';
+                if (dictTool.getUnitId() !== '218000') options = '<option value="">全部</option><option value="1">西医</option>' + options;
+                $('#medicalType').empty().append(options);
+
+                if (flag_medicalType && medicalType) {
+                    $('#medicalType').attr('disabled', true).val(medicalType);
+                    $('.div-medicalType').css('display', 'inline-block');
+                }
+                
+                form.render('select');
+            };
+
+            
+            /** 标签 */
+            $('.tab_others').on('click', function () {
+                let index = $(this).index();
+                $(this).addClass('tab_this').siblings().removeClass('tab_this');
+            });
+            element.on('tab(tab-teamProj)', function () {
+                $('#projectExpert').next().remove();
+                let type = this.getAttribute('lay-id');
+                if (type === 'allProject') {
+                    dataStatus      = '';
+                    doubleForRowBar = true;
+                    expertGroup     = '';
+                    toolBar         = '#bar';
+                }
+                else if (type==='projectTeamProject') {
+                    dataStatus      = '';
+                    doubleForRowBar = false;
+                    expertGroup     = localSession.proTeaId;
+                    toolBar         = '#barForTwo';
+                }
+                tableOp.init();
+            });
+
+
+            window.tableOp = {
+
+                init() {
+                    table.render({
+                        elem            : '#table-teamInfo',
+                        id              : 'table-teamInfo',
+                        defaultToolbar  : [],
+                        cols            : [ [
+                            { field: 'knowledge', title: '二级学科', align: 'center' },
+                            { field: 'knowledgeName', title: '三级学科', align: 'center' }
+                        ] ],
+                        data            : [
+                            { knowledge: localSession.proTeTwoName, knowledgeName: localSession.proTeName, projectTeamId: teamId }
+                        ]
+                    });
+
+                    table.render({
+                        elem            : '#table-project',
+                        url             : huayi_projectscore_url + 'project/teamForProject',
+                        defaultToolbar  : [],
+                        where           : tableOp.getQueryParams(),
+                        cols            : [ [
+                            { fixed: 'left', type: 'checkbox', width: 40, title: '选择', align: 'center' },
+                            { fixed: 'left', field: 'projectCode', title: '项目编号', sort: true, width: 200, align: 'center' },
+                            { fixed: 'left', field: 'projectName', title: '项目名称', sort: true, minWidth: 200 },
+                            { fixed: 'left', field: 'expertGroup', title: '分配情况', width: 110, align: 'center', sort: true, hide: !doubleForRowBar, 
+                                templet: d => {
+                                    let text = d.expertGroup ? '已分配' : '未分配', clazz = d.expertGroup ? 'layui-bg-green' : 'layui-bg-orange'
+                                    return `<span class="layui-badge ${clazz}">${text}</span>`;
+                                } },
+                            { field: 'applyUnit', title: '申报单位', sort: true, minWidth: 180 },
+                            { field: 'personName', title: '项目负责人', sort: true, minWidth: 150, align: 'center' },
+                            { field: 'subjectTwo', title: '二级学科', sort: true, minWidth: 180, align: 'center' },
+                            { field: 'knowledgeName', title: '三级学科', sort: true, minWidth: 180, align: 'center' }
+                        ] ],
+                        toolbar         : toolBar,
+                        cellMinWidth    : 100,
+                        id              : 'table-project',
+                        height          : 'full-294',
+                        page            : true,
+                        limit           : 10,
+                        limits          : [10, 50, 100, 150, 200],
+                        parseData       : res => {
+                            return {
+                                'code'  : res.status === 200 ? 0 : res.status, // 解析接口状态
+                                'msg'   : res.message, // 解析提示文本
+                                'count' : res.data.recordsTotal, // 解析数据长度
+                                'data'  : res.data.records, // 解析数据列表
+                                'page'  : res.data.pageNum, // 当前页
+                                'limit' : res.data.pageSize, // 每页条数
+                            };
+                        },
+                        request         : {
+                            pageName    : 'pageNum', // 页码的参数名称，默认：page
+                            limitName   : 'pageSize' // 每页数据量的参数名，默认：limit
+                        }
+                    });
+            
+                    tableOp.initListener();
+                },
+
+                initListener () {
+                    table.on('toolbar(table-project)', obj => {
+                        let { event } = obj,
+                            tableData   = table.checkStatus('table-project'),
+                            projectIds  = [];
+
+                        if ([ 'distribution', 'removeTeam' ].includes(event)) {
+                            if (tableData.data.length > 0) {
+                                tableData.data.forEach(item => projectIds.push(item.projectId));
+                            } else {
+                                layer.msg('请选择项目', { icon: 7, time: 1500 });
+                                return;
+                            }
+                        }
+
+                        if (event === 'distribution') {
+                            let teamInfo = layui.sessionData('ProjectTeamInfo'),
+                                selectedLen = tableData.data.length,
+                                currentCount = Number.parseInt(teamInfo.projectCount || 0, 10),
+                                maxProjNum = Number.parseInt(teamInfo.maxProjNum || 0, 10);
+
+                            if (flag_guangxi && maxProjNum > 0 && (selectedLen + currentCount) > maxProjNum) {
+                                layer.msg(`共选择<span class="text-kw">${selectedLen}</span>个项目，超出最大项目数限制（本组最大项目数为<span class="text-kw">${maxProjNum}</span>，已分配数为<span class="text-kw">${currentCount}</span>）`, { icon: 7, time: 2500 });
+                                return;
+                            }
+
+                            $.ajax({
+                                type        : 'post',
+                                url         : huayi_projectscore_url + 'project/addTeam',
+                                data        : JSON.stringify({ teamId: localSession.proTeaId, projectIds: projectIds }),
+                                contentType : 'application/json;charset=UTF-8',
+                                dataType    : 'json',
+                                success     : res => {
+                                    if (res.status == 200 && res.success == true) tableOp.callback();
+                                    else layer.msg('操作失败', { icon: 7, time: 1500 });
+                                },
+                                error       : () => layer.msg('操作失败', { icon: 7, time: 1500 })
+                            });
+                        }
+                        else if (event === 'removeTeam') {
+                            $.ajax({
+                                type        : 'post',
+                                url         : huayi_projectscore_url + 'project/removeTeam',
+                                data        : JSON.stringify(projectIds),
+                                contentType : 'application/json;charset=UTF-8',
+                                dataType    : 'json',
+                                success     : res => {
+                                    if (res.status == 200 && res.success == true) tableOp.callback();
+                                    else layer.msg('操作失败', { icon: 7, time: 1500 });
+                                },
+                                error       : () => layer.msg('操作失败', { icon: 7, time: 1500 })
+                            });
+                        }
+
+                    });
+                
+                    table.on('tool(table-project)', obj => {
+                        let { event, data } = obj;
+
+                        if (event === '') {}
+
+                    });
+                },
+
+                callback() {
+                    getTeamInfo();
+                    table.reload('table-project');
+                    if (window != parent.window) window.parent.tableOp.init();
+                    layer.msg('操作成功', { icon: 1, time: 1500 });
+                },
+
+                getQueryParams(data) {
+                    return { ...$('#form-query').serializeObject({ includeDisabled: true }),
+                        expertGroup         : expertGroup,
+                        cmeStandardKindId   : dictTool.getStandardKindId(),
+                        unitId              : dictTool.getUnitId(),
+                        unitUserType        : dictTool.getUnitUserType(),
+                        teamId              : flag_guangDong ? teamId : '',
+                        holdYear            : flag_guangDong ? year : $('#holdYear').val(),
+                        batch               : $('#batch').val(),
+                        ...data
+                    }
+                }
+
+            };
+
+
+            window.getTeamInfo = () => {
+                $.ajax({
+                    type        : 'get',
+                    url         : huayi_personorg_url + 'projectTeam/getTeamInfo',
+                    contentType : 'application/json;charset=UTF-8',
+                    dataType    : 'json',
+                    data        : { teamId: teamId },
+                    success     : res => {
+                        if (res.status == 200 && res.success == true) {
+                            let data = res.data;
+                            document.getElementById('projectCount').innerText = '（' + data.projectCount + '）';
+                            layui.sessionData('ProjectTeamInfo', { key: 'projectCount', value: data.projectCount });
+                            layui.sessionData('ProjectTeamInfo', { key: 'expertCount', value: data.expertCount });
+                            layui.sessionData('ProjectTeamInfo', { key: 'maxProjNum', value: data.maxProjNum });
+                        }
+                        else layer.msg('获取专家组信息失败', { icon: 7, time: 1500 });
+                    },
+                    error       : () => layer.msg('获取专家组信息失败', { icon: 7, time: 1500 })
+                });
+            }
+
+
+            window.getVerParams = () => ({
+                cmeStandardKindId   : standardKindId,
+                versionYear         : year
+            });
+
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <title>会员统计查询</title>
+
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="../../js/auth.js"></script>
+
+    <style>
+        .layui-card-body.layui_body_box {
+            padding: 0 !important;
+        }
+        .layui-form.layui-border-box.layui-table-view {
+            margin: 0 !important;
+        }
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+        .summary-row {
+            display: flex;
+            gap: 12px;
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            background: #fff;
+            align-items: center;
+        }
+        .summary-item {
+            min-width: 170px;
+            height: 58px;
+            border: 1px solid #e6e6e6;
+            border-radius: 4px;
+            padding: 8px 12px;
+            box-sizing: border-box;
+        }
+        .summary-item label {
+            display: block;
+            color: #666;
+            line-height: 18px;
+        }
+        .summary-item span {
+            display: block;
+            margin-top: 4px;
+            font-size: 22px;
+            line-height: 24px;
+            color: #1f2329;
+            font-weight: 600;
+        }
+        .summary-item .summary-rate {
+            margin-left: 8px;
+            font-size: 14px;
+            line-height: 22px;
+            color: #009688;
+            font-weight: 400;
+        }
+        .summary-item em {
+            font-style: normal;
+        }
+        .summary-action {
+            margin-left: auto;
+        }
+        .member-stat-date .layui-form-label {
+            width: 100px;
+        }
+        .member-stat-date .layui-input-block {
+            margin-left: 130px;
+        }
+        #memberSubmitStatisticsTable {
+            margin: 0;
+        }
+    </style>
+</head>
+<body class="body-area">
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area">
+                <div class="layui_mess">
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">统计年度</label>
+                            <div class="layui-input-block">
+                                <select name="checkYear" id="checkYear" lay-filter="checkYear"></select>
+                            </div>
+                        </div>
+                        <div class="layui-inline member-stat-date">
+                            <label class="layui-form-label">上报开始时间</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="submitStartDate" autocomplete="off" readonly class="layui-input" placeholder="请选择开始时间">
+                            </div>
+                        </div>
+                        <div class="layui-inline member-stat-date">
+                            <label class="layui-form-label">上报截止时间</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="submitEndDate" autocomplete="off" readonly class="layui-input" placeholder="请选择截止时间">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">审核状态</label>
+                            <div class="layui-input-block">
+                                <select name="bizState" id="bizState">
+                                    <option value="">全部</option>
+                                    <option value="10">审核中</option>
+                                    <option value="20">审核退回</option>
+                                    <option value="30">终审通过</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" id="searchBtn" lay-filter="table-search" data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-row">
+                <div class="summary-item">
+                    <label>报名总人数</label>
+                    <span id="submitTotal">0</span>
+                </div>
+                <div class="summary-item">
+                    <label>已接受人数</label>
+                    <span><em id="acceptedTotal">0</em><em class="summary-rate" id="acceptedRate">0.00%</em></span>
+                </div>
+                <div class="summary-item">
+                    <label>待处理人数</label>
+                    <span id="pendingTotal">0</span>
+                </div>
+                <div class="summary-action">
+                    <a class="layui-btn layui-btn-sm" id="exportBtn">
+                        <i class="layui-icon layui-icon-download-circle layuiadmin-button-btn"></i>导出
+                    </a>
+                </div>
+            </div>
+
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="memberSubmitStatisticsTable" lay-filter="memberSubmitStatisticsTable"></table>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        layui.use(['table', 'form', 'laydate', 'jquery', 'layer'], function () {
+            var table = layui.table;
+            var form = layui.form;
+            var laydate = layui.laydate;
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var currentYear = new Date().getFullYear();
+            var exporting = false;
+
+            function setExportButtonDisabled(disabled) {
+                $('#exportBtn')
+                    .toggleClass('layui-btn-disabled', disabled)
+                    .attr('aria-disabled', disabled ? 'true' : 'false');
+            }
+
+            function renderYearOptions() {
+                var options = '';
+                for (var i = currentYear; i >= currentYear - 2; i--) {
+                    options += '<option value="' + i + '">' + i + '</option>';
+                }
+                $('#checkYear').html(options).val(currentYear);
+                form.render('select');
+            }
+
+            function yearFirstDay() {
+                var year = $('#checkYear').val();
+                return year + '-01-01';
+            }
+
+            function yearLastDay() {
+                var year = $('#checkYear').val();
+                return year + '-12-31';
+            }
+
+            function clearSubmitDatePickers() {
+                $('#submitStartDate').val('');
+                $('#submitEndDate').val('');
+            }
+
+            function openSubmitStartDatePicker() {
+                laydate.render({
+                    elem: '#submitStartDate',
+                    trigger: 'manual',
+                    show: true,
+                    min: yearFirstDay(),
+                    max: $('#submitEndDate').val() || yearLastDay(),
+                    done: function () {
+                        validateSubmitDateRange('start');
+                    }
+                });
+            }
+
+            function openSubmitEndDatePicker() {
+                laydate.render({
+                    elem: '#submitEndDate',
+                    trigger: 'manual',
+                    show: true,
+                    min: $('#submitStartDate').val() || yearFirstDay(),
+                    max: yearLastDay(),
+                    done: function () {
+                        validateSubmitDateRange('end');
+                    }
+                });
+            }
+
+            function validateSubmitDateRange(changedField) {
+                var startDate = $('#submitStartDate').val();
+                var endDate = $('#submitEndDate').val();
+                if (startDate && endDate && startDate > endDate) {
+                    $('#submitEndDate').val('');
+                    if (changedField === 'end') {
+                        layer.msg('上报截止时间不能早于开始时间', { icon: 7, time: 1500 });
+                    }
+                }
+            }
+
+            function dateParams() {
+                return {
+                    startDate: $('#submitStartDate').val() || yearFirstDay(),
+                    endDate: $('#submitEndDate').val() || yearLastDay()
+                };
+            }
+
+            function queryParams() {
+                var dates = dateParams();
+                var params = {
+                    checkYear: $('#checkYear').val(),
+                    startDate: dates.startDate,
+                    endDate: dates.endDate
+                };
+                var bizState = $('#bizState').val();
+                if (bizState) {
+                    params.bizState = bizState;
+                }
+                return params;
+            }
+
+            function renderSummary(summary) {
+                summary = summary || {};
+                $('#submitTotal').text(summary.submitTotal || 0);
+                $('#acceptedTotal').text(summary.acceptedTotal || 0);
+                $('#acceptedRate').text(summary.acceptedRate || calculateAcceptedRate(summary));
+                $('#pendingTotal').text(summary.pendingTotal || 0);
+            }
+
+            function showExportError(xhr) {
+                var blob = xhr && xhr.response;
+                if (blob && blob.type && blob.type.indexOf('json') > -1) {
+                    var reader = new FileReader();
+                    reader.onload = function () {
+                        var message = '导出失败';
+                        try {
+                            var result = JSON.parse(reader.result);
+                            message = result.msg || result.message || message;
+                        } catch (e) {}
+                        layer.msg(message, { icon: 7, time: 1500 });
+                    };
+                    reader.readAsText(blob);
+                    return;
+                }
+                layer.msg('导出失败', { icon: 7, time: 1500 });
+            }
+
+            function exportStatistics() {
+                if (exporting) {
+                    return;
+                }
+                exporting = true;
+                setExportButtonDisabled(true);
+                var loadIndex = layer.load(2);
+                $.ajax({
+                    type: 'GET',
+                    url: huayi_personorg_url + 'memberSubmit/query/statistics/export',
+                    data: queryParams(),
+                    xhrFields: {
+                        responseType: 'blob'
+                    },
+                    success: function (blob, status, xhr) {
+                        if (blob && blob.type && blob.type.indexOf('json') > -1) {
+                            showExportError({ response: blob });
+                            return;
+                        }
+                        var href = window.URL.createObjectURL(blob);
+                        var downloadElement = document.createElement('a');
+                        downloadElement.href = href;
+                        downloadElement.download = '会员统计查询.xlsx';
+                        document.body.appendChild(downloadElement);
+                        downloadElement.click();
+                        document.body.removeChild(downloadElement);
+                        window.URL.revokeObjectURL(href);
+                    },
+                    error: function (xhr) {
+                        showExportError(xhr);
+                    },
+                    complete: function () {
+                        layer.close(loadIndex);
+                        exporting = false;
+                        setExportButtonDisabled(false);
+                    }
+                });
+            }
+
+            function calculateAcceptedRate(summary) {
+                var submitTotal = Number(summary.submitTotal || 0);
+                var acceptedTotal = Number(summary.acceptedTotal || 0);
+                if (!submitTotal) {
+                    return '0.00%';
+                }
+                return ((acceptedTotal * 100) / submitTotal).toFixed(2) + '%';
+            }
+
+            function renderTable() {
+                table.render({
+                    elem: '#memberSubmitStatisticsTable',
+                    url: huayi_personorg_url + 'memberSubmit/query/statistics',
+                    headers: {
+                        'Authorization': localStorage.getItem('token'),
+                        'KJPT-USER-ID': localStorage.getItem('user-id')
+                    },
+                    where: queryParams(),
+                    cols: [[
+                        { field: 'personNo', title: '人员编号', align: 'center', minWidth: 120 },
+                        { field: 'personName', title: '姓名', align: 'center', minWidth: 100 },
+                        { field: 'sex', title: '性别', align: 'center', minWidth: 80 },
+                        { field: 'titleName', title: '职称', align: 'center', minWidth: 120 },
+                        { field: 'mobile', title: '联系电话', align: 'center', minWidth: 130 },
+                        { field: 'submitTime', title: '上报时间', align: 'center', minWidth: 160 },
+                        { field: 'submitUnitName', title: '上报单位', align: 'center', minWidth: 180 },
+                        { field: 'currentUnitName', title: '当前单位', align: 'center', minWidth: 180 },
+                        { field: 'bizStateName', title: '审核状态', align: 'center', minWidth: 110 },
+                        { field: 'remark', title: '备注', align: 'center', minWidth: 180 }
+                    ]],
+                    cellMinWidth: 100,
+                    id: 'memberSubmitStatisticsTable',
+                    height: 'full-240',
+                    page: true,
+                    limit: 10,
+                    limits: [10, 50, 100, 150, 200],
+                    parseData: function (res) {
+                        var page = res.data && res.data.page ? res.data.page : {};
+                        if (res.status === 200) {
+                            renderSummary(res.data ? res.data.summary : null);
+                        } else {
+                            renderSummary(null);
+                            layer.msg(res.msg || '查询失败', { icon: 7, time: 1500 });
+                        }
+                        return {
+                            code: res.status === 200 ? 0 : res.status,
+                            msg: res.msg,
+                            count: page.recordsTotal || 0,
+                            data: page.records || [],
+                            page: page.pageNum,
+                            limit: page.pageSize
+                        };
+                    },
+                    request: {
+                        pageName: 'pageNum',
+                        limitName: 'pageSize'
+                    }
+                });
+            }
+
+            form.on('select(checkYear)', function () {
+                clearSubmitDatePickers();
+            });
+
+            $('#submitStartDate').click(openSubmitStartDatePicker);
+            $('#submitEndDate').click(openSubmitEndDatePicker);
+
+            $('#searchBtn').click(function () {
+                table.reload('memberSubmitStatisticsTable', {
+                    where: queryParams(),
+                    page: { curr: 1 }
+                });
+            });
+
+            $('#exportBtn').click(exportStatistics);
+
+            renderYearOptions();
+            clearSubmitDatePickers();
+            renderTable();
+        });
+    </script>
+</body>
+</html>

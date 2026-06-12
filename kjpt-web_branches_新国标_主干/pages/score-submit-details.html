@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>送审明细</title>
+    <!-- LayUI CSS -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css">
+    <!-- LayUI JS -->
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <style type="text/css">
+        .layui-table-view .layui-form-checkbox, .layui-table-view .layui-form-radio, .layui-table-view .layui-form-switch{ margin-right: 10px;margin-bottom: 10px; }
+        .warning-text { color: red; margin-left: 20px; }
+    </style>
+</head>
+<body>
+    <div class="layui-form">
+        <div class="layui-fluid">
+            <div class="layui-card">
+                <div class="layui-card-body" style="padding: 0 0">
+                    <div class="layui-table-tool" style="width: auto; background-color: white;">
+                        <table id="score_details" lay-filter="score_details"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <script type="text/javascript">
+        // 配置对象，统一管理ip端口
+        var config = {
+            baseUrl: huayi_projectscore_url
+        };
+        
+        // 获取URL参数
+        function getUrlParam(name) {
+            var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)');
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]);
+            return null;
+        }
+        
+        // 获取页面参数
+        var zykId = getUrlParam('zykId');
+        var xxkId = getUrlParam('xxkId');
+        var type = zykId ? 'zyk' : 'xxk';
+        var cmeYear = getUrlParam('cmeYear');
+        console.log('详情年度:', cmeYear);
+        var comPersonId = zykId ? zykId : xxkId;
+        
+        // 根据课程类型设置页面标题
+        if (type === 'zyk') {
+            document.title = '专业课送审明细';
+        } else {
+            document.title = '选修课送审明细';
+        }
+        
+        layui.config({
+            base: "https://cdn.91huayi.com/hywupload/common/layui/v121/std/" //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use(['form', 'table', 'laydate', 'jquery', 'layer'], function () {
+            var form = layui.form,
+                table = layui.table;
+
+            // 渲染表格
+            var detail_table = table.render({
+                elem: '#score_details'
+                , height: 'full-198'
+                , loading: true
+                , method: 'get'
+                , defaultToolbar: ['filter']
+                , page: false //禁用分页
+                , cols: [
+                    [ //表头
+                        { field: 'projName', title: '课程名称', width: 120, align: 'left' }
+                        , { field: 'totalPeriod', title: '学时', width: 80, align: 'center' }
+                        , { field: 'totalScore', title: '学分', width: 80, align: 'center' }
+                        , { field: 'addTime', title: '提交时间', width: 180, align: 'center' }
+                        , { field: 'checkStatus', title: '审核状态', width: 120, align: 'center'}
+                        , { field: 'checkTime', title: '审核时间', width: 150, align: 'center' }
+                        , { field: 'syncStatus', title: '同步状态', width: 130, align: 'center'}
+                        , { field: 'message', title: '备注', width: 150, align: 'left' }
+                    ]
+                ]
+                , url: type === 'zyk' ? config.baseUrl + '/score/submit/getSpecialCourseDetail' : config.baseUrl + '/score/submit/getElectiveCourseDetail' //数据接口
+                , where: {
+                    comPersonId: comPersonId,
+                    cmeYear:cmeYear
+                }
+                , parseData: function(res) {
+                    console.log('表格数据解析：', res);
+                    if (res && res.msg === "成功" && Array.isArray(res.data)) {
+                        return {
+                            "code": 0,
+                            "msg": "",
+                            "count": res.data.length,
+                            "data": res.data
+                        };
+                    } else if (res && res.msg === "成功" && res.data) {
+                        return {
+                            "code": 0,
+                            "msg": "",
+                            "count": 1,
+                            "data": [res.data]
+                        };
+                    } else {
+                        return {
+                            "code": 1,
+                            "msg": (res && res.msg) || "获取详情失败",
+                            "count": 0,
+                            "data": []
+                        };
+                    }
+                }
+            });
+            
+            // 返回按钮已移除
+
+            
+            form.render();
+        });
+        
+        // 日期格式化
+        function Format(datetime, fmt) {
+            if (parseInt(datetime) == datetime) {
+                if (datetime.length == 10) {
+                    datetime = parseInt(datetime) * 1000;
+                } else if (datetime.length == 13) {
+                    datetime = parseInt(datetime);
+                }
+            }
+            datetime = new Date(datetime);
+            var o = {
+                "M+": datetime.getMonth() + 1,                 //月份   
+                "d+": datetime.getDate(),                    //日   
+                "h+": datetime.getHours(),                   //小时   
+                "m+": datetime.getMinutes(),                 //分   
+                "s+": datetime.getSeconds(),                 //秒   
+                "q+": Math.floor((datetime.getMonth() + 3) / 3), //季度   
+                "S": datetime.getMilliseconds()             //毫秒   
+            };
+            if (/(y+)/.test(fmt))
+                fmt = fmt.replace(RegExp.$1, (datetime.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o)
+                if (new RegExp("(" + k + ")").test(fmt))
+                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            return fmt;
+        }
+    </script>
+</body>
+</html>

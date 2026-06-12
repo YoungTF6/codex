@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <title>单位达标情况查询（行政）</title>
+
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="../../js/axios.min.js"></script>
+    <script type="text/javascript" src="../../js/auth.js"></script>
+    <!-- 工具 -->
+    <script type="text/javascript" src="../../js/base64.js"></script>
+    <script type="text/javascript" src="/js/api/xlsx.full.min.js"></script>
+    <script type="text/javascript" src="/js/api/xlsx.bundle.js"></script>
+
+    <style>
+        .layui-card-body.layui_body_box {
+            padding: 0 !important;
+        }
+        .layui-form.layui-border-box.layui-table-view {
+            margin: 0 !important;
+        }
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+
+        .layui-treeSelect .ztree li {
+            line-height: initial !important;
+            padding: 2px 0;
+        }
+        .table_toolbar_right {
+            float: right;
+            position: relative;
+            right: -120px;
+        }
+
+        #content-left {
+            display: inline-block;
+            width: 250px;
+            border: 1px solid #e6e6e6;
+            margin: 0 10px 0 0;
+            vertical-align: top;
+            overflow: auto;
+            padding: 10px;
+        }
+        #content-right {
+            display: inline-block;
+            width: calc(100% - 290px);
+            vertical-align: top;
+        }
+        #unit-tree {
+            width: 310px;
+        }
+        .div-statistical-year span {
+            float: left;
+        }
+        .div-statistical-year .span-left {
+            width: 75px; 
+            display: inline-block;
+        }
+        .div-statistical-year .span-right {
+            display: inline-block; 
+            margin-left: 10px; 
+            width: calc(186.4px - 15px); 
+            color: blue;
+            height: 38px;
+            line-height: 38px;
+        }
+        #statistical-years {
+            width: 187px;
+            float: left;
+        }
+    </style>
+</head>
+
+<body class="body-area">
+
+    <div class="layui-fluid">
+
+        <!-- 下级单位树 -->
+        <div class="layui-card" id="content-left">
+            <div id="unit-tree"></div>
+        </div>
+
+
+        <!-- 统计表格 -->
+        <div class="layui-card" id="content-right">
+
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area">
+                <div class="layui_mess">
+
+                    <!-- 筛选项 -->
+                    <div class="layui_display">
+                        <!-- 统计年度（单选） -->
+                        <div class="layui-inline layui-form div-statistical-year hide" lay-filter="div-statistical-year">
+                            <label class="layui-form-label">统计年度</label>
+                            <div class="layui-input-block">
+                                <span class="span-left">
+                                    <select id="statistical-year" lay-filter="statistical-year"></select>
+                                </span>
+                                <span class="span-right"><d1></d1>&nbsp;至&nbsp;<d2></d2></span>
+                            </div>
+                        </div>
+                        <!-- 统计年度（复选） -->
+                        <div class="layui-inline layui-form" lay-filter="div-statistical-years">
+                            <label class="layui-form-label">统计年度</label>
+                            <div class="layui-input-block">
+                                <div id="statistical-years" class="layui-input-inline" data-name="unitLevels"></div>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-form" lay-filter="">
+                            <label class="layui-form-label">统计维度</label>
+                            <div class="layui-input-block">
+                                <select id="statistical-dimension" lay-filter="statistical-dimension">
+                                    <option value="UNIT_NAME">按单位名称统计</option>
+                                    <option value="TITLE_LEVEL">按职称级别统计</option>
+                                    <option value="TITLE">按职称统计</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-form" lay-filter="dept-select-div">
+                            <label class="layui-form-label">职称</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input"
+                                        lay-filter="text_title_names" id="text_title_names"
+                                        placeholder="全部">
+                                <input type="hidden" autocomplete="off" class="layui-input"
+                                        lay-filter="hidden_title_ids " id="hidden_title_ids">
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-form" lay-filter="">
+                            <label class="layui-form-label">在编状态</label>
+                            <div class="layui-input-block">
+                                <select id="series-state" lay-filter="series-state">
+                                    <option value="ALL">全部</option>
+                                    <option value="IN_THE_SERIES">在编</option>
+                                    <option value="OUT_OF_THE_SERIES">不在编</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-form" lay-filter="unitPropertyDiv" >
+                            <label class="layui-form-label">单位属性</label>
+                            <div class="layui-input-block">
+                                <select id="unitProperty" lay-filter="unitProperty"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui_display">
+                        <div class="layui-inline btn-search-positon">
+                            <a class="layui-btn layui-btn-sm" onclick="configTable()"
+                                    id="searchBtn" lay-filter="table-search" data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <!-- 表格区域 -->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" style="margin: 0px 0px;"
+                        id="table_compliance" lay-filter="table_compliance">
+                </table>
+            </div>
+            <div class="layui-card-body layui_body_box" style="margin: 0px 0px;display: none;">
+                <table class="layui-table" style="margin: 0px 0px;display: none;" 
+                        id="table_compliance_hide" lay-filter="table_compliance_hide">
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- 表头工具条 -->
+    <script type="text/html" id="table_toolbar">
+        <span class="table_toolbar_right">
+            <a class="layui-btn layui-btn-sm" lay-event="export_excel_unit" id="export_excel_unit">
+                按单位导出Excel</a>
+            <a class="layui-btn layui-btn-sm" lay-event="export_excel">按查询结果导出Excel</a>
+        </span>
+    </script>
+
+
+    <script type="text/javascript">
+        const unitId            = localStorage.getItem('unit-id'),
+              unitName          = localStorage.getItem('unit-name'),
+              username          = localStorage.getItem('user-name'),
+              cmeStandardKindId = localStorage.getItem('standardkind-id');
+
+        let   menuUnitId        = localStorage.getItem('menu-unit-id');
+              menuUnitId        = (null == menuUnitId || menuUnitId.trim().length < 1) ? unitId : menuUnitId;
+
+
+        layui.config({
+            base : '../../js/layui/ext/'
+        }).extend({
+            treeSelect : 'treeSelect',
+            eleTree    : 'eleTree',
+            xmSelect: 'xm-select',
+        });
+
+        /* 全局配置及引入相关的模块 */
+        layui.use(['table', 'form', 'jquery', 'layer', 'eleTree', 'xmSelect'], function() {
+            var table       = layui.table,
+                form        = layui.form,
+                $           = layui.jquery,
+                layer       = layui.layer,
+                xmSelect = layui.xmSelect,
+                eleTree     = layui.eleTree;
+
+
+            var statisticalYearList = [],
+                xmSelectYears,
+                eleTreeUnit         = null;
+
+
+            /* 页面初始化 */
+            $(() => {
+                // 单位树
+                let unitDict = {},
+                    rootKey  = ''; // 虚拟root节点
+                $.ajax({
+                    type        : 'get',
+                    url         : huayi_personorg_url + 'comunit/childrenAllTreeNew?unitId=' + menuUnitId + '&depth=2',
+                    contentType : 'application/json;charset=UTF-8',
+                    dataType    : 'json',
+                    async       : false,
+                    success     : res => {
+                        let rootNode             = [{ name : '全选', id : rootKey }];
+                            rootNode[0].children = res[0].children;
+                        eleTreeUnit = eleTree({
+                            el                  : '#unit-tree',
+                            defaultExpandedKeys : [rootKey],
+                            defaultCheckedKeys  : [rootKey],
+                            expandOnClickNode   : false,
+                            highlightCurrent    : true,
+                            showCheckbox        : true,
+                            data                : rootNode,
+                            sort                : true,
+                            initSort            : {
+                                field : 'order',
+                                type  : 'asc'
+                            },
+                            request             : { // 对于树形数据字段名重定义
+                                name     : 'name',
+                                key      : 'id',
+                                children : 'children',
+                                pid      : 'pid'
+                            },
+                            customText          : function (data) {
+                                let s                 = data.name;
+                                    unitDict[data.id] = data.name;
+
+                                return s;
+                            }
+                        });
+                    }
+                });
+
+                // 统计年度
+                $.ajax({
+                    url      : huayi_sjwh_url + 'cmeYear',
+                    type     : 'get',
+                    async    : false,
+                    dataType : 'json',
+                    data     : { cmeStandardKindId : cmeStandardKindId },
+                    success  : function(res) {
+                        if (res.status == 200) {
+                            let option = '';
+                            statisticalYearList = res.data;
+
+                            for (let i = 0; i < 10 && i < statisticalYearList.length; i++) {
+                                option += '<option value="' + statisticalYearList[i].cmeYearId + '">' +
+                                        statisticalYearList[i].cmeYear + '</option>';
+                            }
+                            $('#statistical-year').append(option);
+                            form.render('select', 'div-statistical-year');
+                            $('#statistical-year').parent().next().find('d1').html(statisticalYearList[0].startDate);
+                            $('#statistical-year').parent().next().find('d2').html(statisticalYearList[0].endDate);
+
+                             // 复选框
+                            xmSelectYears = xmSelect.render({
+                                el: '#statistical-years',
+                                max: 5,
+                                maxMethod(seles, item){
+                                    alert(`最多选择5个年份`)
+                                },
+                                // autoRow: true,
+                                name: 'statistical-years',
+                                initValue: [statisticalYearList[0].cmeYearId],
+                                data: function () {
+                                    var unitLevels = new Array();
+                                    if (statisticalYearList != null && statisticalYearList.length > 0) {
+                                        for (var i = 0; i < statisticalYearList.length; i++) {
+                                            unitLevels.push({ "name": statisticalYearList[i].cmeYear, "value": statisticalYearList[i].cmeYearId });
+                                        }
+                                    }
+                                    return unitLevels;
+                                },
+                            });
+                            form.render('select', 'div-statistical-years');
+                            
+                        } else {
+                            layer.msg('获取统计年度列表失败', { icon: 7, time: 1500 });
+                        }
+                    },
+                    error    : function () {
+                        layer.msg('获取统计年度列表失败', { icon: 7, time: 1500 });
+                    }
+                });
+
+                 // 单位属性 
+                $.ajax({
+                    url      : huayi_sjwh_url + 'comdictionary/getComUnitProperty',
+                    type     : 'get',
+                    async    : false,
+                    dataType : 'json',
+                    success  : function(res) {
+                        if (res.status == 200) {
+                            let option = '<option value="">全部</option>';
+                            for (let i = 0; i < 10 && i < res.data.length; i++) {
+                                option += '<option value="' + res.data[i].unit_property_id + '">' +
+                                        res.data[i].unit_property_name + '</option>';
+                            }
+                            $('#unitProperty').append(option);
+                            form.render('select', 'unitPropertyDiv');
+                        } else {
+                            layer.msg('获取单位属性列表失败', { icon: 7, time: 1500 });
+                        }
+                    },
+                    error    : function () {
+                        layer.msg('获取单位属性列表失败', { icon: 7, time: 1500 });
+                    }
+                });
+
+                // 统计年度事件
+                form.on('select(statistical-year)', function(data) {
+                    for (let i = 0; i < statisticalYearList.length; i++) {
+                        if (statisticalYearList[i].cmeYearId == data.value) {
+                            $('#statistical-year').parent().next().find('d1').html(statisticalYearList[i].startDate);
+                            $('#statistical-year').parent().next().find('d2').html(statisticalYearList[i].endDate);
+                            break;
+                        }
+                    }
+                });
+
+                // 统计维度事件
+                form.on('select(statistical-dimension)', function(data) {
+                    if ('UNIT_NAME' == data.value) {
+                        $('#text_title_names').attr('disabled', false);
+                        $('#text_title_names').removeClass('layui-disabled');
+                        document.querySelector('[lay-filter="div-statistical-year"]').style.display = "none";
+                        document.querySelector('[lay-filter="div-statistical-years"]').style.display = "";
+                        document.getElementById('export_excel_unit').style.display = "";
+                    } else {
+                        $('#text_title_names').attr('disabled', true);
+                        $('#text_title_names').addClass('layui-disabled');
+                        $('#text_title_names').val('');
+                        $('#hidden_title_ids').val('');
+                        document.querySelector('[lay-filter="div-statistical-years"]').style.display = "none";
+                        document.querySelector('[lay-filter="div-statistical-year"]').style.display = "";
+                        document.getElementById('export_excel_unit').style.display = "none";
+                    }
+                });
+
+                // 职称
+                $('#text_title_names').click(function() {
+                    var titleIds = $("#hidden_title_ids").val();
+                    layer.open({
+                        type      : 2,
+                        content   : '../controls/selectTitle/selectTitles.html?titleIds=' + titleIds,
+                        area      : ['600px', '395px'],
+                        scrollbar : false
+                    });
+                });
+
+
+                // 表格初始化
+                // loaderTable([], []);
+                // configTable();
+
+
+                let height = $(window).height();
+                $('#content-left').css('height', height - 56);
+                let height_h = $('#content-right .layui-card-header').height();
+                $('#content-right .layui-card-body').css('height', height - height_h - 80);
+
+                $(window).resize(e => {
+                    let height = $(window).height();
+                    $('#content-left').css('height', height - 56);
+                    let height_h = $('#content-right .layui-card-header').height();
+                    $('#content-right .layui-card-body').css('height', height - height_h - 80);
+                });
+                // $('#content-right').resize(e => {
+                //     let height = $('#content-right').height();
+                //     $('#content-left').css('height', height - 22);
+                // });
+                // $(() => {
+                //     let height = $('#content-right').parent().height();
+                //     $('#content-left').css('height', height - 22);
+                // });
+
+            });
+
+
+            /* 获取表格配置及数据 */
+            var load_index;
+            window.configTable = () => {
+                let msg        = '<span style="color: #666666;">&nbsp;正在查询&nbsp;···</span>';
+                    load_index = layer.msg(msg, { icon: 16, shade: 0.3, time: 0 });
+                            //    = layer.load(2, { shade: 0.3 });
+
+
+                let colsConfig      = [],
+                    colsConfigData  = [],
+                    tableData       = []
+                    unitIds         = '';
+
+                // 选择单位ID
+                if (null != eleTreeUnit) {
+                    let checkedArray = eleTreeUnit.getChecked(false, false);
+                    for (let i = 0; i < checkedArray.length; i++) {
+                        if (checkedArray[i].id.trim().length > 0) {
+                            unitIds += checkedArray[i].id + ','
+                        }
+                    }
+                    if (checkedArray.length < 1) {
+                        layer.msg('请选择要查询的子单位', { icon: 7, time: 1500 });
+                        return false;
+                    }
+                    unitIds = unitIds.substring(0, unitIds.length - 1);
+                }
+
+                var years =  xmSelectYears.getValue();
+
+                if (window.TextReplaceTool && typeof window.TextReplaceTool.changeYear === 'function') {
+                    window.TextReplaceTool.changeYear(years[0].name);
+                    window.TextReplaceTool.forceReplaceText();
+                }
+
+                // 单位名称统计 多年度
+                if ('UNIT_NAME' == $('#statistical-dimension').val() && years.length > 1) {
+                   
+                    var yearsTableData = new Map();
+                    if(years.length == 0){
+                        layer.msg('请选择要查询的年度', { icon: 7, time: 1500 });
+                        return false;
+                    }
+                    if(years.length > 5){
+                        layer.msg('最多选择五个年度', { icon: 7, time: 1500 });
+                        return false;
+                    }
+                    var yearsColsConfig =   [[
+                        {field: '单位名称', title: '单位名称', rowspan: 2},
+                        {field: '总人数', title: '总人数', colspan: years.length, align:'center'},
+                        {field: '参加人数', title: '参加人数', colspan: years.length, align:'center'},
+                        {field: '参与率', title: '参与率', colspan: years.length, align:'center'},
+                        {field: '达标人数', title: '达标人数', colspan: years.length, align:'center'},
+                        {field: '达标率', title: '达标率', colspan: years.length, align:'center'},
+                        {field: '未达标人员达标所需学分总和', title: '未达标人员达标所需学分总和', colspan: years.length, align:'center'},
+                        {field: '待审批无效学分总和', title: '待审批无效学分总和', colspan: years.length, align:'center'},
+                    ]
+                    // ,[
+                    //             {field: '总人数', title: '2023'},
+                    //             {field: '总人数', title: '2022'},
+
+                    //             {field: '参加人数', title: '2023'},
+                    //             {field: '参加人数', title: '2022'},
+
+                    //             {field: '参与率', title: '2023'},
+                    //             {field: '参与率', title: '2022'},
+
+                    //             {field: '达标人数', title: '2023'},
+                    //             {field: '达标人数', title: '2022'},
+
+                    //             {field: '达标率', title: '2023'},
+                    //             {field: '达标率', title: '2022'},
+                    //         ]
+                        ];
+
+                    var tempIndex = 0;
+                    $.each(years, function (index, item) {
+                        axios({
+                            method       : 'get',
+                            url          : huayi_projectscore_url + 'statisticsUtility/compliance/unit/admin',
+                            responseType : 'json',
+                            async         : false,
+                            params       : {
+                                cmeStandradKindId    : cmeStandardKindId,
+                                unitId               : unitId,
+                                statisticalYear      : item.value,
+                                statisticalDimension : $('#statistical-dimension').val(),
+                                titleIds             : $('#hidden_title_ids').val(),
+                                comUnitPropertyId    : $('#unitProperty').val(),
+                                unitIds              : unitIds,
+                                userType             : 0,
+                                showZero             : 0,
+                                seriesState          : $('#series-state').val()
+                            }
+                        }).then(res => {
+                            tempIndex++;
+                            if (res.status == 200 && res.data.status == 200) {
+                                let data           = res.data.data,
+                                    colNameList    = data.colName,
+                                    complianceList = data.compliance;
+
+                                // 设计表头
+                                if(index == years.length - 1){
+                                    for (let i = 0; i < colNameList.length && index == years.length - 1; i++) {
+                                        if(i != 0){
+                                            $.each(years, function (index, item) {
+                                                let col = {
+                                                    field    : colNameList[i]+item.name,
+                                                    title    : item.name,
+                                                    align    : 'center'
+                                                };
+                                                colsConfigData.push(col);
+                                            });
+                                        }
+                                        
+                                    }
+                                    yearsColsConfig.push(colsConfigData);
+                                }
+
+                                // 合并数据
+                                // tableData = complianceList;
+                                yearsTableData.set(item.name, JSON.parse(JSON.stringify(complianceList)));
+                                console.log(yearsTableData);
+
+                                var datas = [];
+                                if(tempIndex == years.length){
+                                    debugger
+                                    
+                                    $.each(complianceList, function (index, item) {
+                                        var newObj = {};
+                                        yearsTableData.forEach(function (item,key) {
+                                            newObj['单位名称'] = item[index].单位名称;
+                                            newObj[`总人数${key}`] = item[index].总人数;
+                                            newObj[`参加人数${key}`] = item[index].参加人数;
+                                            newObj[`参与率${key}`] = item[index].参与率;
+                                            newObj[`达标人数${key}`] = item[index].达标人数;
+                                            newObj[`达标率${key}`] = item[index].达标率;
+                                            newObj[`未达标人员达标所需学分总和${key}`] = item[index].未达标人员达标所需学分总和;
+                                            newObj[`待审批无效学分总和${key}`] = item[index].待审批无效学分总和;
+
+                                        }); 
+                                        datas.push(newObj);
+                                    });
+                                    
+                                    console.log(datas);
+                                    console.log(yearsTableData);
+                                    console.log(yearsColsConfig);
+                                    loaderTable(yearsColsConfig, datas);
+                                }
+                            } else {
+                                layer.msg('查询失败', { icon: 2, time: 1500 });
+                            }
+                        }).catch(error => {
+                            layer.msg('网络异常，请稍后再试', { icon: 7, time: 1500 });
+
+                            colsConfig.push(colsConfigData);
+                            loaderTable(colsConfig, tableData);
+
+                            console.log(error);
+                        });
+                    });
+                
+                }else{
+                    var searchYear = years && years.length == 1 ? years[0].value : $('#statistical-year').val();
+                    // 职称统计/职称级别 单年度
+                    axios({
+                        method       : 'get',
+                        url          : huayi_projectscore_url + 'statisticsUtility/compliance/unit/admin',
+                        responseType : 'json',
+                        params       : {
+                            cmeStandradKindId    : cmeStandardKindId,
+                            unitId               : unitId,
+                            statisticalYear      : searchYear,
+                            statisticalDimension : $('#statistical-dimension').val(),
+                            titleIds             : $('#hidden_title_ids').val(),
+                            comUnitPropertyId    : $('#unitProperty').val(),
+                            unitIds              : unitIds,
+                            userType             : 0,
+                            showZero             : 0,
+                            seriesState          : $('#series-state').val()
+                        }
+                    }).then(res => {
+                        if (res.status == 200 && res.data.status == 200) {
+                            let data           = res.data.data,
+                                colNameList    = data.colName,
+                                complianceList = data.compliance;
+
+                            // 表头
+                            let colName = "";
+                            for (let i = 0; i < colNameList.length; i++) {
+                                colName = colNameList[i];
+                                let col = {
+                                    field    : colName,
+                                    title    : colName,
+                                    align    : 'center'
+                                }; 
+                                //未达标人员达标所需学分总和 待审批无效学分总和
+                                if(colName == "未达标人员达标所需学分总和" || colName == "待审批无效学分总和") {
+                                    col["width"] = 220;
+                                }
+                                colsConfigData.push(col);
+                            }
+
+                            // 数据
+                            tableData = complianceList;
+
+                        } else {
+                            layer.msg('查询失败', { icon: 2, time: 1500 });
+                        }
+
+                        colsConfig.push(colsConfigData);
+                        loaderTable(colsConfig, tableData);
+
+                    }).catch(error => {
+                        layer.msg('网络异常，请稍后再试', { icon: 7, time: 1500 });
+
+                        colsConfig.push(colsConfigData);
+                        loaderTable(colsConfig, tableData);
+
+                        console.log(error);
+                    });
+                }
+
+                
+            }
+            /* 加载表格 */
+            window.loaderTable = (colsConfig, tableData) => {
+                table.render({
+                    elem            : '#table_compliance',
+                    title           : '单位达标情况（' + new Date().toLocaleString() + '）',
+                    toolbar         : '#table_toolbar',
+                    defaultToolbar  : [],
+                    cols            : colsConfig,
+                    data            : tableData,
+                    cellMinWidth    : 150,
+                    id              : 'table_compliance',
+                    height          : 'full-165',
+                    page            : false,
+                    limit           : Number.MAX_VALUE,
+                    done            : function (res, curr, count) {
+                        layer.close(load_index);
+                    }
+                });
+            };
+             /* 加载表格 */
+             window.loaderTable2 = (colsConfig, tableData) => {
+                table.render({
+                    elem            : '#table_compliance_hide',
+                    title           : '单位达标情况（' + new Date().toLocaleString() + '）',
+                    defaultToolbar  : [],
+                    cols            : colsConfig,
+                    data            : tableData,
+                    cellMinWidth    : 150,
+                    id              : 'table_compliance_hide',
+                    height          : 'full-165',
+                    page            : false,
+                    limit           : Number.MAX_VALUE,
+                    done            : function (res, curr, count) {
+                        
+                        var fileName = '单位达标情况（' + new Date().toLocaleString() + '）.xlsx';
+                        // 创建一个新的table, 将table-header和table-body合并
+                        var table1 = document.querySelector('.layui-table-header table');
+                        var table2Rows = document.querySelectorAll('.layui-table-body tbody');
+                        var mergedTable = document.createElement('table');
+                        mergedTable.innerHTML = table1.innerHTML;
+
+                        mergedTable.appendChild(table2Rows[1].cloneNode(true));
+
+                        var wb = XLSX.utils.table_to_book(mergedTable);
+                        /* Export to file (start a download) */
+                        XLSX.writeFile(wb, "单位达标情况统计.xlsx");
+
+                        layer.close(excel_load_index);
+                    }
+                });
+            };
+            /* 监听表头工具条 */
+            var excel_load_index   ;
+            table.on('toolbar(table_compliance)', function(obj) {
+                let msg        = '<span style="color: #666666;">&nbsp;正在导出&nbsp;···</span>';
+                    excel_load_index = layer.msg(msg, { icon: 16, shade: 0.3, time: 0 });
+                let datas = obj.data;
+
+                switch (obj.event) {
+                    case 'export_excel':
+                        var fileName = '单位达标情况（' + new Date().toLocaleString() + '）.xlsx';
+                        // table.exportFile('table_compliance', table.cache['table_compliance'], 'xlsx');
+
+                         // 创建一个新的table, 将table-header和table-body合并
+                        var table1 = document.querySelector('.layui-table-header table');
+                        var table2Rows = document.querySelectorAll('.layui-table-body tbody');
+                        var mergedTable = document.createElement('table');
+                        mergedTable.innerHTML = table1.innerHTML;
+
+                        // table2Rows.forEach(row => {
+                        //     mergedTable.appendChild(row.cloneNode(true));
+                        // });
+                        mergedTable.appendChild(table2Rows[0].cloneNode(true));
+                        
+                        var wb = XLSX.utils.table_to_book(mergedTable);
+                        /* Export to file (start a download) */
+                        XLSX.writeFile(wb, "单位达标情况统计.xlsx");
+                        layer.close(excel_load_index);
+                        break;
+
+                    case 'export_excel_unit':
+                        // 仅导出普通单位统计结果
+                        debugger
+                        let colsConfig      = [],
+                            colsConfigData  = [],
+                            tableData       = []
+                            unitIds         = '';
+
+                        // 选择单位ID
+                        if (null != eleTreeUnit) {
+                            let checkedArray = eleTreeUnit.getChecked(false, false);
+                            for (let i = 0; i < checkedArray.length; i++) {
+                                if (checkedArray[i].id.trim().length > 0) {
+                                    unitIds += checkedArray[i].id + ','
+                                }
+                            }
+                            if (checkedArray.length < 1) {
+                                layer.msg('请选择要查询的子单位', { icon: 7, time: 1500 });
+                                return false;
+                            }
+                            unitIds = unitIds.substring(0, unitIds.length - 1);
+                        }
+                        
+                        var years =  xmSelectYears.getValue();
+
+                        // 单位名称统计 多年度
+                        if ('UNIT_NAME' == $('#statistical-dimension').val() && years.length > 1) {
+                        
+                            var yearsTableData = new Map();
+                            if(years.length == 0){
+                                layer.msg('请选择要查询的年度', { icon: 7, time: 1500 });
+                                return false;
+                            }
+                            if(years.length > 5){
+                                layer.msg('最多选择五个年度', { icon: 7, time: 1500 });
+                                return false;
+                            }
+                            var yearsColsConfig =   [[
+                                {field: '单位名称', title: '单位名称', rowspan: 2},
+                                {field: '总人数', title: '总人数', colspan: years.length, align:'center'},
+                                {field: '参加人数', title: '参加人数', colspan: years.length, align:'center'},
+                                {field: '参与率', title: '参与率', colspan: years.length, align:'center'},
+                                {field: '达标人数', title: '达标人数', colspan: years.length, align:'center'},
+                                {field: '达标率', title: '达标率', colspan: years.length, align:'center'},
+                            ]
+                                ];
+
+                            var tempIndex = 0;
+                            $.each(years, function (index, item) {
+                                axios({
+                                    method       : 'get',
+                                    url          : huayi_projectscore_url + 'statisticsUtility/compliance/unit/admin',
+                                    responseType : 'json',
+                                    async         : false,
+                                    params       : {
+                                        cmeStandradKindId    : cmeStandardKindId,
+                                        unitId               : unitId,
+                                        statisticalYear      : item.value,
+                                        statisticalDimension : $('#statistical-dimension').val(),
+                                        titleIds             : $('#hidden_title_ids').val(),
+                                        comUnitPropertyId    : $('#unitProperty').val(),
+                                        unitIds              : unitIds,
+                                        isCountAdmin         : false,
+                                        userType             : 0,
+                                        showZero             : 0,
+                                        seriesState          : $('#series-state').val()
+                                    }
+                                }).then(res => {
+                                    tempIndex++;
+                                    if (res.status == 200 && res.data.status == 200) {
+                                        let data           = res.data.data,
+                                            colNameList    = data.colName,
+                                            complianceList = data.compliance;
+
+                                        // 设计表头
+                                        if(index == years.length - 1){
+                                            for (let i = 0; i < colNameList.length && index == years.length - 1; i++) {
+                                                if(i != 0){
+                                                    $.each(years, function (index, item) {
+                                                        let col = {
+                                                            field    : colNameList[i]+item.name,
+                                                            title    : item.name,
+                                                            align    : 'center'
+                                                        };
+                                                        colsConfigData.push(col);
+                                                    });
+                                                }
+                                                
+                                            }
+                                            yearsColsConfig.push(colsConfigData);
+                                        }
+
+                                        // 合并数据
+                                        // tableData = complianceList;
+                                        yearsTableData.set(item.name, JSON.parse(JSON.stringify(complianceList)));
+                                        console.log(yearsTableData);
+
+                                        var datas = [];
+                                        if(tempIndex == years.length){
+                                            debugger
+                                            
+                                            $.each(complianceList, function (index, item) {
+                                                var newObj = {};
+                                                yearsTableData.forEach(function (item,key) {
+                                                    newObj['单位名称'] = item[index].单位名称;
+                                                    newObj[`总人数${key}`] = item[index].总人数;
+                                                    newObj[`参加人数${key}`] = item[index].参加人数;
+                                                    newObj[`参与率${key}`] = item[index].参与率;
+                                                    newObj[`达标人数${key}`] = item[index].达标人数;
+                                                    newObj[`达标率${key}`] = item[index].达标率;
+
+                                                }); 
+                                                datas.push(newObj);
+                                            });
+                                            
+                                            console.log(datas);
+                                            console.log(yearsTableData);
+                                            console.log(yearsColsConfig);
+                                            loaderTable2(yearsColsConfig, datas);
+                                        }
+                                    } else {
+                                        layer.msg('查询失败', { icon: 2, time: 1500 });
+                                    }
+                                }).catch(error => {
+                                    layer.msg('网络异常，请稍后再试', { icon: 7, time: 1500 });
+
+                                    colsConfig.push(colsConfigData);
+                                    loaderTable2(colsConfig, tableData);
+
+                                    console.log(error);
+                                });
+                            });
+
+                        }else{
+                            var searchYear = years && years.length == 1 ? years[0].value : $('#statistical-year').val();
+                            // 职称统计/职称级别 单年度
+                            axios({
+                                method       : 'get',
+                                url          : huayi_projectscore_url + 'statisticsUtility/compliance/unit/admin',
+                                responseType : 'json',
+                                params       : {
+                                    cmeStandradKindId    : cmeStandardKindId,
+                                    unitId               : unitId,
+                                    statisticalYear      : searchYear,
+                                    statisticalDimension : $('#statistical-dimension').val(),
+                                    titleIds             : $('#hidden_title_ids').val(),
+                                    comUnitPropertyId    : $('#unitProperty').val(),
+                                    unitIds              : unitIds,
+                                    isCountAdmin         : false,
+                                    userType             : 0,
+                                    showZero             : 0,
+                                    seriesState          : $('#series-state').val()
+                                }
+                            }).then(res => {
+                                if (res.status == 200 && res.data.status == 200) {
+                                    let data           = res.data.data,
+                                        colNameList    = data.colName,
+                                        complianceList = data.compliance;
+
+                                    // 表头
+                                    for (let i = 0; i < colNameList.length; i++) {
+                                        let col = {
+                                            field    : colNameList[i],
+                                            title    : colNameList[i],
+                                            align    : 'center'
+                                        };
+                                        colsConfigData.push(col);
+                                    }
+
+                                    // 数据
+                                    tableData = complianceList;
+
+                                } else {
+                                    layer.msg('查询失败', { icon: 2, time: 1500 });
+                                }
+
+                                colsConfig.push(colsConfigData);
+                                loaderTable2(colsConfig, tableData);
+
+                            }).catch(error => {
+                                layer.msg('网络异常，请稍后再试', { icon: 7, time: 1500 });
+
+                                colsConfig.push(colsConfigData);
+                                loaderTable2(colsConfig, tableData);
+
+                                console.log(error);
+                            });
+                        }
+
+                        break;
+
+                    default:
+                }
+            });
+            /* 监听行工具条 */
+            table.on('tool(table_compliance)', function(obj) {
+                let datas = obj.data;
+
+                switch (obj.event) {
+                    case '':
+                        break;
+
+                    default:
+                }
+            });
+
+        });
+
+
+        /* 职称选择 */
+        function getChildTitles(hidden_title_ids, titleNames) {
+            $("#text_title_names").val(titleNames);
+            $("#hidden_title_ids").val(hidden_title_ids);
+        }
+    </script>
+</body>
+
+</html>

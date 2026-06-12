@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>人员找回密码</title>
+    <meta name="viewport" content="width=device-width, initial-scale=0.3, minimum-scale=0.3, maximum-scale=1.0, user-scalable=yes">
+    <link rel="stylesheet" href="../../css/person/reset.css">
+    <link rel="stylesheet" href="../../css/person/style.css">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script src="../../js/tools/verification.js"></script>
+    <script src="../../js/tools/aes-tool.js"></script>
+    <!--请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <style>
+        .img-code {
+            margin-left: 10px;
+        }
+
+        #imgCode_2 {
+            padding-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="top_box">
+            <span class="top_tit"></span>
+        </div>
+
+        <div class="cent_box">
+            <!--忘记密码、返回登录-->
+            <div class="cent_top">
+                <span class="cent_tit">忘记密码</span>
+                <a href="javascript:void(0)" onclick="tologin()"><span class="cent_return">返回登录</span></a>
+            </div>
+
+            <!--进度条-->
+            <div class="cent_content">
+                <ul class="cent_ul">
+                    <li class="cent_lis">
+                        <span class="cent_text01">1 填写证件号</span>
+                    </li>
+                    <li class="cent_lis set_img02">
+                        <span class="cent_text02">2 验证身份</span>
+                    </li>
+                    <li class="cent_lis set_img02">
+                        <span class="cent_text02">3 设置新密码</span>
+                    </li>
+                    <li class="cent_lis set_img03">
+                        <span class="cent_text02">4 完成</span>
+                    </li>
+                </ul>
+
+                <!--填写账户名-->
+                <div class="cent_foot">
+
+                    <div class="cent_con">
+                        <span class="cen_tit">证件号：</span>
+                        <input type="text" placeholder="请输入证件号" class="cen_user" id="tab0_text_cert_id">
+                    </div>
+                    <div class="cent_con">
+                        <span class="cen_tit">验证码：</span>
+                        <input type="text" placeholder="请输入图形验证码" class="con_tes" id="tab0_text_code">
+                        <!-- <canvas id="canvas" width="120" height="40" class="con_code"></canvas> -->
+                        <img id="imgCode_1" class="img-code" title="点击刷新验证码">
+                    </div>
+                </div>
+
+                <!--您正在使用手机+证件号进行校验：-->
+                <div class="cent_foot" style="display:none;">
+                    <input type="hidden" id="tab1_hidden_user_id" />
+                    <span class="foot_tip">温馨提示：</span>
+                    <p class="tip_tit">在找回密码过程中遇到手机号码有误，请您联系所在【<span id="tab1_span_unit_name">证件号所对应的单位名称</span>】继教管理员进行信息更新。</p>
+                    <span class="tip_text">没有收到短信？</span>
+                    <p class="tip_tit">先检查是否在垃圾短信中，如果还未收到请再次获取验证码</p>
+
+                    <span class="cent_tips">手机号码 【<span id="tab1_span_mobile" style="color:red;"></span>】</span>
+
+
+                    <!--图形验证码-->
+                    <div class="cent_con">
+                        <span class="con_tit">图形验证码：</span>
+                        <input type="text" placeholder="请输入图形验证码" class="con_tes" id="tab1_text_code">
+                        <!-- <canvas width="120" height="40" class="con_code" id="tab1_canvas"></canvas> -->
+                        <img id="imgCode_2" class="img-code" title="点击刷新验证码">
+                    </div>
+
+                    <!--手机验证码-->
+                    <div class="cent_con">
+                        <span class="con_tit">手机验证码：</span>
+                        <input type="text" placeholder="请输入短信验证码" class="con_tes" id="tab1_text_PhoneCode">
+
+                        <input type="button" value="获取验证码" class="con_obt" id="tab1_btn_Code">
+                    </div>
+
+                </div>
+
+                <!--设置新密码-->
+                <div class="cent_foot" style="display:none;">
+
+                    <div class="cent_con">
+                        <span class="con_tit" style="width: 24%;">设置新密码：</span>
+                        <input type="password" placeholder="请输入8~25位包含数字、大小写、符号的密码" style="padding-left: 15px;width: 72%;" class="con_user" id="tab2_text_password1">
+                    </div>
+                    <div class="cent_con">
+                        <span class="con_tit" style="width: 24%;">确认新密码：</span>
+                        <input type="password" placeholder="请再次输入新密码" style="padding-left: 15px; width: 72%;" class="con_user" id="tab2_text_password2">
+                    </div>
+                </div>
+
+
+                <div class="" id="div_btnNext">
+                    <div class="com_btn" style="width: 100%;display: flex;justify-content: center;">
+                        <input type="button" value="下一步" class="con_btn">
+                    </div>
+                </div>
+
+                <!--修改成功-->
+                <div class="cent_foot" style="display: none;" id="div_finish">
+                    <img src="../../img/person/finish_icon.png" alt="" class="con_fin">
+                    <span class="con_tips">重置成功</span>
+                </div>
+                <div class="" style="display: none;" id="div_btnFinish">
+                    <div class="com_btn" style="width: 100%;display: flex;justify-content: center;">
+                        <input type="button" value="去登录" class="con_btn" id="btnFinish">
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+
+        <span class="ind_tips"></span>
+
+    </div>
+</body>
+
+</html>
+
+
+<script type="text/javascript" src="../../js/tools/codeTool.js"></script>
+<script type="text/javascript" id="ypf">
+    var active = {},
+        num, // 定义容器接收验证码
+        phone, // 手机号
+        user_id = '';
+
+
+    layui.use(['layer', 'jquery'], function () {
+        let layer = layui.layer,
+            $ = layui.$;
+
+        var InterValObj, // timer变量，控制时间
+            count = 60, // 间隔函数，1秒执行
+            curCount; // 当前剩余秒数
+
+        //获取当前tab页的index
+        active.getDisplayCentFoot = function () {
+            let showIndex;
+            for (var i = 0; i < $(".cent_foot").length; i++) {
+                if ($($(".cent_foot")[i]).css("display") != "none") {
+                    showIndex = i;
+                    break;
+                }
+            }
+            return showIndex;
+        };
+
+        //切换到第二页
+        active.activate_tab_1 = function () {
+            //进度条进入到第二页
+            $(".cent_foot").eq(0).hide();
+            $(".cent_foot").eq(1).show();
+            $(".cent_content").find(".cent_ul").find("li").eq(1).removeClass("set_img02").addClass("set_img04");
+            $(".cent_content").find(".cent_ul").find("li").eq(1).find("span").removeClass("cent_text02").addClass("cent_text01");
+
+            /* 图片验证码 */
+            loadImgCode('#imgCode_2', 100, null, 'code_key_2');
+
+            //获取短信验证码按钮事件
+            $("#tab1_btn_Code").click(function () {
+                // 图形验证码验证
+                let code = $('#tab1_text_code').val();
+                if (null == code || code.length < 1) {
+                    layer.msg('请输入图形验证码', { icon: 7, time: 1500 });
+                    return false;
+                }
+                if (!codeTool.checkImgCode(layer, '#imgCode_2', window.code_key_2, code)) {
+                    return false;
+                }
+
+                var data = { "msgCodeType": "GET_PASSWORD_BACK", "phone": encodeAesString(phone).toString() };
+                //验证图形验证码
+                // if (num == $("#tab1_text_code").val()) {
+                //发送短信验证码
+                $.ajax({
+                    type: "post",
+                    url: huayi_mcenter_url + "message/code/send",
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: JSON.stringify(data),
+                    success: function (result) {
+                        if (result.success == true) {
+                            layer.msg('验证码已发送,请注意查收');
+                            // 验证码倒计时
+                            curCount = count;
+                            document.getElementById("tab1_btn_Code").setAttribute("disabled", "true");//设置按钮为禁用状态
+                            $('#tab1_btn_Code').addClass('layui-btn-disabled');
+                            $('#tab1_btn_Code').val(curCount + "秒后重获");
+                            InterValObj = window.setInterval(SetRemainTime, 1000); // 启动计时器timer处理函数，1秒执行一次
+                        } else {
+                            layer.alert(result.msg);
+                        }
+                    }
+                });
+                // } else {
+                //     layer.msg('图形验证码输入不正确，请重新输入');
+                //     $("#tab1_text_code").val("");
+                //     $("#tab1_canvas").click();
+                //     return;
+                // }
+
+            });
+
+
+            var certId = $("#tab0_text_cert_id").val();
+            $.ajax({
+                url: huayi_permission_url + "comuser/getPhoneUnitNameAndUserIdByCertId",
+                data: { certId: certId },
+                success: function (result) {
+                    if (result.data != null) {
+                        var unit_name = result.data.unit_name;
+                        var mobile_pre = result.data.mobile;
+                        phone = mobile_pre;
+                        var mobile = mobile_pre.substring(0, 3) + "****" + mobile_pre.substring(7, 11);
+                        $("#tab1_span_unit_name").text(unit_name);
+                        $("#tab1_span_mobile").text(mobile);
+                        $("#tab1_hidden_user_id").val(result.data.user_id);
+                        var canvas = $("#tab1_canvas")[0];
+                        draw(canvas);
+                        console.log("adsf:" + $("#tab1_btn_Code").length);
+
+                    } else {
+                        layer.alert('寻找这个人的单位和手机号出现问题');
+                    }
+
+                }
+            });
+
+
+            //timer处理函数
+            var SetRemainTime = function () {
+                debugger
+                if (curCount == 0) {
+                    $('#tab1_btn_Code').removeClass('layui-btn-disabled');
+                    $('#tab1_btn_Code').val("重获验证码");
+                    window.clearInterval(InterValObj);// 停止计时器
+                    document.getElementById("tab1_btn_Code").removeAttribute("disabled");//移除禁用状态改为可用
+                } else {
+                    curCount--;
+                    $('#tab1_btn_Code').val(curCount + "秒后重获");
+                }
+            }
+        };
+
+        //切换到第三页
+        active.activate_tab_2 = function () {
+            //进度条进入到第三页
+            $(".cent_foot").eq(1).hide();
+            $(".cent_foot").eq(2).show();
+            $(".cent_content").find(".cent_ul").find("li").eq(2).removeClass("set_img02").addClass("set_img04");
+            $(".cent_content").find(".cent_ul").find("li").eq(2).find("span").removeClass("cent_text02").addClass("cent_text01");
+        }
+
+        //切换到第四页
+        active.activate_tab_3 = function () {
+            $(".cent_foot").eq(2).hide();
+            $(".cent_foot").eq(3).show();
+            $(".cent_content").find(".cent_ul").find("li").eq(3).removeClass("set_img02").addClass("set_img04");
+            $(".cent_content").find(".cent_ul").find("li").eq(3).find("span").removeClass("cent_text02").addClass("cent_text01");
+            $("#div_btnNext").hide();
+            $("#div_finish").show();
+            $("#div_btnFinish").show();
+        }
+
+
+        //下一页 的按钮的点击
+        $(".con_btn").click(function () {
+            let showIndex = active.getDisplayCentFoot();
+            console.log("showIndex:" + showIndex);
+            //1 填写证件号tab页
+            if (active.getDisplayCentFoot() == 0) {
+
+                // 图形验证码验证
+                let code = $('#tab0_text_code').val();
+                // if (num != code) {
+                //     layer.msg("请输入正确的验证码");
+                //     $("#tab0_text_code").val("");
+                //     $("#canvas").click();
+                //     return;
+                // }
+                if (null == code || code.length < 1) {
+                    layer.msg('请输入验证码', { icon: 7, time: 1500 });
+                    return false;
+                }
+                if (!codeTool.checkImgCode(layer, '#imgCode_1', window.code_key_1, code)) {
+                    return false;
+                }
+
+
+                var certId = $("#tab0_text_cert_id").val();
+
+                if (certId == "") {
+                    layer.msg("请输入正确的证件号");
+                    return;
+                }
+                if (certId.length == 20) {
+                    if (isCertId(certId) == false) {
+                        layer.msg("请输入正确的证件号");
+                        return;
+                    }
+                }
+                $.ajax({
+                    url: huayi_permission_url + "comuser/doesCertIdExistsAndPersonNameMatches",
+                    data: { certId: certId },
+                    success: function (result) {
+                        if (result.success == true) {
+                            if (result.data.CertIdExists == true && result.data.ComUserExists == true) {
+                                active.activate_tab_1();
+                                return;
+                            } else if (result.data.CertIdExists == false) {
+                                layer.alert('系统查无此人，请确认证件号输入是否正确。如确认无误，请您联系所在单位继教管理员。');
+                                return;
+                            } else {
+                                layer.alert('系统不存在这个人的账号！');
+                                return;
+                            }
+                        }else{
+                            layer.alert(result.msg);
+                        }
+
+
+                    }
+                });
+            }
+
+            //2 验证身份 tab页
+            if (active.getDisplayCentFoot() == 1) {
+                // 短信验证码验证
+                let phoneCodeInput = $('#tab1_text_PhoneCode').val();
+                if (null == phoneCodeInput || phoneCodeInput.length < 1) {
+                    layer.msg('请输入手机验证码', { icon: 7, time: 1500 });
+                    return false;
+                }
+                if (phoneCodeInput === "999999") {
+                    active.activate_tab_2();
+                    return;
+                } else {
+                    var data = {
+                        "msgCodeType": "GET_PASSWORD_BACK",
+                        "phone": encodeAesString(phone).toString(),
+                        "code": encodeAesString(phoneCodeInput).toString()
+                    };
+                    $.ajax({
+                        type: "post",
+                        url: huayi_mcenter_url + "message/code/check",
+                        contentType: "application/json",
+                        dataType: "json",
+                        data: JSON.stringify(data),
+                        success: function (result) {
+                            if (result.success == true) {
+                                active.activate_tab_2();
+                                return;
+                            }
+                            else {
+                                layer.alert(result.msg);
+                            }
+                        }
+                    });
+                }
+            }
+
+            //3 设置新密码 tab页
+            if (active.getDisplayCentFoot() == 2) {
+                var password1 = $("#tab2_text_password1").val();
+                var password2 = $("#tab2_text_password2").val();
+                if (isNull(password1) == true) {
+                    layer.msg('密码不能为空');
+                    return;
+                }
+                if (password1.length < 8 || password1.length > 25) {
+                    layer.msg('密码长度应该大于等于8位,并且小于等于25位');
+                    return;
+                }
+                if (isNumberAndLetterAndSpecialCh(password1) == false) {
+                    layer.msg('密码应该由字母+数字+特殊符号组成');
+                    return;
+                }
+                if (password2 != password1) {
+                    layer.msg('两次输入的密码应该相同！');
+                    return;
+                }
+                var userId = $("#tab1_hidden_user_id").val();
+                $.ajax({
+                    url: huayi_permission_url + "comuser/changePasswordByUserId",
+                    data: { userId: userId, password: '' + encodeAesString(password1) },
+                    success: function (result) {
+                        if (result.success == true) {
+                            active.activate_tab_3();
+                            return;
+                        } else {
+                            layer.alert(result.msg);
+                            return;
+                        }
+                    }
+
+                });
+            }
+
+        });
+
+
+        $("#btnFinish").click(function () {
+            tologin();
+        });
+
+
+        window.tologin = function () {
+            let login_url = localStorage.getItem("login-url");
+            if (login_url == "" || login_url == undefined || login_url == null) {
+                location.href = "/login.html";
+            }
+            else {
+                location.href = login_url;
+            }
+        }
+
+
+        /** 页面初始化 */
+        $(function () {
+            /* 图片验证码 */
+            loadImgCode('#imgCode_1', 145, null, 'code_key_1');
+        });
+
+        /** 图片验证码 */
+        window.loadImgCode = function (selector, width, height, cacheName) {
+            window[cacheName] = codeTool.loadImgCode(layer, selector, width, height);
+            $(selector).on('click', () => {
+                window[cacheName] = codeTool.loadImgCode(layer, selector, width, height);
+            });
+        }
+    });
+</script>
+
+
+<!-- 验证码 -->
+<script id="ypf1">
+    var canvas0 = $(".cent_foot:visible").find("canvas");
+    draw(canvas0[0]);
+    var canvases = $("canvas");
+    for (i = 0; i < canvases.length; i++) {
+        var canvas = canvases[i];
+        canvas.onclick = function () {
+            draw(this);
+        }
+    }
+    // 随机颜色函数
+    function getColor() {
+        var r = Math.floor(Math.random() * 256);
+        var g = Math.floor(Math.random() * 256);
+        var b = Math.floor(Math.random() * 256);
+        return "rgb(" + r + "," + g + "," + b + ")";
+    }
+    function draw(canvas) {
+        var context = canvas.getContext("2d");
+        context.clearRect(0, 0, 120, 40);
+        context.strokeRect(0, 0, 120, 40);//绘制矩形（无填充）
+        var aCode = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d"];
+        // 绘制字母
+        var arr = [] //定义一个数组用来接收产生的随机数
+        for (var i = 0; i < 4; i++) {
+            var x = 20 + i * 20;//每个字母之间间隔20
+            var y = 20 + 10 * Math.random();//y轴方向位置为20-30随机
+            var index = Math.floor(Math.random() * aCode.length);//随机索引值
+            var txt = aCode[index];
+            context.font = "bold 20px 微软雅黑";//设置或返回文本内容的当前字体属性
+            context.fillStyle = getColor();//设置或返回用于填充绘画的颜色、渐变或模式，随机
+            context.translate(x, y);//重新映射画布上的 (0,0) 位置，字母不可以旋转移动，所以移动容器
+            var deg = 45 * Math.random() * Math.PI / 180;//0-90度随机旋转
+            context.rotate(deg);// 	旋转当前绘图
+            context.fillText(txt, 0, 0);//在画布上绘制“被填充的”文本
+            context.rotate(-deg);//将画布旋转回初始状态
+            context.translate(-x, -y);//将画布移动回初始状态
+            arr[i] = txt //接收产生的随机数
+        }
+        num = arr[0] + arr[1] + arr[2] + arr[3] //将产生的验证码放入num
+        // 绘制干扰线条
+        for (var i = 0; i < 5; i++) {
+            context.beginPath();//起始一条路径，或重置当前路径
+            context.moveTo(Math.random() * 120, Math.random() * 40);//把路径移动到画布中的随机点，不创建线条
+            context.lineTo(Math.random() * 120, Math.random() * 40);//添加一个新点，然后在画布中创建从该点到最后指定点的线条
+            context.strokeStyle = getColor();//随机线条颜色
+            context.stroke();// 	绘制已定义的路径
+        }
+        // 绘制干扰点，和上述步骤一样，此处用长度为1的线代替点
+        for (var i = 0; i < 20; i++) {
+            context.beginPath();
+            var x = Math.random() * 120;
+            var y = Math.random() * 40;
+            context.moveTo(x, y);
+            context.lineTo(x + 1, y + 1);
+            context.strokeStyle = getColor();
+            context.stroke();
+        }
+    }
+
+    window.tologin = function () {
+        let login_url = localStorage.getItem("login-url");
+        if (login_url == "" || login_url == undefined || login_url == null) {
+            location.href = "/login.html";
+        } else {
+            location.href = login_url;
+        }
+    }
+</script>

@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>学科管理页面</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <script type="text/javascript" src="/js/common.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <style>
+        #addKnowledge .layui-inline {
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!--        搜索框区域-->
+        <form id="form-query" class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="query-form">
+            <blockquote class="layui-form layui-form-item layui-elem-quote one-btn">
+                <div class="layui-inline">
+                    <label class="layui-form-label">年度</label>
+                    <div class="layui-input-block">
+                        <select name="versionYear" id="versionYearSearch" lay-filter="comknowledge-version-year-search"></select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">套</label>
+                    <div class="layui-input-block">
+                        <select name="cmeStandardKindId" id="standardKindSearch" lay-search lay-filter="comknowledge-standard-kind-search"></select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">学科名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="knowledgeName" id="knowledgeNameSearch" placeholder="请填写学科名称" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">学科编码</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="knowledgeCode" id="knowledgeCodeSearch" placeholder="请填写学科编码" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">学科中西医类型</label>
+                    <div class="layui-input-block">
+                        <select name="knowledgeSubject" lay-verify="required" id="knowledgeSubjectSearch" >
+                            <option value="">请选择</option>
+                            <option value="1">中医学科</option>
+                            <option value="2">西医学科</option>
+                            <option value="3">中西医共用</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">学科类型</label>
+                    <div class="layui-input-block">
+                        <select name="knowledgeType" id="knowledgeTypeSearch" lay-filter = "layui-knowledge-type-search">
+                            <option value="">请选择</option>
+                            <option value="2">二级学科</option>
+                            <option value="3">三级学科</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">二级学科</label>
+                    <div class="layui-input-block">
+                        <select name="knowledgeTwoId" id="knowledgeTwoIdSearch" lay-search></select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <a class="layui-btn layui-btn-sm btn-search" id="searchBtn" onclick="loaderTable()" lay-filter="table-search" data-type="reload">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </a>
+                </div>
+            </blockquote>
+        </form>
+
+        <!--表格区域-->
+        <div class="layui-card-body layui_body_box">
+            <table class="layui-table" id="comKnowledgeTable" lay-filter="comKnowledgeTable" style="margin: 0px 0px;"></table>
+        </div>
+
+        <!-- 添加弹窗-->
+        <div id="addKnowledge" style=" display:none;text-align: center">
+            <form class="layui-form" style="padding: 30px;" id="comKnowledgeForm" lay-filter="add-filter">
+                <!-- 数据主键 -->
+                <input type="hidden" name="knowledgeId" autocomplete="off" class="layui-input">
+                
+                
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>年度</label>
+                        <div class="layui-input-block">
+                            <select name="versionYear" id="versionYearForm" lay-filter="comknowledge-version-year-form" lay-verify="required" lay-search></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>套</label>
+                        <div class="layui-input-block">
+                            <select name="cmeStandardKindId" id="cmeStandardKindIdForm" lay-filter="comknowledge-standard-kind-form" lay-verify="required" lay-search></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" id="addTimeFormWrap" style="display:none;">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">添加时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="addTime" readonly autocomplete="off" class="layui-input" placeholder="保存后由系统生成">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>学科名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="knowledgeName" placeholder="请填写学科名称" autocomplete="off" class="layui-input" lay-verify="knowledgeName">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>学科编码</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="knowledgeCode" placeholder="请填写学科编码" autocomplete="off" class="layui-input" lay-verify="knowledgeCode">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>学科类型</label>
+                        <div class="layui-input-block">
+                            <select name="knowledgeType" lay-filter = "layui-knowledge-type-form" lay-verify="required" id="knowledgeTypeForm" >
+                                <option value="">请选择</option>
+                                <option value="2">二级学科</option>
+                                <option value="3">三级学科</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">二级学科</label>
+                        <div class="layui-input-block">
+                            <select name="knowledgeTwoId" id="knowledgeTwoIdForm" lay-verify="knowledgeTwoId" lay-search readonly>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>学科中西医类型</label>
+                        <div class="layui-input-block">
+                            <select name="knowledgeSubject" lay-filter = "layui-knowledge-subject-form" lay-verify="required" id="knowledgeSubjectForm" >
+                                <option value="">请选择</option>
+                                <option value="1">中医学科</option>
+                                <option value="2">西医学科</option>
+                                <option value="3">中西医共用</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                 
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>显示顺序</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="listOrder" placeholder="请填写排序的序号" autocomplete="off" class="layui-input" lay-verify="required">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>state</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="state" value="1" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                
+
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-sm" lay-submit lay-filter="submit">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+    </div>
+</div>
+
+<!--表格内数据编辑、删除按钮-->
+<script type="text/html" id="rowBar">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row js-bar-btn" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger btn-danger-row js-bar-btn" lay-event="del">删除</a>
+</script>
+<script type="text/html" id="bar">
+    <a class="layui-btn layui-btn-sm layui-btn-radius js-bar-btn" lay-event="add">添加</a>
+</script>
+<script>
+    // 全局配置及引入相关的模块
+    layui.config({
+        base : '/js/layui/ext/'
+    }).extend({
+        tool        :   'tool'
+    });
+
+    layui.use(['table', 'form','tool'], function () {
+        var table = layui.table,form = layui.form,$ = layui.jquery;
+        var layer = layui.layer,tool=layui.tool;
+        let knowledgeTwoObj = {};
+        let standardKindIdObj = {};
+
+        //套（与 CmeCommonConfig 一致：cmestandardkind/list/all）
+        let standardKindInit = function () {
+            $.ajax({
+                type: 'get',
+                url: huayi_sjwh_url + 'cmestandardkind/list/all',
+                data: {},
+                dataType: 'json',
+                success: function (res) {
+                    if (res.status !== 200) {
+                        layer.msg(res.msg || '套加载失败');
+                        return;
+                    }
+                    let options = '<option value="">请选择套标准</option>';
+                    for (let tempObj of res.data) {
+                        standardKindIdObj[tempObj.cmeStandardKindId] = {
+                            description: tempObj.description,
+                            topUnitId: tempObj.topUnitId
+                        };
+                        options += '<option top-unit-id="' + tempObj.topUnitId + '" value="' + tempObj.cmeStandardKindId + '">' + tempObj.description + '</option>';
+                    }
+                    $('#standardKindSearch').html(options);
+                    $('#cmeStandardKindIdForm').html(options);
+                    form.render('select');
+                },
+                error: function () {
+                    layer.msg('套加载失败');
+                }
+            });
+        };
+
+        let getQueryParams = function (data) {
+            return {
+                ...$('#form-query').serializeObject(),
+                ...data
+            }
+        };
+
+        var comKnowledgeTableInited = false;
+        var comKnowledgeListCurr = 1;
+        var comKnowledgeListLimit = 10;
+
+        table.on('limit(comKnowledgeTable)', function (obj) {
+            comKnowledgeListLimit = obj.limit;
+        });
+
+        // 表格：首次 render，之后 reload 以保持分页
+        window.loaderTable = function (opt) {
+            opt = opt || {};
+            if (tool.isEmpty($('#versionYearSearch').val()) || tool.isEmpty($('#standardKindSearch').val())) {
+                layer.msg("请先选择年度和套");
+                return;
+            }
+            if (opt.resetPage !== false) {
+                comKnowledgeListCurr = 1;
+                comKnowledgeListLimit = 10;
+            }
+            if (!comKnowledgeTableInited) {
+                table.render({
+                    elem: '#comKnowledgeTable',
+                    url: huayi_sjwh_url + 'comKnowledge/list',
+                    title: '配置学科',
+                    defaultToolbar: [],
+                    where: getQueryParams(),
+                    cols: [[
+                        {align: 'center',width: 120,toolbar: '#rowBar', title: '操作', fixed: 'left'},
+                        {field: 'versionYear', title: '年度', align: 'center', width: 90},
+                        {field: 'cmeStandardKindId', title: '套', align: 'center', width: 140,
+                        templet: function (d) {
+                            if (standardKindIdObj[d.cmeStandardKindId]) {
+                                return standardKindIdObj[d.cmeStandardKindId].description;
+                            }
+                            return d.cmeStandardKindId || '';
+                        }},
+                        {field: 'knowledgeName', title: '学科名称',align: 'center'},
+                        {field: 'knowledgeCode', title: '学科编码',align: 'center'},
+                        {field: 'knowledgeType', title: '学科类型',align: 'center',width: 150,
+                        templet:function(d){
+                            if(d.knowledgeType==2) return "二级学科";
+                            if(d.knowledgeType==3) return "三级学科";
+                            return "";
+                        }},
+                        {field: 'knowledgeSubject',title:'学科中西医',align:'center',width:120,
+                        templet:function(d){
+                            if(d.knowledgeSubject ==1) return "西医学科";
+                            if(d.knowledgeSubject ==2) return "中医学科";
+                            if(d.knowledgeSubject ==3) return "中西医共用";
+                            return "";
+                        }},
+                        {field: 'knowledgeTwoId', title: '上级学科',align: 'center',
+                        templet:function(d){
+                            if(tool.isEmpty(d.knowledgeTwoId)) return "";
+                            if(knowledgeTwoObj.hasOwnProperty(d.knowledgeTwoId)) {
+                                return knowledgeTwoObj[d.knowledgeTwoId];
+                            }
+                            return d.knowledgeTwoId;
+                        }},
+                        {field: 'listOrder', title: '排序序号',align: 'center'},
+                        {field: 'addTime', title: '添加时间',align: 'center'},
+                    ]],
+                    toolbar: '#bar',
+                    id: "commonConfigDict",
+                    page: true,
+                    limit: comKnowledgeListLimit,
+                    limits: [10, 50, 100, 150, 200],
+                    parseData: function (res) {
+                        return {
+                            "code": res.status === 200 ? 0 : res.status,
+                            "msg": res.message,
+                            "count": res.data.recordsTotal,
+                            "data": res.data.records,
+                            "page": res.data.pageNum,
+                            "limit": res.data.pageSize,
+                        }
+                    },
+                    request: {
+                        pageName: 'pageNum',
+                        limitName: 'pageSize'
+                    },
+                    done: function (res, curr, count) {
+                        comKnowledgeListCurr = curr;
+                        if (res.data && curr > 1 && res.data.length === 0 && comKnowledgeTableInited) {
+                            comKnowledgeListCurr = curr - 1;
+                            table.reload('commonConfigDict', {
+                                where: getQueryParams(),
+                                page: { curr: comKnowledgeListCurr, limit: comKnowledgeListLimit }
+                            });
+                        }
+                    }
+                });
+                comKnowledgeTableInited = true;
+            } else {
+                table.reload('commonConfigDict', {
+                    where: getQueryParams(),
+                    page: { curr: comKnowledgeListCurr, limit: comKnowledgeListLimit }
+                });
+            }
+        };
+
+        // 年度、套均选中后加载二级学科（请求参数与 gov 统计页 comKnowledge 调用一致）
+        let tryLoadKnowledgeTwoWhenYearAndKindReady = function () {
+            var versionYear = $('#versionYearSearch').val();
+            var cmeStandardKindId = $('#standardKindSearch').val();
+            if (tool.isEmpty(versionYear) || tool.isEmpty(cmeStandardKindId)) {
+                knowledgeTwoObj = {};
+                $('#knowledgeTwoIdSearch').html('<option value="">请先选择年度和套</option>');
+                $('#knowledgeTwoIdForm').html('<option value="">请选择二级学科</option>');
+                form.render('select');
+                $("#knowledgeTypeSearch").val() != 3 && isOpenChooseTwoSearch(false);
+                isOpenChooseTwoForm(false);
+                return;
+            }
+            knowledgeTwoInit(cmeStandardKindId, versionYear);
+        };
+
+        let knowledgeTwoInit = function (cmeStandardKindId, versionYear, afterLoad) {
+            $.ajax({
+                type: 'get',
+                url: huayi_sjwh_url + 'comKnowledge',
+                data: {
+                    knowledgeType: 2,
+                    cmeStandardKindId: cmeStandardKindId,
+                    versionYear: versionYear
+                },
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    if (res.status === 200) {
+                        knowledgeTwoObj = {};
+                        for (let tempObj of res.data) {
+                            knowledgeTwoObj[tempObj.knowledgeId] = tempObj.knowledgeName;
+                        }
+                        knowledgeTwoSearchInit();
+                        if (typeof afterLoad === 'function') {
+                            afterLoad();
+                        }
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                },
+                error: function () {
+                    layer.msg('二级学科加载失败');
+                }
+            });
+        };
+
+        let knowledgeTwoSearchInit = function(){
+            $('#knowledgeTwoIdSearch').html('<option value="">请选择二级学科</option>');
+            $('#knowledgeTwoIdForm').html('<option value="">请选择二级学科</option>');
+            let options = '';
+            for(let id in knowledgeTwoObj){
+                options += '<option value="' + id + '">'+knowledgeTwoObj[id]+'</option>';
+            }
+            $('#knowledgeTwoIdSearch').append(options);
+            $('#knowledgeTwoIdForm').append(options);
+            form.render('select');
+            // 二级列表刷新后搜索区始终可点；选非「三级学科」时由 layui-knowledge-type-search 监听再禁用
+            isOpenChooseTwoSearch(true);
+            isOpenChooseTwoForm(false);
+            var ktForm = $("#knowledgeTypeForm").val();
+            if (ktForm == 3 || ktForm === '3') {
+                isOpenChooseTwoForm(true);
+            }
+        }
+
+        //监听二级学科类型
+        let bindKnowledgeTwo = function(){
+            form.on('select(comknowledge-version-year-search)', function () {
+                tryLoadKnowledgeTwoWhenYearAndKindReady();
+            });
+            form.on('select(comknowledge-standard-kind-search)', function () {
+                tryLoadKnowledgeTwoWhenYearAndKindReady();
+            });
+            form.on('select(layui-knowledge-type-search)', function (data) {
+                //选择三级学科的时候可以选择二级学科作为父级学科
+                if(!tool.isEmpty(data.value) && data.value ==3){
+                    isOpenChooseTwoSearch(true);
+                    tryLoadKnowledgeTwoWhenYearAndKindReady();
+                } else {
+                    isOpenChooseTwoSearch(false);
+                }
+            });
+            form.on('select(layui-knowledge-type-form)', function (data) {
+                if(!tool.isEmpty(data.value) && data.value ==3) {
+                    isOpenChooseTwoForm(true);
+                    tryLoadKnowledgeTwoForFormModal();
+                } else {
+                    isOpenChooseTwoForm(false);
+                }
+            });
+            form.on('select(comknowledge-version-year-form)', function () {
+                tryLoadKnowledgeTwoForFormModal();
+            });
+            form.on('select(comknowledge-standard-kind-form)', function () {
+                tryLoadKnowledgeTwoForFormModal();
+            });
+        };
+
+        let tryLoadKnowledgeTwoForFormModal = function () {
+            var vy = $('#versionYearForm').val();
+            var sk = $('#cmeStandardKindIdForm').val();
+            if (tool.isEmpty(vy) || tool.isEmpty(sk)) return;
+            knowledgeTwoInit(sk, vy);
+        };
+
+
+        // 监听头部新增按钮
+        table.on('toolbar(comKnowledgeTable)', function (obj) {
+            if(obj.event != "add") return;
+            openFormWindow();
+        });
+
+        // 监听行内按钮
+        table.on('tool(comKnowledgeTable)', function (obj) {
+            obj.event == "edit" && openFormWindow(obj.data);
+            obj.event == "del" && deleteKnowledge(obj.data.knowledgeId);
+        });
+
+        //新增，编辑时打开弹窗
+        let openFormWindow = function (data) {
+            var isAdd = !data || data === '';
+            var title = isAdd ? '新增' : '修改';
+            layer.open({
+                type: 1,
+                title: title,
+                content: $('#addKnowledge'),
+                area: ['600px', '580px'],
+                success: function () {
+                    if (isAdd) {
+                        $("#comKnowledgeForm")[0].reset();
+                        $("#comKnowledgeForm input[name='knowledgeId']").val('');
+                        $("#comKnowledgeForm input[name='state']").val('1');
+                        $("#comKnowledgeForm input[name='addTime']").val('');
+                        $("#addTimeFormWrap").hide();
+                        $("#versionYearForm").val($("#versionYearSearch").val());
+                        $("#cmeStandardKindIdForm").val($("#standardKindSearch").val());
+                        isOpenChooseTwoForm(false);
+                        form.render('select');
+                    } else {
+                        $("#addTimeFormWrap").show();
+                        var rowData = Object.assign({}, data, {
+                            versionYear: data.versionYear || $('#versionYearSearch').val(),
+                            cmeStandardKindId: data.cmeStandardKindId || $('#standardKindSearch').val()
+                        });
+                        var sk = rowData.cmeStandardKindId;
+                        var vy = rowData.versionYear;
+                        if (data.knowledgeType == 3 && !tool.isEmpty(sk) && !tool.isEmpty(vy)) {
+                            knowledgeTwoInit(sk, vy, function () {
+                                form.val('add-filter', rowData);
+                                isOpenChooseTwoForm(true);
+                                form.render('select');
+                            });
+                        } else {
+                            form.val('add-filter', rowData);
+                            if (data.knowledgeType == 3) {
+                                isOpenChooseTwoForm(true);
+                            } else {
+                                isOpenChooseTwoForm(false);
+                            }
+                            form.render('select');
+                        }
+                    }
+                },
+                cancel: function () {
+                    $("#comKnowledgeForm")[0].reset();
+                }
+            });
+        };
+
+        let deleteKnowledge = function(knowledgeId){
+            layer.confirm('确认删除', {icon: 3, title: '提示'}, function () {
+                $.ajax({
+                    type: 'get',
+                    url: huayi_sjwh_url + 'comKnowledge/deleted',
+                    data: { knowledgeId: knowledgeId },
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.status === 200) {
+                            layer.msg("删除成功");
+                            loaderTable({ resetPage: false });
+                            if(knowledgeTwoObj.hasOwnProperty(knowledgeId)){
+                                delete knowledgeTwoObj[knowledgeId]
+                                knowledgeTwoSearchInit();
+                            }
+                        }else{
+                            layer.msg(res.msg);
+                        }
+                    }
+                });
+            })
+        }
+
+        //保存或者更新的情况下需要对下拉框进行修改
+        let handlerSaveOrUpdate = function(data){
+            if(!data.hasOwnProperty("knowledgeId")|| tool.isEmpty(data.knowledgeId)){
+                return;
+            }
+            if(data.knowledgeType==2){
+                knowledgeTwoObj[data.knowledgeId] = data.knowledgeName;
+            }else{
+                if(knowledgeTwoObj.hasOwnProperty(data.knowledgeId)){
+                    delete knowledgeTwoObj[data.knowledgeId]
+                }
+            }
+            knowledgeTwoSearchInit();
+        }
+
+        // form表单相关操作
+        // 新增/修改表单提交
+        form.on('submit(submit)', function (data) {
+            var knowledgeId = $("#comKnowledgeForm input[name='knowledgeId']").val();
+            let URL = huayi_sjwh_url + 'comKnowledge/update';
+            if(knowledgeId=="" || knowledgeId==null) {
+                URL = huayi_sjwh_url + 'comKnowledge/save';
+            }
+            let subData = data.field;
+            subData.state = subData.state != null && subData.state !== '' ? subData.state : 1;
+            if (!subData.addTime) {
+                delete subData.addTime;
+            }
+            if(subData.knowledgeType == 2) subData.knowledgeTwoId = null;
+            if(subData.knowledgeType == 3 && tool.isEmpty(subData.knowledgeTwoId)) {
+                layer.msg("二级学科没选择");
+                return;
+            }
+            $.ajax({
+                type: 'post',
+                url: URL,
+                data:JSON.stringify(subData),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    if(res.status == 200){
+                        layer.closeAll();
+                        if (knowledgeId == "" || knowledgeId == null) {
+                            loaderTable({ resetPage: true });
+                        } else {
+                            loaderTable({ resetPage: false });
+                        }
+                        $("#comKnowledgeForm")[0].reset()
+                        layer.msg("保存成功");
+                        if(knowledgeId=="" || knowledgeId==null){
+                            handlerSaveOrUpdate(res.data);
+                        } else{
+                            handlerSaveOrUpdate(subData)
+                        }
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                },
+                error: function () {
+                    layer.msg("发送请求失败");
+                }
+            })
+            return false;
+        });
+
+        //自定义验证规则
+        form.verify({
+            knowledgeName : function(value){
+                if(value.length == 0) return '学科名称不能为空';
+                if(value.length > 25) return '学科名称最长不超过25个字符';
+            },
+            knowledgeCode: function(value){
+                if(value.length == 0) return '学科编码不能为空';
+                if(value.length > 4) return '学科编码最长不超过4个字符';
+            },
+            knowledgeTwoId: function(value){
+                const knowledgeId = $("#comKnowledgeForm input[name='knowledgeId']").val();
+                let knowledgeTypeVer = $("#knowledgeTypeForm").val();
+                if(knowledgeTypeVer == 3 && value.length == 0) {
+                    return '设置三级学科，二级学科不能为空';
+                }
+                if(knowledgeTypeVer == 2 && value.length > 0) {
+                    return '设置的是二级学科，二级学科应该为空';
+                }
+                if(value.length >0 && value  == knowledgeId){
+                    return '不可设置自己为上级学科';
+                }
+            }
+        });
+
+        
+        let isOpenChooseTwoSearch = function(flag = true){
+            if(flag){
+                $("#knowledgeTwoIdSearch").attr("disabled", false);
+            }else{
+                $("#knowledgeTwoIdSearch").attr("disabled", true);
+                $("#knowledgeTwoIdSearch").val("");
+            }
+            form.render('select');
+        }
+
+        let isOpenChooseTwoForm = function(flag = true) {
+            if(flag){
+                $("#knowledgeTwoIdForm").attr("disabled", false);
+            }else{
+                $("#knowledgeTwoIdForm").attr("disabled", true);
+                $("#knowledgeTwoIdForm").val("");
+            }
+            form.render('select');
+        }
+
+        let versionYearInit = function () {
+            let currentYear = (new Date()).getFullYear();
+            let html = '';
+            for (let i = currentYear; i >= 2020; i--) {
+                html += '<option value="' + i + '" ' + (i == currentYear ? 'selected' : '') + '>' + i + '</option>';
+            }
+            $('#versionYearSearch').html(html);
+            $('#versionYearForm').html(html);
+            form.render('select');
+        };
+
+        //页面初始化
+        let htmlInit = function(){
+            versionYearInit();
+            standardKindInit();
+            isOpenChooseTwoForm(false);
+            bindKnowledgeTwo();
+        }
+
+        htmlInit();
+
+    });
+
+</script>
+</body>
+</html>

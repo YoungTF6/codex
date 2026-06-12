@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>zhejiang.portal</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.4 -->
+    <!--<link rel="stylesheet" href="/js/layui-v2.6.4/layui/css/layui.css" media="all">-->
+    <!--<script src="/js/layui-v2.6.4/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <link rel="stylesheet" href="/pages/mod/declare/css/declare.css">
+    <style>
+        #projectDetailPage3 .layui-table-header .laytable-cell-1-0-2:before {
+            content: '' !important;
+        }
+        #projectDetailPage3 .layui-table-header .laytable-cell-2-0-2:before {
+            content: '' !important;
+        }
+    </style>
+</head>
+<body style="background-color: white;">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-tab" lay-filter="declare-tab">
+            <ul class="layui-tab-title page-tab-title">
+                <li lay-id="page1" class="tab-default layui-this">项目基本信息</li>
+                <li lay-id="page2" class="tab-default">项目负责人信息</li>
+                <li lay-id="page3" class="tab-default">课程及教师信息</li>
+                <li lay-id="page4" class="tab-default">项目其它信息</li>
+            </ul>
+            <div class="layui-tab-content page-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <!--<iframe src="modals/declare1st.html" name="ifm1"-->
+                    <!--        onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);console.info('onload1.....');this.remove()"></iframe>-->
+                    <div id="projectDetailPage1">
+                        <form class="page-form layui-form" action="" lay-filter="page1-form" id="page1-form">
+                            <input type="hidden" name="pageNum" value=1>
+                            <input type="hidden" name="projectId">
+                            <!-- row1 -->
+                            <div class="layui-form-item">
+                                <div class="layui-col-md6">
+                                    <label class="layui-form-label"><span
+                                            style="color:red">*&nbsp;</span>项目名称:</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="projectName" lay-verify="required|projectName"
+                                               autocomplete="off"
+                                               class="layui-input" placeholder="请输入,最多75个汉字">
+                                    </div>
+                                </div>
+                                <div class="layui-col-md3">
+                                    <label class="layui-form-label"><span
+                                            style="color:red">*&nbsp;</span>II级学科:</label>
+                                    <div class="layui-input-block">
+                                        <select name="knowledgeTwoId" lay-filter="knowledgeTwoIdSelect"
+                                                lay-verify="required"
+                                                lay-search="true">
+                                            <option value="">请选择</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-col-md3">
+                                    <label class="layui-form-label"><span
+                                            style="color:red">*&nbsp;</span>III级学科:</label>
+                                    <div class="layui-input-block">
+                                        <select name="knowledgeId" lay-filter="knowledgeIdSelect" lay-verify="required"
+                                                lay-search="true">
+                                            <option value="">请先选择二级学科</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- row2 -->
+                            <div class="layui-form-item">
+                                <div class="page-row-item">
+                                    <label><span style="color:red">*&nbsp;</span>国内外本领域的最新进展（最多不能超过3000个汉字）:</label>
+                                    <div>
+                                        <textarea name="progress" placeholder="请输入内容" class="layui-textarea"
+                                                  lay-verify="required|progress"></textarea>
+                                    </div>
+                                </div>
+                                <div class="page-row-item">
+                                    <label><span style="color:red">*&nbsp;</span>本领域存在的问题（最多不能超过3000个汉字）:</label>
+                                    <div>
+                                        <textarea name="question" placeholder="请输入内容" class="layui-textarea"
+                                                  lay-verify="required|question"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- row3 -->
+                            <div class="layui-form-item">
+                                <div class="page-row-item">
+                                    <label><span
+                                            style="color:red">*&nbsp;</span>项目的目标（最多不能超过3000个汉字）:</label>
+                                    <div>
+                                        <textarea name="target" placeholder="请输入内容" class="layui-textarea"
+                                                  lay-verify="required|target"></textarea>
+                                    </div>
+                                </div>
+                                <div class="page-row-item">
+                                    <label><span style="color:red">*&nbsp;</span>项目的创新之处（最多不能超过3000个汉字）:</label>
+                                    <div>
+                                        <textarea name="innovation" placeholder="请输入内容" class="layui-textarea"
+                                                  lay-verify="required|innovation"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- row4 -->
+                            <div class="layui-form-item"
+                                 style="vertical-align:bottom;display: flex;align-items: flex-end">
+                                <div class="page-row-item">
+                                    <label><span style="color:red">*&nbsp;</span>项目培训需求及效益、效果分析（最多不能超过3000个汉字）:</label>
+                                    <div>
+                                        <textarea name="projAnalyze" placeholder="请输入内容" class="layui-textarea"
+                                                  lay-verify="required|projAnalyze"></textarea>
+                                    </div>
+                                </div>
+                                <div class="page-row-item">
+                                    <label><span
+                                            style="color:red">*&nbsp;</span>主办单位近几年与项目有关的工作概况（包括开展的培训、科研工作以及师资队伍情况）（最多不能超过3000个汉字）:</label>
+                                    <div>
+                                        <textarea name="jobSummary" placeholder="请输入内容" class="layui-textarea"
+                                                  lay-verify="required|jobSummary"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- row5 -->
+                            <div class="layui-form-item">
+                                <div class="layui-col-sm12">
+                                    <div style="text-align: center;">
+                                        <button class="layui-btn" type="submit" lay-submit lay-filter="save">保存
+                                        </button>
+                                        <button class="layui-btn" type="submit" lay-submit lay-filter="saveToNext">
+                                            保存并进入下一页
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="layui-tab-item">
+                    <iframe src="modals/declare2nd.html" name="ifm2"
+                            onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);console.info('onload2.....');this.remove()"></iframe>
+                </div>
+                <div class="layui-tab-item">
+                    <iframe src="modals/declare3rd.html" name="ifm3"
+                            onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);console.info('onload3.....');this.remove();"></iframe>
+                </div>
+                <div class="layui-tab-item">
+                    <iframe src="modals/declare4th.html" name="ifm4"
+                            onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);console.info('onload4.....');this.remove()"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="display: none" id="someTpl">
+    <!-- course.cert_type cell -->
+    <div type="text/html" id="courseCertTypeCell">
+        <select name="certType" id="certType{{d.LAY_TABLE_INDEX}}" idx="{{d.LAY_TABLE_INDEX}}"
+                lay-filter="certTypePage3" data-value="{{d.certType}}">
+        </select>
+    </div>
+    <!-- course.title_id cell -->
+    <div type="text/html" id="courseTitleIdCell">
+        <div class="titleTreeSelector" id="titleTreeSelector{{d.LAY_TABLE_INDEX}}" idx="{{d.LAY_TABLE_INDEX}}"
+             lay-filter="courseTitleId" data-value="{{d.titleId}}"></div>
+    </div>
+    <!-- course.teaching_method cell -->
+    <div type="text/html" id="courseTeachingMethodCell">
+        <select name="teachingMethod" id="teachingMethod{{d.LAY_TABLE_INDEX}}" idx="{{d.LAY_TABLE_INDEX}}"
+                lay-filter="teachingMethod" data-value="{{d.teachingMethod}}">
+            <option value="面授">面授</option>
+            <option value="实验技术">实验技术</option>
+        </select>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="/js/axios.min.js"></script>
+<script type="text/javascript" src="/js/moment.min.js"></script>
+<script type="text/javascript" src="/js/constant.js"></script>
+<script type="text/javascript" src="/js/auth.js"></script>
+<script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+<script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script><script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+<script type="text/javascript" src="/js/api/number.js"></script>
+<script type="text/javascript" src="/js/api/cpt.js"></script>
+<script type="text/javascript" src="/pages/mod/libs/vendor.d44bed60.b62ea42s.js"></script>
+<script type="text/javascript" src="/pages/mod/declare/js/report.js"></script>
+<script type="text/javascript">
+    $.extend(true, _dbase, {
+        calc: {
+            calcScore: function (courseArr, cycleArr) {
+                const that = this;
+                that.score = Math.floor(that.period / 3) + (that.period % 3 === 2 ? 0.5 : 0);
+                layui.form.val('page4-form', {score: that.score});
+            },
+        },
+        fix: {
+            fixForm: function (){
+                $('input[name=score]').attr('disabled', 'true').toggleClass('layui-disabled');
+            }
+        },
+    });
+</script>
+<script type="text/javascript" src="/pages/mod/declare/js/d.js"></script>
+<!-- courseTale: toolbar -->
+<script type="text/html" id="courseToolbar">
+    <a class='layui-btn layui-btn-sm' lay-event='addCourse'>添加</a>
+</script>
+<!-- courseTable: Operation Cell -->
+<script type="text/html" id="courseOperationCell">
+    <a class="layui-btn layui-btn-xs btn-row btn-danger-row" lay-event="delCourse">移除</a>
+</script>
+<!-- cycleTable: toolbar -->
+<script type="text/html" id="cycToolbar">
+    <a class='layui-btn layui-btn-sm' lay-event='addCycle'>添加周期</a>
+</script>
+<!-- cycleTable: Operation Cell -->
+<script type="text/html" id="cycOperCell">
+    <a class="layui-btn layui-btn-xs btn-row btn-danger-row" lay-event="delCycle">移除</a>
+</script>
+<!-- cycleTable: dateStart cell -->
+<script type="text/html" id="cycDsTpl">
+    <input type="text" name="dateStart" class="cycle-date" id="dateStartSel{{d.LAY_TABLE_INDEX}}" placeholder="开始日期"
+           autocomplete="off" class="layui-input">
+</script>
+<!-- cycleTable: dateEnd cell -->
+<script type="text/html" id="cycDeTpl">
+    <input type="text" name="dateEnd" class="cycle-date" id="dateEndSel{{d.LAY_TABLE_INDEX}}" placeholder="结束日期"
+           autocomplete="off" class="layui-input">
+</script>
+</html>

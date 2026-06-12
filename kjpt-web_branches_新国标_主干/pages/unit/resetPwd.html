@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>机构找回密码</title>
+    <meta name="viewport" content="width=device-width, initial-scale=0.3, minimum-scale=0.3, maximum-scale=1.0, user-scalable=yes">
+    <link rel="stylesheet" href="../../css/person/reset.css">
+    <link rel="stylesheet" href="../../css/person/style.css">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script src="../../js/tools/verification.js"></script>
+    <script src="../../js/tools/aes-tool.js"></script>
+    <!--请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <style>
+        .img-code {
+            margin-left: 10px;
+        }
+
+        /* #imgCode_2 {
+            padding-left: 10px;
+        } */
+        .cent_ul {
+            margin-left: 190px;
+        }
+        .cent_foot {
+            margin-left: 270px;
+        }
+
+        /* 浙江：单位名称联想下拉（与 .cent_con 的 position:relative 配合） */
+        .reset_zj_fuzzy {
+            position: absolute;
+            left: 20%;
+            top: 36px;
+            min-width: calc(73% - 142px);
+            width: auto;
+            max-width: calc(100% - 20%);
+            max-height: 220px;
+            overflow-y: auto;
+            background: #fff;
+            border: 1px solid #e2e2e2;
+            border-radius: 4px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+            box-sizing: border-box;
+            z-index: 1000;
+            display: none;
+        }
+
+        .reset_zj_fuzzy .fuzz_ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .reset_zj_fuzzy .fuzz_lis {
+            padding: 9px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            line-height: 1.4;
+            border-bottom: 1px solid #f2f2f2;
+            transition: background-color .18s ease, color .18s ease, padding-left .18s ease;
+        }
+
+        .reset_zj_fuzzy .fuzz_lis:hover {
+            background: #eef5ff;
+            color: #1f6feb;
+            padding-left: 16px;
+        }
+
+        .reset_zj_fuzzy .fuzz_lis:last-child {
+            border-bottom: none;
+        }
+
+        .reset_zj_fuzzy .fuzz_lis .unit_name {
+            display: block;
+            font-weight: 500;
+        }
+
+        .reset_zj_fuzzy .fuzz_lis .unit_id {
+            display: block;
+            margin-top: 2px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .reset_zj_fuzzy .fuzz_lis.muted {
+            color: #999;
+            cursor: default;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="top_box">
+            <span class="top_tit"></span>
+        </div>
+
+        <div class="cent_box">
+            <!--忘记密码、返回登录-->
+            <div class="cent_top">
+                <span class="cent_tit">忘记密码</span>
+                <a href="javascript:void(0)" onclick="tologin()"><span class="cent_return">返回登录</span></a>
+            </div>
+
+            <!--进度条-->
+            <div class="cent_content">
+                <ul class="cent_ul">
+                    <li class="cent_lis">
+                        <span class="cent_text01">1 验证身份</span>
+                    </li>
+                    <li class="cent_lis set_img02">
+                        <span class="cent_text02">2 设置新密码</span>
+                    </li>
+                    <li class="cent_lis set_img03">
+                        <span class="cent_text02">3 完成</span>
+                    </li>
+                </ul>
+
+                <!--填写账户名-->
+                <div class="cent_foot">
+
+                    <div class="cent_con">  
+                        <span class="cen_tit" id="unitLabelTitle">单位编号</span>
+                        <input type="text" placeholder="请输入单位编号" class="con_tes" id="tab0_text_unit_id" autocomplete="off">
+                        <!-- 浙江：展示单位全称，提交仍使用 unitId -->
+                        <input type="hidden" id="tab0_hidden_unit_id" value="">
+                        <div class="fuzzy_box reset_zj_fuzzy" id="unitFuzzyBox" style="display:none;">
+                            <ul class="fuzz_ul" id="unitUl"></ul>
+                        </div>
+                    </div>
+                    <div class="cent_con">
+                        <span class="cen_tit">管理员姓名</span>
+                        <input type="text" placeholder="请输入管理员姓名" class="con_tes" id="tab0_text_admin_name">
+                    </div>
+                    <div class="cent_con">
+                        <span class="cen_tit">管理员手机号</span>
+                        <input type="text" placeholder="请输入管理员手机号" class="con_tes" id="tab0_text_admin_mobile">
+                    </div>
+                    <div class="cent_con">
+                        <span class="cen_tit">图形验证码</span>
+                        <input type="text" placeholder="请输入图形验证码" class="con_tes" id="tab0_text_code">
+                        <img id="imgCode_0" class="img-code" title="点击刷新验证码">
+                    </div>
+                    <div class="cent_con">
+                        <span class="cen_tit">手机验证码</span>
+                        <input type="text" placeholder="请输入手机验证码" class="con_tes" id="tab0_text_PhoneCode">
+                        <input type="button" value="获取验证码" class="con_obt" id="tab0_btn_Code">
+                    </div>
+                </div>
+
+              
+
+                <!--设置新密码-->
+                <div class="cent_foot" style="display:none;">
+
+                    <div class="cent_con">
+                        <span class="con_tit" style="width: 24%;">设置新密码：</span>
+                        <input type="password" placeholder="请输入8~25位包含数字、大小写、符号的密码" style="padding-left: 5px;width: 72%;" class="con_user" id="tab1_text_password1">
+                    </div>
+                    <div class="cent_con">
+                        <span class="con_tit" style="width: 24%;">确认新密码：</span>
+                        <input type="password" placeholder="请再次输入新密码" style="padding-left: 5px; width: 72%;" class="con_user" id="tab1_text_password2">
+                    </div>
+                </div>
+
+
+                <div  id="div_btnNext">
+                    <div class="com_btn" style="width: 100%;display: flex;justify-content: center;">
+                        <input type="button" value="下一步" class="con_btn">
+                    </div>
+                </div>
+
+                <!--修改成功-->
+                <div class="cent_foot" style="display: none;margin-left: 230px;" id="div_finish">
+                    <img src="../../img/person/finish_icon.png" alt="" class="con_fin">
+                    <span class="con_tips" >重置成功</span>
+                </div>
+                <div class="" style="display: none;" id="div_btnFinish">
+                    <div class="com_btn" style="width: 100%;display: flex;justify-content: center;">
+                        <input type="button" value="去登录" class="con_btn" id="btnFinish">
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+
+        <span class="ind_tips"></span>
+
+    </div>
+</body>
+
+</html>
+
+
+<script type="text/javascript" src="../../js/tools/codeTool.js"></script>
+<script type="text/javascript" id="ypf">
+    var active = {},
+        num, // 定义容器接收验证码
+        phone, // 手机号
+        user_id = '';
+
+
+    layui.use(['layer', 'jquery'], function () {
+        let layer = layui.layer,
+            $ = layui.$;
+
+        var InterValObj, // timer变量，控制时间
+            count = 60, // 间隔函数，1秒执行
+            curCount; // 当前剩余秒数
+
+        var unitList = [],
+            zjUnitSearchTimer = null,
+            unitInputIsComposing = false;
+
+        //获取当前tab页的index
+        active.getDisplayCentFoot = function () {
+            let showIndex=-1;
+            for (var i = 0; i < $(".cent_foot").length; i++) {
+                if ($($(".cent_foot")[i]).css("display") != "none") {
+                    showIndex = i;
+                    break;
+                }
+            }
+            return showIndex;
+        };
+
+        const isZhejiang = window.location.hostname === 'cme.wsjkw.zj.gov.cn';
+        // const isZhejiang = true;
+
+        /**
+         * 浙江：根据关键词拉取单位候选列表（后端就绪后替换为真实 $.ajax）
+         * 约定返回数组元素：{ unitId, unitName }
+         */
+        function fetchZhejiangUnitSuggest(keyword) {
+            return new Promise(function (resolve) {
+                window.setTimeout(function () {                    
+                    var units = [];
+                    $.ajax({
+                        async: false,
+                        url: huayi_personorg_url + "comunit/getComUnitsByProvIdAndUnitName",
+                        type: "post",
+                        data: { unitIdOrUnitName: keyword, provinceId: 33 },
+                        success: function (result) {
+                            if (result.success == true) {
+                                units = result.data;
+                            } else {
+                                layer.msg("请求单位数据失败");
+                            }
+                        }, error: function () {
+                            layer.msg("发送数据失败");
+                        }
+                    });
+                 
+                    var kw = (keyword || '').trim();
+                    if (!kw) {
+                        resolve([]);
+                        return;
+                    }
+                    var normalizedUnits = (units || []).map(function (r) {
+                        r = r || {};
+                        return {
+                            unitId: r.unitId || r.id || r.comUnitId || r.orgId || '',
+                            unitName: r.unitName || r.comUnitName || r.name || r.orgName || ''
+                        };
+                    }).filter(function (r) {
+                        return !!r.unitName;
+                    });
+                    var lower = kw.toLowerCase();
+                    var filtered = normalizedUnits.filter(function (r) {
+                        var name = String(r.unitName || '');
+                        return name.indexOf(kw) !== -1 || name.toLowerCase().indexOf(lower) !== -1;
+                    });
+                    resolve(filtered.length ? filtered : normalizedUnits);
+                }, 180);
+            });
+        }
+
+        function renderZjUnitDropdown(list) {
+            unitList = list || [];
+            var $ul = $('#unitUl');
+            var $input = $('#tab0_text_unit_id');
+            var $box = $('#unitFuzzyBox');
+            $ul.empty();
+            if (!unitList.length) {
+                $ul.append($('<li class="fuzz_lis muted">没有匹配结果</li>'));
+                $box.outerWidth($input.outerWidth());
+                $box.show();
+                return;
+            }
+            var maxTextWidth = 0;
+            var $measure = $('<span></span>').css({
+                position: 'absolute',
+                visibility: 'hidden',
+                whiteSpace: 'nowrap',
+                fontSize: '14px',
+                fontWeight: '500',
+                fontFamily: $input.css('font-family')
+            }).appendTo('body');
+            for (var i = 0; i < unitList.length; i++) {
+                (function (item) {
+                    var unitName = item.unitName || '';
+                    var unitId = item.unitId || '';
+                    var $li = $('<li class="fuzz_lis"></li>');
+                    $li.append($('<span class="unit_name"></span>').text(unitName));
+                    if (unitId) {
+                        $li.append($('<span class="unit_id"></span>').text('单位编号：' + unitId));
+                    }
+                    $measure.text(unitName + (unitId ? ' 单位编号：' + unitId : ''));
+                    maxTextWidth = Math.max(maxTextWidth, $measure.outerWidth());
+                    $li.on('mousedown', function (e) {
+                        e.preventDefault();
+                    });
+                    $li.on('click', function (e) {
+                        e.stopPropagation();
+                        $input.val(unitName);
+                        $('#tab0_hidden_unit_id').val(unitId);
+                        $box.hide();
+                    });
+                    $ul.append($li);
+                })(unitList[i]);
+            }
+            $measure.remove();
+            var minWidth = $input.outerWidth();
+            var calculatedWidth = Math.max(minWidth, Math.ceil(maxTextWidth) + 40);
+            var maxAvailableWidth = Math.max(minWidth, $input.closest('.cent_con').width() - $input.position().left);
+            $box.outerWidth(Math.min(calculatedWidth, maxAvailableWidth));
+            $box.show();
+        }
+
+        if (isZhejiang) {
+            $('#unitLabelTitle').text('单位名称');
+            $('#tab0_text_unit_id').attr('placeholder', '请输入单位名称关键词');
+
+            function tryResolveSelectedUnitByText() {
+                var inputText = $.trim($('#tab0_text_unit_id').val());
+                if (!inputText) {
+                    $('#tab0_hidden_unit_id').val('');
+                    return false;
+                }
+                var matchedItem = null;
+                for (var i = 0; i < unitList.length; i++) {
+                    var item = unitList[i] || {};
+                    if ($.trim(item.unitName || '') === inputText) {
+                        matchedItem = item;
+                        break;
+                    }
+                }
+                if (matchedItem && matchedItem.unitId) {
+                    $('#tab0_hidden_unit_id').val(matchedItem.unitId);
+                    return true;
+                }
+                return false;
+            }
+
+            function triggerZjUnitSearch() {
+                $('#tab0_hidden_unit_id').val('');
+                var kw = $.trim($('#tab0_text_unit_id').val());
+                if (!kw) {
+                    unitList = [];
+                    $('#unitUl').empty();
+                    $('#unitFuzzyBox').hide();
+                    return;
+                }
+                window.clearTimeout(zjUnitSearchTimer);
+                zjUnitSearchTimer = window.setTimeout(function () {
+                    fetchZhejiangUnitSuggest(kw).then(function (list) {
+                        renderZjUnitDropdown(list);
+                    });
+                }, 300);
+            }
+
+            // 中文输入法（IME）合成阶段会先产生“拼音阶段”的 input 事件；
+            // 这里在合成期间不请求，合成结束后再用最终值触发请求。
+            $('#tab0_text_unit_id').on('compositionstart', function () {
+                unitInputIsComposing = true;
+                $('#tab0_hidden_unit_id').val('');
+                $('#unitFuzzyBox').hide();
+            });
+
+            $('#tab0_text_unit_id').on('compositionend', function () {
+                unitInputIsComposing = false;
+                triggerZjUnitSearch();
+            });
+
+            $('#tab0_text_unit_id').on('input', function () {
+                if (unitInputIsComposing) {
+                    return;
+                }
+                // 兼容某些浏览器：如果 input 事件自带 isComposing 标记，也跳过合成阶段请求
+                var ev = arguments && arguments.length ? arguments[0] : null;
+                var composingFlag = !!(ev && (ev.isComposing || (ev.originalEvent && ev.originalEvent.isComposing)));
+                if (composingFlag) {
+                    return;
+                }
+
+                $('#tab0_hidden_unit_id').val('');
+                var kw = $.trim($(this).val());
+                if (!kw) {
+                    unitList = [];
+                    $('#unitUl').empty();
+                    $('#unitFuzzyBox').hide();
+                    return;
+                }
+                window.clearTimeout(zjUnitSearchTimer);
+                zjUnitSearchTimer = window.setTimeout(function () {
+                    fetchZhejiangUnitSuggest(kw).then(function (list) {
+                        renderZjUnitDropdown(list);
+                    });
+                }, 300);
+            });
+
+            $('#tab0_text_unit_id').on('blur', function () {
+                window.setTimeout(function () {
+                    if ($('#tab0_hidden_unit_id').val()) {
+                        return;
+                    }
+                    var inputText = $.trim($('#tab0_text_unit_id').val());
+                    if (!inputText) {
+                        return;
+                    }
+                    if (tryResolveSelectedUnitByText()) {
+                        $('#unitFuzzyBox').hide();
+                        return;
+                    }
+                    layer.msg('请选择下拉列表中的单位', { icon: 7, time: 1500 });
+                }, 120);
+            });
+
+            $('#tab0_text_unit_id').on('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    if (tryResolveSelectedUnitByText()) {
+                        $('#unitFuzzyBox').hide();
+                    } else {
+                        layer.msg('请选择下拉列表中的单位', { icon: 7, time: 1500 });
+                        $('#unitFuzzyBox').show();
+                    }
+                }
+            });
+
+            $(document).on('click.zjUnitSuggest', function (e) {
+                if (!$(e.target).closest('#unitFuzzyBox, #tab0_text_unit_id').length) {
+                    $('#unitFuzzyBox').hide();
+                }
+            });
+        }
+
+        window.clearUnitInfo = function () {
+            unitList = [];
+            $('#unitUl').empty();
+            $('#unitFuzzyBox').hide();
+            $('#tab0_hidden_unit_id').val('');
+        }
+
+        active.activate_tab_0 = function() {
+
+            /* 图片验证码 */
+            loadImgCode('#imgCode_0', 145, null, 'code_key_1');
+
+            //获取短信验证码按钮事件
+            $("#tab0_btn_Code").click(function () {
+                var unitNameText = $("#tab0_text_unit_id").val();
+                var unitIdForSubmit = isZhejiang ? ($('#tab0_hidden_unit_id').val() || '') : $("#tab0_text_unit_id").val();
+                let adminName = $("#tab0_text_admin_name").val();
+                let adminMobile = $("#tab0_text_admin_mobile").val();
+                let code = $('#tab0_text_code').val();
+
+                if (isZhejiang) {
+                    if (null == unitNameText || unitNameText.length < 1) {
+                        layer.msg('请输入单位名称', { icon: 7, time: 1500 });
+                        return false;
+                    }
+                    if (!unitIdForSubmit || unitIdForSubmit.length < 1) {
+                        layer.msg('请从列表中选择单位', { icon: 7, time: 1500 });
+                        return false;
+                    }
+                } else if (null == unitIdForSubmit || unitIdForSubmit.length < 1) {
+                    layer.msg('请输入单位编号', { icon: 7, time: 1500 });
+                    return false;
+                }
+                if(null == adminName || adminName.length < 1) {
+                    layer.msg('请输入管理员姓名', { icon: 7, time: 1500 });
+                    return false;
+                }
+                if(null == adminMobile || adminMobile.length < 1) {
+                    layer.msg('请输入管理员手机号', { icon: 7, time: 1500 });
+                    return false;
+                }
+                if(/^1\d{10}$/.test(adminMobile) == false ) {
+                    layer.msg('请输入正确格式的手机号', { icon: 7, time: 1500 });
+                    return false;
+                }
+                if (null == code || code.length < 1) {
+                    layer.msg('请输入图形验证码', { icon: 7, time: 1500 });
+                    return false;
+                }
+                if (!codeTool.checkImgCode(layer, '#imgCode_0', window.code_key_1, code)) {
+                    return false;
+                }
+
+                //首先检查输入的单位管理员信息是否正确
+                var data = { unitId: unitIdForSubmit, userRealName:adminName, userPhone:adminMobile };
+                let adminExists = false;
+            
+                $.ajax({
+                    type: "post",
+                    async: false,
+                    url:   huayi_permission_url+'comUserManager/managerExists',
+                    data: data,
+                    success: function(res) {
+                        if(res.success) {
+                            adminExists = res.data;
+                        } else {
+                            layer.msg(res.msg, { icon: 2, time: 3000 });
+                        }
+                    },
+                    error: function(){
+                        layer.msg('接口发送信息失败', { icon: 2, time: 1500 });
+                    }
+                });
+                if (adminExists == false) { 
+                    layer.alert('该单位的管理员信息输入不正确', { icon: 2, time: 3000 }); 
+                    return false;
+                }  
+
+
+                data = { "msgCodeType": "EXPORT_VERIFY", "phone": encodeAesString(adminMobile).toString() };
+  
+                $.ajax({
+                    type: "post",
+                    url: huayi_mcenter_url + "message/code/send",
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: JSON.stringify(data),
+                    success: function (result) {
+                        if (result.success) {
+                            layer.msg('验证码已发送,请注意查收');
+                            // 验证码倒计时
+                            curCount = count;
+                            document.getElementById("tab0_btn_Code").setAttribute("disabled", "true");//设置按钮为禁用状态
+                            $('#tab0_btn_Code').addClass('layui-btn-disabled');
+                            $('#tab0_btn_Code').val(curCount + "秒后重获");
+                            InterValObj = window.setInterval(SetRemainTime, 1000); // 启动计时器timer处理函数，1秒执行一次
+                        } else {
+                            layer.alert(result.msg,{ icon:2, time:1500 });
+                        }
+                    }
+                });
+            });
+            //timer处理函数
+            var SetRemainTime = function () {
+                if (curCount == 0) {
+                    $('#tab0_btn_Code').removeClass('layui-btn-disabled');
+                    $('#tab0_btn_Code').val("重获验证码");
+                    window.clearInterval(InterValObj);// 停止计时器
+                    document.getElementById("tab0_btn_Code").removeAttribute("disabled");//移除禁用状态改为可用
+                } else {
+                    curCount--;
+                    $('#tab0_btn_Code').val(curCount + "秒后重获");
+                }
+            }
+
+        }
+
+        //切换到第二页
+        active.activate_tab_1 = function () {
+            //进度条进入到第二页
+            $(".cent_foot").eq(0).hide();
+            $(".cent_foot").eq(1).show();
+            $(".cent_content").find(".cent_ul").find("li").eq(1).removeClass("set_img02").addClass("set_img04");
+            $(".cent_content").find(".cent_ul").find("li").eq(1).find("span").removeClass("cent_text02").addClass("cent_text01");
+
+        };
+
+
+        //切换到第三页
+        active.activate_tab_2 = function () {
+            //进度条进入到第三页
+            $(".cent_foot").eq(1).hide();
+            $(".cent_foot").eq(2).show();
+            $(".cent_content").find(".cent_ul").find("li").eq(2).removeClass("set_img02").addClass("set_img04");
+            $(".cent_content").find(".cent_ul").find("li").eq(2).find("span").removeClass("cent_text02").addClass("cent_text01");
+            $("#div_btnNext").hide();
+            $("#div_finish").show();
+            $("#div_btnFinish").show();
+        }
+
+
+
+        //下一页 的按钮的点击
+        $(".con_btn").click(function () {
+            
+            let showIndex = active.getDisplayCentFoot();
+
+            if (showIndex == 0) {
+                if (isZhejiang) {
+                    var stepUnitName = $.trim($('#tab0_text_unit_id').val());
+                    var stepUnitId = $.trim($('#tab0_hidden_unit_id').val());
+                    if (!stepUnitName) {
+                        layer.msg('请输入单位名称', { icon: 7, time: 2000 });
+                        return false;
+                    }
+                    if (!stepUnitId) {
+                        if (!tryResolveSelectedUnitByText()) {
+                            layer.msg('请选择下拉列表中的单位', { icon: 7, time: 1500  });
+                            $('#unitFuzzyBox').show();
+                            return false;
+                        }
+                    }
+                }
+
+                // 短信验证码验证
+                let phoneCodeInput = $('#tab0_text_PhoneCode').val();
+                let mobile = $('#tab0_text_admin_mobile').val();
+                if (null == phoneCodeInput || phoneCodeInput.length < 1) {
+                    layer.msg('请输入手机验证码', { icon: 7, time: 2000 });
+                    return false;
+                }
+      
+                var data = {
+                    "msgCodeType": "EXPORT_VERIFY",
+                    "phone": encodeAesString(mobile).toString(),
+                    "code": encodeAesString(phoneCodeInput).toString()
+                };
+                $.ajax({
+                    type: "post",
+                    url: huayi_mcenter_url + "message/code/check",
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: JSON.stringify(data),
+                    success: function (result) {
+                        if (result.success == true) {
+                            active.activate_tab_1();
+                            return;
+                        }
+                        else {
+                            layer.msg(result.msg, { icon: 7, time: 3000 });
+                        }
+                    }
+                });
+                
+            }
+
+            //3 设置新密码 tab页
+            if (active.getDisplayCentFoot() == 1) {
+                var password1 = $("#tab1_text_password1").val();
+                var password2 = $("#tab1_text_password2").val();
+                if (isNull(password1) == true) {
+                    layer.msg('密码不能为空',{ icon: 2 , time: 2000});
+                    return;
+                }
+                if (password1.length < 8 || password1.length > 25) {
+                    layer.msg('密码长度应该大于等于8位,并且小于等于25位',{ icon: 2 , time: 2000});
+                    return;
+                }
+                if (isNumberAndLetterAndSpecialCh(password1) == false) {
+                    layer.msg('密码应该由字母+数字+特殊符号组成',{ icon: 2 , time: 2000});
+                    return;
+                }
+                if (password2 != password1) {
+                    layer.msg('两次输入的密码应该相同！',{ icon: 2 , time: 2000});
+                    return;
+                }
+                var unitIdForSubmit = isZhejiang ? ($('#tab0_hidden_unit_id').val() || '') : $("#tab0_text_unit_id").val();
+                if (isZhejiang && (!unitIdForSubmit || unitIdForSubmit.length < 1)) {
+                    layer.msg('请返回上一步选择单位', { icon: 7, time: 2000 });
+                    return;
+                }
+                $.ajax({
+                    url: huayi_permission_url + "comuser/changePasswordByUnitId",
+                    data: { unitId: unitIdForSubmit, password: '' + encodeAesString(password1) },
+                    success: function (result) {
+                        if (result.success == true) {
+                            active.activate_tab_2();
+                            return;
+                        } else {
+                            layer.alert(result.msg,{ icon: 2 , time: 2000 });
+                            return;
+                        }
+                    }
+
+                });
+            }
+
+        });
+
+
+        $("#btnFinish").click(function () {
+            tologin();
+        });
+
+
+        window.tologin = function () {
+            let login_url = localStorage.getItem("login-url");
+            if (login_url == "" || login_url == undefined || login_url == null) {
+                location.href = "/login.html";
+            }
+            else {
+                location.href = login_url;
+            }
+        }
+
+
+        /** 页面初始化 */
+        $(function () {
+            active.activate_tab_0();
+        });
+
+        /** 图片验证码 */
+        window.loadImgCode = function (selector, width, height, cacheName) {
+            window[cacheName] = codeTool.loadImgCode(layer, selector, width, height);
+            $(selector).on('click', () => {
+                window[cacheName] = codeTool.loadImgCode(layer, selector, width, height);
+            });
+        }
+    });
+</script>
+
+
+<!-- 验证码 -->
+<script id="ypf1">
+    var canvas0 = $(".cent_foot:visible").find("canvas");
+    draw(canvas0[0]);
+    var canvases = $("canvas");
+    for (i = 0; i < canvases.length; i++) {
+        var canvas = canvases[i];
+        canvas.onclick = function () {
+            draw(this);
+        }
+    }
+    // 随机颜色函数
+    function getColor() {
+        var r = Math.floor(Math.random() * 256);
+        var g = Math.floor(Math.random() * 256);
+        var b = Math.floor(Math.random() * 256);
+        return "rgb(" + r + "," + g + "," + b + ")";
+    }
+    function draw(canvas) {
+        var context = canvas.getContext("2d");
+        context.clearRect(0, 0, 120, 40);
+        context.strokeRect(0, 0, 120, 40);//绘制矩形（无填充）
+        var aCode = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d"];
+        // 绘制字母
+        var arr = [] //定义一个数组用来接收产生的随机数
+        for (var i = 0; i < 4; i++) {
+            var x = 20 + i * 20;//每个字母之间间隔20
+            var y = 20 + 10 * Math.random();//y轴方向位置为20-30随机
+            var index = Math.floor(Math.random() * aCode.length);//随机索引值
+            var txt = aCode[index];
+            context.font = "bold 20px 微软雅黑";//设置或返回文本内容的当前字体属性
+            context.fillStyle = getColor();//设置或返回用于填充绘画的颜色、渐变或模式，随机
+            context.translate(x, y);//重新映射画布上的 (0,0) 位置，字母不可以旋转移动，所以移动容器
+            var deg = 45 * Math.random() * Math.PI / 180;//0-90度随机旋转
+            context.rotate(deg);// 	旋转当前绘图
+            context.fillText(txt, 0, 0);//在画布上绘制“被填充的”文本
+            context.rotate(-deg);//将画布旋转回初始状态
+            context.translate(-x, -y);//将画布移动回初始状态
+            arr[i] = txt //接收产生的随机数
+        }
+        num = arr[0] + arr[1] + arr[2] + arr[3] //将产生的验证码放入num
+        // 绘制干扰线条
+        for (var i = 0; i < 5; i++) {
+            context.beginPath();//起始一条路径，或重置当前路径
+            context.moveTo(Math.random() * 120, Math.random() * 40);//把路径移动到画布中的随机点，不创建线条
+            context.lineTo(Math.random() * 120, Math.random() * 40);//添加一个新点，然后在画布中创建从该点到最后指定点的线条
+            context.strokeStyle = getColor();//随机线条颜色
+            context.stroke();// 	绘制已定义的路径
+        }
+        // 绘制干扰点，和上述步骤一样，此处用长度为1的线代替点
+        for (var i = 0; i < 20; i++) {
+            context.beginPath();
+            var x = Math.random() * 120;
+            var y = Math.random() * 40;
+            context.moveTo(x, y);
+            context.lineTo(x + 1, y + 1);
+            context.strokeStyle = getColor();
+            context.stroke();
+        }
+    }
+
+    window.tologin = function () {
+        let login_url = localStorage.getItem("login-url");
+        if (login_url == "" || login_url == undefined || login_url == null) {
+            location.href = "/login.html";
+        } else {
+            location.href = login_url;
+        }
+    }
+</script>

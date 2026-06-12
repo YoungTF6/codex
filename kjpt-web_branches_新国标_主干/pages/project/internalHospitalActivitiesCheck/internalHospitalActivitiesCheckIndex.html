@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>院内活动学分审核</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <script type="text/javascript" src="../../../js/constantPage/projectConstant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../../js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="../../../js/tools/dict_tool.js"></script>
+    <script src="../../../js/common.js"></script>
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/common.js"></script>
+    <style>
+        /* card tabs */
+
+        .layui-tab-title .layui-this {
+            color: #404040 !important;
+        }
+
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+        .condition-area {
+            margin-bottom: 0px;
+        }
+        .condition-area .layui_display:nth-child(1) {
+            margin-right: 15px;
+        }
+
+        .condition-area .layui_display:nth-child(1) .layui-inline {
+            margin-top: 5px;
+        }
+
+        .condition-area .layui_display:nth-child(2) .layui-btn {
+            width: 75px;
+        }
+    </style>
+       
+</head>
+<body>
+<div>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-tab" lay-filter="tabarea" id="tabarea">
+                <ul class="layui-tab-title">
+                    <li id="tab_-1" class="tab-default layui-this" lay-id="-1">全部<span id="all"></span></li>
+                    <li id="tab_0" lay-id="0" class="tab-default">待审核<span id="toAudit"></span></li>
+                    <li id="tab_1" lay-id="1" class="tab-default">退回修改<span id="returnToModify"></span></li>
+                    <li id="tab_3" lay-id="3" class="tab-default">审核通过<span id="passTheAudit"></span></li>
+                    <li id="tab_2" lay-id="2" class="tab-default">审核不通过<span id="auditFailed"></span></li>
+                </ul>
+            </div>
+            <!--        搜索框区域-->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area" style="background: #f5f5f5;">
+                <div class="layui_mess">
+                    <div class="layui_display">
+                        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md3">
+                            <label class="layui-form-label">举办年度</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="cmeYear" id="cmeYear_id" required lay-verify="required"
+                                       placeholder="请输入年度" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <!-- 项目级别 -->
+                        <div class="layui-inline tree-select layui-col-xs6 layui-col-sm6 layui-col-md3">
+                            <label class="layui-form-label" name="lblProjectLevel"></label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" 
+                                    lay-filter="scoreLevel" id="scoreLevel" name="scoreLevel" placeholder="请选择">
+                            </div>
+                        </div>
+                         <!-- 活动形式 -->
+                        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md3">
+                            <label class="layui-form-label" name="lblActivityForm"></label>
+                            <div class="layui-input-block">
+                                <select name="holdType" id="holdType" lay-filter="holdType"></select>
+                            </div>
+                        </div>
+
+                        <!-- <div class="layui-inline">
+                            <label class="layui-form-label">项目级别</label>
+                            <div style="width: 180px;"  id="scoreLevel_id" class="layui-input-inline" data-name="scoreLevels"></div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">举办方式</label>
+                            <div class="layui-input-block">
+                                <select name="holdType" id="holdType_id" lay-verify="required">
+                                    <option value="">全部</option>
+                                </select>
+                            </div>
+                        </div> -->
+                        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md3"> 
+                            <label class="layui-form-label">二级学科</label>
+                            <div class="layui-input-block">
+                                <select name="knowledgeTwo" id="knowledgeTwo_id" lay-filter="knowledge_search_filter"
+                                        lay-verify="required">
+                                    <option value="">全部</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md3">
+                            <label class="layui-form-label">三级学科</label>
+                            <div class="layui-input-block">
+                                <select name="knowledgeId" id="knowledgeId_id" lay-verify="required">
+                                    <option value="">请选择</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md3">
+                            <label class="layui-form-label" style="width: 85px;padding-right: 10px;">院内活动名称</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="groupProjectName" id="groupProjectName_id" required
+                                       lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md3">
+                            <label class="layui-form-label" style="width: 85px;padding-right: 10px;">举办开始日期</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="startDate" id="startDate_id" required lay-verify="required"
+                                       placeholder="请输入标题" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md3">
+                            <label class="layui-form-label" style="width: 85px;padding-right: 10px;">执行情况反馈</label>
+                            <div class="layui-input-block">
+                                <select name="fbStatus">
+                                    <option value="">请选择</option>
+                                    <option value="1">已反馈</option>
+                                    <option value="0">未反馈</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="reloadTable()"
+                               lay-filter="table-search"
+                               data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--        表格区域-->
+            <div class="layui-card-body">
+                <table class="layui-table" id="cmeGroupproj" lay-filter="cmeGroupproj_filter" style="margin: 0px 0px;">
+                </table>
+            </div>
+        </div>
+    </div>
+            <!--审核弹出框-->
+            <div id="remark" style=" display:none;text-align: center">
+
+                <form class="layui-form" style="padding: 30px;" id="form-ComDept" lay-filter="add-filter">
+                    <div class="layui-form-item layui-form-text" >
+                        <div class="layui-inline">
+                            <label class="layui-form-label">审核说明</label>
+                            <div class="layui-input-block">
+                                <textarea  type="text" name="remark" id="remark_id" autocomplete="off" class="layui-textarea"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="layui-btn layui-btn-radius layui-btn-primary" onclick="choose()" style="display: none">选择</button>
+                </form>
+            </div>
+</div>
+</body>
+<script type="text/html" id="rowBar">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="attendance">授分人员考勤明细</a>
+</script>
+<script type="text/html" id="rowBar1">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="grantPoints">学分审核</a>
+</script>
+<script type="text/html" id="rowBar2">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="projectEvaluation">项目评价表</a>
+</script>
+<script type="text/html" id="rowBar3">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="examinationResult">考试结果查看</a>
+</script>
+
+<script type="text/html" id="bar">
+    <a class="layui-btn layui-btn-sm" lay-event="checkPass" style="visibility:hidden;" id="checkPassStyle">审核通过</a>
+    <a class="layui-btn layui-btn-sm" lay-event="checkNoPass" style="visibility:hidden;" id="checkNoPassStyle">审核不通过</a>
+    <!-- <a class="layui-btn layui-btn-sm" lay-event="returnToModify">退回修改</a> -->
+</script>
+
+<script type="text/html" id="groupFbCell">
+    {{# if(d.fbCycleCnt > 0) { }}
+    <a class="layui-btn layui-btn-xs btn-row" lay-event="viewFeedback">查看</a>
+    {{# } else { }}
+    <a class="layui-btn layui-btn-xs layui-btn-disabled btn-row btn-disabled-row">未反馈</a>
+    {{# } }}
+</script>
+
+<script>
+    let projectStatus = getUrlParam("projectStatus") === "" ? -1 : parseInt(getUrlParam("projectStatus"));
+    let data={},downIds=[];
+    layui.config({
+        base: '../../../js/layui/ext/'
+    }).extend({
+        myTable: 'table',
+        xmSelect: 'xm-select',
+        treeSelect: 'treeSelect'
+    }).use(['table', 'form', 'element', 'laydate','xmSelect',"treeSelect"], function () {
+        var table = layui.table, form = layui.form, element = layui.element, laydate = layui.laydate, $ = layui.$;
+        var permissions = localStorage.getItem("current-user-permissions");
+        var xmlSelectScoreLevel;
+        var treeSelect = layui.treeSelect;
+        var standardKindId = localStorage.getItem("standardkind-id");
+        var unitId = localStorage.getItem("unit-id");
+        var userType = localStorage.getItem("user-type");
+
+        const _isHainan = '6eec6713-670a-43cc-ad4d-9bd700a92928' === standardKindId; // 海南
+        const _isGuangxi = '4a6d91fb-8ba4-4560-a801-9c6f00e6d999' === standardKindId; // 广西
+
+        window.initCmeYear = function () {
+            // 搜索栏日期选择
+            let curYear = (new Date()).getFullYear();
+            laydate.render({
+                elem: '#cmeYear_id',
+                type: 'year',
+                range: false,
+                value: curYear,
+                done: function(value, date, endDate) {
+                    window.renderDDL(value);
+                }
+            });
+            laydate.render({
+                elem: '#startDate_id',
+                type: 'date',
+                range: true,
+            });
+            $("#cmeYear_id").val(curYear);
+        }
+
+        window.initScoreLevelSel = (cmeYear) => {
+            window.scoreLevelSel && (treeSelect.destroy('scoreLevel'), $('#scoreLevel').val(''));
+            window.scoreLevelSel = treeSelect.render({
+                elem    : '#scoreLevel',
+                data    : huayi_sjwh_url + 'option/scoreLevel/tree/' + standardKindId + '/' + cmeYear + '/_1_',
+                type    : 'get',
+                search  : true,
+                style   : {
+                    folder  : { enable: false }, // 父节点图标
+                    line    : { enable: true} // 连接线
+                },
+                click   : d => (initHoldTypeSel()),
+                success : d => (initHoldTypeSel())
+            });
+        }
+        window.initHoldTypeSel = () => {
+            let keyName     = projectLabels.lblProjectLevel,
+                scoreLevel  = $('#scoreLevel').val();
+            $.ajax({
+                url     : huayi_sjwh_url + 'option/holdType/list/' + standardKindId + '/' + scoreLevel + '/_1_',
+                async   : false,
+                success : re => {
+                    if (re.status == 200) {
+                        let $item = $('#holdType');
+                        $item.empty().append($('<option value="">请选择</option>'));
+                        $.each(re.data, (i, d) => $item.append($('<option value="' + d.holdTypeId + '">' + d.holdTypeName + '</option>')));
+                    } else layer.msg(keyName + '加载失败', { icon: 7, time: 1500 });
+                },
+                error   : () => layer.msg(keyName + '加载失败', { icon: 7, time: 1500 })
+            });
+            form.render();
+        }
+
+
+        window.renderDDL = function (cmeYear) {
+            cmeYear = cmeYear || $("#cmeYear_id").val();
+            $('#knowledgeTwo_id').find("option:gt(0)").remove();
+            $('#knowledgeId_id').find("option:gt(0)").remove();
+            dictTool.initKnowledgeSel("#knowledgeTwo_id","二级学科",{'knowledgeType': 2,'versionYear': cmeYear });
+            initScoreLevelSel(cmeYear);
+            initHoldTypeSel();
+        }
+
+        window.loaderTable = function () {
+            table.render({
+                elem: '#cmeGroupproj',
+                title: '学分审核表',
+                defaultToolbar: [],
+                url: huayi_projectscore_url + 'cmeGroupProj/getListForGroup',
+                id: 'cmeGroupprojTable',
+                height: '550',
+                where: {
+                    status: projectStatus,
+                    year: $('#cmeYear_id').val(),
+                    projectLevel: $('#scoreLevel').val(),
+                    //projectLevels: getSelectedScoreLevels(),
+                    holdType: $('#holdType').val(),
+                    knowledgeId: $('#knowledgeId_id').val(),
+                    projectName: $('#groupProjectName_id').val(),
+                    startDate: $('#startDate_id').val(),
+                    fbStatus: $('select[name=fbStatus]').val(),
+                    unitId: localStorage.getItem("menu-unit-id")== undefined ? localStorage.getItem("unit-id") : localStorage.getItem("menu-unit-id"),
+                    unitUserType: localStorage.getItem("unit-user-type")
+                },
+                cols: [[
+                    {align: 'center', type: 'checkbox', title: '选择', hide: !(projectStatus === "0" && permissions.indexOf("cmeGroupProjScore/checkByDownID")>-1)},
+                    {field: 'projectId', title: '项目id', type: '', hide: true},
+                    {field: 'downId', title: '周期id', type: '', hide: true},
+                    // {field: '', title: '授分人员考勤明细', type: '', toolbar: '#rowBar', hide: false,align:'center'},
+                    {field: '', title: '学分审核', type: '', hide: false,align:'center',templet: function(data) {
+                        let html =  `<a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="grantPoints">学分审核</a>`;
+                        if(ableOperateLastYearData(data.cmeYear) == false) {
+                            html =  `<a class="layui-btn layui-btn-xs  layui-btn-disabled " alt="无法审核过往年度学分" onmouseenter="showTips(this)" onmouseleave="closeTips()">学分审核</a>`
+                        }
+                        return html;
+                    } },
+                    {title: '执行情况反馈', align: 'center', templet: '#groupFbCell', hide: (!_isHainan && !_isGuangxi)},
+                    {field: '', title: '项目评价表', type: '',width:120, toolbar: '#rowBar2', hide: false,align:'center'},
+                    {field: '', title: '考试结果查看', type: '',width:120, toolbar: '#rowBar3', hide: false,align:'center'},
+                    {field: 'cmeYear', title: '举办年度', type: '', hide: false,align:'center'},
+                    {field: 'countbydownid', title: '授分人数', width:150,type: '', hide: false,align:'center'},
+                    {field: 'groupProjectName', title: '院内活动名称',width:220, type: '', hide: false,align:'center'},
+                    {field: 'scoreLevelName', title: projectLabels.lblProjectLevel, width:220, type: '', hide: false,align:'center'},
+                    {field: 'holdTypeName', title: projectLabels.lblActivityForm, type: '', hide: false,align:'center'},
+                    {field: 'unitName', title: '主办单位', type: '', hide: false,align:'center'},
+                    {field: 'score', title: '学分',width:80, type: '', hide: false,align:'center'},
+                    {field: 'period', title: '学时',width:80, type: '', hide: false,align:'center'},
+                    {field: 'twoKnowledgeName', title: '二级学科', type: '', hide: false,align:'center'},
+                    {field: 'knowledgeName', title: '三级学科', type: '', hide: false,align:'center'},
+                    {field: 'startDate', title: '开始日期',width:180, type: '', hide: false,align:'center'},
+                    {field: 'endDate', title: '结束日期',width:180, type: '', hide: false,align:'center'},
+
+                ]],
+                cellMinWidth: 150,
+                page: true,
+                toolbar: '#bar',
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "count": res.data.recordsTotal, //解析数据长度
+                        "data": res.data.records, //解析数据列表
+                        "page": res.data.pageNum, //当前页
+                        "limit": res.data.pageSize, //每页条数
+                    }
+                },
+                request: {
+                    pageName: 'pageNum', //页码的参数名称，默认：page
+                    limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                },
+                done: function(res, curr, count){
+                    // var permissions = localStorage.getItem("current-user-permissions")
+                    console.log(permissions)
+                    console.log(permissions.indexOf("cmeGroupProjScore/checkByDownID"))
+                    if (projectStatus ==="0" && permissions.indexOf("cmeGroupProjScore/checkByDownID")>-1){
+                        document.getElementById("checkNoPassStyle").style.visibility = "visible";
+                        document.getElementById("checkPassStyle").style.visibility = "visible";
+                    }else {
+                        document.getElementById("checkNoPassStyle").style.visibility = "hidden";
+                        document.getElementById("checkPassStyle").style.visibility = "hidden";
+                    }
+
+                    //是否可以处理往年数据
+                    if(res.data != null && res.data.length > 0) {
+                        getConfig("value_forbid_some_operate_on_last_year_data",localStorage.getItem("unit-id"),null);
+                        let cmeYear = res.data[0].cmeYear;
+                        let ableOper =  ableOperateLastYearData(cmeYear);
+                        if(ableOper == false) {
+                            $("td[data-field='projApply']").find("a").removeAttr("lay-event").addClass("layui-disabled");
+                        }
+                    }
+
+                }
+            })
+        }
+      
+        window.reloadTable = function () {
+            table.reload('cmeGroupprojTable', {
+                where: {
+                    status: projectStatus,
+                    year: $('#cmeYear_id').val(),
+                    projectLevel: $('#scoreLevel').val(),
+                    //projectLevels: getSelectedScoreLevels(),
+                    holdType: $('#holdType').val(),
+                    knowledgeId: $('#knowledgeId_id').val(),
+                    projectName: $('#groupProjectName_id').val(),
+                    startDate: $('#startDate_id').val(),
+                    fbStatus: $('select[name=fbStatus]').val(),
+                    unitId: localStorage.getItem("menu-unit-id")== undefined ? localStorage.getItem("unit-id") : localStorage.getItem("menu-unit-id")
+                }
+            });
+            getCountForGroup();
+
+        }
+
+        window.check=function () {
+            downIds=[]
+            layer.open({
+                type: 1,
+                title: '审核',
+                content: $('#remark'),
+                skin: '',
+                area: ['40%', '40%'],
+                btn: ['确定','取消'],
+                yes: function (index, layero) {
+                    data.remark=$("#remark_id").val();
+                    data.unitType=localStorage.getItem("unit-user-type")
+                    var index = layer.load();
+                    debugger;
+                    $.ajax({
+                        type: 'post',
+                        url: huayi_projectscore_url + 'cmeGroupProjScore/checkByDownID',
+                        contentType: 'application/json;charset=UTF-8',
+                        data: JSON.stringify(data),
+                        dataType: 'json',
+                        success: function (res) {
+                            layer.closeAll();
+                             //loaderTable();
+                            reloadTable();
+                            layer.msg(res.data)
+                            data={};
+                            downIds=[];
+                        },
+                        error: function (res) {
+                            layer.msg("发送请求失败")
+                        }
+                    })
+                },
+                btn2: function (index, layero) {
+                    data={};
+                    downIds=[];
+                    layer.closeAll()
+                }
+            })
+        }
+        window.choose=function () {
+            // 获取点击选择的数据并填充到输入框
+            index = layer.open({
+                type: 2,
+                title: '选择原因',
+                content: '../maintenanceOfAuditOpinions/CmeCheckReasonForLayer.html',
+                skin: '',
+                area: ['80%', '80%'],
+            })
+        }
+
+        // 分类统计项目状态
+        window.getCountForGroup= function () {
+            $.ajax({
+                type: 'get',
+                url: huayi_projectscore_url + 'cmeGroupProj/getCountForGroup',
+                // ?unitId=' + (localStorage.getItem("menu-unit-id")== undefined ? localStorage.getItem("unit-id") : localStorage.getItem("menu-unit-id")),
+                contentType: 'application/json;charset=UTF-8',
+                data: {
+                    year: $('#cmeYear_id').val(),
+                    projectLevel: $('#scoreLevel').val(),
+                    // projectLevels: getSelectedScoreLevels(),
+                    holdType: $('#holdType').val(),
+                    knowledgeId: $('#knowledgeId_id').val(),
+                    projectName: $('#groupProjectName_id').val(),
+                    startDate: $('#startDate_id').val(),
+                    unitId: localStorage.getItem("menu-unit-id")== undefined ? localStorage.getItem("unit-id") : localStorage.getItem("menu-unit-id"),
+                    unitUserType: localStorage.getItem("unit-user-type")
+                },
+                dataType: 'json',
+                success: function (res) {
+                    if (res.status === 200) {
+                        document.getElementById("all").innerText = '(' + res.data.all + ')';
+                        document.getElementById("toAudit").innerText = '(' + res.data.toAudit + ')';
+                        document.getElementById("passTheAudit").innerText = '(' + res.data.passTheAudit + ')';
+                        document.getElementById("auditFailed").innerText = '(' + res.data.auditFailed + ')';
+                        document.getElementById("returnToModify").innerText = '(' + res.data.returnToModify + ')';
+                    }
+                }
+
+            })
+        }
+
+        window.getSelectedScoreLevels = function() {
+            // var scoreLevelCheck =  xmlSelectScoreLevel.getValue();
+            // var scoreLevelIds = '';
+            // $.each(scoreLevelCheck, function (index, item) {
+            //     scoreLevelIds += item.value + ',' ;
+            // });
+            // return scoreLevelIds;
+        }
+
+        window.ableOperateLastYearData = function(cmeYear) {
+            let cgv = window["value_forbid_some_operate_on_last_year_data"];
+            if(cgv == null || cgv == "" || localStorage.getItem("unit-user-type") == 5) {
+                return true;
+            }
+
+            let able = true;
+            let deadline = new Date(cgv);
+            let now = new Date();
+            if(parseInt(cmeYear) < now.getFullYear()){
+                if(deadline < now) {
+                    able = false;
+                }
+            }
+            return able;
+        }
+
+        let gLayerIndex;
+        window.showTips = function (curDom){
+            let that = curDom;
+            let msg = $(that).attr('alt');
+            gLayerIndex = layer.tips(msg, that, {
+                tips: [2, '#808080'],
+            });
+        };
+        window.closeTips = function (){
+            layer.close(gLayerIndex);
+        };
+
+        table.on('tool(cmeGroupproj_filter)', function (obj) {
+            let projectId = obj.data.projectId;
+            let downId = obj.data.downId;
+            let scoreLevel = obj.data.scoreLevel;
+            if (obj.event === 'grantPoints') {
+                layer.open({
+                    type: 2,
+                    content: 'groupprojScoreCheck.html?downId=' + downId + "&status=" + projectStatus+'&scoreLevel='+scoreLevel,
+                    area: ['100%', '100%'],
+                    title: '学分审核',
+                    scrollbar: false
+                })
+            } else if (obj.event === 'attendance') {
+                layer.open({
+                    type: 2,
+                    content: 'givingList.html?downId='+downId,
+                    area: ['100%', '100%'],
+                    title: '授分人员考勤明细',
+                    scrollbar: false
+                })
+            } else if (obj.event === 'projectEvaluation') {
+                layer.open({
+                    type: 2,
+                    content: '../CmeProjEvaluation.html?projectId  =' + projectId + '&projectType=2',
+                    area: ['100%', '100%'],
+                    title: '项目评价',
+                    scrollbar: false
+                })
+            } else if (obj.event === 'examinationResult') {
+                layer.open({
+                    type: 2,
+                    content: 'givingResultsList.html?projectId=' + projectId+'&downId='+downId,
+                    area: ['100%', '100%'],
+                    title: '考试结果',
+                    scrollbar: false
+                })
+            } else if (obj.event === 'viewFeedback') {
+                let content = '/pages/mod/group/modals/GroupFeedback.html?a=a&g_proj_id=' + projectId;
+                layer.open({
+                    type: 2,
+                    shade: 0.6,
+                    shadeClose: true,
+                    title: '执行情况反馈',
+                    content: content,
+                    area: ['100%', '100%'],
+                    scrollbar: false
+                });
+            }
+        })
+
+        // 监听头部新增按钮
+        table.on('toolbar(cmeGroupproj_filter)', function (obj) {
+            debugger;
+            let unitId=localStorage.getItem("unit-id") == '{}' ? null : localStorage.getItem("unit-id");
+            let checkStatus = table.checkStatus('cmeGroupprojTable');
+            if (checkStatus.data.length>0) {
+                for (var i = 0; i < checkStatus.data.length; i++) {
+                    downIds.push(checkStatus.data[i].downId);
+                }
+            }else{
+                layer.msg("请选择审核项目");
+                return;
+            }
+            data.unitId=unitId;
+            data.userName=localStorage.getItem("user-name") == '{}' ? '' : localStorage.getItem("user-name")
+            data.downIds=downIds;
+            data.userType=parseInt(localStorage.getItem("user-type"));
+            var datas = obj.data;
+            if (obj.event === 'checkPass') {
+                data.checkStatus=3;
+                data.remark='';
+                data.unitType=localStorage.getItem("unit-user-type")
+                $.ajax({
+                        type: 'post',
+                        url: huayi_projectscore_url + 'cmeGroupProjScore/checkByDownID',
+                        contentType: 'application/json;charset=UTF-8',
+                        data: JSON.stringify(data),
+                        dataType: 'json',
+                        success: function (res) {
+                            layer.closeAll();
+                             //loaderTable();
+                            reloadTable();
+                            layer.msg(res.data)
+                            data={};
+                            downIds=[];
+                        },
+                        error: function (res) {
+                            layer.msg("发送请求失败")
+                        }
+                    })
+            } else if (obj.event === 'checkNoPass') {
+                data.checkStatus=2;
+                // data.remark='';
+                // $.ajax({
+                //         type: 'post',
+                //         url: huayi_projectscore_url + 'cmeGroupProjScore/checkByDownID',
+                //         contentType: 'application/json;charset=UTF-8',
+                //         data: JSON.stringify(data),
+                //         dataType: 'json',
+                //         success: function (res) {
+                //             layer.closeAll();
+                //             loaderTable();
+                //             layer.msg(res.data)
+                //             data={};
+                //             downIds=[];
+                //         },
+                //         error: function (res) {
+                //             layer.msg("发送请求失败")
+                //         }
+                //     })
+                check();
+            }else if (obj.event === 'returnToModify'){
+                data.checkStatus=1;
+                check();
+            }
+        });
+       
+        // 选项卡切换事件
+        element.on('tab(tabarea)', function (elem) {
+            var type = this.getAttribute('lay-id');
+            // layer.msg(type);
+            projectStatus = type;
+            loaderTable();
+            // reloadTable();
+        });
+
+        form.on('select(knowledge_search_filter)', function (data) {
+            let cmeYear = $("#cmeYear_id").val();
+            dictTool.initKnowledgeSel("#knowledgeId_id","三级学科", {'knowledgeType': 3, 'knowledgeTwoId': data.value,'versionYear': cmeYear });
+        })
+
+        $(function(){
+            renderLables();
+
+            initCmeYear();
+            window.renderDDL($("#cmeYear_id").val());
+           
+            if(_isHainan) {
+                $("#knowledgeId_id").attr("disabled",true);
+            }
+         
+            if (projectStatus != -1){
+                var tabId=projectStatus;
+                // 修改项目状态默认选中的值
+                var ida="tab_"+tabId;
+                document.getElementById("tab_-1").setAttribute("class","tab-default")
+                document.getElementById(ida).setAttribute("class", "tab-default layui-this" )
+            }
+            
+            getConfig("value_forbid_some_operate_on_last_year_data",localStorage.getItem("unit-id"),null);
+            getCountForGroup();
+            loaderTable();
+        });
+
+
+    
+
+    })
+</script>
+</html>

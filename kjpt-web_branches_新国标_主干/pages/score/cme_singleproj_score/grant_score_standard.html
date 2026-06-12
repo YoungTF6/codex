@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no, viewport-fit=cover" />
+		<link rel="stylesheet" href="css/reset.css" />
+		<link rel="stylesheet" href="css/bslayout.css" />
+
+		<link rel="stylesheet" href="../../../js/layui-v2.6.8/layui/css/layui.css" media="all">
+		<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+		<script type="text/javascript" src="../../../js/jquery-3.5.1.min.js"></script>
+		<script src="../../../js/layui-v2.6.8/layui/layui.js"></script>
+		<script type="text/javascript" src="/js/api/manage.js"></script>
+		<script type="text/javascript" src="/js/moment.min.js"></script>
+
+		<!--    请求路径配置-->
+		<script type="text/javascript" src="../../../js/constant.js"></script>
+		<!--    ajax全局配置-->
+		<script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+
+	</head>
+	<body>
+		<div class="layui_cont">
+		<div class="p_tit">
+			<h1>—— 请选择学分录入方式 ——</h1>
+		</div>
+		<div class="del_list">
+			<ul>
+				<li class="cur choose" onclick="onclickImg(this, 'grant_score_singleproj_guid.html');">
+					<img src="img/b_img.png">
+					<span>依据本省学分管理办法向导录入</span>
+				</li>
+				<!-- <li class="choose" onclick="onclickImg(this, 'grant_score_singleproj_non_guid.html');"> -->
+				<li class="choose" onclick="onclickImg(this, 'grant_score_singleproj_non_guid.html?v=' + today() + '01');">
+					<img src="img/b_img.png">
+					<span>非向导录入</span>
+				</li>
+			</ul>
+		</div>
+		<div class="btn_box">
+			<button id="nextStep" class="layui-btn layui-btn-normal">下一步</button>
+		</div>
+		</div>
+
+
+		<script>
+			layui.use(['table', 'form', 'element', 'laydate'], function(){
+				var $ = layui.jquery
+					, table = layui.table
+					, element = layui.element
+					, form = layui.form
+					, laydate = layui.laydate
+					, layer = layui.layer;
+
+				var forwordUrl = '';
+
+					onclickImg = function(elem, url){
+ 						$(".choose").css('border', '');
+						elem.style.border = '1px solid #009788';
+						forwordUrl = url;
+					}
+
+					$(document).on('click',"#nextStep",function(){
+                        if(forwordUrl == ''){
+                            layer.msg('请选择学分录入方式');
+                            return;
+                        }
+						window.open(forwordUrl)
+					});
+
+			});
+		</script>
+	</body>
+</html>

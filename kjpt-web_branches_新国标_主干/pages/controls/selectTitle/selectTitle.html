@@ -1,0 +1,253 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0075)https://newkjpt21.91huayi.com/controls/SelectTitle.aspx?mode=2&callback=ff4 -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="css/base.css" type="text/css" rel="stylesheet">
+    <link href="css/content.css" type="text/css" rel="stylesheet">
+    <link href="css/layout.css" type="text/css" rel="stylesheet">
+    <!-- <link href="./无标题页_files/popdiv.css" type="text/css" rel="stylesheet"> -->
+
+    <title>
+        无标题页
+    </title>
+
+    <style type="text/css">
+        .tab td {
+            text-align: left;
+            padding: 2px 5px;
+        }
+
+        .show {
+            width: 150px;
+            height: auto;
+            overflow: auto;
+            position: absolute;
+            display: block;
+            background-color: #fff;
+            z-index: 1000;
+            padding: 4px;
+        }
+
+        .select {
+            margin-right: 10px;
+        }
+    </style>
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+</head>
+
+<body>
+    <form name="form1" id="form1">
+
+        <div style="height: 320px; width: 580px;">
+            <div style="height: 100%; overflow:visible; width: 100%; overflow-x: hidden;">
+                <div id="for1" style="margin: 9px;">
+                </div>
+                <div id="for2" style="margin: 9px; line-height: 200%">
+                </div>
+                <div>
+                    <table id="dltitle2" class="tab" cellspacing="0" border="0" style="border-collapse:collapse;margin: 9px; width: 580px">
+                        <tbody>
+                            <tr>
+                                <td colspan="3">
+                                    <input type="button" class="btn72_mouseout" id="btnok1" value="确定" style="float: right;
+                            margin: 5px 10px; display: none;">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+<script>
+
+    loadTitleTypes();
+    loadTitlesByTitleType();
+
+    function loadTitleTypes() {
+        var data = { "title_kind": "2" };
+        $.ajax({
+            url: huayi_sjwh_url + 'comTitle/list/all',
+            async: false,
+            data: { "titleKind": "2" },
+            dataType: "json",
+            success: function (result) {
+                var titleTypes = result.data;
+                if (titleTypes.length > 0) {
+                    var titleTypePer = null;
+                    for (var i = 0; i < titleTypes.length; i++) {
+                        titleTypePer = titleTypes[i];
+                        var $tr;
+                        if (i % 3 == 0) {
+                            $tr = $("<tr></tr>");
+                        }
+                        if ($tr != null) {
+                            var $td = $('<td id="' + titleTypePer.titleId + '"><div>' +
+                                '<a href="" tid="' + titleTypePer.titleId + '" class="tt2">' + titleTypePer.titleName + ' </a>' +
+                                '</div></td>');
+                            $tr.append($td);
+                        }
+                        if (i % 3 == 2) {
+                            $("#dltitle2 tbody").append($tr);
+                        }
+                    }
+
+
+                }
+            }
+
+        });
+    }
+
+    function loadTitlesByTitleType() {
+        $.ajax({
+            url: huayi_sjwh_url + 'comTitle/list/all',
+            async: false,
+            data: { titleKind: 3 },
+            dataType: "json",
+            success: function (result) {
+                var titles = result.data;
+
+                $("#dltitle2").find("tr:gt(0)").find("td").each(function () {
+                    var title = null;
+                    var $div1 = $('<div class="nn">' +
+                        '<table class="tab" style="margin-top: 0px;">' +
+                        '<tbody>' +
+                        '<tr>' +
+                        '<td style="text-align: left; padding-left: 30px;">' +
+                        '<a href="" class="cls">关闭</a>' +
+                        '</td>' +
+                        '</tr>' +
+                        '</tbody>' +
+                        '</table>' +
+                        '</div>');
+                    for (var j = 0; j < titles.length; j++) {
+                        title = titles[j];
+                        if (title.titleType == $(this).attr("id")) {
+                            var $tr1 = $('<tr><td>' +
+                                '<a tid="' + title.titleId + '" class="tt3"href="" pid="' + title.titleType + '">' + title.titleName + '</a>' +
+                                '</td></tr>');
+                            $div1.find("tbody").append($tr1);
+                        }
+                    }
+                    $(this).append($div1);
+
+                });
+
+
+            }
+        });
+
+    }
+
+
+
+
+
+
+</script>
+
+<script type="text/javascript">
+
+    $.fn.toggle = function (fn, fn2) {
+        var args = arguments, guid = fn.guid || $.guid++, i = 0,
+            toggle = function (event) {
+                var lastToggle = ($._data(this, "lastToggle" + fn.guid) || 0) % i;
+                $._data(this, "lastToggle" + fn.guid, lastToggle + 1);
+                event.preventDefault();
+                return args[lastToggle].apply(this, arguments) || false;
+            };
+        toggle.guid = guid;
+        while (i < args.length) {
+            args[i++].guid = guid;
+        }
+        return this.click(toggle);
+    };
+
+
+    function viewport() {
+        return {
+            x: $(window).scrollLeft(),
+            y: $(window).scrollTop(),
+            cx: $(window).width(),
+            cy: $(window).height()
+        };
+    }
+    $(function () {
+        //弹出子菜单
+        $('a.tt2').toggle(function () {
+            var top = $(this).offset().top + 10;
+            var left = $(this).offset().left + 20;
+            $('a.tt2[current]').click();
+            $(this).attr('current', 1);
+
+            $(this).parent().next().addClass('show').css({
+                top: top + 'px',
+                left: left + 'px'
+            });
+            var v = viewport();
+            var h = $(this).parent().next()[0];
+            // check horizontal position
+            if (v.x + v.cx < h.offsetLeft + h.offsetWidth) {
+                left -= h.offsetWidth;
+                if (left < 0) {
+                    left = 0;
+                }
+                $(h).css({
+                    left: left + 10 + 'px'
+                });
+            }
+            // check vertical position
+            if (v.y + v.cy < h.offsetTop + h.offsetHeight) {
+                top -= h.offsetHeight;
+                if (top < 0) {
+                    top = 0;
+                }
+                $(h).css({
+                    top: top + 10 + 'px'
+                });
+            }
+            return false;
+        }, function () {
+            $(this).removeAttr('current');
+            $(this).parent().next().removeClass('show')
+            return false;
+        });
+        $('.tt3').click(function () {
+            var titleId = $(this).attr('tid');
+            var titleName = $.trim($(this).text());
+            var type_id = $(this).attr('ttype');
+            var list_order = $(this).attr('torder');
+            window.parent.getChildTitle(titleId, titleName, type_id, list_order);
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //再执行关闭 
+        });
+    })
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        $('a.cls').click(function () {
+            $('a.tt2[current]').click(); //.find('a').click();
+            //alert(ms);
+            return false;
+        });
+    });
+</script>

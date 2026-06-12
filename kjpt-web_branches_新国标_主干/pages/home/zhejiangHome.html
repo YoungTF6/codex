@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+	<title></title>
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no, viewport-fit=cover" />
+	<link rel="stylesheet" href="/css/home/bslayout.css">
+	<link rel="stylesheet" href="/css/home/reset.css">
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/js/layui-v2.6.8/admin.css" media="all">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <!--    ajax全局配置-->
+	<script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+	<script type="text/javascript" src="/js/constant.js"></script>
+    <script src="/js/tools/dict_tool.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <!-- 引入echart文件 -->
+    <link rel="stylesheet" href="/css/home/zjHome.css">
+	<script src="/js/echarts.js"></script>
+    <script src="/js/map/zheJiang/zhejiang.js"></script>
+
+</head>
+
+<body style="background: #eaeff5;">
+    <div>
+        <div id="peoplePop" style="display: none;">
+            <div class="modal_box"></div>
+            <div class="modal_item">
+                <div class="modal">
+                    <h2>请选择
+                        <img src="/img/home/close_img.png">
+                    </h2>
+                    <div class="option-container">
+                        <div class="option" data-title="人员信息查看" data-url="pages/person/comPerson.html">人员信息查看</div>
+                        <div class="option" data-title="专家库管理" data-url="pages/projectexpert/ProjectExpert.html">专家库管理</div>
+                        <div class="option" data-title="人员调动管理" data-url="pages/person/personTransfer.html">人员调动管理</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="jijaoPop" style="display: none;">
+            <div class="modal_box"></div>
+            <div class="modal_item">
+                <div class="modal">
+                    <h2>请选择
+                        <img src="/img/home/close_img.png">
+                    </h2>
+                    <div class="option-container">
+                        <div class="option" data-title="继续医学教育项目" data-url="pages/project/CmeCmeProjectAdmin.html">继续医学教育项目</div>
+                        <div class="option" data-title="内部培训" data-url="pages/project/internalHospitalActivities/CmeGroupprojAdmin.html">内部培训</div>
+                        <div class="option" data-title="异地备案项目审核" data-url="pages/project/projectRecord/zhejiang/diffPlaceRecord.html">异地继教项目</div>
+                        <div class="option" data-title="继教（学术会议）" data-url="pages/project/projectRecord/zhejiang/meetingRecord.html">继教（学术会议）</div>
+                        <div class="option" data-title="高级研修项目" data-url="pages/project/projectRecord/zhejiang/studyRecord.html">高级研修项目</div>
+                        <div class="option" data-title="个人活动学分审核" data-url="pages/mod/check/SingleScoreCheck.html?scoreKindId=68015778-3b87-4adb-8c97-6a4e5c220d7e">外出进修（任务）</div>
+                        <div class="option" data-title="个人活动学分审核" data-url="pages/mod/check/SingleScoreCheck.html?scoreKindId=5904b52c-100e-47fe-a3bd-b6ba8f131729">在职学历(学位)教育</div>
+                        <div class="option" data-title="个人活动学分审核" data-url="pages/mod/check/SingleScoreCheck.html?scoreKindId=feb67704-8ec7-4ab2-8789-710a52cd9143">专项培训</div>
+                        <div class="option" data-title="可验证自学" data-url="pages/mod/zixue/listz.html">可验证自学</div>
+                        <div class="option" data-title="个人活动学分审核" data-url="pages/mod/check/SingleScoreCheck.html?scoreKindId=802e5814-8aba-40eb-886e-71b2fc7de391">其他</div>
+                        <div class="option" data-title="个人活动学分审核" data-url="pages/mod/check/SingleScoreCheck.html?scoreKindId=ea2a201d-86d9-4656-9ff3-e72990eaff5d">符合规定的其他方式</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="scorePop" style="display: none;">
+            <div class="modal_box"></div>
+            <div class="modal_item">
+                <div class="modal">
+                    <h2>请选择<img src="/img/home/close_img.png"></h2>
+                    <div class="option-container">
+                        <div class="option" data-title="快捷审核" data-url=/pages/mod/check/s1check2.html?checkState=null&scoreKindId=ae79aeb6-f3e2-4735-8f51-d9cc9b12aa69&scoreLevelId="">快捷审核</div>
+                        <div class="option" data-title="人员学分情况查询" data-url="pages/score/creditstatus/personCreditStatus.html">人员学分情况查询</div>
+                        <div class="option" data-title="人员达标情况查询" data-url="pages/score/creditstatus/searchPeoplePass.html">人员达标统计</div>
+                        <div class="option" data-title="单位达标情况查询" data-url="pages/statistical/compliance_unit_admin.html">单位达标统计</div>
+                        <div class="option" data-title="年度登记表" data-url="pages/mod/audit/zhejiang1.html">年度登记表</div>
+                        <div class="option" data-title="多年度汇总表" data-url="pages/mod/audit/zhejiang2.html">多年度汇总表</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="unitPop" style="display: none;">
+            <div class="modal_box"></div>
+            <div class="modal_item">
+                <div class="modal">
+                    <h2>请选择<img src="/img/home/close_img.png"></h2>
+                    <div class="option-container">
+                        <div class="option" data-title="单位信息维护" data-url="/pages/mod/reset.html">单位信息维护</div>
+                        <div class="option" data-title="联合体审核" data-url="/pages/unit/comUnitUnitedCheck.html">联合体审核</div>
+                        <!-- <div class="option" data-title="基层单位内部培训开通管理" data-url="/pages/mod/group/groupswitch.html">基层单位内部培训开通管理</div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="projPop" style="display: none;">
+            <div class="modal_box"></div>
+            <div class="modal_item">
+                <div class="modal">
+                    <h2>请选择<img src="/img/home/close_img.png"></h2>
+                    <div class="option-container">
+                        <div class="option" data-title="申报时间设置" data-url="pages/project/ProjectApplyDate.html">申报时间控制</div>
+                        <div class="option" data-title="项目预审" data-url="pages/project/ProjectProcCheck.html">项目预审</div>
+                        <div class="option" data-title="项目分配专家" data-url="pages/projectexpert/ProjectTeam.html">项目分配</div>
+                        <div class="option" data-title="项目终审" data-url="pages/project/ProjectLastCheck.html">项目终审</div>
+                        <div class="option" data-title="项目公布" data-url="pages/project/projectPublish.html">项目公布</div>
+                        <div class="option" data-title="项目申报数量限制" data-url="pages/project/ProjectReportedQuaList.html">项目申报数量控制</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="settingPop" style="display: none;">
+            <div class="modal_box"></div>
+            <div class="modal_item">
+                <div class="modal">
+                    <h2>请选择<img src="/img/home/close_img.png"></h2>
+                    <div class="option-container">
+                        <div class="option" data-title="达标标准浏览" data-url="/pages/score/CmeGrantscoreStandard.html">学分授予标准浏览</div>
+                        <!-- <div class="option" data-title="" data-url="">职称查询</div> -->
+                        <!-- <div class="option" data-title="往年学分录入控制" data-url="pages\score\PreviousYearsScoreInput.html">往年学分录入控制</div> -->
+                        <!-- <div class="option" data-title="职称修改控制" data-url="pages\score\TitleUpdateConfig.html">往年职称修改控制</div> -->
+                        <div class="option" data-title="通知公告管理" data-url="pages/message/NoticeNews.html">通知公告管理</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="home-box">
+        <div class="top-buttons">
+            <div class="button-size-box" id="topBox1">
+                <div class="botton-real-box">
+                    <div class="left-image">
+                        <img src="/img/home/icon1.png">
+                    </div>
+                    <div class="right-text">人员管理</div>
+                </div>
+            </div>
+            <div class="button-size-box" id="topBox2">
+                <div class="botton-real-box">
+                    <div class="left-image">
+                        <img src="/img/home/icon2.png">
+                    </div>
+                    <div class="right-text">继教活动</div>
+                </div>
+            </div>
+            <div class="button-size-box" id="topBox3">
+                <div class="botton-real-box">
+                    <div class="left-image">
+                        <img src="/img/home/icon3.png">
+                    </div>
+                    <div class="right-text">学分管理</div>
+                </div>
+            </div>
+            <div class="button-size-box" id="topBox4">
+                <div class="botton-real-box">
+                    <div class="left-image">
+                        <img src="/img/home/icon4.png">
+                    </div>
+                    <div class="right-text">单位管理</div>
+                </div>
+            </div>
+            <div class="button-size-box" id="topBox5">
+                <div class="botton-real-box">
+                    <div class="left-image">
+                        <img src="/img/home/icon5.png">
+                    </div>
+                    <div class="right-text">项目推荐</div>
+                </div>
+            </div>
+            <div class="button-size-box" id="topBox6">
+                <div class="botton-real-box">
+                    <div class="left-image">
+                        <img src="/img/home/icon6.png">
+                    </div>
+                    <div class="right-text">系统维护及信息浏览</div>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-content" style="padding-top: 0;">
+            <div class="left-bottom-box">
+                <div class="statistics-size-box">
+                    <div class="botton-real-box">
+                        <div class="bottom-left-title-box bottom-left-image1">项目情况</div>
+                        <div class="bottom-left-context-box" id="projectCategory">
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">项目总数</div>
+                                    <div class="bottom-item-num">0</div>
+                                </div>
+                            </div>
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">推荐（国）</div>
+                                    <div class="bottom-item-num">0</div>
+                                </div>
+                            </div>
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">推荐（省）</div>
+                                    <div class="bottom-item-num">0</div>
+                                </div>
+                            </div>
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">推广（国）</div>
+                                    <div class="bottom-item-num">0</div>
+                                </div>
+                            </div>
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">推广（省）</div>
+                                    <div class="bottom-item-num">0</div>
+                                </div>
+                            </div>
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">异地（国）</div>
+                                    <div class="bottom-item-num">0</div>
+                                </div>
+                            </div>
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">异地（省）</div>
+                                    <div class="bottom-item-num">0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="statistics-size-box">
+                    <div class="botton-real-box">
+                        <div class="bottom-left-title-box bottom-left-image2">人员情况</div>
+                        <div class="bottom-left-context-box">
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">总人数</div>
+                                    <div class="bottom-item-num" id="personNum1">0</div>
+                                </div>
+                            </div>
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">初级</div>
+                                    <div class="bottom-item-num" id="personNum2">0</div>
+                                </div>
+                            </div>
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">中级</div>
+                                    <div class="bottom-item-num" id="personNum3">0</div>
+                                </div>
+                            </div>
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">副高</div>
+                                    <div class="bottom-item-num" id="personNum4">0</div>
+                                </div>
+                            </div>
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">正高</div>
+                                    <div class="bottom-item-num" id="personNum5">0</div>
+                                </div>
+                            </div>
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">乡村医生</div>
+                                    <div class="bottom-item-num" id="personNum7">0</div>
+                                </div>
+                            </div>
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">其他</div>
+                                    <div class="bottom-item-num" id="personNum6">0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="statistics-size-box">
+                    <div class="botton-real-box">
+                        <div class="bottom-left-title-box bottom-left-image3">单位类别</div>
+                        <div class="bottom-left-context-box" id="unitCategory">
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">单位总数</div>
+                                    <div class="bottom-item-num">0</div>
+                                </div>
+                            </div>
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">医疗卫生单位</div>
+                                    <div class="bottom-item-num">0</div>
+                                </div>
+                            </div>
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">高等医学院校</div>
+                                    <div class="bottom-item-num">0</div>
+                                </div>
+                            </div>
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">医学相关研究机构</div>
+                                    <div class="bottom-item-num">0</div>
+                                </div>
+                            </div>
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">行业组织</div>
+                                    <div class="bottom-item-num">0</div>
+                                </div>
+                            </div>
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">其他</div>
+                                    <div class="bottom-item-num">0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="statistics-size-box">
+                    <div class="botton-real-box">
+                        <div class="bottom-left-title-box bottom-left-image4">单位层级</div>
+                        <div class="bottom-left-context-box" id="unitLevel">
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">单位总数</div>
+                                    <div class="bottom-item-num">0</div>
+                                </div>
+                            </div>
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">基层</div>
+                                    <div class="bottom-item-num">0</div>
+                                </div>
+                            </div>
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">县(区)级</div>
+                                    <div class="bottom-item-num">0</div>
+                                </div>
+                            </div>
+                            <div class="bottom-item">
+                                <div>
+                                    <div class="bottom-item-title">市级</div>
+                                    <div class="bottom-item-num">0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-bottom-box">
+                <div class="section-size-box" id="cycleApplicationItem">
+                    <div class="botton-real-box">
+                        <div class="bottom-right-box">
+                            办班申请待审核
+                            <div id="cycleApplicationBtn">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="section-size-box" id="feedbackItem">
+                    <div class="botton-real-box">
+                        <div class="bottom-right-box">
+                            执行反馈待审核
+                            <div id="feedbackBtn">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="section-size-box" id="singleScoreCheckItem">
+                    <div class="botton-real-box">
+                        <div class="bottom-right-box">
+                            外省获得学分待审核
+                            <div id="singleScoreCheck">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="section-size-box" id="diffPlaceRecordItem">
+                    <div class="botton-real-box">
+                        <div class="bottom-right-box">
+                            异地备案项目待审核
+                            <div id="diffPlaceRecord">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+<script>
+
+    layui.config({
+        base : '/js/layui/ext/'
+    }).extend({
+        homeTool:   'homeTool',
+        tool: 'tool'
+    });
+
+    let echartSets = echarts;
+
+    layui.use(['homeTool','layer','tool'], function () {
+        let homeTool = layui.homeTool,layer = layui.layer,tool = layui.tool;
+        // 获取项目级别调整白名单配置（project_change_score_level_user）
+        let getProjectChangeScoreLevelUserConfig = function() {
+            dictTool.getConfigsByStandard('project_change_score_level_user');
+        }
+        // 判断当前用户是否需要按配置调整统计参数（按配置的用户名白名单）
+        let isNeedChangeScoreLevelByUserName = function() {
+            const userName = localStorage.getItem('user-name') || '';
+            const configValue = window['project_change_score_level_user'] || '';
+            const configUserList = (configValue.toString().match(/\d+/g) || []).filter(Boolean);
+            return !!userName && configUserList.indexOf(userName) > -1;
+        }
+        // 浙江首页统计接口固定使用的项目级别 ID 列表（仅对白名单用户生效）
+        const fixedScoreLevelsForProvinceStatistics = 'acc0b6c2-4e0c-4190-98bd-689ef1ddb012,874d523a-a292-4b4c-8a79-61b6b99228e3,aa6067d7-be32-41dd-81c2-8129a54ef0ff,68033ab1-5282-4cfa-9c00-ed110b1e8a2c,50b9f143-57d2-4a64-abab-814c03c58505,995b7e47-e89f-4433-b90e-a7a5e5cbf363,b00b00e4-f85d-4e82-af28-433d85c399ea';
+        const unitId = localStorage.getItem("unit-id");
+        const unitUserType = localStorage.getItem("unit-user-type");
+        const standardId = localStorage.getItem("standardkind-id");
+        // 赴外省获得学分-国家级（与跳转个人活动学分审核 scoreLevelId 一致）
+        const outProvinceScoreLevelId = '67457a63-55a1-43db-ae50-8bc748e15626';
+        //方法内执行，$('#topBox1').click(function(){ $("#peoplePop").show(); })
+        homeTool.clickElemShow({"#topBox1":"#peoplePop","#topBox2":"#jijaoPop",
+            "#topBox3":"#scorePop","#topBox4":"#unitPop",
+            "#topBox5":"#projPop","#topBox6":"#settingPop"});
+
+        //地图数据
+        let provinceDataMap = {},cityDataMap = {};
+        // 省份下的城市map数据  ; 市下的区县map数据
+        let provinceUnderCityMap = null,cityUnderMap = {};
+        // 左侧省数据；左侧市数据
+        let mapLeftData = [];
+        // 省直属单位数据，市直属单位数据
+        let provinceZsDataMap = null,cityZsDataMap = {};
+        let btnType = 0;
+        let curUnitId = unitId;
+
+        let isZhiShu = false,isCity = false;
+
+        // 配置地图选项
+        const zheJiangCityData = [
+            { name: '杭州市', unitId: '330100' ,value: 1193.6},
+            { name: '宁波市', unitId: '330200' ,value: 854.2},
+            { name: '温州市', unitId: '330300' ,value: 957.3},
+            { name: '绍兴市', unitId: '330400' ,value: 527.1},
+            { name: '湖州市', unitId: '330500' ,value: 306.0},
+            { name: '嘉兴市', unitId: '330600' ,value: 540.1},
+            { name: '金华市', unitId: '330700' ,value: 705.1},
+            { name: '衢州市', unitId: '330800' ,value: 227.6},
+            { name: '台州市', unitId: '330900' ,value: 662.3},
+            { name: '丽水市', unitId: '331000' ,value: 250.7},
+            { name: '舟山市', unitId: '331100' ,value: 115.8}
+        ];
+
+        const mapId = `mapChart`,mapBox = `mapBox`;
+
+        let mapChart = null;
+
+        // 控制权限
+        homeTool.controlPermission(()=>{
+            // 绑定元素点击事件，全屏打开地图
+            homeTool.bindElemClick('.bottom-left-title-box',(el)=>{
+                let index = Array.from(document.querySelectorAll(`.bottom-left-title-box`)).indexOf(el);
+                btnType = index;
+                // 打开弹窗,创建地图
+                homeTool.openMapPopup(mapBox,mapId,index,()=>{
+                    if(unitUserType == '5') {
+                        createZheJianMap();
+                    } else if(unitUserType == '4') {
+                        let mapUnitId = homeTool.getMapId(unitId);
+                        loadindCityJson(homeTool.getZheJiangCityJson(mapUnitId),homeTool.getZheJiangCityName(mapUnitId),mapUnitId,true);
+                    }
+                });
+                // 导出按钮点击事件
+                homeTool.createExpertBox(mapBox,"exportBtn",expertExpert);
+
+                bindMapBtn();
+            });
+        })
+
+        //导出excel统计数据
+        let expertExpert = function() {
+            let type = isCity ? 2 : 1;
+            let index = homeTool.getActiveIndex('statistics-type-btn','st-active');
+            let text = homeTool.getActiveText('statistics-type-btn','st-active');
+            let unitIds = (isCity) ? homeTool.getChildUnitIdsByRealUnit(curUnitId) : homeTool.getCityUnitIds();
+            tool.exportExcelGet(huayi_projectscore_url + "sumJjpersonStateTotal/expertStatisticsByUnitId",
+                {unitId:curUnitId,childUnitIds:unitIds.join(','),type:type,statisticsType:index,standardId:localStorage.getItem("standardkind-id")},
+                `${text}.xlsx`);
+        }
+
+
+        let bindMapBtn = function() {
+            // 统计类型按钮点击事件
+            const typeBtns = document.querySelectorAll('.statistics-type-btn');
+            if (typeBtns.length > 0) {
+                typeBtns.forEach((btn, index) => {
+                    btn.addEventListener('click', function() {
+                        // 移除所有按钮的st-active类
+                        typeBtns.forEach(b => b.classList.remove('st-active'));
+                        // 为当前点击的按钮添加st-active类
+                        this.classList.add('st-active');
+                        btnType = index;
+                        //获取左侧地图数据
+                        let data = getLeftMapData(index,curUnitId);
+
+                        // 切换统计类型
+                        homeTool.createMapLeftHtml(data,index);
+                    });
+                });
+            }
+        }
+
+        let getLeftMapData = function(index,realCityUnitId) {
+            let data = null;
+            if(isZhiShu) {
+                if(isCity) {
+                    if(cityZsDataMap[`data${index}`] && cityZsDataMap[`data${index}`][realCityUnitId]) {
+                        data = cityZsDataMap[`data${index}`][realCityUnitId];
+                    }
+                } else {
+                    if(provinceZsDataMap[`data${index}`] && provinceZsDataMap[`data${index}`][realCityUnitId]) {
+                        data = provinceZsDataMap[`data${index}`][realCityUnitId];
+                    }
+                }
+            } else {
+                if(mapLeftData && mapLeftData[`data${index}`] && mapLeftData[`data${index}`][realCityUnitId]) {
+                    data = mapLeftData[`data${index}`][realCityUnitId];
+                }
+            }
+            return data;
+        }
+
+        //构建浙江省地图
+        let createZheJianMap = function() {
+            isCity = false;
+            let underUnitIdArr = homeTool.getCityUnitIds();
+            //获取浙江省的数据
+            homeTool.getUnderUnitStatisticsByUnit([curUnitId],(res)=>{
+                mapLeftData = res.data;
+                let index = homeTool.getActiveIndex('statistics-type-btn','st-active');
+                let data = getLeftMapData(index,curUnitId);
+                // 点击省的时候添加左侧数据
+                homeTool.createMapLeftHtml(data,index);
+            });
+            //获取浙江省的地市数据
+            if(!provinceUnderCityMap) {
+                homeTool.getUnderUnitStatisticsByUnit(underUnitIdArr,(res)=>{
+                    provinceUnderCityMap = res.data;
+                });
+            }
+            if(!provinceZsDataMap) {
+                homeTool.getZhiShuStatisticsByUnit(unitId,1,(res)=>{
+                    provinceZsDataMap = res.data;
+                });
+            }
+            //添加省直属，并监控选中事件
+            homeTool.createCheckbox(mapBox,"zhiShuBox","省直属",(checkData)=>{
+                isZhiShu = checkData.elem.checked;
+                let index = homeTool.getActiveIndex('statistics-type-btn','st-active');
+                //点击省直属的时候添加左侧数据
+                let data = getLeftMapData(index,curUnitId);
+                homeTool.createMapLeftHtml(data,index);
+            });
+            // 初始化地图
+            let tempOption = homeTool.getOptionByMapData(zheJiangCityData,"浙江",(params)=>{
+                let cityUnitId = params.data.unitId;
+                let realCityUnitId = homeTool.getRealUnitId(cityUnitId);
+                let btnEl = `data${btnType}`;
+                let tempData = (provinceUnderCityMap && provinceUnderCityMap[btnEl]) ? provinceUnderCityMap[btnEl]  : "";
+                let showTitleHtml = homeTool.createMapShowTitleByType(btnType,tempData,realCityUnitId);
+                return showTitleHtml;
+            });
+            mapChart = homeTool.createMap(mapId,echartSets,tempOption);
+            // 点击地图事件
+            mapChart.on('click', handleMapClick);
+        }
+
+
+        let handleMapClick = function (params,mapChart) {
+            if (!params) return;
+            // 省级下钻到市级，只有当点击的是城市时才执行操作
+            const cityName = params.name;
+            let cityUnitId = params.data.unitId;
+            let jsonFileName = homeTool.getZheJiangCityJson(cityUnitId);
+            // 检查是否为有效的城市名称，如果不是（即点击的是区县），则不执行任何操作
+            if (!jsonFileName) return;
+            loadindCityJson(jsonFileName,cityName,cityUnitId);
+
+        }
+
+        let loadindCityJson= function(jsonFileName,cityName,cityUnitId,isCityUser=false) {
+            fetch(jsonFileName)
+                .then(response => response.json())
+                .then(cityData => {
+                    echarts.registerMap(cityName, cityData);
+
+                    // 构造区县数据，为每个区县生成不同的value值以显示不同深浅的蓝色
+                    const mapData = cityData.features.map((feature, index) => ({
+                        name: feature.properties.name,
+                        unitId: feature.properties.adcode,
+                        value: 200 + Math.random() * 800, // 生成200-1000之间的随机值
+                    }));
+                    createCityMap(cityName,mapData,cityUnitId,isCityUser);
+                })
+                .catch(error => console.error('Error loading JSON:', error));
+        }
+
+
+        let createCityMap = function(cityName,mapData,cityUnitId,isCityUser=false) {
+            isCity = true;
+            //获取市直属数据
+            homeTool.getZhiShuStatisticsByUnit(homeTool.getRealUnitId(cityUnitId),2,(res)=>{
+                cityZsDataMap = res.data;
+            });
+            if(isCityUser == false) mapChart.clear();
+            //鼠标放上去获取地图渲染数据
+            let tempOption = homeTool.getOptionByMapData(mapData,cityName,(params)=>{
+                let countryUnitId = params.data.unitId;
+                let realCityUnitId = homeTool.getRealUnitId(countryUnitId);
+
+                let btnEl = `data${btnType}`;
+                let tempData = {};
+                if(cityUnderMap && cityUnderMap[btnEl]) tempData = cityUnderMap[btnEl];
+                let showTitleHtml = homeTool.createMapShowTitleByType(btnType,tempData,realCityUnitId);
+                return showTitleHtml;
+            });
+            let underUnitIdArr = homeTool.getCityUnderArrByMapId(cityUnitId);
+            let realCityUnitId = homeTool.getRealUnitId(cityUnitId);
+            curUnitId = realCityUnitId;
+            //获取地市的子单位数据
+            homeTool.getUnderUnitStatisticsByUnit(underUnitIdArr,(res)=>{
+                cityUnderMap = res.data;
+            });
+
+            //获取地市左侧统计数据
+            homeTool.getUnderUnitStatisticsByUnit([curUnitId],(res)=>{
+                mapLeftData = res.data;
+                let index = homeTool.getActiveIndex('statistics-type-btn','st-active');
+                let data = getLeftMapData(index,realCityUnitId);
+                homeTool.createMapLeftHtml(data,index);
+            });
+
+
+
+            homeTool.createMap(mapId,echartSets,tempOption);
+
+            // 添加市直属复选框
+            homeTool.createCheckbox(mapBox,"zhiShuBox","市直属",(checkData)=>{
+                isZhiShu = checkData.elem.checked;
+                //获取市直属数据
+                let index = homeTool.getActiveIndex('statistics-type-btn','st-active');
+                let data = getLeftMapData(index,realCityUnitId);
+                homeTool.createMapLeftHtml(data,index);
+            });
+
+
+
+            if(!isCityUser) {
+                // 添加返回按钮
+                const mapBoxEl = document.getElementById(mapBox);
+                // 检查是否已存在返回按钮，如果存在则先移除
+                const existingBackBtn = mapBoxEl.querySelector('.back-to-province-btn');
+                if (existingBackBtn) {
+                    existingBackBtn.remove();
+                }
+                const backBtn = document.createElement('div');
+                backBtn.className = 'back-to-province-btn';
+                backBtn.innerHTML = '<span class="map-back">返回</span>';
+
+                backBtn.addEventListener('click', function() {
+                    // 点击返回按钮，重新渲染浙江省地图
+                    mapChart.clear();
+                    // 移除返回按钮
+                    this.remove();
+                    isZhiShu = false;
+                    isCity = false;
+                    curUnitId = unitId;
+                    createZheJianMap();
+                });
+                mapBoxEl.appendChild(backBtn);
+            }
+
+
+
+        }
+
+
+        $(".modal_box").click(function(e) {
+            $(e.currentTarget.parentElement).hide();
+        })
+
+        $(".modal > h2 > img").click(function () {
+            $(this).parents(".modal_item").parent().hide();
+        })
+
+        $(".option").click(function(e){
+            let tempTitle = e.target.getAttribute("data-title");
+            let tempUrl = e.target.getAttribute("data-url");
+            if(tempTitle == "项目预审" && unitUserType == '4') {
+                tempUrl="pages/project/ProjectDistrictCheck.html";
+            }
+            if(tempTitle && tempUrl && tempTitle!= "" && tempUrl != "") {
+                let tempId =  tempUrl.split("?")[0];
+                $(e.currentTarget.parentElement.parentElement.parentElement.parentElement).hide();
+                window.parent.addNewTab('layadmin-layout-tabs', {id:tempId,title: tempTitle,attr: tempUrl,content: tempUrl});
+
+            } else {
+                layer.msg("正在开发中",{time:1000})
+            }
+        })
+
+        $("#feedbackItem").click(function(e){
+            let tempTitle = "已公布项目管理";
+            let tempUrl = "pages/project/CmeCmeProjectAdmin.html?tab=tab_3_1";
+            window.parent.addNewTab('layadmin-layout-tabs', {id:tempUrl,title: tempTitle,attr: tempUrl,content: tempUrl});
+        })
+
+        $("#cycleApplicationItem").click(function(e){
+            let tempTitle = "已公布项目管理";
+            let tempUrl = "pages/project/CmeCmeProjectAdmin.html?tab=tab_2_1";
+            window.parent.addNewTab('layadmin-layout-tabs', {id:tempUrl,title: tempTitle,attr: tempUrl,content: tempUrl});
+        })
+
+        $("#singleScoreCheckItem").click(function(e){
+            let tempTitle = "个人活动学分审核";
+            let tempUrl = 'pages/mod/check/SingleScoreCheck.html?scoreLevelId=' + outProvinceScoreLevelId;
+            let tempUri = "pages/mod/check/SingleScoreCheck.html";
+            window.parent.addNewTab('layadmin-layout-tabs', {id:tempUri,title: tempTitle,attr: tempUrl,content: tempUrl});
+        })
+
+        $("#diffPlaceRecordItem").click(function(e){
+            let tempTitle = "异地项目备案审核";
+            let tempUrl = "pages/project/projectRecord/zhejiang/diffPlaceRecord.html";
+            window.parent.addNewTab('layadmin-layout-tabs', {id:tempUrl,title: tempTitle,attr: tempUrl,content: tempUrl});
+        })
+
+
+        let getFeedbackAndCycleApplication = function() {
+            const requestParams = {
+                unitId: unitId,
+                unitUserType: unitUserType
+            };
+            // 按白名单用户名配置，控制是否追加 scoreLevels 参数
+            if (isNeedChangeScoreLevelByUserName()) {
+                requestParams.scoreLevels = fixedScoreLevelsForProvinceStatistics;
+            }
+            // 中西医过滤：与 dictTool / CmeCmeProjectAdmin.setMedicalTypeSelectById 一致
+            // 仅分管西医(1)或中医(2)时传 medicalType；未配置或非法值不传，后端统计中西医合计
+            const managerMedicalTypeVal = Number(dictTool.getManagerMedicalType());
+            if (managerMedicalTypeVal === 1 || managerMedicalTypeVal === 2) {
+                requestParams.medicalType = managerMedicalTypeVal;
+            }
+
+            $.ajax({
+                type    :   "get",
+                url     :   huayi_projectscore_url + "sumJjpersonStateTotal/getProvinceStatistics",
+                data    :   requestParams,
+                success :   function (res) {
+                    if(res && res.status == 200) {
+                        $("#feedbackBtn").html(res.data.feedbackNum);
+                        $("#cycleApplicationBtn").html(res.data.cycleApplicationNum);
+                    } else {
+                        layer.msg(res.msg)
+                    }
+                },
+                error    :   function(res){
+                    layer.msg("加载失败");
+                }
+            });
+        }
+
+        // 外省获得学分待审核（与 s1check2 默认「待本级审核」、s1/score/page 查询条件一致）
+        let getDiffPlaceSingleScoreCheck = function() {
+            const uut = Number(unitUserType);
+            const curYear = new Date().getFullYear();
+            const todayStr = new Date().toISOString().substr(0, 10);
+            const menuUnitId = localStorage.getItem('menu-unit-id');
+            const menuUnitDepth = localStorage.getItem('menu-unit-depth');
+            const tempData = {
+                pageNum: 1,
+                pageSize: 1,
+                downId: '00000000-0000-0000-0000-000000000000',
+                standardKindId: standardId,
+                unitId: menuUnitId || unitId,
+                scoreLevelIds: outProvinceScoreLevelId,
+                startDate: curYear + '-01-01 00:00:00',
+                endDate: todayStr + ' 23:59:59',
+                depth: menuUnitDepth ? Number.parseInt(menuUnitDepth, 10) : 9
+            };
+            if (uut > 0) {
+                tempData.flowChainState = uut * 10;
+            }
+            $.ajax({
+                type: 'post',
+                url: huayi_projectscore_url + 's1/score/page',
+                contentType: 'application/json',
+                data: JSON.stringify(tempData),
+                success: function (res) {
+                    if (res && res.status == 200) {
+                        const total = (res.data && res.data.recordsTotal != null) ? res.data.recordsTotal : 0;
+                        $('#singleScoreCheck').html(total);
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                },
+                error: function () {
+                    layer.msg('加载失败');
+                }
+            });
+        }
+
+        //异地项目备案审核
+        let getDiffPlaceRecordProj = function() {
+            $.ajax({
+                type    :   "get",
+                url     :   huayi_projectscore_url + `cmeRecordProj/selectCheckingNum?unitId=${unitId}`,
+                success :   function (res) {
+                    if(res && res.status == 200) {
+                        $("#diffPlaceRecord").html(res.data);
+                    } else {
+                        layer.msg(res.msg)
+                    }
+                },
+                error    :   function(res){
+                    layer.msg("加载失败");
+                }
+            });
+        }
+
+        let getPersonTitleStatistics = function() {
+            $.ajax({
+                type    :   "get",
+                url     :   huayi_projectscore_url + `sumJjpersonStateTotal/getPersonTitleStatistics?unitId=${unitId}`,
+                success :   function (res) {
+                    if(res && res.status == 200) {
+                        provinceDataMap[1] = res.data;
+                        homeTool.setPersonTitleStatisticsHtml(res.data);
+                    } else {
+                        layer.msg(res.msg)
+                    }
+                },
+                error    :   function(res){
+                    layer.msg("加载失败");
+                }
+            });
+        }
+
+
+        let getUnitLevelStatistics = function() {
+            $.ajax({
+                type    :   "get",
+                url     :   huayi_projectscore_url + `sumJjpersonStateTotal/getHomeUnitLevel?unitId=${unitId}`,
+                success :   function (res) {
+                    if(res && res.status == 200) {
+                        provinceDataMap[3] = res.data;
+                        let tempHtml = homeTool.getHomeUnitLevalHtml(res.data);
+                        $("#unitLevel").html(tempHtml);
+                    } else {
+                        layer.msg(res.msg)
+                    }
+                },
+                error    :   function(res){
+                    layer.msg("加载失败");
+                }
+            });
+        }
+
+
+
+        //单位类别
+        let getUnitCategoryStatistics = function() {
+            $.ajax({
+                type    :   "get",
+                url     :   huayi_projectscore_url + `sumJjpersonStateTotal/getHomeUnitCategory?unitId=${unitId}`,
+                success :   function (res) {
+                    if(res && res.status == 200) {
+                        provinceDataMap[2] = res.data;
+                        let tempHtml = homeTool.getHomeUnitCategoryHtml(res.data);
+                        $("#unitCategory").html(tempHtml);
+                    } else {
+                        layer.msg(res.msg)
+                    }
+                },
+                error    :   function(res){
+                    layer.msg("加载失败");
+                }
+            });
+        }
+
+
+        //项目情况
+        let getHomeProjectCategoryStatistics = function(data) {
+            $.ajax({
+                type    :   "get",
+                url     :   huayi_projectscore_url + `sumJjpersonStateTotal/getHomeProjectCategory?unitId=${unitId}`,
+                success :   function (res) {
+                    if(res && res.status == 200) {
+                        provinceDataMap[0] = res.data;
+                        let tempHtml = homeTool.getHomeProjectCategoryHtml(res.data);
+                        $("#projectCategory").html(tempHtml);
+                    } else {
+                        layer.msg(res.msg)
+                    }
+                },
+                error    :   function(res){
+                    layer.msg("加载失败");
+                }
+            });
+        }
+
+        //页面加载入口
+        let htmlInit = function(){
+            getProjectChangeScoreLevelUserConfig();
+            getFeedbackAndCycleApplication();
+            getDiffPlaceSingleScoreCheck();
+            getDiffPlaceRecordProj();
+            getPersonTitleStatistics();
+            getUnitLevelStatistics();
+            getUnitCategoryStatistics();
+            getHomeProjectCategoryStatistics();
+        }
+
+        htmlInit();
+    })
+</script>
+</html>

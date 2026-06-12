@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>往年个人活动学分录入</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="../../js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script src="../../js/layui-v2.6.8/layui/layui.js"></script>
+    <script type="text/javascript" src="../../js/tools/verification.js"></script>
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+
+    <style>
+        .layui-layer-content {
+            overflow: visible !important;
+        }
+
+        .tab_others {
+            width: 100px !important;
+        }
+
+        .tab_this {
+            width: 100px !important;
+        }
+
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .layui_display {
+            flex: 1 auto;
+        }
+
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+
+        .tab_others {
+            background-color: #009688;
+            color: #ffffff;
+            margin-left: 6px;
+        }
+
+        .tab_this {
+            background-color: #f5f5f5;
+            color: #404040;
+            margin-left: 6px;
+            border-bottom: 1px solid #F5F5F5;
+        }
+
+        .layui-table-tool-temp {
+            padding-right: 10px;
+        }
+    </style>
+</head>
+
+<body style="background: #fff;">
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <!--        搜索框区域-->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="background-color: #f5f5f5;">
+                <div class="layui_mess">
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">操作年度</label>
+                            <div class="layui-input-block">
+                                <select name="year" lay-filter="layui-select-year" id="year" lay-verify="1">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">单位编号</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="unitId" id="unitId" placeholder="单位编号" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">单位名称</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="unitName" id="unitName" placeholder="单位名称" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">生效状态</label>
+                            <div class="layui-input-block">
+                                <select name="validState" lay-filter="validState" id="validState" lay-verify="1">
+                                    <option value="">全部</option>
+                                    <option value="true">生效中</option>
+                                    <option value="false">已失效</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="loaderTable()" lay-filter="table-search" data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="previousYearsScoreInputList" lay-filter="previousYearsScoreInputList" style="margin: 0px 0px;">
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!--        添加弹窗-->
+    <div id="addConfig" style=" display:none;">
+        <form class="layui-form" style="padding: 30px;" id="form-addConfig" lay-filter="add-score">
+            <div class="layui-form-item" style="display: none">
+                <div class="layui-inline">
+                    <label class="layui-form-label">主键</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="id" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div>
+                    <label class="layui-form-label">
+                        <font color="red">*&nbsp;</font>开通年度
+                    </label>
+                    <div id="yearCheckBox">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 130px;">
+                        <font color="red">*&nbsp;</font>学分录入截止时间
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="expirationTime" id="expirationTime" autocomplete="off" class="layui-input" lay-verify="required"
+                            placeholder="请选择">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 130px;">
+                        <font color="red">*&nbsp;</font>开通单位
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="underUnitId" name="unitId" lay-filter="unitTreeSelect" autocomplete="off" class="layui-input" readonly="true"
+                            lay-verify="required">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" id="submitScore">
+                <div style="text-align: center;">
+                    <button class="layui-btn" lay-submit lay-filter="submitScore">保存</button>
+                    <button id="closeBtn" type="close" class="layui-btn layui-btn-primary">关闭</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <!--表格内数据编辑、删除按钮-->
+    <script type="text/html" id="rowBar">
+        {{# if(d.validState == true){ }}
+        <a class="layui-btn layui-btn-xs" lay-event="close" style="color: #27b1a2;background-color: transparent;">关闭</a>
+        {{# }else{ }}
+        {{# } }}
+    </script>
+    <script type="text/html" id="bar">
+        <a class="layui-btn layui-btn-sm" lay-event="add"><i class="layui-icon layui-icon-add-1"></i>添加</a>
+    </script>
+    <script>
+        layui.config({
+            base: '../../js/layui/ext/'
+        })
+        layui.use(['table', 'form', 'element', 'laydate', 'treeSelect'], function () {
+            var $ = layui.jquery
+                , table = layui.table
+                , element = layui.element
+                , form = layui.form
+                , laydate = layui.laydate
+                , layer = layui.layer
+                , treeSelect = layui.treeSelect
+                ;
+
+            var unitId = localStorage.getItem("unit-id")
+                , unitName = localStorage.getItem("unit-name")
+                , managerId = localStorage.getItem("manager-id")
+                , standardkindId = localStorage.getItem("standardkind-id")
+                ;
+            var managerName = '', managerPhone = '';
+
+            // 年度复选框
+            // function loadYearCheckBox() {
+            //     year = date.getFullYear();
+            //     var checkboxs = '';
+            //     for (var i = 0; i < 10; i++) {
+            //         checkboxs += '<input type="checkbox" name="year" value="' + year + '" title="' + year + '" lay-skin="primary">';
+            //         year = year - 1;
+            //     }
+            //     $('#yearCheckBox').html("");
+            //     $('#yearCheckBox').append(checkboxs);
+            // }
+
+            // 表格配置
+            window.loaderTable = function () {
+                table.render({
+                    elem: '#previousYearsScoreInputList',
+                    url: huayi_sjwh_url + 'cmeInputSingleprojscoreControlConfig/list',
+                    toolbar: '#bar',
+                    defaultToolbar: [],
+                    where: {
+                        unitId: $("#unitId").val(),
+                        unitName: $('#unitName').val(),
+                        validState: $('#validState').val(),
+                        selectYear: $('#year').val(),
+                        cmeStandardKindId: standardkindId,
+                        setUnitId: unitId
+                    },
+                    cols: [[ //表头
+                        { field: 'id', title: 'ID', hide: 'true' }
+                        , { align: 'center', toolbar: '#rowBar', width: 70, title: '操作' }
+                        , { field: 'unitId', title: '单位编号', width: 90, align: 'center' }
+                        , { field: 'unitName', title: '单位名称', width: 180, align: "center" }
+                        , { field: 'cmeYear', title: '开通年度', width: 90, align: "center" }
+                        , { field: 'expirationTime', title: '学分录入截止时间', width: 160, align: "center" }
+                        , { field: 'setUserName', title: '操作账号', width: 180, align: "center" }
+                        , { field: 'setManagerName', title: '操作人姓名', width: 100, align: "center" }
+                        , { field: 'setManagerMobile', title: '操作人手机号码', width: 160, align: "center" }
+                        , { field: 'addTime', title: '操作时间', width: 160, align: "center" }
+                        , {
+                            field: 'validState', title: '生效状态', width: 90,
+                            templet: function (data) {
+                                let validStateText;
+                                switch (data.validState) {
+                                    case true:
+                                        validStateText = "生效中";
+                                        break;
+                                    case false:
+                                        validStateText = "已失效";
+                                        break;
+                                    default:
+                                        validStateText = "";
+                                        break;
+                                }
+                                return validStateText;
+                            }
+                        }
+                    ]],
+                    cellMinWidth: 70,
+                    id: "previousYearsScoreInputList",
+                    height: 'full-170',
+                    page: true,
+                    limit: 10,
+                    limits: [10, 50, 100, 150, 200],
+                    parseData: function (res) {
+                        if (res.status === 200) {
+                            return {
+                                "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                                "msg": res.message, //解析提示文本
+                                "count": res.data.recordsTotal, //解析数据长度
+                                "data": res.data.records, //解析数据列表
+                                "page": res.data.pageNum, //当前页
+                                "limit": res.data.pageSize, //每页条数
+                            }
+                        } else {
+                            layer.msg("请求失败");
+                            console.log(res);
+                        }
+                    },
+                    request: {
+                        pageName: 'pageNum', //页码的参数名称，默认：page
+                        limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                    }
+                });
+            };
+
+            // 监听头部新增按钮
+            table.on('toolbar(previousYearsScoreInputList)', function (obj) {
+                // 初始化
+                $("#form-addConfig")[0].reset();
+                if (obj.event == 'add') {
+                    layer.open({
+                        type: 1,
+                        title: '新增往年学分录入配置',
+                        content: $('#addConfig'),
+                        skin: '',
+                        area: ['70%', '60%'],
+                    })
+                }
+            });
+
+            // 提交往年学分录入配置信息
+            form.on('submit(submitScore)', function (data) {
+                layer.confirm("确认要添加此配置吗？", { icon: 3, title: '提示' }, function () {
+                    // 获取管理员信息, 以保存操作记录
+                    if(managerName == ''){
+                        getManagerById();
+                    }
+                    var fields = data.field;
+                    console.log(fields);
+                    var cmeYears = [];
+                    $('input[type=checkbox]:checked').each(function () {
+                        // cmeYears.push($(this).val());
+                        cmeYears.push($(this)[0].title);
+                    });
+                    if (cmeYears.length <= 0) {
+                        layer.msg('请选择年度')
+                        return false;
+                    }
+
+                    // 单位名称
+                    var treeObj = treeSelect.zTree('unitTreeSelect');
+                    var selected = treeObj.getSelectedNodes();
+                    if (selected.length > 0) {
+                        data.field.unitName = selected[0].name;
+                    }
+                    fields.cmeYears = cmeYears;
+                    fields.setUnitId = unitId;
+                    fields.setUserName = unitName;
+                    fields.cmeStandardKindId = standardkindId;
+                    fields.validState = true;
+                    fields.setManagerName = managerName;
+                    fields.setManagerMobile = managerPhone;
+                    console.log(fields);
+                    var datas = JSON.stringify(fields);
+                    $.ajax({
+                        type: 'post',
+                        url: huayi_sjwh_url + 'cmeInputSingleprojscoreControlConfig/save',
+                        data: datas,
+                        contentType: 'application/json;charset=UTF-8',
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.status === 200) {
+                                $("#form-addConfig")[0].reset();
+                                // layer.close(layer.index);
+                                layer.closeAll();
+                                layer.msg('添加成功');
+                                table.reload('previousYearsScoreInputList');
+                                loadUnitTree(unitId);
+                            } else if (res.status === 500) {
+                                layer.msg('添加失败');
+                            }
+                            console.log(layer.index);
+                        },
+                        error: function () {
+                            layer.msg("发送请求失败");
+                        }
+                    })
+                });
+                return false;
+            });
+
+            table.on('tool(previousYearsScoreInputList)', function (obj) {
+                // 获取管理员信息, 以保存操作记录
+                if(managerName == ''){
+                    getManagerById();
+                }
+                var datas = obj.data;
+                datas.setManagerName = managerName;
+                datas.setManagerMobile = managerPhone;
+                if (obj.event === 'close') {
+                    layer.confirm('确认关闭', { icon: 3, title: '提示' }, function () {
+                        datas.validState = false;
+                        $.ajax({
+                            url: huayi_sjwh_url + 'cmeInputSingleprojscoreControlConfig/update',
+                            type: 'post',
+                            data: JSON.stringify(datas),
+                            contentType: 'application/json;charset=UTF-8',
+                            dataType: 'json',
+                            success: res => {
+                                if (res.status == '200') {
+                                    layer.msg('关闭成功')
+                                    table.reload('previousYearsScoreInputList');
+                                } else {
+                                    layer.msg('获取往年学分录入配置信息失败');
+                                }
+                            },
+                            error: (xhr, status, error) => {
+                                layer.msg('网络异常，请稍后后再试');
+                            }
+                        });
+                    })
+                }
+            });
+
+            // 年度选择复选框, 从cme_year获取数据
+            var loadYearCheckBox = function (unitId) {
+                $.ajax({
+                    url: huayi_sjwh_url + 'cmeYear?cmeStandardKindId=' + standardkindId,
+                    type: 'get',
+                    dataType: 'json',
+                    success: res => {
+                        if (res.status == '200') {
+                            var years = res.data;
+                            var length = years.length;
+                            if (length > 0) {
+                                var nowYear = new Date().getFullYear();
+                                var checkboxs = '';
+                                length = length > 10 ? 10 : length;
+                                for (var i = 0; i < length; i++) {
+                                    if (years[i].cmeYear < nowYear) {
+                                        checkboxs += '<input type="checkbox" name="cmeYear" value="' + years[i].cmeYearId
+                                            + '" title="' + years[i].cmeYear + '" lay-skin="primary">';
+                                    }
+                                }
+                                $('#yearCheckBox').html("");
+                                $('#yearCheckBox').append(checkboxs);
+                            }
+                        } else {
+                            layer.msg('获取往年学分录入配置信息失败');
+                        }
+                    },
+                    error: (xhr, status, error) => {
+                        layer.msg('网络异常，请稍后后再试');
+                    }
+                });
+            }
+
+            // 获取管理员信息
+            var getManagerById = function (){
+                $.ajax({
+                    type: 'get',
+                    url: huayi_permission_url + 'comUserManager/getManagerById',
+                    data: {
+                        managerId: managerId
+                    },
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    async: false,
+                    success: function (res) {
+                        if (res.status === 200) {
+                            managerName = res.data.userRealName;
+                            managerPhone = res.data.userPhone;
+                        } else if (res.status === 500) {
+                            layer.msg('获取管理员信息失败')
+                            console.log(res.msg);
+                        }
+                    },
+                    error: function () {
+                        layer.msg("发送请求失败");
+                    }
+                })
+            }
+
+            //获取下级机构树
+            var loadUnitTree = function (unitId) {
+                var loading = layer.msg('加载中', { icon: 16, shade: 0.3, time: 0 });
+                treeSelect.destroy('unitTreeSelect');
+                treeSelect.render({
+                    elem: '#underUnitId',
+                    data: huayi_personorg_url + 'comunit/childrenAllTreeRedis?unitId=' + unitId,
+                    headers: {
+                        'Authorization': localStorage.getItem('token'),
+                        'KJPT-USER-ID': localStorage.getItem('user-id')
+                    },
+                    type: 'get',
+                    search: true,
+                    success: function (res) { layer.close(loading); },
+                    fail: function (res) { layer.close(loading); }
+                });
+            }
+
+            //页面初始化
+            let htmlInit = function () {
+                // 单位树
+                loadUnitTree(unitId);
+                // 年度下拉框
+                var date = new Date();
+                var year = date.getFullYear();
+                // var options = '';
+                var options = '<option selected="" value="' + year + '">' + year + '年</option>';
+                year = year - 1;
+                for (var i = 0; year >= 2022; i++) {
+                    options += '<option value="' + year + '">' + year + '年</option>';
+                    year = year - 1;
+                }
+                $('#year').append(options);
+                form.render('select');
+                // 日期选择
+                function min() {
+                    var nowDate = new Date();
+                    return nowDate.getFullYear() + "-" + (nowDate.getMonth() + 1) + "-" + nowDate.getDate();
+                }
+                laydate.render({
+                    elem: '#expirationTime',
+                    type: 'datetime',
+                    min: min()
+                });
+                // 数据列表 
+                loaderTable();
+                // 年度复选框
+                loadYearCheckBox();
+            }
+
+            htmlInit();
+
+            // Esc关闭弹窗
+            window.onkeyup = function (ev) {
+                var key = ev.keyCode || ev.which;
+                if (key == 27) {
+                    layer.close(layer.index);
+                    console.log('layer.index = ' + layer.index)
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

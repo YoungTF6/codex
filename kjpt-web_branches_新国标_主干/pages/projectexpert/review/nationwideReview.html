@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <title>评审表（全国）</title>
+
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+    <script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <script type="text/javascript" src="../../../js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="../../../js/common.js"></script>
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+    <style>
+        .layui-card {
+            box-shadow: none;
+            margin-bottom: 70px !important;
+            padding-bottom: 5px;
+        }
+        .reference-item {
+            padding: 8px;
+            margin: 5px 0;
+            cursor: pointer;
+            background-color: #f8f8f8;
+            border-radius: 3px;
+        }
+        .reference-item:hover {
+            background-color: #e6e6e6;
+        }
+        .layui-card-body {
+            padding: 20px;
+        }
+        .layui-tab-content {
+            padding: 0;
+        }
+        #expertReviewProject {
+            padding-right: 20px;
+        }
+        .footer {
+            text-align: center;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            margin-bottom: 0;
+            width: 100%;
+            background-color: #fff;
+            padding: 15px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+
+            <!-- 评分参考 -->
+            <div class="layui-card-body layui_body_box hide" id="score-table-div">
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <table class="layui-table" id="projectForReview" lay-filter="projectForReview"
+                                style="margin: 0px 0px;"></table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 评分 -->
+            <div id="expertReviewProject">
+                <form class="layui-form" id="form1" lay-filter="review-form">
+                    <div class="layui-form-item hide">
+                        <div class="layui-inline">
+                            <label class="layui-form-label"></label>
+                            <div class="layui-input-block">
+                                <input type="hidden" name="projectId" id="projectId_form" autocomplete="off"
+                                        class="layui-input">
+                                <input type="hidden" name="reviewId" id="reviewId_form" autocomplete="off"
+                                        class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item hide" id="score-div">
+                        <!-- <div class="layui-inline"> -->
+                            <label class="layui-form-label"><span class="required-item"></span>综合评分</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="grade" id="grade_form" autocomplete="off" 
+                                        class="layui-input" lay-verify="grade" placeholder="请输入" 
+                                        oninput="if(!/^[0-9]+$/.test(value))value=value.replace(/\D/g,'');if(value>100)value=100;if(value<0)value=null">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">分</div>
+                        <!-- </div> -->
+                    </div>
+                    <div class="layui-form-item">
+                    
+                        <label class="layui-form-label"><span class="required-item"></span><lable id="requiredText"></lable></label>
+                        <div class="layui-input-block">
+                            <input type="radio" name="reviewResult" lay-filter="review-result" value="1" title="" checked>
+                            <input type="radio" name="reviewResult" lay-filter="review-result" value="2" title="">
+                        </div>
+                    </div>
+                    <div class="layui-form-item" id="explanation-div">
+                      
+                        <label class="layui-form-label"><span class=""></span>评审意见</label>
+                        <div class="layui-input-block">
+                            <!-- 文本输入框 -->
+                            <textarea name="explanation" id="explanation_form" class="layui-textarea" placeholder=""></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- 参考意见弹窗 -->
+                    <div id="reference-popup" style="display: none; padding: 10px;">
+                        <div class="reference-list" style="height: 400px; overflow-y: auto;">
+                            <div class="reference-item">一、申报单位要求：</div>
+                            <div class="reference-item">1、申办单位工作基础不够、申办单位实力偏弱。不适宜举办此项目。</div>
+                            <div class="reference-item">2、申办单位缺少与项目相关的研究和工作。</div>
+                            <div class="reference-item">3、申报单位与主办单位不一致，未体现主体责任。</div>
+                            <div class="reference-item">4、项目申报有重复性，同一项目应只通过一个单位申报。</div>
+                            <div class="reference-item">二、申报负责人及师资要求：</div>
+                            <div class="reference-item">1、项目负责人职称不符合规定要求。</div>
+                            <div class="reference-item">2、项目负责人新申报项目数量超过规定要求。</div>
+                            <div class="reference-item">3、项目负责人缺少相近的培训、研究和相关文章等研究基础。</div>
+                            <div class="reference-item">4、项目负责人从事的专业与所负责的项目不够相符。</div>
+                            <div class="reference-item">5、项目负责人实力偏弱没有开展与项目相关的有关研究。</div>
+                            <div class="reference-item">7、项目负责人所在单位在所报项目领域研究基础尚不够。</div>
+                            <div class="reference-item">8、项目负责人非申办单位工作人员且与申办单位无关联。</div>
+                            <div class="reference-item">9、项目负责人工作单位与实际工作单位不符。</div>
+                            <div class="reference-item">10、项目负责人未在项目中承担主要授课。</div>
+                            <div class="reference-item">11、师资力量偏弱，师资力量设置不合理。</div>
+                            <div class="reference-item">12、授课教师的专业特长与其授课内容不够相符。</div>
+                            <div class="reference-item">13、项目授课教师职称比例不符合要求，未满足占比80%以上。</div>
+                            <div class="reference-item">三、申报项目内容要求：</div>
+                            <div class="reference-item">1、项目内容未体现四新（新理论、新知识、新技术、新方法）</div>
+                            <div class="reference-item">2、项目内容未体现学科的新进展、先进性、针对性和实用性。项目缺乏实质性内容，实用性不突出</div>
+                            <div class="reference-item">3、项目缺少近年高质量研究结果支持。</div>
+                            <div class="reference-item">4、项目内容过于单薄，内容过于普通，缺乏一定的深度。</div>
+                            <div class="reference-item">5、已有类似项目申报，且水平优于此项目。</div>
+                            <div class="reference-item">6、项目授课学时、学分设置不合理。（一天不能超出10小时）。</div>
+                            <div class="reference-item">7、项目举办时间过短，难以完成拟培训的内容。</div>
+                            <div class="reference-item">8、举办时间过长、授予学分过高，与项目内容不相符</div>
+                            <div class="reference-item">9、项目内容的组织架构不够合理。</div>
+                            <div class="reference-item">10、项目内容尚存争议、有不同看法或处于研究阶段，不适宜作为继教内容。</div>
+                            <div class="reference-item">11、项目内容缺少相互的关联度。</div>
+                            <div class="reference-item">12、项目内容较杂乱，主题不够突出。</div>
+                            <div class="reference-item">13、内容有较强的地域性，缺乏广泛的借鉴意义。</div>
+                            <div class="reference-item">14、某些授课教师的专业特长与其授课内容不够相符。</div>
+                            <div class="reference-item">15、存在同类别、内容重复项目且本项目整体水平偏低。</div>
+                            <div class="reference-item">16、项目题目与内容不符，项目相关内容有待进一步完善与补充。</div>
+                            <div class="reference-item">17、项目题目过大，与项目内容不匹配。</div>
+                            <div class="reference-item">18、项目参加人数超出要求范围（人员超出250人/期）。</div>
+                            <div class="reference-item">四、申报填写要求： </div>
+                            <div class="reference-item">1、项目填报不认真、不规范、过于简单、质量差，存在有误信息。</div>
+                            <div class="reference-item">2、项目填报不专业，对本专业研究进展了解不深入。</div>
+                            <div class="reference-item">3、项目题目不规范、题目不完整。</div>
+                            <div class="reference-item">4、项目题目含义不够清晰，不完整。</div>
+                            <div class="reference-item">5、填写所属学科选择错误或不准确。</div>
+                            <div class="reference-item">6、项目内容填写不完整，项目中部分授课内容尚待定。</div>
+                        </div>
+                    </div>
+
+                  
+                    <div class="layui-form-item footer">
+                        <button class="layui-btn" lay-submit lay-filter="formDemo">提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <style type="text/css">
+        .tab_others {
+            background-color: #009688;
+            color: #ffffff;
+            margin-left: 6px;
+            width: 173px;
+        }
+
+        .tab_this {
+            background-color: #f5f5f5;
+            color: #404040;
+            margin-left: 6px;
+            width: 173px;
+            border-bottom: 1px solid #F5F5F5;
+        }
+
+        [data-field='evaluationOfTheTitle'] {
+            background-color: #f2f2f2
+        }
+
+        tbody tr {
+            height: 70px;
+        }
+
+        .layui-table-cell {
+            font-size:14px;
+            padding:0 5px;
+            height:auto;
+            overflow:visible;
+            text-overflow:inherit;
+            white-space:normal;
+            word-break: break-all;
+        }
+    </style>
+
+
+    <script type="text/javascript">
+        const   projectId       = getUrlParam('projectId'),
+                reviewId        = getUrlParam('reviewId'),
+                updateFlag      = reviewId && reviewId.length == 36,
+                standardKindId  = localStorage.getItem('standardkind-id'),
+                userType        = localStorage.getItem('user-type');
+
+
+        /** 全局配置及引入相关的模块 */
+        layui.use([ 'table', 'form', 'element', 'laytpl' ], () => {
+            let table   = layui.table,
+                form    = layui.form,
+                laytpl  = layui.laytpl;
+
+
+            /** 表格配置 */
+            window.loaderTable = () => {
+                table.render({
+                    elem            : '#projectForReview',
+                    title           : '评分参考',
+                    defaultToolbar  : [],
+                    cols            : [ [
+                        { field: 'evaluationOfTheTitle', align: 'center', width: 100, title: '评价内容', rowspan: 3 },
+                        { align: 'center', title: '评价等级与标准', colspan: 4 },
+                    ], [
+                        { field: 'A', align: 'center', title: '优：90-100' },
+                        { field: 'B', align: 'center', title: '良：76-89' },
+                        { field: 'C', align: 'center', title: '中：61-75' },
+                        { field: 'D', align: 'center', title: '差：0-60' },
+                    ] ],
+                    toolbar         : '',
+                    cellMinWidth    : 100,
+                    id              : 'projectTeam',
+                    // height          : 'full-155',
+                    page            : false,
+                    data            : [
+                        { 'evaluationOfTheTitle': '科学性', 'A': '选题符合学科理论体系，科研设计严谨，技术路线清晰', 'B': '选题较符合学科理论体系，科研设计较严谨，技术路线较清晰', 'C': '选题基本符合学科理论体系，科研设计较严谨，技术路线基本清晰', 'D': '选题不符合学科理论体系，科研设计欠严谨，技术路线欠清晰'},
+                        { 'evaluationOfTheTitle': '先进性', 'A': '创新程度高，研究方法、手段及其观测指标先进', 'B': '创新程度较高，研究方法、手段及其观测指标较先进', 'C': '有一定创新度，研究方法、手段及其观测指标基本合理', 'D': '创新程度不高，研究方法、手段及其观测指标不先进'},
+                        { 'evaluationOfTheTitle': '实用性', 'A': '学术价值高，研究结果有明显的社会效益，对学科发展具有很好的促进作用', 'B': '学术价值较高，研究结果有较好的社会效益，对学科发展具有较好的促进作用', 'C': '有一定学术价值，研究结果有一定社会效益，对学科发展具有促进作用', 'D': '学术价值低，研究结果无明显的社会效益，对学科发展的促进作用不明显'},
+                        { 'evaluationOfTheTitle': '可行性', 'A': '研究目的明确，计划进度安排科学，课题组人员构成合理，研究条件齐全，经费预算合理，预试结果可靠', 'B': '研究目的较明确，计划进度安排科学，课题组人员构成较合理，研究条件齐全，经费预算较合理，预试结果较可靠', 'C': '研究目的基本明确，计划进度安排科学，课题组人员构成基本合理，研究条件基本齐全，经费预算基本合理，预试结果一般', 'D': '研究目的欠明确，计划进度安排不够科学，课题组人员构成欠合理，研究条件不齐全，经费预算欠合理，预试结果不理想'},
+                    ]
+                });
+            };
+
+
+            /** 获取配置 */
+            window.getConfig = (configNames, standardKindId, userType) => {
+                $.ajax({
+                    async   : false,
+                    type    : 'post',
+                    url     : huayi_sjwh_url + 'cmeCommonConfig/getConfigByStandardKind',
+                    data    : { 
+                        standardKindId  : standardKindId, 
+                        configNames     : configNames,
+                        userType        : userType
+                    },
+                    success : res => {
+                        if (res.success == true) window[configNames] = res.data[configNames];
+                        else layer.msg('获取配置失败', { icon: 2, time: 1000 });
+                    },
+                    error   : (xhr, status, error) => layer.msg('获取配置失败', { icon: 7, time: 1000 })
+                });
+            }
+            window.getConfig('fun_expert_review_entry', standardKindId, userType);
+
+
+            /** 页面初始化 */
+            $(() => {
+                let $explanationLabel   = $('#explanation-div label span'),
+                    $explanation        = $('#explanation_form');
+
+                 // 是否推荐文字根据地市和省级不同而不同
+                if (standardKindId == "4a6d91fb-8ba4-4560-a801-9c6f00e6d999") {
+                    // id requiredText 追加 为推荐通过
+                    $('#requiredText').text('是否同意立项');
+                    //单选按钮 title 文字改为 同意  不同意 
+                    $('input[name="reviewResult"][value="1"]').attr('title', '同意').next().text('同意');
+                    $('input[name="reviewResult"][value="2"]').attr('title', '不同意').next().text('不同意');
+                    form.render('radio');
+                } else {
+                    // id requiredText 为推荐通过
+                    $('#requiredText').text('是否推荐通过');
+                    //单选按钮文字改为 推荐通过  不推荐通过
+                    $('input[name="reviewResult"][value="1"]').attr('title', '推荐通过').next().text('推荐通过');
+                    $('input[name="reviewResult"][value="2"]').attr('title', '不推荐通过').next().text('不推荐通过');
+                    form.render('radio');
+                }
+
+
+ 
+                /* 评分 */
+                let $grade = $('#grade_form');
+                if (fun_expert_review_entry && fun_expert_review_entry.split('、').includes('NO_SCORE')) {
+                    $grade.attr('lay-verify', '');
+                   
+                    if(standardKindId == "4a6d91fb-8ba4-4560-a801-9c6f00e6d999"){
+                        $explanation.attr('placeholder', '不能单纯填写同意立项或不同意立项，对不同意立项的应不少于两个理由，每条理由不少于20个字');
+                    }else{
+                        $explanation.attr('placeholder', '请填写评审说明');
+                    }
+                } 
+                else {
+                    loaderTable(); // 初始化表格
+                    $('#score-table-div').show();
+                    $('#score-div').show();
+                    $grade.attr('lay-verify', 'required');
+                    $explanation.attr('placeholder', '请按上述评分标准中的"四性"依次对项目进行评价');
+                }
+
+               
+                /* 获取评审信息 */
+                if (updateFlag) {
+                    $.ajax({
+                        type        : 'get',
+                        url         : huayi_projectscore_url + 'projectExpertReview/' + reviewId,
+                        async       : false,
+                        dataType    : 'json',
+                        success     : res => {
+                            if (res && 200 == res.status) {
+                              
+                                let data = res.data;
+                                form.val('review-form', data);
+                              
+                                $('[name=reviewResult][value=' + data.reviewResult + ']').prop('checked', true);
+                                form.render('radio');
+                                
+                                // 重新获取 reviewResult 的值
+                                let reviewResult = $('[name="reviewResult"]:checked').val();
+                                updateExplanationRequirement(reviewResult);
+                            } 
+                            else layer.msg('获取评审信息失败', { icon: 7, time: 1000 });
+                        },
+                        error       : () => layer.msg('获取评审信息失败', { icon: 7, time: 1000 })
+                    });
+                }
+                /* 说明 */
+                function updateExplanationRequirement(reviewResult) {
+                    if (2 == reviewResult) {
+                        $explanationLabel.addClass('required-item');
+                        $explanation.attr('lay-verify', 'required');
+                    } else {
+                        $explanationLabel.removeClass('required-item');
+                        $explanation.attr('lay-verify', ''); 
+                    }
+                }
+                if (fun_expert_review_entry && fun_expert_review_entry.split('、').includes('NO_EXPLAN_NOT_REC')) { 
+                    form.on('radio(review-result)', data => {
+                        updateExplanationRequirement(data.value);
+                    });
+                } else {
+                    $explanationLabel.addClass('required-item');
+                    $explanation.attr('lay-verify', 'required');
+                }
+
+
+                $(document).on('click', '.reference-item', function(){
+                    var text = $(this).text();
+                    var textarea = $('#explanation_form');
+                    var curVal = textarea.val();
+                    
+                    // 追加内容（带换行）
+                    textarea.val(curVal ? curVal + '\n' + text : text);
+                });
+
+            });
+
+
+            /** 表单相关 */
+            /* 表单校验 */
+            form.verify({
+                grade: (value , item) => {
+                    // let regPos = /^[0-9]+.?[0-9]*/;
+                    let regPos = /^[1-9]\d*$/;
+                    if (!value) return '综合评分不能为空'
+                    else if (!regPos.test(value)) return '只能填写数';
+                    else if (value > 100 || value < 0) return '只能填写0-100内的数字（含）';
+                }
+           
+            }); 
+
+            /* 表单提交 */
+            form.on('submit(formDemo)', data => {
+                let     reviewResultvalue;
+                const   tools = document.getElementsByName('reviewResult');
+                //如果是不通过且是广西，评审意见必须大于40字
+                if(standardKindId=="4a6d91fb-8ba4-4560-a801-9c6f00e6d999" && data.field.reviewResult==2 && data.field.explanation.length<40){
+                    layer.msg('评审意见必须大于40字', { icon: 7, time: 1000 });
+                    return false;
+                }
+                $.each(tools, (i, item) => { if (item.checked) reviewResultvalue = item.value; });
+                $.ajax({
+                    type        : 'post',
+                    url         : huayi_projectscore_url + 'projectExpertReview/' + (updateFlag ? 'update' : 'save'),
+                    contentType : 'application/json;charset=UTF-8',
+                    async       : false,
+                    data        : JSON.stringify({
+                        projectId       : projectId,
+                        id              : updateFlag ? reviewId : '',
+                        reviewResult    : reviewResultvalue,
+                        explanation     : $('#explanation_form').val(),
+                        grade           : $('#grade_form').val(),
+                        standardKindId  : standardKindId
+                    }),
+                    dataType    : 'json',
+                    success     : res => {
+                        layer.msg(res.msg)
+                       
+                        window.parent.tableOp.reload();
+                        window.parent.layer.closeAll();
+                    },
+                    error       : () => {
+                       
+                        window.parent.tableOp.reload();
+                        window.parent.layer.closeAll();
+                    }
+                });
+               
+                window.parent.tableOp.reload();
+                window.parent.layer.closeAll();
+            });
+            
+            //将弹窗方法抽象出来
+            function openReferencePopup(){
+                if(standardKindId=="4a6d91fb-8ba4-4560-a801-9c6f00e6d999") {
+                    // 显示参考意见弹窗
+                    layer.open({
+                        type: 1,
+                        title: '参考意见',
+                        area: ['600px', '340px'], // 弹窗宽高
+                        content: $('#reference-popup'), // 弹窗内容
+                        btn: ['关闭'],
+                        yes: function(index, layero){
+                            layer.close(index); // 关闭弹窗
+                        },
+                        success: function(layero, index){
+                            // 动态设置内容区域高度，避免双滚动条
+                            var $content = $(layero).find('.reference-list');
+                            var contentHeight = $content[0].scrollHeight; // 内容实际高度
+                            var maxHeight = 200; // 最大高度
+                            if (contentHeight > maxHeight) {
+                                $content.css('max-height', maxHeight + 'px');
+                            } else {
+                                $content.css('max-height', 'none'); // 不限制高度
+                            }
+                        }
+                    });
+                }
+            }
+
+        });
+    </script>
+</body>
+</html>

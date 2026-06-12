@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Hello world!</title>
+    <style type="text/css">
+    #container{
+        /*地图(容器)显示大小*/
+        width:100%;
+        height:100%;
+    }
+    </style>
+    <!--引入Javascript API GL，参数说明参见下文-->
+    <script src="https://map.qq.com/api/gljs?v=1.exp&key=V3GBZ-GA5WS-7H6OS-62ZD7-FWV7H-JVBNT"></script>
+    <script src="https://apis.map.qq.com/ws/location/v1/ip?key=V3GBZ-GA5WS-7H6OS-62ZD7-FWV7H-JVBNT&callback=getMyMap()"></script>
+	<script src="../../../js/jquery-3.5.1.min.js"></script>
+
+</head>
+<!-- 页面载入后，调用init函数 -->
+<!-- <body onload="initMap()"> -->
+    <body>
+    <!-- 定义地图显示容器 -->
+    <div id="container"></div>
+</body>
+<script>
+    //地图初始化函数，本例取名为init，开发者可根据实际情况定义
+    // function initMap() {
+        //定义地图中心点坐标
+        var center = new TMap.LatLng(39.908765,116.397479)
+        //定义map变量，调用 TMap.Map() 构造函数创建地图
+        var map = new TMap.Map(document.getElementById('container'), {
+            center: center,//设置地图中心点坐标
+            // zoom: 17.2,   //设置地图缩放级别
+            // pitch: 43.5,  //设置俯仰角
+            // rotation: 45 ,   //设置地图旋转角度
+            // viewMode:'3D',  // 地图是3D还是2D
+        });
+    // }
+
+    // // 修改地图中心点坐标
+    // map.setCenter(new TMap.LatLng(lat,lng));
+
+    // // 获取地图中心点坐标
+    // var centerLatLng=map.getCenter();
+
+    //定义事件处理方法
+    var clickHandler=function(evt){
+        var lat = evt.latLng.getLat().toFixed(6);
+        var lng = evt.latLng.getLng().toFixed(6);
+        console.log(evt)
+        console.log("您点击的的坐标是："+ lat + "," + lng);
+    }
+    //Map实例创建后，通过on方法绑定点击事件
+    map.on("click",clickHandler);
+    // //通过off方法解绑点击事件
+    // map.off("click",clickHandler);
+
+    //创建并初始化MultiMarker
+    var markerLayer = new TMap.MultiMarker({
+        map: map,  //指定地图容器
+        //样式定义
+        styles: {
+            //创建一个styleId为"myStyle"的样式（styles的子属性名即为styleId）
+            "myStyle": new TMap.MarkerStyle({ 
+                "width": 25,  // 点标记样式宽度（像素）
+                "height": 35, // 点标记样式高度（像素）
+                "src": '../../../img/eyes-close-max.png',  //图片路径
+                //焦点在图片中的像素位置，一般大头针类似形式的图片以针尖位置做为焦点，圆形点以圆心位置为焦点
+                "anchor": { x: 16, y: 32 }  
+            }) 
+        },
+        //点标记数据数组
+        geometries: [{
+            "id": "1",   //点标记唯一标识，后续如果有删除、修改位置等操作，都需要此id
+            // "styleId": 'myStyle',  //指定样式id
+            "src": '../../../img/eyes-close-max.png',  //图片路径
+            "position": new TMap.LatLng(39.908765,116.397479),  //点标记坐标位置
+            "properties": {//自定义属性
+                "title": "marker1"
+            }
+        }, {//第二个点标记
+            "id": "2",
+            "styleId": 'marker',
+            "position": new TMap.LatLng(39.994104, 116.287503),
+            "properties": {
+                "title": "marker2"
+            }
+        }
+        ]
+    });
+    // 向地图上添加标记
+    markerLayer.add([{
+        "id": "3",   //点标记唯一标识，后续如果有删除、修改位置等操作，都需要此id
+        "styleId": 'myStyle',  //指定样式id
+        "position": new TMap.LatLng(39.954104, 116.357503),  //点标记坐标位置
+        "properties": {//自定义属性
+            "title": "marker3"
+            }
+        }, {//第4个点标记
+            "id": "4",
+            "styleId": 'marker',
+            "position": new TMap.LatLng(39.994104, 116.287503),
+            "properties": {
+                "title": "marker4"
+            }
+        }
+    ]);
+
+    //修改id为4的点标记的位置 如果id=4的坐标在集合中则更新，如果不在则添加
+    markerLayer.updateGeometries([
+        {
+        "styleId":"marker",
+        "id": "4",
+        "position": new TMap.LatLng(39.994104, 116.287503),
+        }
+    ]);
+
+    // 清空坐标点
+    markerLayer.setGeometries([]);
+
+    // 删除指定id 的坐标点
+    markerLayer.remove(["1","4"]);
+
+</script>
+<script>
+
+    window.getMyMap = function(result) {
+        alert(result)
+    }
+    $(function () {
+        $.ajax({
+                type: 'get',
+                url: 'https://apis.map.qq.com/ws/location/v1/ip?key=V3GBZ-GA5WS-7H6OS-62ZD7-FWV7H-JVBNT',
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    layer.closeAll();
+                    loaderTable();
+                    layer.msg(res.data)
+                    data={};
+                },
+                error: function (res) {
+                    layer.msg("发送请求失败")
+                }
+            })
+    })
+</script>
+</html>

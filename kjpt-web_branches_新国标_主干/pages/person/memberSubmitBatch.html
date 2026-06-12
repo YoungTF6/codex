@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>人员上报</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="../../js/auth.js"></script>
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <style>
+        body {
+            background: #f5f7fb;
+        }
+        .submit-page {
+            padding: 12px;
+        }
+        .submit-card {
+            border: 1px solid #e8edf5;
+            box-shadow: none;
+        }
+        .condition-area {
+            padding: 12px 14px 6px;
+            border-bottom: 1px solid #edf1f7;
+        }
+        .condition-grid {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .condition-fields {
+            flex: 1;
+        }
+        .condition-fields .layui-inline {
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        .condition-fields .layui-form-label {
+            width: 86px;
+        }
+        .condition-fields .layui-input-block {
+            width: 150px;
+            margin-left: 116px;
+        }
+        .condition-actions {
+            white-space: nowrap;
+            padding-top: 1px;
+        }
+        .toolbar-row {
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #edf1f7;
+            background: #fff;
+        }
+        .status-tag {
+            display: inline-block;
+            min-width: 54px;
+            padding: 0 8px;
+            height: 24px;
+            line-height: 24px;
+            border-radius: 3px;
+            font-size: 12px;
+            text-align: center;
+        }
+        .status-submit {
+            color: #0f6b57;
+            background: #e8f7f1;
+        }
+        .status-receive {
+            color: #2454a6;
+            background: #eaf1ff;
+        }
+        .person-dialog {
+            padding: 12px;
+            background: #f5f7fb;
+            box-sizing: border-box;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        .person-dialog-grid {
+            display: grid;
+            grid-template-columns: 320px 500px minmax(300px, 1fr);
+            gap: 12px;
+            flex: 1;
+            min-height: 0;
+        }
+        .selected-dept-summary {
+            flex: 0 0 auto;
+            height: 36px;
+            line-height: 36px;
+            padding: 0 12px;
+            margin-bottom: 12px;
+            background: #fff;
+            border: 1px solid #e8edf5;
+            box-sizing: border-box;
+            color: #667085;
+        }
+        .selected-dept-summary strong {
+            color: #1f2329;
+            margin-right: 6px;
+        }
+        .selected-dept-summary .dept-chip {
+            display: inline-block;
+            max-width: 120px;
+            height: 22px;
+            line-height: 22px;
+            margin-right: 6px;
+            padding: 0 8px;
+            border-radius: 12px;
+            background: #edf4ff;
+            color: #1677ff;
+            vertical-align: middle;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .dept-tree-toolbar {
+            flex: 0 0 auto;
+            padding: 10px 12px;
+            border-bottom: 1px solid #edf1f7;
+            display: flex;
+            gap: 8px;
+        }
+        .dept-tree-toolbar .layui-input,
+        .dept-tree-toolbar .layui-btn {
+            flex-shrink: 0;
+        }
+        .dept-tree-toolbar .layui-input {
+            flex: 1;
+            min-width: 0;
+        }
+        .dept-tree-toolbar .layui-input {
+            height: 30px;
+        }
+        .dept-select-all-row {
+            flex: 0 0 auto;
+            padding: 8px 12px;
+            border-bottom: 1px solid #edf1f7;
+            color: #344054;
+        }
+        .dept-select-all-row label {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .dept-select-all-row input[type="checkbox"] {
+            margin: 0 6px 0 0;
+        }
+        .dept-tree-list {
+            flex: 1;
+            min-height: 0;
+            overflow: auto;
+            padding: 8px 8px 12px;
+            box-sizing: border-box;
+        }
+        .dept-node {
+            position: relative;
+            display: flex;
+            align-items: center;
+            min-height: 28px;
+            line-height: 20px;
+            padding: 4px 8px 4px calc(8px + var(--dept-level) * 18px);
+            box-sizing: border-box;
+            white-space: nowrap;
+            color: #4779ad;
+            border-radius: 3px;
+        }
+        .dept-node:hover {
+            background: #f3f8ff;
+        }
+        .dept-node::before {
+            content: "";
+            position: absolute;
+            left: calc(15px + var(--dept-level) * 18px);
+            top: 0;
+            bottom: 0;
+            border-left: 1px solid #e2eaf5;
+        }
+        .dept-node.level-0::before {
+            display: none;
+        }
+        .dept-toggle,
+        .dept-toggle-placeholder {
+            position: relative;
+            z-index: 1;
+            width: 18px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            flex: 0 0 18px;
+            color: #7a8aa0;
+            cursor: pointer;
+            user-select: none;
+        }
+        .dept-toggle-placeholder {
+            cursor: default;
+        }
+        .dept-node label,
+        .dept-node .dept-virtual-name {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            min-width: 0;
+        }
+        .dept-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .dept-virtual-name {
+            color: #344054;
+            font-weight: 600;
+        }
+        .dept-node input[type="checkbox"] {
+            margin: 0 6px 0 0;
+            flex: 0 0 auto;
+        }
+        .dept-node.checked {
+            background: #f3f8ff;
+            color: #1677ff;
+            font-weight: 600;
+        }
+        .dept-empty {
+            padding: 24px 0;
+            text-align: center;
+            color: #999;
+        }
+        .candidate-action-row {
+            flex: 0 0 auto;
+            padding: 10px 12px;
+            border-bottom: 1px solid #edf1f7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #667085;
+        }
+        .candidate-disabled {
+            color: #aaa;
+            background: #fafafa;
+        }
+        .dialog-panel {
+            background: #fff;
+            border: 1px solid #e8edf5;
+            box-sizing: border-box;
+            min-width: 0;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .dialog-panel-title {
+            flex: 0 0 auto;
+            height: 42px;
+            line-height: 42px;
+            padding: 0 12px;
+            border-bottom: 1px solid #edf1f7;
+            font-weight: 600;
+            color: #1f2329;
+        }
+        .dialog-query {
+            flex: 0 0 auto;
+            padding: 10px 12px 2px;
+            border-bottom: 1px solid #edf1f7;
+        }
+        .dialog-query .layui-inline {
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        .dialog-query .layui-form-label {
+            width: 70px;
+            padding-left: 0;
+        }
+        .dialog-query .layui-input-block {
+            width: 140px;
+            margin-left: 92px;
+        }
+        .detail-query {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: nowrap;
+        }
+        .detail-query .layui-inline {
+            display: flex;
+            align-items: center;
+            margin: 0;
+        }
+        .detail-query .layui-form-label {
+            flex: 0 0 70px;
+            padding-right: 6px;
+            box-sizing: border-box;
+        }
+        .detail-query .layui-input-block {
+            flex: 0 0 140px;
+            width: 140px;
+            margin-left: 0;
+        }
+        .detail-query-spacer {
+            flex: 1;
+            min-width: 12px;
+        }
+        .detail-query .layui-btn {
+            flex: 0 0 auto;
+            margin-left: 0;
+        }
+        .candidate-panel .dialog-query {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: nowrap;
+        }
+        .candidate-panel .dialog-query .layui-inline {
+            display: flex;
+            align-items: center;
+            margin: 0;
+        }
+        .candidate-panel .dialog-query .layui-form-label {
+            flex: 0 0 64px;
+            width: 64px;
+            padding: 9px 6px 9px 0;
+            box-sizing: border-box;
+        }
+        .candidate-panel .dialog-query .layui-input-block {
+            flex: 0 0 116px;
+            width: 116px;
+            margin-left: 0;
+        }
+        .dialog-table-wrap {
+            flex: 1;
+            min-height: 0;
+            padding: 10px 12px 12px;
+            overflow: hidden;
+        }
+        .dialog-table-wrap .layui-table-view {
+            margin: 0;
+        }
+        .dialog-table-wrap .layui-table th,
+        .dialog-table-wrap .layui-table td {
+            text-align: center;
+        }
+        .selected-count {
+            color: #1e9fff;
+            margin-left: 6px;
+        }
+        .occupied-text {
+            color: #999;
+        }
+        .readonly-layer .layui-layer-btn0 {
+            display: none;
+        }
+    </style>
+</head>
+<body class="body-area">
+<div class="layui-fluid submit-page">
+    <div class="layui-card submit-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area">
+            <div class="condition-grid">
+                <div class="condition-fields">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">上报年度</label>
+                        <div class="layui-input-block">
+                            <select id="queryYear"></select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">接收情况</label>
+                        <div class="layui-input-block">
+                            <select id="queryReceiveFlag">
+                                <option value="">全部</option>
+                                <option value="0">已上报</option>
+                                <option value="1">已接收</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">开始时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="queryStartDate" readonly autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">结束时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="queryEndDate" readonly autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">人员编号</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="queryPersonNo" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">人员姓名</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="queryPersonName" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="condition-actions">
+                    <a class="layui-btn layui-btn-sm" id="searchBtn">
+                        <i class="layui-icon layui-icon-search"></i>查询
+                    </a>
+                    <a class="layui-btn layui-btn-primary layui-btn-sm" id="resetBtn">重置</a>
+                </div>
+            </div>
+        </div>
+        <div class="toolbar-row">
+            <a class="layui-btn layui-btn-sm" id="addBatchBtn">
+                <i class="layui-icon layui-icon-add-1"></i>添加批次
+            </a>
+        </div>
+        <div class="layui-card-body" style="padding:0;">
+            <table class="layui-table" id="memberBatchTable" lay-filter="memberBatchTable"></table>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="batchRowBar">
+    <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="viewPersons">查看人员</a>
+</script>
+
+<script type="text/html" id="statusTpl">
+    {{# var cls = d.receiveFlag === 1 ? 'status-receive' : 'status-submit'; }}
+    <span class="status-tag {{ cls }}">{{ d.receiveStatusName || '' }}</span>
+</script>
+
+<script type="text/html" id="selectedRowBar">
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="removePerson">移除</a>
+</script>
+
+<script type="text/html" id="personSelectDialogTpl">
+    <div class="person-dialog">
+        <div class="selected-dept-summary">
+            <strong>已选科室</strong><span id="selectedDeptSummary">请选择左侧科室</span>
+        </div>
+        <div class="person-dialog-grid">
+            <div class="dialog-panel dept-panel">
+                <div class="dialog-panel-title">科室树</div>
+                <div class="dept-tree-toolbar">
+                    <input type="text" id="candidateDeptKeyword" autocomplete="off" class="layui-input" placeholder="搜索科室">
+                    <a class="layui-btn layui-btn-sm" id="deptSearchBtn">查询</a>
+                </div>
+                <div class="dept-select-all-row">
+                    <label title="全选当前科室列表">
+                        <input type="checkbox" id="deptSelectAll"><span>全选</span>
+                    </label>
+                </div>
+                <div class="dept-tree-list" id="candidateDeptTree">
+                    <div class="dept-empty">科室加载中...</div>
+                </div>
+            </div>
+            <div class="dialog-panel candidate-panel">
+                <div class="dialog-panel-title">待选人员</div>
+                <div class="layui-form dialog-query" lay-filter="candidateQueryForm">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">人员编号</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="candidatePersonNo" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">人员姓名</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="candidatePersonName" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <a class="layui-btn layui-btn-sm" id="candidateSearchBtn">
+                        <i class="layui-icon layui-icon-search"></i>查询
+                    </a>
+                </div>
+                <div class="candidate-action-row">
+                    <span id="candidateDeptHint">请先勾选左侧科室</span>
+                    <a class="layui-btn layui-btn-sm" id="addCheckedPersonsBtn">
+                        加入已选 <i class="layui-icon layui-icon-next"></i>
+                    </a>
+                </div>
+                <div class="dialog-table-wrap">
+                    <table class="layui-table" id="candidatePersonTable" lay-filter="candidatePersonTable"></table>
+                </div>
+            </div>
+            <div class="dialog-panel selected-panel">
+                <div class="dialog-panel-title">已选人员<span class="selected-count" id="selectedCount">0人</span></div>
+                <div class="dialog-table-wrap" style="padding-top:12px;">
+                    <table class="layui-table" id="selectedPersonTable" lay-filter="selectedPersonTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="personDetailDialogTpl">
+    <div class="person-dialog">
+        <div class="dialog-panel">
+            <div class="layui-form dialog-query detail-query">
+                <div class="layui-inline">
+                    <label class="layui-form-label">人员编号</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="detailPersonNo" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">人员姓名</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="detailPersonName" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <a class="layui-btn layui-btn-sm" id="detailSearchBtn">
+                    <i class="layui-icon layui-icon-search"></i>查询
+                </a>
+                <a class="layui-btn layui-btn-primary layui-btn-sm" id="detailResetBtn">重置</a>
+                <span class="detail-query-spacer"></span>
+                <a class="layui-btn layui-btn-sm" id="detailExportBtn">
+                    <i class="layui-icon layui-icon-download-circle"></i>导出Excel
+                </a>
+            </div>
+            <div class="dialog-table-wrap">
+                <table class="layui-table" id="detailPersonTable" lay-filter="detailPersonTable"></table>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script>
+    layui.use(['table', 'form', 'laydate', 'jquery', 'layer'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var laydate = layui.laydate;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var currentYear = new Date().getFullYear();
+        var selectedPersons = {};
+        var selectedDeptMap = {};
+        var deptTreeData = [];
+        var expandedDeptMap = {};
+        var activeLayerIndex = null;
+        var detailExporting = false;
+
+        function headers() {
+            return {
+                'Authorization': localStorage.getItem('token'),
+                'KJPT-USER-ID': localStorage.getItem('user-id')
+            };
+        }
+
+        function unitId() {
+            return localStorage.getItem('unit-id');
+        }
+
+        function userId() {
+            return localStorage.getItem('user-id');
+        }
+
+        function renderYearOptions() {
+            var html = '';
+            for (var i = currentYear; i >= currentYear - 2; i--) {
+                html += '<option value="' + i + '">' + i + '</option>';
+            }
+            $('#queryYear').html(html).val(currentYear);
+            form.render('select');
+        }
+
+        function queryParams() {
+            return {
+                year: $('#queryYear').val(),
+                unitId: unitId(),
+                receiveFlag: $('#queryReceiveFlag').val(),
+                startDate: $('#queryStartDate').val(),
+                endDate: $('#queryEndDate').val(),
+                personNo: $('#queryPersonNo').val(),
+                personName: $('#queryPersonName').val()
+            };
+        }
+
+        function parsePage(res) {
+            var data = res.data || {};
+            return {
+                code: res.status === 200 ? 0 : res.status,
+                msg: res.msg,
+                count: data.recordsTotal || 0,
+                data: data.records || []
+            };
+        }
+
+        function renderBatchTable() {
+            table.render({
+                elem: '#memberBatchTable',
+                url: huayi_personorg_url + 'memberSubmit/batch/unit/list',
+                headers: headers(),
+                where: queryParams(),
+                id: 'memberBatchTable',
+                height: 'full-178',
+                page: true,
+                limit: 10,
+                limits: [10, 20, 50, 100],
+                request: { pageName: 'pageNum', limitName: 'pageSize' },
+                parseData: parsePage,
+                cols: [[
+                    { title: '操作', toolbar: '#batchRowBar', width: 260, align: 'center', fixed: 'left' },
+                    { field: 'applyId', title: '批次号', width: 100, align: 'center' },
+                    { field: 'personCount', title: '上报人数', width: 100, align: 'center' },
+                    { field: 'receiveUnitName', title: '接收单位', minWidth: 220, align: 'center' },
+                    { field: 'receiveStatusName', title: '接收情况', width: 110, align: 'center', templet: '#statusTpl' },
+                    { field: 'applyDate', title: '上报时间', width: 170, align: 'center' },
+                    { field: 'addTime', title: '添加时间', width: 170, align: 'center' }
+                ]]
+            });
+        }
+
+        function reloadBatchTable() {
+            table.reload('memberBatchTable', {
+                where: queryParams(),
+                page: { curr: 1 }
+            });
+        }
+
+        function renderDatePickers() {
+            laydate.render({ elem: '#queryStartDate', trigger: 'click' });
+            laydate.render({ elem: '#queryEndDate', trigger: 'click' });
+        }
+
+        function selectedList() {
+            return Object.keys(selectedPersons).map(function (key) {
+                return selectedPersons[key];
+            });
+        }
+
+        function selectedPersonNos() {
+            return selectedList().map(function (item) {
+                return item.personNo;
+            });
+        }
+
+        function selectedDeptList() {
+            return Object.keys(selectedDeptMap).map(function (key) {
+                return selectedDeptMap[key];
+            });
+        }
+
+        function selectedDeptIds() {
+            return selectedDeptList().map(function (item) {
+                return item.id;
+            });
+        }
+
+        function currentDeptKeyword() {
+            return $.trim($('#candidateDeptKeyword').val());
+        }
+
+        function renderSelectedDeptSummary() {
+            var list = selectedDeptList();
+            if (list.length === 0) {
+                $('#selectedDeptSummary').html('请选择左侧科室');
+                $('#candidateDeptHint').text('请先勾选左侧科室');
+                return;
+            }
+            var chips = list.slice(0, 5).map(function (item) {
+                return '<span class="dept-chip" title="' + escapeHtml(item.name) + '">' + escapeHtml(item.name) + '</span>';
+            }).join('');
+            if (list.length > 5) {
+                chips += '<span>等 ' + list.length + ' 个科室</span>';
+            }
+            $('#selectedDeptSummary').html(chips);
+            $('#candidateDeptHint').text('已选择 ' + list.length + ' 个科室，待选人员按所选科室汇总');
+        }
+
+        function escapeHtml(text) {
+            return String(text || '').replace(/[&<>"']/g, function (item) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[item];
+            });
+        }
+
+        function selectedTableLimit() {
+            return Math.max(selectedList().length, 1);
+        }
+
+        function refreshSelectedTable() {
+            $('#selectedCount').text(selectedList().length + '人');
+            table.reload('selectedPersonTable', {
+                data: selectedList(),
+                limit: selectedTableLimit()
+            });
+        }
+
+        function personDialogArea() {
+            var availableWidth = Math.max($(window).width() - 48, 320);
+            var availableHeight = Math.max($(window).height() - 64, 420);
+            var width = Math.min(availableWidth, 1480);
+            var height = Math.min(availableHeight, 860);
+            return [width + 'px', height + 'px'];
+        }
+
+        function dialogTableHeight(panelSelector, fallbackHeight) {
+            var panel = $(panelSelector);
+            if (panel.length === 0) {
+                return fallbackHeight;
+            }
+            var wrap = panel.find('.dialog-table-wrap');
+            var usedHeight = 0;
+            panel.children().not('.dialog-table-wrap').each(function () {
+                usedHeight += $(this).outerHeight(true);
+            });
+            var wrapPadding = (parseInt(wrap.css('padding-top'), 10) || 0) + (parseInt(wrap.css('padding-bottom'), 10) || 0);
+            return Math.max(300, panel.height() - usedHeight - wrapPadding - 12);
+        }
+
+        function renderSelectedTable() {
+            table.render({
+                elem: '#selectedPersonTable',
+                id: 'selectedPersonTable',
+                data: selectedList(),
+                height: dialogTableHeight('.selected-panel', 360),
+                page: false,
+                limit: selectedTableLimit(),
+                cols: [[
+                    { field: 'personNo', title: '人员编号', width: 112, align: 'center' },
+                    { field: 'personName', title: '姓名', width: 80, align: 'center' },
+                    { field: 'deptName', title: '科室', minWidth: 120, align: 'center' },
+                    { title: '操作', toolbar: '#selectedRowBar', width: 66, align: 'center' }
+                ]]
+            });
+            $('#selectedCount').text(selectedList().length + '人');
+        }
+
+        function candidateParams() {
+            var deptIds = selectedDeptIds();
+            return {
+                year: $('#queryYear').val(),
+                unitId: unitId(),
+                deptIds: deptIds.join(','),
+                personNo: $('#candidatePersonNo').val(),
+                personName: $('#candidatePersonName').val()
+            };
+        }
+
+        function candidateCanSelect(item) {
+            return !!(item && item.canSelect && !selectedPersons[item.personNo]);
+        }
+
+        function syncCandidateDisabledSelection() {
+            var cache = (table.cache && table.cache.candidatePersonTable) || [];
+            var view = $('#candidatePersonTable').next();
+            var selectableCount = 0;
+            var checkedSelectableCount = 0;
+
+            $.each(cache, function (index, item) {
+                var tr = view.find('.layui-table-body tbody tr[data-index="' + index + '"]');
+                if (candidateCanSelect(item)) {
+                    selectableCount++;
+                    if (item.LAY_CHECKED) {
+                        checkedSelectableCount++;
+                    }
+                    return;
+                }
+                item.LAY_CHECKED = false;
+                tr.addClass('candidate-disabled');
+                tr.find('input[name="layTableCheckbox"]')
+                    .prop('checked', false)
+                    .prop('disabled', true);
+            });
+
+            var headerCheck = view.find('.layui-table-header input[name="layTableCheckbox"]');
+            headerCheck
+                .prop('checked', selectableCount > 0 && checkedSelectableCount === selectableCount)
+                .prop('indeterminate', checkedSelectableCount > 0 && checkedSelectableCount < selectableCount)
+                .prop('disabled', selectableCount === 0);
+            form.render('checkbox');
+        }
+
+        function renderCandidateTable() {
+            var deptIds = selectedDeptIds();
+            var config = {
+                elem: '#candidatePersonTable',
+                id: 'candidatePersonTable',
+                height: dialogTableHeight('.candidate-panel', 360),
+                page: true,
+                limit: 10,
+                limits: [10, 20, 50],
+                request: { pageName: 'pageNum', limitName: 'pageSize' },
+                parseData: parsePage,
+                cols: [[
+                    { type: 'checkbox', width: 46, align: 'center' },
+                    { field: 'personNo', title: '人员编号', width: 112, align: 'center' },
+                    { field: 'personName', title: '姓名', width: 82, align: 'center' },
+                    { field: 'sex', title: '性别', width: 58, align: 'center' },
+                    { field: 'deptName', title: '科室', minWidth: 150, align: 'center' }
+                ]],
+                done: function (res) {
+                    var data = (res && res.data) || [];
+                    var view = $('#candidatePersonTable').next();
+                    $.each(data, function (index, item) {
+                        if (!candidateCanSelect(item)) {
+                            var tr = view.find('.layui-table-body tbody tr[data-index="' + index + '"]');
+                            tr.addClass('candidate-disabled');
+                            tr.find('input[name="layTableCheckbox"]').prop('disabled', true);
+                        }
+                    });
+                    syncCandidateDisabledSelection();
+                }
+            };
+            if (deptIds.length === 0) {
+                config.data = [];
+                config.page = false;
+                config.text = { none: '请先勾选左侧科室' };
+            } else {
+                config.url = huayi_personorg_url + 'memberSubmit/batch/candidate/persons';
+                config.headers = headers();
+                config.where = candidateParams();
+            }
+            table.render(config);
+        }
+
+        function reloadCandidateTable(showTip) {
+            if (selectedDeptIds().length === 0 && showTip) {
+                layer.msg('请先勾选科室');
+            }
+            renderCandidateTable();
+        }
+
+        function deptIdOf(node) {
+            return node.id || node.deptId || node.value || node.comDeptId || node.unitDeptId || node.key;
+        }
+
+        function deptParentIdOf(node) {
+            return node.parentId || node.parentDeptId || node.pId || node.pid || node.parent_id;
+        }
+
+        function deptNameOf(node) {
+            return node.name || node.deptName || node.title || node.label || node.text || '';
+        }
+
+        function normalizeDeptNode(node) {
+            var children = node.children || node.childs || node.nodes || [];
+            var id = deptIdOf(node);
+            var parentId = deptParentIdOf(node);
+            id = id === undefined || id === null ? '' : String(id);
+            parentId = parentId === undefined || parentId === null ? '' : String(parentId);
+            return {
+                id: id,
+                parentId: parentId,
+                name: deptNameOf(node),
+                virtual: !!node.virtual || id === '',
+                children: $.map(children, normalizeDeptNode)
+            };
+        }
+
+        function wrapDeptRoots(roots) {
+            if (roots.length > 1) {
+                return [{
+                    id: '__dept_root__',
+                    name: '全部科室',
+                    virtual: true,
+                    children: roots
+                }];
+            }
+            return roots;
+        }
+
+        function buildDeptTreeData(data) {
+            var list = $.map(data || [], normalizeDeptNode);
+            var hasNestedChildren = list.some(function (node) {
+                return (node.children || []).length > 0;
+            });
+            var hasParent = list.some(function (node) {
+                return !!node.parentId;
+            });
+            if (!hasNestedChildren && hasParent) {
+                var nodeMap = {};
+                var roots = [];
+                $.each(list, function (_, node) {
+                    node.children = [];
+                    nodeMap[node.id] = node;
+                });
+                $.each(list, function (_, node) {
+                    if (node.parentId && nodeMap[node.parentId] && node.parentId !== node.id) {
+                        nodeMap[node.parentId].children.push(node);
+                    } else {
+                        roots.push(node);
+                    }
+                });
+                return wrapDeptRoots(roots.length > 0 ? roots : list);
+            }
+            return wrapDeptRoots(list);
+        }
+
+        function expandDeptNodes(nodes) {
+            $.each(nodes || [], function (_, node) {
+                if ((node.children || []).length > 0) {
+                    expandedDeptMap[node.id] = true;
+                    expandDeptNodes(node.children);
+                }
+            });
+        }
+
+        function deptNodeMatched(node, keyword) {
+            if (!keyword) {
+                return true;
+            }
+            if ((node.name || '').indexOf(keyword) > -1) {
+                return true;
+            }
+            return (node.children || []).some(function (child) {
+                return deptNodeMatched(child, keyword);
+            });
+        }
+
+        function selectableDeptList(keyword) {
+            var list = [];
+            function collect(nodes) {
+                $.each(nodes || [], function (_, node) {
+                    if (!deptNodeMatched(node, keyword)) {
+                        return;
+                    }
+                    if (!node.virtual) {
+                        list.push({
+                            id: node.id,
+                            name: node.name
+                        });
+                    }
+                    collect(node.children);
+                });
+            }
+            collect(deptTreeData);
+            return list;
+        }
+
+        function setDeptSelection(list, checked) {
+            $.each(list || [], function (_, item) {
+                if (checked) {
+                    selectedDeptMap[item.id] = {
+                        id: item.id,
+                        name: item.name
+                    };
+                } else {
+                    delete selectedDeptMap[item.id];
+                }
+            });
+        }
+
+        function keepMatchedDeptSelection(previousSelectedMap) {
+            var currentMap = {};
+            $.each(selectableDeptList(currentDeptKeyword()), function (_, item) {
+                currentMap[item.id] = item;
+            });
+            var nextSelectedDeptMap = {};
+            $.each(previousSelectedMap || {}, function (id) {
+                if (currentMap[id]) {
+                    nextSelectedDeptMap[id] = {
+                        id: currentMap[id].id,
+                        name: currentMap[id].name
+                    };
+                }
+            });
+            selectedDeptMap = nextSelectedDeptMap;
+        }
+
+        function syncDeptSelectAll() {
+            var $selectAll = $('#deptSelectAll');
+            if ($selectAll.length === 0) {
+                return;
+            }
+            var list = selectableDeptList(currentDeptKeyword());
+            var selectedCount = 0;
+            $.each(list, function (_, item) {
+                if (selectedDeptMap[item.id]) {
+                    selectedCount++;
+                }
+            });
+            $selectAll
+                .prop('checked', list.length > 0 && selectedCount === list.length)
+                .prop('indeterminate', selectedCount > 0 && selectedCount < list.length)
+                .prop('disabled', list.length === 0);
+        }
+
+        function buildDeptTreeHtml(nodes, level, keyword) {
+            var html = '';
+            $.each(nodes || [], function (_, node) {
+                if (!deptNodeMatched(node, keyword)) {
+                    return;
+                }
+                var children = node.children || [];
+                var hasChildren = children.length > 0;
+                var hasExpandState = Object.prototype.hasOwnProperty.call(expandedDeptMap, node.id);
+                var expanded = hasExpandState ? expandedDeptMap[node.id] !== false : !!keyword;
+                var checked = !node.virtual && !!selectedDeptMap[node.id];
+                var classes = [
+                    'dept-node',
+                    'level-' + Math.min(level, 4),
+                    hasChildren ? 'has-children' : 'leaf',
+                    node.virtual ? 'virtual' : '',
+                    checked ? 'checked' : ''
+                ].join(' ');
+                html += '<div class="' + classes + '" style="--dept-level:' + level + ';">';
+                if (hasChildren) {
+                    html += '<span class="dept-toggle' + (expanded ? ' expanded' : '') + '" data-id="' + escapeHtml(node.id) + '">' + (expanded ? '&#9662;' : '&#9656;') + '</span>';
+                } else {
+                    html += '<span class="dept-toggle-placeholder"></span>';
+                }
+                if (node.virtual) {
+                    html += '<span class="dept-virtual-name" title="' + escapeHtml(node.name) + '"><span class="dept-name">' + escapeHtml(node.name) + '</span></span>';
+                } else {
+                    html += '<label title="' + escapeHtml(node.name) + '">'
+                        + '<input type="checkbox" class="dept-check" value="' + escapeHtml(node.id) + '" data-name="' + escapeHtml(node.name) + '"' + (checked ? ' checked' : '') + '>'
+                        + '<span class="dept-name">' + escapeHtml(node.name) + '</span>'
+                        + '</label>';
+                }
+                html += '</div>';
+                if (hasChildren && expanded) {
+                    html += buildDeptTreeHtml(children, level + 1, keyword);
+                }
+            });
+            return html;
+        }
+
+        function renderDeptTree() {
+            var keyword = currentDeptKeyword();
+            var html = buildDeptTreeHtml(deptTreeData, 0, keyword);
+            $('#candidateDeptTree').html(html || '<div class="dept-empty">暂无科室</div>');
+            syncDeptSelectAll();
+        }
+
+        function loadDeptTree(afterLoad) {
+            $('#candidateDeptTree').html('<div class="dept-empty">科室加载中...</div>');
+            $.ajax({
+                type: 'get',
+                url: huayi_personorg_url + 'comdept/tree/unit',
+                headers: headers(),
+                data: { unitId: unitId() },
+                success: function (res) {
+                    var data = $.isArray(res) ? res : (res.data || []);
+                    expandedDeptMap = {};
+                    deptTreeData = buildDeptTreeData(data);
+                    expandDeptNodes(deptTreeData);
+                    if (typeof afterLoad === 'function') {
+                        afterLoad();
+                    }
+                    renderDeptTree();
+                },
+                error: function () {
+                    $('#candidateDeptTree').html('<div class="dept-empty">科室加载失败</div>');
+                }
+            });
+        }
+
+        function searchDeptTree() {
+            var previousSelectedMap = $.extend(true, {}, selectedDeptMap);
+            loadDeptTree(function () {
+                keepMatchedDeptSelection(previousSelectedMap);
+                renderSelectedDeptSummary();
+                renderCandidateTable();
+            });
+        }
+
+        function addCheckedCandidatePersons() {
+            if (selectedDeptIds().length === 0) {
+                layer.msg('请先勾选科室');
+                return;
+            }
+            var checked = table.checkStatus('candidatePersonTable').data || [];
+            if (checked.length === 0) {
+                layer.msg('请选择待选人员');
+                return;
+            }
+            var added = 0;
+            var skipped = 0;
+            $.each(checked, function (_, item) {
+                if (!item.canSelect || selectedPersons[item.personNo]) {
+                    skipped++;
+                    return;
+                }
+                selectedPersons[item.personNo] = item;
+                added++;
+            });
+            if (added > 0) {
+                refreshSelectedTable();
+                renderCandidateTable();
+            }
+            if (skipped > 0) {
+                layer.msg('已加入 ' + added + ' 人，跳过 ' + skipped + ' 人');
+            } else {
+                layer.msg('已加入 ' + added + ' 人');
+            }
+        }
+
+        function openPersonSelectDialog() {
+            selectedPersons = {};
+            selectedDeptMap = {};
+            deptTreeData = [];
+            expandedDeptMap = {};
+            activeLayerIndex = layer.open({
+                type: 1,
+                title: '添加批次',
+                area: personDialogArea(),
+                content: $('#personSelectDialogTpl').html(),
+                btn: ['上报', '关闭'],
+                success: function () {
+                    form.render();
+                    renderSelectedDeptSummary();
+                    loadDeptTree();
+                    renderCandidateTable();
+                    renderSelectedTable();
+                    $('#candidateDeptTree').on('click', '.dept-toggle', function (event) {
+                        event.stopPropagation();
+                        var id = $(this).data('id');
+                        expandedDeptMap[id] = !$(this).hasClass('expanded');
+                        renderDeptTree();
+                    });
+                    $('#candidateDeptTree').on('change', '.dept-check', function () {
+                        var id = $(this).val();
+                        if (this.checked) {
+                            selectedDeptMap[id] = {
+                                id: id,
+                                name: $(this).data('name')
+                            };
+                        } else {
+                            delete selectedDeptMap[id];
+                        }
+                        renderSelectedDeptSummary();
+                        renderDeptTree();
+                        renderCandidateTable();
+                    });
+                    $('#deptSearchBtn').on('click', searchDeptTree);
+                    $('#candidateDeptKeyword').on('keyup', function (event) {
+                        if (event.keyCode === 13) {
+                            searchDeptTree();
+                        }
+                    });
+                    $('#deptSelectAll').on('change', function () {
+                        setDeptSelection(selectableDeptList(currentDeptKeyword()), this.checked);
+                        renderSelectedDeptSummary();
+                        renderDeptTree();
+                        renderCandidateTable();
+                    });
+                    $('#candidateSearchBtn').on('click', function () {
+                        reloadCandidateTable(true);
+                    });
+                    $('#addCheckedPersonsBtn').on('click', addCheckedCandidatePersons);
+                },
+                yes: function () {
+                    submitSelected();
+                    return false;
+                }
+            });
+        }
+
+        function postJson(url, payload, callback) {
+            var loadingIndex = layer.load(2, { shade: [0.2, '#fff'] });
+            $.ajax({
+                type: 'post',
+                url: huayi_personorg_url + url,
+                headers: headers(),
+                data: JSON.stringify(payload),
+                contentType: 'application/json',
+                success: function (res) {
+                    if (res.status !== 200) {
+                        layer.msg(res.msg || '处理失败');
+                        return;
+                    }
+                    if (callback) {
+                        callback(res);
+                    }
+                },
+                error: function () {
+                    layer.msg('响应失败');
+                },
+                complete: function () {
+                    layer.close(loadingIndex);
+                }
+            });
+        }
+
+        function showExportError(xhr) {
+            var blob = xhr && xhr.response;
+            if (blob && blob.type && blob.type.indexOf('json') > -1) {
+                var reader = new FileReader();
+                reader.onload = function () {
+                    var message = '导出失败';
+                    try {
+                        var result = JSON.parse(reader.result);
+                        message = result.msg || result.message || message;
+                    } catch (e) {}
+                    layer.msg(message, { icon: 7, time: 1500 });
+                };
+                reader.readAsText(blob);
+                return;
+            }
+            layer.msg('导出失败', { icon: 7, time: 1500 });
+        }
+
+        function downloadBlob(blob, fileName) {
+            var href = window.URL.createObjectURL(blob);
+            var downloadElement = document.createElement('a');
+            downloadElement.href = href;
+            downloadElement.download = fileName;
+            document.body.appendChild(downloadElement);
+            downloadElement.click();
+            document.body.removeChild(downloadElement);
+            window.URL.revokeObjectURL(href);
+        }
+
+        function setDetailExportButtonDisabled(disabled) {
+            $('#detailExportBtn')
+                .toggleClass('layui-btn-disabled', disabled)
+                .attr('aria-disabled', disabled ? 'true' : 'false');
+        }
+
+        function exportBatchPersons(applyId) {
+            if (detailExporting) {
+                return;
+            }
+            detailExporting = true;
+            setDetailExportButtonDisabled(true);
+            var loadIndex = layer.load(2);
+            $.ajax({
+                type: 'GET',
+                url: huayi_personorg_url + 'memberSubmit/batch/persons/export',
+                headers: headers(),
+                data: {
+                    applyId: applyId,
+                    personNo: $('#detailPersonNo').val(),
+                    personName: $('#detailPersonName').val()
+                },
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function (blob) {
+                    if (blob && blob.type && blob.type.indexOf('json') > -1) {
+                        showExportError({ response: blob });
+                        return;
+                    }
+                    downloadBlob(blob, '会员上报人员明细.xlsx');
+                },
+                error: function (xhr) {
+                    showExportError(xhr);
+                },
+                complete: function () {
+                    layer.close(loadIndex);
+                    detailExporting = false;
+                    setDetailExportButtonDisabled(false);
+                }
+            });
+        }
+
+        function submitSelected() {
+            var personNos = selectedPersonNos();
+            if (personNos.length === 0) {
+                layer.msg('请选择人员');
+                return;
+            }
+            layer.confirm('确定上报当前批次吗？', { icon: 3, title: '提示' }, function (index) {
+                layer.close(index);
+                postJson('memberSubmit/batch/submit', {
+                    year: $('#queryYear').val(),
+                    unitId: unitId(),
+                    userId: userId(),
+                    personNos: personNos
+                }, function (res) {
+                    layer.msg((res.data && res.data.message) || '上报成功');
+                    layer.close(activeLayerIndex);
+                    reloadBatchTable();
+                });
+            });
+        }
+
+        function openPersonDetailDialog(row) {
+            layer.open({
+                type: 1,
+                title: '批次人员明细',
+                area: ['920px', '620px'],
+                content: $('#personDetailDialogTpl').html(),
+                btn: ['关闭'],
+                success: function () {
+                    table.render({
+                        elem: '#detailPersonTable',
+                        url: huayi_personorg_url + 'memberSubmit/batch/persons',
+                        headers: headers(),
+                        where: { applyId: row.applyId },
+                        id: 'detailPersonTable',
+                        height: 400,
+                        page: true,
+                        limit: 10,
+                        limits: [10, 20, 50],
+                        request: { pageName: 'pageNum', limitName: 'pageSize' },
+                        parseData: parsePage,
+                        cols: [[
+                            { field: 'personNo', title: '人员编号', width: 130, align: 'center' },
+                            { field: 'personName', title: '姓名', width: 100, align: 'center' },
+                            { field: 'sex', title: '性别', width: 70, align: 'center' },
+                            { field: 'deptName', title: '科室', minWidth: 160, align: 'center' },
+                            { field: 'titleName', title: '职称', minWidth: 130, align: 'center' }
+                        ]]
+                    });
+                    $('#detailSearchBtn').on('click', function () {
+                        table.reload('detailPersonTable', {
+                            where: {
+                                applyId: row.applyId,
+                                personNo: $('#detailPersonNo').val(),
+                                personName: $('#detailPersonName').val()
+                            },
+                            page: { curr: 1 }
+                        });
+                    });
+                    $('#detailResetBtn').on('click', function () {
+                        $('#detailPersonNo').val('');
+                        $('#detailPersonName').val('');
+                        table.reload('detailPersonTable', {
+                            where: {
+                                applyId: row.applyId,
+                                personNo: '',
+                                personName: ''
+                            },
+                            page: { curr: 1 }
+                        });
+                    });
+                    $('#detailExportBtn').on('click', function () {
+                        exportBatchPersons(row.applyId);
+                    });
+                }
+            });
+        }
+
+        table.on('tool(memberBatchTable)', function (obj) {
+            if (obj.event === 'viewPersons') {
+                openPersonDetailDialog(obj.data);
+            }
+        });
+
+        table.on('tool(selectedPersonTable)', function (obj) {
+            if (obj.event === 'removePerson') {
+                delete selectedPersons[obj.data.personNo];
+                refreshSelectedTable();
+                renderCandidateTable();
+            }
+        });
+
+        table.on('checkbox(candidatePersonTable)', function () {
+            syncCandidateDisabledSelection();
+        });
+
+        $('#searchBtn').on('click', reloadBatchTable);
+        $('#resetBtn').on('click', function () {
+            $('#queryReceiveFlag').val('');
+            $('#queryStartDate').val('');
+            $('#queryEndDate').val('');
+            $('#queryPersonNo').val('');
+            $('#queryPersonName').val('');
+            form.render('select');
+            reloadBatchTable();
+        });
+        $('#addBatchBtn').on('click', function () {
+            openPersonSelectDialog();
+        });
+
+        renderYearOptions();
+        renderDatePickers();
+        renderBatchTable();
+    });
+</script>
+</body>
+</html>

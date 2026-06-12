@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=0.3, minimum-scale=0.3, maximum-scale=1.0, user-scalable=yes">
+    <title>d25.neimeng</title>
+    <link rel="stylesheet" href="/pages/mod/declare25/css/d25.css"/>
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <!--<script src="/pages/mod/js/kjpt.js"></script>-->
+    <script src="https://testkjpt.wsglw.net/pages/mod/js/kjpt.js"></script>
+    <script type="text/javascript" src="/js/api/expertPdf.js"></script>
+    <script type="text/javascript" src="/js/api/html2canvas.js"></script>
+    <script type="text/javascript" src="/js/pdfjs/build/pdf.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/lodash_4.17.21.min.js"></script>
+</head>
+<body>
+<main class="main">
+    <aside id="box_left">
+        <h1 class="app_name">
+            <a class="app_name_link">申报书</a>
+        </h1>
+        <div class="sidebar_nav">
+            <ul>
+                <li class="li_active"><a data-href="#page_cover">首页</a></li>
+                <li><a data-href="#page_introduce">填表说明</a></li>
+                <li>
+                    <p>申报项目信息表</p>
+                    <ul>
+                        <li><a data-href="#page_proj_proj_analyze">培训需求分析</a></li>
+                        <li><a data-href="#page_proj_innovation">教学设计思路和评估方法</a></li>
+                        <li><a data-href="#page_proj_target">培训内容简介</a></li>
+                        <li><a data-href="#page_principal">项目负责人信息</a></li>
+                        <li><a data-href="#page_proj_job_summary">基本情况</a></li>
+                        <li><a data-href="#page_course">课程信息</a></li>
+                        <li><a data-href="#page_teacher">教师信息</a></li>
+                        <li><a data-href="#page_other">项目其他信息</a></li>
+                        <li><a data-href="#page_stamp">意见和备注</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </aside>
+    <section id="box_center">
+        <div class="center_container">
+            <div class="pdf_box" id="pdf_container">
+                <div class="a4_portrait foot_n_pass" id="page_cover">
+                    <div>
+                        <div class="proj_code_box">
+                            <p><span id="code_label">申请代码</span>：<span id="proj_projectCode">xxxxxxxxxxxxx</span></p>
+                        </div>
+                        <div class="title_box">
+                            <h1><span name="proj_holdYear">2025</span>年自治区级继续医学教育项目</h1>
+                            <h1 style="letter-spacing: 20px;">申报表</h1>
+                        </div>
+                        <div class="proj_name_box">
+                            <ul>
+                                <li>
+                                    <p>&emsp;&emsp;项目名称</p>
+                                    <span>
+                                        <div data-pre name="proj_projectName" class="txt_ipt txare_sm auto_wrap" contenteditable="true" data-centerholder="请输入"></div>
+                                    </span>
+                                </li>
+                                <li>
+                                    <p>&emsp;&emsp;所属学科&emsp;&emsp;<br>（二、三级学科）</p>
+                                    <span>
+                                        <div id="proj_knowledgeTreeSel" name="proj_knowledgeId" style="margin-top: 18px;"></div>
+                                    </span>
+                                </li>
+                                <li>
+                                    <p>&emsp;&emsp;项目负责人</p>
+                                    <span>
+                                        <input name="prin_personName" class="txt_ipt" placeholder="请输入"/>
+                                    </span>
+                                </li>
+                                <li>
+                                    <p>&emsp;&emsp;申报单位<br>&emsp;&emsp;（盖章）</p>
+                                    <span>
+                                        <input name="proj_unitName" class="txt_ipt" placeholder="请输入" style="transform: translateY(18px);"/>
+                                        <!--<div data-pre name="proj_unitName" class="txt_ipt txare_sm auto_wrap" contenteditable="true" data-centerholder="请输入" style="transform: translateY(18px);"></div>-->
+                                    </span>
+                                </li>
+                                <li>
+                                    <p>&emsp;&emsp;申报日期</p>
+                                    <span>
+                                        <input name="proj_addTime" class="txt_ipt disabled_ipt" placeholder="请输入" disabled/>
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="author_box">
+                            <p style="visibility: hidden;">国家卫生健康委科技教育司制</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- page -->
+                <div class="a4_portrait foot_n_pass" id="page_introduce">
+                    <div class="intro_box">
+                        <h1 style="padding-bottom: 16px;">填表说明</h1>
+                        <p>
+                            &emsp;&emsp;一、本申报表所列内容必须实事求是、逐项认真填写，不要漏填，表达要清晰、准确。<br>
+                            &emsp;&emsp;二、申报表须按规定程序要求，经申办单位和推荐单位签署意见。委直属单位、内蒙古医科大学各附属医院、在蒙部队医疗机构、有关自治区级学协会仅需本单位继续医学教育管理部门签署意见。<br>
+                            &emsp;&emsp;三、申报表填写具体要求如下：<br>
+                            &emsp;&emsp;（一）申报表填写思路：<br>
+                            &emsp;&emsp;1. 体现本申报项目在理论、知识、方法和技术上的新颖性或实用性；<br>
+                            &emsp;&emsp;2. 分析本申报项目的培训需求；<br>
+                            &emsp;&emsp;3. 介绍培训效果的具体评估方法。<br>
+                            &emsp;&emsp;（二）教学对象须符合该学科继续教育对应类别对象的要求。<br>
+                            &emsp;&emsp;（三）项目举办方式有：面授（指线下或线上线下相结合的学习，如学术讲座、专题研讨班、培训班等）。<br>
+                            &emsp;&emsp;（四）教学时数为实际授课时数，不包括开班典礼及与教学无关的时间。<br>
+                            &emsp;&emsp;（五）学分计算方式：<br>
+                            &emsp;&emsp;参加者经考勤和考核合格，按每3小时授予1学分；主讲人每小时授予2学分。按规定每个项目所授学分数最多不超过10学分。<br>
+                            &emsp;&emsp;（六）填写项目申报表时，所填内容系指举办一期活动而言，如相同活动预计举办一期以上，需根据实际情况写明其他批次的举办时间。<br>
+                            &emsp;&emsp;（七）基层单位包括：社区卫生服务中心（站）、乡镇卫生院、村卫生室（站）。<br>
+                        </p>
+                    </div>
+                </div>
+                <!-- page -->
+                <div class="a4_portrait" id="page_proj_proj_analyze" data-idx="0">
+                    <div class="table_box">
+                        <table>
+                            <caption class="sub_title break_pass">申报项目信息表</caption>
+                            <tbody class="body_double_cap">
+                            <tr class="break_pass">
+                                <td colspan="1" style="max-width: 120px;">项目类别</td>
+                                <td colspan="11">
+                                    <p class="category_box">
+                                        <input type="hidden" name="proj_projCategory">
+                                        <input type="checkbox" name="mask_projCategory[0]" lay-skin="primary" value="基础培训类" title="基础培训类"><span>基础培训类</span>
+                                        <input type="checkbox" name="mask_projCategory[1]" lay-skin="primary" value="能力提高类" title="能力提高类"><span>能力提高类</span>
+                                        <input type="checkbox" name="mask_projCategory[2]" lay-skin="primary" value="前沿拓展类" title="前沿拓展类"><span>前沿拓展类</span>
+                                        <input type="checkbox" name="mask_projCategory[3]" lay-skin="primary" value="基层全科类" title="基层全科类"><span>基层全科类</span>
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="12">培训需求分析（含本学科的最新进展、实际情况、存在问题、发展需求等）（不少于500字）</td>
+                            </tr>
+                            <tr>
+                                <td colspan="12">
+                                    <div data-pre name="proj_projAnalyze" data-idx="0" class="txt_ipt txare_lg auto_break" contenteditable="true" data-leftholder="请输入" style="height: 902px;"></div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- page -->
+                <div class="a4_portrait" id="page_proj_innovation" data-idx="0">
+                    <div class="table_box">
+                        <table>
+                            <caption>教学设计思路和评估方法（含教案撰写、集体备课、教学反思、评价等）（不少于500字）</caption>
+                            <tbody class="body_single_cap">
+                            <tr>
+                                <td colspan="12">
+                                    <div data-pre name="proj_innovation" data-idx="0" class="txt_ipt txare_lg auto_break" contenteditable="true" data-leftholder="请输入"></div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- page -->
+                <div class="a4_portrait" id="page_proj_target" data-idx="0">
+                    <div class="table_box">
+                        <table>
+                            <caption>培训内容简介（含培训目标、内容和预期培训效果）（不少于800字）</caption>
+                            <tbody class="body_single_cap">
+                            <tr>
+                                <td colspan="12">
+                                    <div data-pre name="proj_target" data-idx="0" class="txt_ipt txare_lg auto_break" contenteditable="true" data-leftholder="请输入"></div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- page -->
+                <div class="a4_portrait" id="page_principal">
+                    <div class="principal_box table_box">
+                        <table>
+                            <tbody class="body_no_cap">
+                            <tr>
+                                <td style="width: 119px;"><span class="txt_label">项目负责人姓名</span></td>
+                                <td colspan="3">
+                                    <input name="prin_personName" class="txt_ipt" placeholder="请输入">
+                                </td>
+                                <td style="width: 84px;"><span class="txt_label">性别</span></td>
+                                <td colspan="3" style="min-width: 80px;">
+                                    <div id="prin_genderSel" name="prin_gender"></div>
+                                </td>
+                                <td style="width: 78px;"><span class="txt_label">出生年月</span></td>
+                                <td colspan="3" style="width: 108px;">
+                                    <input name="prin_birthDate" class="txt_ipt" placeholder="请选择">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="txt_label">项目负责人身份证号码</span></td>
+                                <td colspan="11">
+                                    <input name="prin_idCardNo" class="txt_ipt" placeholder="请输入"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="txt_label">职称</span></td>
+                                <td colspan="3">
+                                    <div id="prin_titleTreeSel" name="prin_titleId"></div>
+                                </td>
+                                <td><span class="txt_label">职务</span></td>
+                                <td colspan="3">
+                                    <div id="prin_businessSel" name="prin_business"></div>
+                                </td>
+                                <td><span class="txt_label">最高学历</span></td>
+                                <td colspan="3">
+                                    <div id="prin_educationSel" name="prin_education"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="txt_label">工作单位</span></td>
+                                <td colspan="3">
+                                    <div data-pre name="prin_workUnit" class="txt_ipt txare_sm auto_wrap" contenteditable="true" data-centerholder="请输入"></div>
+                                </td>
+                                <td><span class="txt_label">是否<br>在职（岗）</span></td>
+                                <td colspan="3">
+                                    <div id="prin_isInJobSel" name="prin_isInJob"></div>
+                                </td>
+                                <td><span class="txt_label">从事专业</span></td>
+                                <td colspan="3">
+                                    <div id="prin_specIdSel" name="prin_specId"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="12">项目负责人在临床诊疗、教学、科研等促进学科发展方面的主要成绩</td>
+                            </tr>
+                            <tr>
+                                <td colspan="12">
+                                    <div data-pre name="prin_study" class="txt_ipt txare_md" contenteditable="true" data-leftholder="请输入" style="height: 595px;"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="12">项目负责人近三年获批继续医学教育项目曾开展的培训情况</td>
+                            </tr>
+                            <tr>
+                                <td colspan="12">
+                                    <div data-pre name="prin_article" class="txt_ipt txare_md" contenteditable2="false" data-leftholder="请输入" style="height: 120px;"></div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- page -->
+                <div class="a4_portrait" id="page_proj_job_summary" data-idx="0">
+                    <div class="table_box">
+                        <table>
+                            <caption>项目申报单位及项目负责人所在科室基本情况（主要表述与项目有关的基本情况，如组织架构、配套政策、经费支持、培训场地、师资队伍建设等方面）（不少于300字）</caption>
+                            <tbody class="body_double_cap">
+                            <tr>
+                                <td colspan="12">
+                                    <div data-pre name="proj_jobSummary" data-idx="0" class="txt_ipt txare_lg auto_break" contenteditable="true" data-leftholder="请输入" style="height: 961px;"></div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- page -->
+                <div class="a4_portrait" id="page_course" data-idx="0">
+                    <div class="table_box">
+                        <table>
+                            <caption class="txt_label">项目讲授题目及具体授课内容</caption>
+                            <thead>
+                            <tr>
+                                <td style=""><span class="txt_label">讲授题目</span></td>
+                                <td style=""><span class="txt_label">内容</span></td>
+                                <td style="width: 80px;"><span class="txt_label">授课教师</span></td>
+                                <td style="width: 60px;"><span class="txt_label">时长</span></td>
+                                <td style="width: 80px;"><span class="txt_label">教学方法</span></td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!-- echo -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- page -->
+                <div class="rect00" id="page_teacher"></div>
+                <div class="a4_portrait" id="page_teacher_and" data-idx="0">
+                    <div class="table_box">
+                        <table>
+                            <thead>
+                            <tr>
+                                <td colspan="2"></td>
+                                <td><span class="txt_label">姓名</span></td>
+                                <td><span class="txt_label">专业技术职称</span></td>
+                                <td><span class="txt_label">从事专业</span></td>
+                                <td><span class="txt_label">所在单位</span></td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!-- echo -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- page -->
+                <div class="a4_portrait" id="page_other">
+                    <div class="table_box">
+                        <table>
+                            <tbody>
+                            <tr>
+                                <td style="width: 114px;"><span class="txt_label">举办形式</span></td>
+                                <td colspan="5" style="width: 108px;">
+                                    <div id="proj_holdTypeIdSel" name="proj_holdTypeId"></div>
+                                </td>
+                                <td>
+                                    <input type="hidden" name="proj_canBp">
+                                    <span>该远程项目可做基层公益项目</span>
+                                    <input type="checkbox" name="mask_canBp[0]" lay-skin="primary" value="Y" title="">
+                                </td>
+                                <td><span class="txt_label">举办天数(每期)</span></td>
+                                <td colspan="4">
+                                    <input name="proj_days" class="txt_ipt disabled_ipt" type="number" placeholder="" disabled>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="txt_label">举办起止日期</span></td>
+                                <td colspan="11">
+                                    <div class="cycle_box">
+                                        <!-- echo -->
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="txt_label">拟授学分</span></td>
+                                <td colspan="4">
+                                    <input name="proj_score" class="txt_ipt" type="number" placeholder="请输入">
+                                </td>
+                                <td colspan="2"><span class="txt_label">拟招生人数</span></td>
+                                <td colspan="3">
+                                    <input name="proj_number" class="txt_ipt number_zzs" type="number" placeholder="请输入">
+                                </td>
+                                <td><span class="txt_label">拟招收基层单位学员占比(%)</span></td>
+                                <td colspan="4">
+                                    <input name="proj_basicPercent" class="txt_ipt number_zzs" type="number" placeholder="请输入">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2"><span class="txt_label">教学总时长<br>(小时)</span></td>
+                                <td rowspan="2" colspan="6">
+                                    <input name="proj_period" class="txt_ipt disabled_ipt" type="number" placeholder="" disabled>
+                                </td>
+                                <td><span class="txt_label">讲授理论时长(小时)</span></td>
+                                <td colspan="4">
+                                    <input name="proj_theoryPeriod" class="txt_ipt disabled_ipt" type="number" placeholder="" disabled>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="txt_label">实验（技术示范）时长(小时)</span></td>
+                                <td colspan="4">
+                                    <input name="proj_experimentPeriod" class="txt_ipt disabled_ipt" type="number" placeholder="" disabled>
+                                </td>
+                            </tr>
+                            <tr class="blank_tr">
+                                <td colspan="12">&ensp;</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- page -->
+                <div class="a4_portrait" id="page_stamp">
+                    <div class="table_box">
+                        <table>
+                            <tbody>
+                            <tr>
+                                <td colspan="2" style="width: 100px;">申报单位意见</td>
+                                <td colspan="10">
+                                    <div data-pre name="proj_unitOpinion" class="txt_ipt txare_md auto_wrap proj_unit_opinion" contenteditable="true" data-leftholder="请输入"></div>
+                                    <p>（盖章）<span>&emsp;&emsp;&emsp;&emsp;</span>年<span>&emsp;&emsp;&emsp;&emsp;</span>月<span>&emsp;&emsp;&emsp;&emsp;</span>日</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">盟市继续医学教育<br>委员会审批意见</td>
+                                <td colspan="10">
+                                    <textarea class="opinion_ipt disabled_ipt" disabled></textarea>
+                                    <p>（盖章）<span>&emsp;&emsp;&emsp;&emsp;</span>年<span>&emsp;&emsp;&emsp;&emsp;</span>月<span>&emsp;&emsp;&emsp;&emsp;</span>日</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">备注</td>
+                                <td colspan="10">
+                                    <textarea class="remark_ipt disabled_ipt" disabled></textarea>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div id="box_right">
+        <div class="btn_auto preview_hide">
+            <button id="btn_course" class="hide layui-btn layui-btn-sm layui-btn-primary layui-border-green"><i class="layui-icon layui-icon-addition"></i>添加课程</button>
+            <button id="btn_cycle" class="hide layui-btn layui-btn-sm layui-btn-primary layui-border-green"><i class="layui-icon layui-icon-table"></i>维护举办周期</button>
+        </div>
+        <div class="btn_box">
+            <button id="btn_close" class="layui-btn layui-btn-sm layui-btn-primary layui-border-red"><i class="layui-icon layui-icon-close"></i>关闭</button>
+            <button id="btn_stage" class="layui-btn layui-btn-sm layui-btn-primary layui-border-green preview_hide"><i class="layui-icon layui-icon-note"></i>暂存</button>
+            <button id="btn_save" class="layui-btn layui-btn-sm preview_hide"><i class="layui-icon layui-icon-ok-circle"></i>保存</button>
+            <button id="btn_down" class="layui-btn layui-btn-sm"><i class="layui-icon layui-icon-download-circle"></i>下载</button>
+        </div>
+        <div class="pn_box">
+            <p>0&ensp;/&ensp;0</p>
+        </div>
+    </div>
+</main>
+<div class="loading">
+    <img alt="" src=""/>
+</div>
+</body>
+<script type="text/javascript" src="/js/api/number.js"></script>
+<script type="text/javascript" src="/js/api/cpt.js"></script>
+<script type="text/javascript" src="/pages/mod/js/options.js"></script>
+<script type="text/javascript" src="/pages/mod/libs/vendor.p22f700c.bc56936s.js"></script>
+<script type="text/javascript" src="/pages/mod/libs/vendor.d1c40cd8.k5b960ca.js"></script>
+<script type="text/javascript" src="/pages/mod/libs/vendor.bcf8c62e.k6dc193a.js?a=2"></script>
+<script type="text/javascript" src="/pages/mod/libs/vendor.f7216f32.m345f9da.js"></script>
+<script type="text/javascript">
+    let e = {
+        prinSpecIdFromKnowledge: true,
+        echoPrinArticle: function (article) {
+            let year = +getOrDefault(getUrlParamByName('hold_year'), '2025');
+            let defarr = Array(3).fill(0).map((_, idx) => `${year - 1 - idx},Y,`);
+            let def = defarr.join('#'); // '2024,Y,#2023,Y,#2022,Y,'
+            let arr = (article ?? def).split('#');
+            let str = arr.map(item => {
+                let ar = item.split(',');
+                let year = ar[0];
+                let yon = ar[1];
+                let pcode = ar[2];
+                let isY = 'Y' === yon;
+                let isN = 'N' === yon;
+                return `<p data-year="${year}" data-yon="${yon}" data-pcode="${pcode}">
+                <span>${year}</span>
+                <span>年：项目编号</span>
+                <input name="articleCode" value="${pcode}"/>
+                <span>，是否执行：是</span>
+                <input type="checkbox" lay-skin="primary" value="Y" title="是" ${isY ? 'checked' : ''}>
+                <span>否</span>
+                <input type="checkbox" lay-skin="primary" value="N" title="否" ${isN ? 'checked' : ''}>
+            </p>`;
+            }).join('');
+            $('div[name="prin_article"]').html(str);
+        },
+        bind: {
+            bindPrinArticle: function () {
+                $('div[name=prin_article] input[name="articleCode"]').on('keyup', function () {
+                    let $this = $(this);
+                    let pcode = $this.val();
+                    $this.parent('p').attr('data-pcode', pcode);
+                });
+                $('div[name=prin_article] input[type=checkbox]').off('change').on('change', function () {
+                    let $this = $(this);
+                    let checked = $this.is(':checked'); // $this[0].checked;
+                    let val = $this.val();
+                    $this.siblings('input[type="checkbox"]').prop('checked', !checked);
+                    let checkY = checked && 'Y' === val;
+                    let uncheckN = !checked && 'N' === val;
+                    let yon = (checkY || uncheckN) ? 'Y' : 'N';
+                    let $p = $this.parent('p');
+                    $p.attr('data-yon', yon);
+                    let pcode = $this.siblings('input[name="articleCode"]').val();
+                    $p.attr('data-pcode', pcode);
+                });
+            },
+        },
+        default: {
+            firstLilunTeacher: function (course) {
+                return `<tr class="may_recall" data-mthd="${_echo.tchr.enums.LI_LUN}">
+                <td rowspan="5" class="td_rowspan_all">授课教师</td>
+                <td rowspan="2" class="td_rowspan_lilun">理论授课教师</td>
+                <td>${getOrDefault(course.teacherName, '&emsp;')}</td>
+                <td>${getOrDefault(course.titleName, '')}</td>
+                <td>${getOrDefault(course.speciality, '')}</td>
+                <td>${getOrDefault(course.workUnit, '')}</td>
+            </tr>`;
+            },
+            firstShiyanTeacher: function (course) {
+                return `<tr class="may_recall" data-mthd="${_echo.tchr.enums.SHI_YAN}">
+                <td rowspan="3" class="td_rowspan_shiyan">实验（技术示范）教师</td>
+                <td>${getOrDefault(course.teacherName, '&emsp;')}</td>
+                <td>${getOrDefault(course.titleName, '')}</td>
+                <td>${getOrDefault(course.speciality, '')}</td>
+                <td>${getOrDefault(course.workUnit, '')}</td>
+            </tr>`;
+            },
+            teacher: function (course) {
+                return `<tr class="may_recall" data-mthd="${_echo.tchr.isLilun(course) ? _echo.tchr.enums.LI_LUN : _echo.tchr.enums.SHI_YAN}">
+                <td>${getOrDefault(course.teacherName, '&emsp;')}</td>
+                <td>${getOrDefault(course.titleName, '')}</td>
+                <td>${getOrDefault(course.speciality, '')}</td>
+                <td>${getOrDefault(course.workUnit, '')}</td>
+            </tr>`;
+            },
+            teacherHeaderTr: function () {
+                return `<tr>
+                <td colSpan="2"></td>
+                <td><span class="txt_label">姓名</span></td>
+                <td><span class="txt_label">专业技术职称</span></td>
+                <td><span class="txt_label">从事专业</span></td>
+                <td><span class="txt_label">所在单位</span></td>
+            </tr>`;
+            }
+        }
+    };
+    $.extend(true, _echo, e);
+    $.extend(true, _validate, {
+        ruleExt: {
+            article: function (val, item) {
+                let parr = val.split('#');
+                for (const p of parr) {
+                    let a = p.split(',');
+                    let year = a[0];
+                    let yon = a[1];
+                    let pcode = a[2];
+                    if ((pcode || '').length > 20) {
+                        return `项目负责人${year}年获批项目编号最多20个字符`;
+                    }
+                }
+            }
+        },
+        verify: {
+            'prin_study': 'required',
+            'course_mustCertId': 0,
+            'cycle_limit': 3,
+        }
+    });
+    _d2.bindsameipt('prin_personName');
+    _d2.bindmask('proj_projCategory', 'mask_projCategory');
+    _d2.bindmask('proj_canBp', 'mask_canBp');
+</script>
+<!-- <script src="https://testkjpt.wsglw.net/pages/mod/js/prod.tmp.js"></script> -->
+<script type="text/javascript" src="/pages/mod/declare25/js/d2.js"></script>
+<style>
+    .intro_box p {
+        font-size: 18px;
+    }
+    div[name="prin_article"] p input[name="articleCode"]:not([type=checkbox]) {
+        width: 340px;
+    }
+    .category_box {
+        display: flex;
+        justify-content: center;
+    }
+    .category_box span:not(:last-child) {
+        margin-right: 14px;
+    }
+    .proj_unit_opinion {
+        height: 394px !important;
+        width: 449px !important;
+        font-size: 14px;
+        line-height: 22px;
+        border: none;
+        outline: none;
+    }
+</style>
+</html>

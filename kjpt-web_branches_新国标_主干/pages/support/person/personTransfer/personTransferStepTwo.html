@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>人员调动向导-第二步</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+<script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/tools/form_validation_tool.js"></script>
+
+    <style>
+        .myBoder {
+            border: 1px solid #6086b5;
+        }
+
+    </style>
+</head>
+
+<body>
+
+
+    <div class="layui-bg-gray" style="padding: 30px;">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header myBoder">
+                        <h3 style="font-weight: bold;">第二步: 选择人员的目标单位</h3>
+                    </div>
+                    <div class="layui-card-body myBoder">
+                        <h4 id="tips" style="font-weight: bold;"></h4>
+                        <div class="layui-card">
+                            <!--        搜索框区域-->
+                            <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+                                <blockquote class="layui-form layui-form-item layui-elem-quote one-btn" lay-filter="query-form">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">请选择地区</label>
+                                        <div class="layui-input-block">
+                                            <select name="standardKindId" id="standardKindSearch" lay-filter="standard-kind-search">
+                                            </select>
+                                        </div>
+                                    </div>
+                
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">关键字</label>
+                                        <div class="layui-input-block" >
+                                            <input type="text" id="searchValue" placeholder="单位编号或者单位名称" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                
+                                    <div class="layui-inline">
+                                        <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="loaderTable()"
+                                            lay-filter="table-search" data-type="reload">
+                                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                                        </a>
+                                    </div>
+
+                                    <div class="layui-inline"  style="float: right;">
+                                        <a class="layui-btn layui-btn-sm" id="backBtn" onclick="backWard()"
+                                            lay-filter="table-back">
+                                            <i class="layui-icon layui-icon-return layuiadmin-button-btn"></i>返回
+                                        </a>
+                                    </div>
+                                </blockquote>
+                            </div>
+                
+                            <!--        表格区域-->
+                            <div class="layui-card-body layui_body_box">
+                                <table class="layui-table" id="comUnit" lay-filter="comUnit" style="margin: 0px 0px;">
+                                </table>
+                            </div>
+                
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        eleTree: 'eleTree',
+        xmSelect: 'xm-select',
+        zTreeSelectM: 'zTreeSelectM'
+    });
+    // 全局配置及引入相关的模块
+    layui.use(['table', 'form', 'element', 'laydate', 'eleTree', 'xmSelect', 'zTreeSelectM'], function () {
+        var $ = layui.jquery
+            , table = layui.table
+            , element = layui.element
+            , form = layui.form
+            , laydate = layui.laydate
+            , xmSelect = layui.xmSelect
+            , eleTree = layui.eleTree
+            , zTreeSelectM = layui.zTreeSelectM
+            , layer = layui.layer;
+        let standardKindIdObj = {};
+        var standardkindId = localStorage.getItem("standardkind-id")
+            , personData
+            ;
+
+
+        //解析url参数
+        let getParamFromUrl = function (paramName) {
+            let urlStr = location.search;
+            if (urlStr.indexOf(paramName) < 0 || urlStr.indexOf("?") < 0) return;
+            let paramKV = urlStr.substr(1).split("&");
+            for (let i = 0; i < paramKV.length; i++) {
+                if (paramKV[i].indexOf(paramName) >= 0) {
+                    return paramKV[i].split("=")[1];
+                }
+            }
+        }
+        var comPersonId = getParamFromUrl("comPersonId");
+        comPersonId = decodeURI(comPersonId);
+        var cmeStandardKindId = getParamFromUrl("cmeStandardKindId");
+        cmeStandardKindId = decodeURI(cmeStandardKindId);
+        var personNo = getParamFromUrl("personNo");
+        personNo = decodeURI(personNo);
+        var personName = getParamFromUrl("personName");
+        personName = decodeURI(personName);
+        var srcUnitId = getParamFromUrl("srcUnitId");
+        srcUnitId = decodeURI(srcUnitId);
+        var unitName = getParamFromUrl("unitName");
+        unitName = decodeURI(unitName);
+
+
+        var init = function () {
+            var tips = '要调动的人员：' + personNo + ' ' + personName;
+            console.log(comPersonId + "---" + tips)
+            $("#tips").text(tips);
+        }
+        init();
+
+        // 返回第一步
+        window.backWard = function () {
+            parent.layer.close(parent.layer.index);
+        };
+
+        // 表格配置
+        window.loaderTable = function () {
+            var standardKindSearch = $('#standardKindSearch').val();
+            var searchValue = $("#searchValue").val();
+            // 查询条件为空不加载
+            if (strTool.isBlank(standardkindId)) {
+                layer.msg('该账号未配置套权限');
+                return false;
+            }
+            // TODO 查询条件必输, 开发时关闭
+            if(strTool.isBlank(standardKindSearch) && strTool.isBlank(searchValue)){
+                layer.msg('请输入查询条件');
+                return false;
+            }
+            console.log(standardkindId)
+            table.render({
+                elem: '#comUnit',
+                url: huayi_personorg_url + '/comunit/list',
+                title: '单位表',
+                defaultToolbar: [],
+                where: {
+                    cmeStandardKindIds: strTool.isBlank(standardKindSearch) ? standardkindId : standardKindSearch,
+                    fieldValue: $('#searchValue').val(),
+                    urlSource: ""
+                    // unitId: $("#searchValue").val(),
+                },
+                cols: [[
+                    // { align: 'center', width: 220, toolbar: '#rowBar', title: '操作', fixed: 'left' },
+                    { field: 'unitId', title: '单位编号', width: 110, sort: true },
+                    { field: 'unitName', title: '单位名称', width: 200, sort: true },
+                    { field: 'userName', title: '登录账号', width: 110, sort: true },
+                    { field: 'parentUnit', title: '上级单位编号', width: 130, sort: true },
+                    { field: 'parentUnitName', title: '上级单位', width: 150, sort: true },
+                    { field: 'unitLevelName', title: '单位级别', width: 180, sort: true },
+                    { field: 'description', title: '套名称', width: 120, sort: true },
+                    {
+                        field: 'unitUserType', title: '机构账号类型', width: 200, sort: true, templet:
+                            function (d) {
+                                if (d.unitUserType == 5) {
+                                    return '卫生行政部门账号(政府版--省厅) ';
+                                } else if (d.unitUserType == 4) {
+                                    return '卫生行政部门账号(政府版--市州卫建委、大学) ';
+                                } else if (d.unitUserType == 3) {
+                                    return '卫生行政部门账号(政府版--区县卫建委) ';
+                                } else if (d.unitUserType == 2) {
+                                    return '机构用户(单位版)';
+                                } else {
+                                    return '未定义';
+                                }
+                            }
+                    },
+                    {
+                        field: 'userStatus', title: '单位状态', width: 110, sort: true, templet:
+                            function (d) {
+                                if (d.userStatus == 1) {
+                                    return '正常 ';
+                                } else if (d.userStatus == 4) {
+                                    return '注销';
+                                } else {
+                                    return '未定义';
+                                }
+                            }
+                    },
+                    , {
+                        field: 'funChooseAgentDept', title: '科室', width: 120,
+                        templet: function (data) {
+                            let html = '<a class="layui-btn layui-btn-xs" lay-event="chooseDept" style="color: #5FB878;background-color: transparent;">选择科室</a>'
+                            return html;
+                        }
+                    }
+                ]],
+                // cellMinWidth: 100,
+                id: "comUnit",
+                // height: 'full-155',
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    if (res.status == 200) {
+                        return {
+                            "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                            "msg": res.message, //解析提示文本
+                            "count": res.data.recordsTotal, //解析数据长度
+                            "data": res.data.records, //解析数据列表
+                            "page": res.data.pageNum, //当前页
+                            "limit": res.data.pageSize, //每页条数
+                        }
+                    } else {
+                        layer.msg(res.msg);
+                        return false;
+                    }
+
+                },
+                request: {
+                    pageName: 'pageNum', //页码的参数名称，默认：page
+                    limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                }
+            });
+        };
+
+        table.on('tool(comUnit)', function (obj) {
+            var event = obj.event;
+            let desStandardKindId = obj.data.cmeStandardKindId;
+            let desUnitId = obj.data.unitId;
+            console.log('选择科室')
+            if(event == 'chooseDept'){
+                layer.open({
+                    title: '选择调动科室',
+                    type: 2,
+                    area: ['70%', '95%'],
+                    maxmin: true,
+                    content: 'deptsMessage.html?comPersonId=' + comPersonId 
+                                                        + '&srcUnitId=' + srcUnitId 
+                                                        + '&desUnitId=' + desUnitId 
+                                                        + '&unitName=' + unitName 
+                                                        + '&srcStandardKindId=' + cmeStandardKindId 
+                                                        + '&desStandardKindId=' + desStandardKindId 
+                                                        + '&personName=' + personName ,
+                    scrollbar: false
+                });
+            }
+
+        });
+        
+        //套
+        let standardKindInit = function () {
+            var standardkindIdArr = standardkindId.split(",");
+            console.log(standardkindIdArr);
+            commonAjax('get', huayi_sjwh_url + "cmestandardkind/list/all", {},
+                function () { layer.msg("套加载失败"); },
+                function (res) {
+                    let options = '<option value="" > 请选择套标准 </option>';
+                    for (let tempObj of res.data) {
+                        if (standardkindIdArr.includes(tempObj.cmeStandardKindId)) {
+                            standardKindIdObj[tempObj.cmeStandardKindId] = {
+                                description: tempObj.description,
+                                topUnitId: tempObj.topUnitId
+                            };
+                            options += '<option top-unit-id="' + tempObj.topUnitId + '" value="' + tempObj.cmeStandardKindId + '">' + tempObj.description + '</option>';
+                        }
+                    }
+                    $('#standardKindSearch').append(options);
+                    $('#standardKindForm').append(options);
+                    form.render('select');
+                });
+        }
+
+        //公共ajax
+        let commonAjax = function (type = "get", url, data, failFun, successFun) {
+            $.ajax({
+                type: type,
+                url: url,
+                data: data,
+                success: function (res) {
+                    if (res.status != 200) {
+                        layer.msg(res.msg);
+                        return;
+                    }
+                    successFun(res);
+                },
+                error: function (res) {
+                    failFun();
+                }
+            });
+        }
+        
+           // 初始化函数
+        layer.ready(function () {
+            standardKindInit();//套初始化
+        })
+
+    });
+
+</script>
+</body>
+
+</html>

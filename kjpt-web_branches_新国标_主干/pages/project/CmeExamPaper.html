@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>考试结果查看</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+<script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+
+    <style>
+        .paper-box{
+            max-width: 1200px;
+            width: 100%;
+            background: #FFF;
+            margin: 0px auto;
+            padding: 20px 0px;
+        }
+        .questions-box>li{
+            margin-top: 20px;
+        }
+        .paper-name{
+            text-align: center;
+            font-size: 30px;
+            padding: 20px;
+        }
+
+        .paper-box .questions-box{
+            width: 85%;
+            margin: 5px auto;
+            font-size: 19px;
+            line-height: 30px;
+        }
+        .paper-question{
+            display: inline-block;
+            width: 100%;
+        }
+        .paper-question>span{
+            float: right;
+            font-size: 15px;
+        }
+        .question-item{
+            margin: 15px 0px;
+        }
+        .question-item li{
+            display:inline-block;
+            margin-right: 25px;
+            font-size: 16px;
+            padding-left: 30px;
+            position: relative;
+        }
+        .question-item li:last-child{
+            margin-right: 0px;
+        }
+        .question-item li::before{
+            position: absolute;
+            left: 0px;
+        }
+        .question-item li:nth-child(1)::before{
+            content: "A、";
+        }
+        .question-item li:nth-child(2)::before{
+            content: "B、";
+        }
+        .question-item li:nth-child(3)::before{
+            content: "C、";
+        }
+        .question-item li:nth-child(4)::before{
+            content: "D、";
+        }
+        .question-item li:nth-child(5)::before{
+            content: "E、";
+        }
+        .question-item li:nth-child(6)::before{
+            content: "F、";
+        }
+        .question-item li:nth-child(7)::before{
+            content: "G、";
+        }
+        .question-item li:nth-child(8)::before{
+            content: "H、";
+        }
+
+    </style>
+
+</head>
+<body>
+<div class="paper-box">
+    <!--
+    <div class="paper-name">新入职护士规范化培训管理与实践</div>
+    <ul class="questions-box">
+        <li>
+            <div class="paper-question">1、圣诞快<span>(A|B)</span></div>
+            <ul class="question-item"><li>24个月</li></ul>
+        </li>
+    </ul>
+    -->
+</div>
+
+<!--表格内数据编辑、删除按钮-->
+<script type="text/html" id="rowBar">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="view">查看</a>
+</script>
+
+<script>
+    // 全局配置及引入相关的模块
+    layui.use(['table', 'form','upload'], function () {
+        var table = layui.table,form = layui.form,$ = layui.jquery,layer = layui.layer;
+        let allAnswerObj = {"A":"A","a":"A","B":"B","b":"B","C":"C","c":"C","D":"D","d":"D","E":"E","e":"E","F":"F","f":"F","G":"G","g":"G","H":"H","h":"H"};
+        let allItemArr = ["itemA","itemB","itemC","itemD","itemE","itemF","itemG","itemH"];
+
+        //获取试卷信息
+        let getPaperInfo = function(projectId=""){
+            if(projectId ==""){
+                layer.msg("缺少不要参数");
+            }
+            // let data = (projectId!="")?{projectId:projectId}:{paperId:paperId};
+            $.ajax({
+                type: 'post',
+                url: huayi_projectscore_url + 'cmeExamQuestion/getExamPaper',
+                data: {projectId:projectId},
+                success: function (res) {
+                    if (res.status === 200) {
+                        createPaper(res.data);
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                },
+                fail:function(){
+                    layer.msg("加载数据失败");
+                }
+            });
+        }
+
+        //创建试卷
+        let createPaper = function(paperData){
+            if(paperData.hasOwnProperty("paperName") && paperData.hasOwnProperty("questions")){
+                const paperName = paperData["paperName"];
+                const questionDatas = paperData["questions"];
+                let paperHtml = `<div class="paper-name">${paperName}</div><ul class="questions-box">`;
+                for (let i = 0; i < questionDatas.length; i++) {
+                    const questionData = questionDatas[i];
+                    let answer = "";
+                    for (let i = 0; i < questionData["answer"].length; i++) {
+                        if(allAnswerObj.hasOwnProperty(questionData["answer"][i]) &&
+                            answer.indexOf(allAnswerObj[questionData["answer"][i]])<0){
+                            answer += allAnswerObj[questionData["answer"][i]];
+                        }
+                    }
+                    paperHtml += `<li><div class="paper-question">${i+1}、${questionData["questionText"]}<span>(${answer})</span></div><ul class="question-item">`;
+                    for (let i = 0; i < allItemArr.length; i++) {
+                        if(questionData[allItemArr[i]] !="" && questionData[allItemArr[i]]!=null){
+                            paperHtml += `<li>${questionData[allItemArr[i]]}</li>`;
+                        }
+                    }
+                    paperHtml += `</ul></li>`;
+                }
+                paperHtml += `</ul>`;
+                $('.paper-box').html(paperHtml);
+            }else{
+                layer.msg("试卷没有试题");
+            }
+        }
+
+        //解析url参数
+        let getParamFromUrl = function(paramName){
+            let urlStr = location.search;
+            if(urlStr.indexOf(paramName) < 0 || urlStr.indexOf("?")<0) return "";
+            let paramKV = urlStr.substring(1).split("&");
+            for(let i = 0;i<paramKV.length;i++){
+                if(paramKV[i].indexOf(paramName) >= 0 ){
+                    return paramKV[i].split("=")[1];
+                }
+            }
+        }
+
+        let htmlInit = function(){
+            let projectId = getParamFromUrl("projectId");
+            if((projectId!=null && projectId!=""&&projectId!=undefined)){
+                getPaperInfo(projectId);
+            }else {
+                layer.msg("缺少必要参数");
+            }
+        }
+        htmlInit();
+    });
+
+</script>
+</body>
+</html>

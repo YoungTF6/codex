@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>在线考试</title>
+    <meta name="viewport" content="width=device-width, initial-scale=0.3, minimum-scale=0.3, maximum-scale=1.0, user-scalable=yes">
+
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="/js/qrcode.js"></script>
+    <script type="text/javascript" src="/js/qrcode/jquery.qrcode.js"></script>
+    <script type="text/javascript" src="/js/qrcode/jquery.qrcode.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+    media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script type="text/javascript" src="/js/layer/layer.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script src="/js/common.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <style>
+        /* 全局CSS定义 */
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            font-family: "微软雅黑", Arial, Helvetica, sans-serif;
+            margin: 0 auto;
+            padding: 0;
+            background: #FFF;
+            font-size: 12px;
+            color: #333;
+        }
+
+        div,
+        form,
+        ul,
+        ol,
+        li,
+        span,
+        p {
+            margin: 0;
+            padding: 0;
+            border: 0;
+        }
+
+        img,
+        a img {
+            border: 0;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            margin: 0;
+            padding: 0;
+            font-size: 12px;
+            font-weight: normal;
+        }
+
+        ul,
+        ol,
+        li {
+            list-style: none;
+        }
+
+        table,
+        td,
+        input {
+            font-size: 12px;
+            padding: 0;
+        }
+
+        a,
+        input,
+        label {
+            outline: none;
+        }
+
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+            border: none;
+            table-layout: fixed;
+        }
+
+        table td {
+            word-break: break-all;
+            word-wrap: break-word;
+        }
+
+        input[type="button"],
+        input[type="submit"],
+        input[type="reset"] {
+            -webkit-appearance: none;
+        }
+
+        .big_box {
+            position: relative;
+        }
+
+        .msg_box {
+            background: #f6f6f6;
+            width: 230px;
+            border-radius: 4px;
+            position: fixed;
+            top: 50px;
+            left: 50%;
+            margin-left: 300px;
+        }
+
+        .msg_box {
+            display: block;
+        }
+
+        .msg_box li {
+            padding-bottom: 30px;
+            border-bottom: 3px solid #fff;
+        }
+
+        .msg_box h1 {
+            padding: 16px 0;
+            height: 30px;
+            line-height: 30px;
+            font-size: 14px;
+            color: #666666;
+            text-align: center;
+        }
+
+        .msg_box p {
+            padding: 0 18px;
+            line-height: 20px;
+            font-size: 16px;
+            color: #009688;
+            text-align: center;
+        }
+
+        .msg_box li select {
+            display: block;
+            height: 24px;
+            line-height: 24px;
+            width: 76px;
+            border: none;
+            border-radius: 4px;
+            background: #ddd;
+            color: #009688;
+            text-align: center;
+            text-indent: 1em;
+            margin: 0 auto;
+        }
+
+        .ewm_box {
+            width: 540px;
+            height: 570px;
+            margin: 0 auto;
+            padding-top: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="big_box">
+        <ul class="msg_box" style="display: none;">
+            <li>
+                <h1>
+                    二维码有效时间</h1>
+                <select name="DropActive" id="DropActive">
+                    <option value="86400">一天</option>
+                </select>
+            </li>
+        </ul>
+        <div class="ewm_box" id="img_code">
+
+        </div>
+    </div>
+
+</body>
+
+</html>
+
+<script>
+        var proj_id =  getUrlParam("projId");   // 项目ID
+        var down_id = getUrlParam("downId");    // 批次ID
+        var teach_id =  getUrlParam("teachId"); // 课程ID
+        var start_date = decodeURIComponent(getUrlParam("startDate"));   //举办开始日期
+        var end_date = decodeURIComponent(getUrlParam("endDate"));     //举办结束日期
+        var type_id =  getUrlParam("projType"); //1继教项目  2集体活动
+        var timeUrl = "https://gettime.91huayi.com/GetTimeTicks.aspx";
+        //手机扫码地址
+        let host = window.location.host == "127.0.0.1" ? "https://testkjpt.wsglw.net": window.location.host;
+        // var Scan_url = location.protocol+"//"+ host + '/pages/project/attendanceForTeach/attendanceByBrowserInput.html'
+        var Scan_url = location.protocol+"//"+ host + '/pages/project/evaluation/examByBrowserInput.html'
+        var teach_subject = decodeURIComponent(getUrlParam("teachName")) ; 
+        var miao = '';
+        var makeCodeItv;
+        var countItv;
+
+        $(function () {
+            init();
+        
+            GetMiao();
+            makeCodeItv = setInterval('GetMiao()', parseInt($("#DropActive").val()) * 1000);  //更新二维码
+            $("#DropActive").change(function () {
+                clearInterval(makeCodeItv);
+                makeCodeItv = setInterval('GetMiao()', parseInt($("#DropActive").val()) * 1000);  //更新二维码
+                GetMiao();
+            });
+
+        });
+
+        function init() {
+
+            if (teach_subject.length > 20) {
+                teach_subject.substring(0, 20)
+            }
+            $("#Lbl_teach_subject").text(teach_subject);
+            $("#Lbl_period").text(start_date+"至"+end_date);
+            $("#Lbl_teach_subject").text(teach_subject);
+
+        }
+
+        function GetMiao() {
+
+            $.ajaxSettings.async = false;
+            $.getJSON(`${timeUrl}?callback=?`, function (data) {
+                miao =  data.miao;
+                madeCode();
+            })
+
+        }
+
+        function madeCode() {
+            var text = "";
+            var second = parseInt($("#DropActive").val())
+            text = Scan_url + "?proj_id="+ proj_id +"&down_id=" + down_id + "&teach_id=" + teach_id + "&active_second=" + second + "&type_id=" + type_id + "&miao=" + miao + "&QRType=1"
+            //alert(text);
+            $("#img_code").empty();
+            jQuery('#img_code').qrcode({
+                text: text,         //根据此串生成一个二维码  
+                //render: "table",
+                //typeNumber: -1,
+                correctLevel: 0, //纠错等级  
+                width: 505,
+                height: 505     //设置高度  
+
+            });
+        }
+
+</script>

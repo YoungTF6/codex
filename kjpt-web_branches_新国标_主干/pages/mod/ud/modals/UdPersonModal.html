@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>学分修改删除器-项目-人员明细</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <!-- 请求路径配置-->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <!-- ajax全局配置-->
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <script type="text/javascript" src="/js/api/base64.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/iife.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+    <script type="text/javascript" src="/js/common.js"></script>
+    <script type="text/javascript" src="/js/api/number.js"></script>
+    <style>
+        /* 新增代码 */
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+    </style>
+</head>
+<body style="background-color: white;">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!-- 查询区域 -->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="background-color: #f5f5f5;">
+            <div class="layui_mess">
+                <div class="layui_display">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">人员编号</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="personNo" id="personNoInput" placeholder="" autocomplete="off"
+                                   class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">人员姓名</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="personName" id="personNameInput" placeholder=""
+                                   autocomplete="off"
+                                   class="layui-input"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui_display">
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-sm" lay-submit
+                                onclick="loadPersonDetailTable()">
+                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                        </button>
+                        <button class="layui-btn layui-btn-sm" lay-submit
+                                onclick="closeCurrModal()">
+                            <i class="layui-icon layui-icon-return layuiadmin-button-btn"></i>返回
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 数据表格 -->
+        <div class="layui-card-body layui_body_box" style="padding-left: 0;padding-right: 0">
+            <table class="layui-table" id="personDetailTable" lay-filter="personDetailTable"
+                   style="margin: 0;"></table>
+        </div>
+    </div>
+</div>
+<!-- checkbox Cell -->
+<script type="text/html" id="checkboxTpl">
+    <input type="checkbox" name="select_one" lay-filter="select_one" title="" lay-skin="primary"
+           data-id="{{ d.projId }}">
+</script>
+<!-- PersonDetailTable toolbar -->
+<script type="text/html" id="pdtToolbar">
+    <div class="layui-form-item my-form-item">
+        <div class="layui-inline my-form-inline">
+            <input type="checkbox" name="layTableCheckbox" value="cp" title="本页全选" lay-filter="layTableAllChoose">
+        </div>
+        <div class="layui-inline my-form-inline">
+            <label class="layui-form-label my-form-label">学分修改为</label>
+            <div class="layui-input-inline my-input-inline" style="width: fit-content;">
+                <input type="number" name="score" min="0" autocomplete="off"
+                       class="layui-input number_ph" style="width: 80px">
+            </div>
+        </div>
+        <div class="layui-inline my-form-inline">
+            <label class="layui-form-label my-form-label">学时修改为</label>
+            <div class="layui-input-inline my-input-inline" style="width: fit-content;">
+                <input type="number" name="period" min="0" autocomplete="off"
+                       class="layui-input number_ph" style="width: 80px">
+            </div>
+        </div>
+        <div class="layui-inline layui-btn-container">
+            <a class="layui-btn layui-btn-sm" lay-event="modifyScoreToolBtn">修改</a>
+            <a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delScoreToolBtn">删除</a>
+        </div>
+    </div>
+</script>
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        lat: 'lat'
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'xmSelect', 'lat'], function () {
+        let table = layui.table;
+        let layer = layui.layer;
+        let form = layui.form;
+        let laydate = layui.laydate;
+        let dropdown = layui.dropdown;
+        let element = layui.element;
+        let $ = layui.jquery;
+        let xmSelect = layui.xmSelect;
+        let lat = layui.lat;
+        let gLayerIndex = -1;
+        window.loadPersonDetailTable = loadPersonDetailTable;
+        window.refreshTable = refreshTable;
+        const _scoreTypeVal = Number.parseInt(getOrDefault(getUrlParamByName('scoreTypeVal'), 7));
+        const _projId = getOrDefault(getUrlParamByName('projId'), null);
+        const _downId = getOrDefault(getUrlParamByName('downId'), null);
+        const _scoreIds = getOrDefault(localStorage.getItem('tmp_score_ids'), ''); // getOrDefault(getUrlParamByName('scoreIds'), PseudoNull.UUID);
+        const _scoreCeil = +getOrDefault(getUrlParamByName('scoreCeil'), '9999');
+        const _states = getUrlParamByName('states')||'';
+        localStorage.removeItem('tmp_score_ids');
+        $(function () {
+            loadPersonDetailTable();
+        });
+        table.on('toolbar(personDetailTable)', function (obj) {
+            let tcs = table.checkStatus(obj.config.id);
+            let selectedRowArr = tcs.data;
+            if (!onlyNotCheckScore(selectedRowArr)) {
+                layer.msg('只能操作未审核的学分');
+                return false;
+            }
+            let params;
+            let newScore = $('input[name=score]').val();
+            let newPeriod = $('input[name=period]').val();
+            if (obj.event === 'modifyScoreToolBtn') {
+                params = {
+                    'msiList': getMsiList(selectedRowArr, {
+                        'score': Number.parseFloat(newScore),
+                        'period': Number.parseFloat(newPeriod)
+                    }),
+                    'action': 'edit',
+                    'fp': fp,
+                    'userId': _userId,
+                    'score': Number.parseFloat(newScore), // front verify
+                    'period': Number.parseFloat(newPeriod) // front verify
+                };
+                if (!validateModifyScoreParam(params)) {
+                    layer.msg('请选择学分并且输入要修改的学分学时');
+                    return false;
+                }
+                // edit
+                modifyScoreAction(params).then((response) => {
+                    let jsonRes = response.data;
+                    if (jsonRes.success) {
+                        layer.msg('修改学分完成');
+                        table.reload('personDetailTable', {
+                            where: getSifter()
+                        });
+                    } else {
+                        layer.msg(jsonRes.msg);
+                    }
+                }).catch(error => {
+                    layer.msg('error:修改学分');
+                });
+            } else if (obj.event === 'delScoreToolBtn') {
+                params = {
+                    'msiList': getMsiList(selectedRowArr, {}),
+                    'action': 'remove',
+                    'fp': fp,
+                    'userId': _userId,
+                };
+                if (params.msiList.length < 1) {
+                    layer.msg('先选择要删除的学分');
+                    return false;
+                }
+                // remove
+                removeScoreAction(params).then((response) => {
+                    let jsonRes = response.data;
+                    if (jsonRes.success) {
+                        layer.msg('删除学分完成');
+                        table.reload('personDetailTable', {
+                            where: getSifter()
+                        });
+                    } else {
+                        layer.msg(jsonRes.msg);
+                    }
+                }).catch(error => {
+                    layer.msg('error:删除学分');
+                });
+            }
+        });
+        table.on('tool(personDetailTable)', function (obj) {
+            let rowData = obj.data;
+            if (obj.event === 'modifyScoreBtn') {
+                showModifyScoreModal(rowData);
+            } else if (obj.event === 'delScoreBtn') {
+                gLayerIndex = layer.confirm('确定删除' + rowData.personName + '的《' + rowData.projName + '》学分吗？', {
+                    title: '提示',
+                    btn: ['删除', '取消']
+                }, function () {
+                    // confirm
+                    let params = {
+                        'msiList': getMsiList(Array.of(rowData), {}),
+                        'action': 'remove',
+                        'fp': fp,
+                        'userId': _userId,
+                    };
+                    // remove
+                    removeScoreAction(params).then((response) => {
+                        let jsonRes = response.data;
+                        if (jsonRes.success) {
+                            layer.msg('删除完成');
+                            table.reload('personDetailTable');
+                        } else {
+                            layer.msg(jsonRes.msg);
+                        }
+                    }).catch((error) => {
+                        layer.msg('error:删除学分');
+                    }).finally(() => {
+                        // parent.layer.close(gLayerIndex);
+                    })
+                }, function () {
+                    // cancel
+                    // parent.layer.close(gLayerIndex);
+                });
+            }
+        });
+        function validateModifyScoreParam(params) {
+            return (params.msiList && (params.msiList.length > 0) && (params.score && params.period));
+        }
+        function loadPersonDetailTable() {
+            table.render({
+                elem: '#personDetailTable',
+                id: 'personDetailTable',
+                url: huayi_projectscore_url + 'pgsi/score/page/byproj', // byProj
+                toolbar: '#pdtToolbar',
+                defaultToolbar: [],
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                where: getSifter(),
+                method: 'post',
+                contentType: 'application/json',
+                page: true,
+                height: 'full-140',
+                parseData: function (res) {
+                    return {
+                        'code': res.status === 200 ? 0 : res.status, // 解析接口状态
+                        'msg': res.message, // 解析提示文本
+                        'count': res.data.recordsTotal, // 解析数据长度
+                        'data': res.data.records, // 解析数据列表
+                        'page': res.data.pageNum, // 当前页
+                        'limit': res.data.pageSize // 每页条数
+                    }
+                },
+                request: {
+                    pageName: 'pageNum',  // 页码的参数名称，默认：page
+                    limitName: 'pageSize'  // 每页数据量的参数名，默认：limit
+                },
+                cols: [[
+                    {
+                        title: '选择',
+                        width: 60,
+                        align: 'center',
+                        fixed: 'left',
+                        // type: 'checkbox',
+                        templet: function (data) {
+                            let m = _tips.canUd(data);
+                            if (m) return `<img src="/pages/mod/img/disableIcon.png" style="width:24px;" alt="${m}" onmouseenter="showTips(this)" onmouseleave="closeTips()"/>`;
+                            else return `<input type="checkbox" name="layTableCheckbox" lay-skin="primary">`
+                        }
+                    },
+                    {
+                        align: 'center', title: '操作', minWidth: 120, fixed: 'left', templet: data => {
+                            if (_tips.canUd(data))
+                                return `<a class="layui-btn layui-btn-xs layui-btn-disabled btn-row btn-disabled-row">修改</a>
+                                        <a class="layui-btn layui-btn-xs layui-btn-disabled btn-row btn-disabled-row">删除</a>`;
+                            else return `<a class="layui-btn layui-btn-xs btn-row" lay-event="modifyScoreBtn">修改</a>
+                                        <a class="layui-btn layui-btn-xs layui-btn-danger btn-danger-row" lay-event="delScoreBtn">删除</a>`;
+                        }
+                    },
+                    {field: 'projNo', minWidth: 120, align: 'center', title: '项目编号', sort: true},
+                    {field: 'extdata', minWidth: 120, align: 'center', title: '详细信息', sort: false, templet: data => _txt.ext__data(data)},
+                    {field: 'personName', minWidth: 100, align: 'center', title: '姓名', sort: false},
+                    {field: 'desCertId', minWidth: 190, align: 'center', title: '身份证号', sort: true},
+                    {field: 'personNo', minWidth: 120, align: 'center', title: '人员编号', sort: true},
+                    {field: 'studyDate', minWidth: 120, align: 'center', title: '活动日期', sort: true},
+                    {field: 'score', minWidth: 60, align: 'center', title: '学分', sort: true},
+                    {field: 'period', minWidth: 60, align: 'center', title: '学时', sort: true},
+                    {field: 'checkState', minWidth: 120, align: 'center', title: '审核状态', sort: false, templet: (data) => _txt.checkState(data)},
+                    {field: 'checkMemo', minWidth: 120, align: 'center', title: '审核意见', sort: false},
+                    {field: 'checkUnitName', minWidth: 160, align: 'center', title: '审核单位', sort: false},
+                ]],
+                done: function () {
+                    $('.number_ph').on("keypress", function (event) {
+                        if (event.keyCode === 45) {
+                            event.preventDefault();
+                        }
+                    });
+                    $('input[name=score]').on('change', function () {
+                        if (this.value > _scoreCeil) {
+                            lat.failMsg(`不能超过项目的学分（${_scoreCeil}）`);
+                            this.value = null;
+                        }
+                    });
+                },
+                data: [{
+                    'unitName': '有关部门'
+                }]
+            });
+        }
+        function getSifter() {
+            return {
+                scoreTypeVal: _scoreTypeVal,
+                projId: _projId,
+                downId: _downId,
+                scoreIds: _scoreIds,
+                personNo: $('#personNoInput').val(),
+                personName: $('#personNameInput').val(),
+                checkStates: _states,
+                addUnit: _unitId,
+                showEp: true,
+                deptIds: null,
+            };
+        }
+        function refreshTable() {
+            table.reload('personDetailTable', {
+                where: getSifter()
+            });
+        }
+        function onlyNotCheckScore(scoreArr) {
+            let notCheckArr = scoreArr.filter(score => !_tips.canUd(score));
+            return notCheckArr.length === scoreArr.length;
+        }
+        function showModifyScoreModal(rowData) {
+            localStorage.setItem('tmp_modify_score', JSON.stringify(rowData));
+            layer.open({
+                type: 2,
+                shade: 0.4,
+                shadeClose: true,
+                title: '修改学分',
+                content: `./ModifyScoreModal.html?scoreCeil=${_scoreCeil}`,
+                area: ['80%', '486px'],
+                cancel: function () {
+                },
+                end: function () {
+                    localStorage.removeItem('tmp_modify_score');
+                },
+                yes: function () {
+                }
+            });
+        }
+        window.viewfile = function (url){
+            lat.previewThumb(url);
+        }
+    });
+</script>
+</body>
+<style>
+    .layui-table-tool {
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
+    .layui-layer-btn .layui-layer-btn0 {
+        border-color: indianred;
+        background-color: indianred;
+        color: #fff;
+    }
+    .my-form-item {
+        margin-bottom: 0;
+        margin-right: 0;
+    }
+    .my-form-inline {
+        margin-bottom: 0;
+        margin-right: 0;
+    }
+    .my-form-label, .my-input-inline {
+        width: fit-content;
+    }
+</style>
+</html>

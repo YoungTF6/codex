@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+
+    <link rel="stylesheet" href="../../../css/person/reset.css" />
+    <link rel="stylesheet" href="../../../css/person/style.css" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <!-- <script type="text/javascript" src="../../js/global_ajax_setting.js"></script> -->
+
+    <!-- 工具 -->
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        table,
+        td,
+        th {
+            border: 1px solid black;
+        }
+
+        .bottom_btn_box_position {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            background: #fff;
+            border-top: 1px solid #ddd;
+            width: 100%;
+        }
+
+        .bottom_btn_box {
+            width: 520px;
+            margin: 12px auto;
+            overflow: hidden;
+        }
+
+        .bottom_btn_box input:first-child {
+            background: #65aef1;
+            border-color: #ff8f23;
+        }
+
+        .bottom_btn_box input {
+            width: 80px;
+            height: 24px;
+            background: #ffa11e;
+            border: 1px solid #3892e4;
+            color: #ffffff;
+            float: left;
+            margin: 0 10px;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .span-bold {
+            font-weight: bold;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body" style="margin:0 auto;">
+
+                <input type="hidden" id="projContractId" name="projContractId" />
+
+                <div style="justify-content: center; display: -webkit-flex; margin-bottom:60px;">
+                    <table id="tb" style="text-align: center; width: 70%; margin-top: 20px;">
+                        <tr>
+                            <td colspan="2" style=" padding:20px;">
+                                <div style=" padding-bottom:40px;text-align: center;font:24px bolder; font-family: Arial, Helvetica, sans-serif"> 继续医学教育项目执行承诺书</div>
+                                <p style="font-size: 16px; line-height: 32px; text-align:left;text-indent:28px">
+                                    在组织举办本次继续医学教育项目期间，本人及单位郑重承诺落实主体责任，做好项目管理：</p>
+                                <p style="font-size: 16px; line-height: 32px; text-align:left;text-indent:28px">
+                                    <span class="span-bold">严格项目执行要求。</span>严格按照申报提交的项目目标、授课内容、授课教师组成等内容开展活动，认真执行培训纪律，做好培训考核管理，引导学员认真学习，积极思考。不与其他项目混办、套办、发放其他培训证书。</p>
+                                <p style="font-size: 16px; line-height: 32px; text-align:left;text-indent:28px">
+                                    <span class="span-bold">落实意识形态管理。</span>对项目执行中的培训课件、师资和教学过程等进行意识形态实时监管，确保内容积极向上，符合国家政策方针，不给错误思想、负面观点提供传播渠道。</p>
+                                <p style="font-size: 16px; line-height: 32px; text-align:left;text-indent:28px">
+                                    <span class="span-bold">做好廉政风险防控。</span>营造风清气正的学习环境，严格落实中央“八项规定”精神，不在国家明令禁止举办会议培训的风景名胜区举办项目；不接受企业及相关利益方提供的赞助、商业展览、旅游和娱乐等服务；不以继续医学教育名义组织与培训无关的活动；不成为违规推介产品、变相输送利益的平台；不从事其他有关法律法规明令禁止的行为。坚持继续医学教育活动公益性质，不以盈利为目的，做好成本测算，规范收费与使用，主动接受财务部门的监督和审计管理。</p>
+                                <p style="font-size: 16px; line-height: 32px; text-align:left;text-indent:28px">
+                                    以上事项本人及单位承诺认真履行，如有违反愿承担相关责任。
+                                </p>
+
+                                <p style="font-size: 16px; line-height: 32px; text-align:left; width:300px; margin-left:400px;">
+                                    项目负责人签名：<br/>年 月 日
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style=" padding:10px; text-align:left;">
+                                <h1>
+                                    单位意见</h1>
+                            </td>
+                        </tr>
+                        <tr style=" height:200px;">
+                            <td style=" vertical-align:top; text-align:left;">
+                                <p style="font-size: 16px; padding:10px;">项目主办单位意见：</p>
+                                <p style="font-size: 16px; line-height: 32px; text-align:left; margin-left:200px;
+                                    margin-top:30px;">
+                                    单位盖章：<br/>年 月 日
+                                </p>
+                            </td>
+                            <td style=" vertical-align:top;text-align:left;">
+                                <p style="font-size: 16px; padding:10px;">
+                                    项目协办单位意见：</p>
+                                <p style="font-size: 16px; line-height: 32px; text-align:left; margin-left:200px;
+                                    margin-top:30px;">
+                                    单位盖章：<br/>年 月 日
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+            </div>
+
+            <div class="layui-btn-container" style="text-align: center" id='btnContainer'>
+                <button class="layui-btn layui-btn-primary btnCancel">返回列表</button>
+                <button class="layui-btn" lay-filter="btnDown" id="btnDown">下载 承诺书和单位意见</button>
+                <button class="layui-btn" lay-filter="btnUpload" id="btnUpload">上传 盖章签字后的承诺书和单位意见</button>
+                <button class="layui-btn" lay-filter="btnView" id="btnView">查看上传文件</button>
+                <!-- <button class="layui-btn layui-btn-warm" lay-filter="btnReport" id="btnReport">上报</button> -->
+            </div>
+
+        </div>
+    </div>
+
+
+</body>
+
+</html>
+
+
+<script>
+
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+
+    });
+
+    layui.use(['form', 'jquery', 'layer', 'upload'], function () {
+        var $ = layui.jquery;
+        var form = layui.form;
+        var layer = layui.layer;
+        var upload = layui.upload;
+
+        var projId = parent.window["projId"];
+        var downId = parent.window["downId"];
+        window.getProjContractId = function() {
+            return parent.window["projContractId"];
+        }
+        var projContractId = getProjContractId();
+        var oper = parent.window["oper"];
+        var main = layui.sessionData("projContract")["main"];
+
+        var commonObj = {
+            get projContractId() { return getProjContractId(); },
+            projId: projId,
+            downId: downId,
+            userCreate: localStorage.getItem("user-name"),
+            userUpdate: localStorage.getItem("user-name")
+        }
+
+
+        window.getUnitId = function () {
+            return localStorage.getItem("unit-id");
+        }
+        window.getCmeStandardKindId = function () {
+            return localStorage.getItem("standardkind-id");
+        }
+
+
+        window.initAll = function () {
+
+            if (oper == "details") {
+                $("#btnDown").hide();
+                $("#btnUpload").hide();
+            }
+        }
+
+        window.getMainData = function () {
+
+            if (projContractId != null && projContractId != "") {
+                let url = huayi_projectscore_url + `cmeProjContract/projContractPartInfo/${projContractId}/CmeProjContractMain`;
+                $.ajax({
+                    url: url,
+                    type: "get",
+                    success: function (res) {
+                        if (res.success) {
+                            let cmeProjContractMain = res.data.cmeProjContractMain;
+                            form.val("mainForm", {
+                                scoreLevelName: cmeProjContractMain.scoreLevelName,
+                                projZhubanUnitName: cmeProjContractMain.projZhubanUnitName,
+                                projChengbanUnitName: cmeProjContractMain.projChengbanUnitName,
+                                dateApply: cmeProjContractMain.dateApply
+                            });
+                            if ($("input[name='scoreLevelName']:checked").length == 0) {
+                                $("input[name='scoreLevelName']").find('[value="异地备案"]').prop("checked", true);
+                            }
+                        } else {
+                            layer.msg(res.msg, { icon: 2 });
+                        }
+                    },
+                    error: function (res) {
+                        layer.msg("发送数据失败", { icon: 2 });
+                    }
+                });
+            }
+        }
+
+
+        $(".btnCancel").click(function () {
+            parent.closeLayer();
+        });
+
+        $("#btnDown").click(function () {
+            let downloadUrl = "/file/promise/190c480d-d43c-450b-8472-a6fd00a6729d/项目执行承诺书.pdf";
+            var a = document.createElement("a");
+            a.href = downloadUrl;
+            a.download = "执行承诺书.pdf"; // 设置下载的文件名
+            document.body.appendChild(a);
+            a.click(); // 触发点击事件开始下载
+            document.body.removeChild(a); // 下载完成后移除元素
+        });
+
+
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#btnUpload' //绑定元素
+            , url: huayi_upload_url + "uploadApi/upload"
+            , accept: 'file'
+            , acceptMime: 'application/pdf'
+            , exts: 'pdf'
+            , data: {
+                path: "/promise/" + getCmeStandardKindId() + "/" + getUnitId(),
+                fileType: 'DOC'
+            }
+            , done: function (res) {
+                if (res.code == 200) {
+                    let myData = {
+                        promisePhotoUrl: res.data.picUrl
+                    }
+
+                    let url = huayi_projectscore_url + `cmeProjContract/projContractPartInfo/${projContractId}/CmeProjContractMain`;
+                    let mainData = { ...myData, ...commonObj };
+                    let submitData = { "cmeProjContractMain": mainData };
+
+                    $.ajax({
+                        url: url,
+                        data: JSON.stringify(submitData),
+                        type: "post",
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (res) {
+                            if (res.success) {
+
+                                layer.msg("保存成功", { icon: 1 });
+                                parent.getFullFlag('Promise');
+
+                            } else {
+                                layer.msg(res.msg, { icon: 2 });
+                            }
+                        },
+                        error: function () {
+                            layer.msg("发送数据失败", { icon: 2 });
+                        }
+                    });
+                } else {
+                    layer.msg("上传失败,失败原因:" + res.msg, { icon: 2 });
+                }
+            }
+            , error: function () {
+
+            }
+        });
+
+
+        $("#btnView").click(function () {
+            if (projContractId != null && projContractId != "") {
+                let url = huayi_projectscore_url + `cmeProjContract/projContractPartInfo/${projContractId}/CmeProjContractMain`;
+                $.ajax({
+                    url: url,
+                    type: "get",
+                    success: function (res) {
+                        if (res.success) {
+                            let cmeProjContractMain = res.data.cmeProjContractMain;
+                            if(cmeProjContractMain != null && cmeProjContractMain.promisePhotoUrl !="") {
+
+                                window.open(cmeProjContractMain.promisePhotoUrl,"_blank");
+                            } else {
+                                layer.msg("请先上传文件", { icon: 5 });
+                            }
+
+
+                        } else {
+                            layer.msg(res.msg, { icon: 2 });
+                        }
+                    },
+                    error: function (res) {
+                        layer.msg("发送数据失败", { icon: 2 });
+                    }
+                });
+            }
+        });
+
+
+
+        $(function () {
+            initAll();
+        });
+    });
+
+</script>

@@ -1,0 +1,806 @@
+
+<!DOCTYPE html>
+<html >
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <title>账号管理</title>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+
+    <script type="text/javascript" src="https://v8.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="../../js/constant.js"></script>
+
+    <!-- <script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script> -->
+    <script type="text/javascript" src='../../js/common.js'></script>
+
+    <!-- 工具 -->
+    <script type="text/javascript" src="../../js/tools/form_validation_tool.js"></script>
+
+    <style>
+        /* 新增代码 */
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+
+        .hide {
+            display: none;
+        }
+        .require {
+            font-weight: bold;
+            color: red;
+        }
+        .require:after{
+            content: '* ';
+        }
+        .pwd_msg {
+            width: auto;
+            margin: 10px 0 0 10px;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+                <div class="layui_mess">
+                    <div class="layui_display">
+                    <div class="layui-inline" >
+                        <label class="layui-form-label">用户类型</label>
+                        <div class="layui-input-block">
+                        <select name="userType"  lay-search >
+                            <option value="">请选择用户类型</option>
+                            <option value="1">超级管理员</option>
+                            <option value="2">管理员</option>
+                            <option value="3">技术支持</option>
+                            <option value="11">行政部门</option>
+                            <option value="12">机构用户</option>
+                            <option value="13">科室用户</option>
+                            <option value="14">个人用户</option>
+                        </select>
+                    </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">用户名</label>
+                        <div class="layui-input-block">
+                        <input type="text" name="userName" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <a class="layui-btn layui-btn-sm" id="searchBtn"
+                        lay-submit
+                        lay-filter="user_query"
+                        data-type="reload">
+                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                        </a>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" lay-filter= "table_user" id="table_user" style="margin: 0px 0px;">
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 列表工具栏 -->
+    <script type="text/html" id="rawBar">
+        {{# if (d.userType == 1) { }}
+        {{# } else { }}
+            {{# if (hasPermission('/permission/comuser/edit')) { }}
+                <a class="layui-btn layui-btn-xs" lay-event="user-edit" 
+                        style="min-width: 58px; height: 26px;line-height:26px;border-radius: 4px; background-color: #1f9fff"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+            {{# } }}
+            {{# if (hasPermission('/permission/comuser/bind')) { }}
+                <a class="layui-btn layui-btn-xs" lay-event="user-bind" onmouseenter="Msg.tip(this,'点击按钮绑定用户菜单黑名单、白名单')" style="min-width: 58px;line-height:26px;  height: 26px;border-radius: 4px; background-color: #009688"><i class="layui-icon layui-icon-list"></i>绑定</a>
+            {{# } }}
+            {{#  if (hasPermission('/permission/comuser/delete')) { }}
+                <a class="layui-btn layui-btn-xs" lay-event="user-del" style="min-width: 58px;  line-height:26px;height: 26px;border-radius: 4px; background-color: #ff5723"><i class="layui-icon layui-icon-delete"></i>删除</a>
+            {{# } }}
+        {{# } }}
+    </script>
+
+    <!-- 头工具栏 -->
+    <script type="text/html" id="toolHeaderBar">
+        {{#  if (hasPermission('/permission/comuser/add')) {  }}
+            <a permission class="layui-btn layui-btn-sm" lay-event="user-add" style="border-radius: 4px;"><i class="layui-icon layui-icon-add-1"></i>新增</a>
+        {{#  }  }}
+    </script>
+
+    <!-- table 模板 -->
+    <script type="text/html" id="userStatus">
+        {{#  if (d.cstate == 1) { }}
+        <span  style="color: #5FB878">正常</span>
+        {{#  } else if (d.cstate == 4) { }}
+        <span  style="color: #bbbbbb">已删除</span>
+        {{#  } else { }}
+        {{d.cstate}}
+        {{#  } }}
+    </script>
+
+
+    <!-- 新增用户 弹框内容 -->
+    <div id="user-div-alert-add" class="hide">
+        <form class="layui-form" style="padding: 30px;" lay-filter="user-form-alert-add" id="user-form-alert-add">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span class="require"></span>用户类型</label>
+                    <div class="layui-input-block">
+                        <select name="userType" lay-verify="required">
+                            <option value="">请选择用户类型</option>
+                            <option value="2">管理员</option>
+                            <option value="3">技术支持</option>
+                            <!-- <option value="11">行政部门</option>
+                            <option value="12">单位用户</option>
+                            <option value="13">科室用户</option>
+                            <option value="14">个人用户</option> -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span class="require"></span>用户名</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="userName" lay-verify="required" 
+                                placeholder="请输入用户名" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">单位</label>
+                    <div id="user-form-select-unit" class="layui-input-inline" ></div>
+                        &lt;!&ndash;<input type="text" name="unitIdd" 
+                                placeholder="请输入单位" autocomplete="off" class="layui-input">&ndash;&gt;
+                </div>
+            </div> -->
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">证件号</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="certId" 
+                                placeholder="请输入证件号" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">手机号</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="mobile" 
+                                placeholder="请输入手机号" autocomplete="off" class="layui-input layui-disabled" 
+                                disabled="disabled" />
+
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">邮箱</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="email" 
+                                placeholder="请输入邮箱" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span class="require"></span>密码</label>
+                    <div class="layui-input-block">
+                        <input type="password" id="userPwd" name="userPwd" lay-verify="required" 
+                                placeholder="请输入密码" autocomplete="off" class="layui-input">
+                        <li class="pwd_msg hide" style="width: auto;">
+                            <span id="pwd_msg">密码强度：<b>弱</b></span>
+                        </li>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span class="require"></span>确认密码</label>
+                    <div class="layui-input-block">
+                        <input type="password" name="reUserPwd" lay-verify="required" 
+                                placeholder="请输入确认密码" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item hide">
+                <div class="layui-inline">
+                    <div class="layui-input-block">
+                        <button type="submit" id="user-form-add-submit" 
+                                lay-filter="user-form-add-submit" lay-submit class="layui-btn">提交</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- 绑定菜单弹窗 -->
+    <div id="user-div-alert-bind" class="hide">
+        <form class="layui-form" style="padding: 10px;" 
+                lay-filter="user-form-alert-bind" id="user-form-alert-bind">
+            <div class="layui-form-item">
+                <label class="layui-form-label">菜单类型:</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="menuType" value="white" title="白名单" 
+                            lay-filter="user-form-menu-radio" checked="">
+                    <input type="radio" name="menuType" value="black" title="黑名单" 
+                            lay-filter="user-form-menu-radio">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">菜单树:</label>
+                <div class="layui-input-block" >
+                    <div style="width: 500px; height: 350px; overflow: scroll; padding: 10px; border: 1px solid #ddd">
+                        <div id="menu-white-tree" lay-filter="menu-white-tree"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item hide">
+                <div class="layui-inline">
+                    <div class="layui-input-block">
+                        <input type="text" name="userId" >
+                        <button type="submit" id="user-form-bind-submit" class="layui-btn" 
+                                lay-filter="user-form-bind-submit" lay-submit>提交</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+    <script>
+        let format_url            = /\\|\/$/gi,
+            permissionUrl         = huayi_permission_url.replace(format_url, ''),
+            sjwhUrl               = huayi_sjwh_url.replace(format_url, ''),
+            listUrl               = permissionUrl  + '/comuser/list',
+            addUrl                = permissionUrl  + '/comuser/add',
+            delUrl                = permissionUrl  + '/comuser/del',
+            menuRelationUrl       = permissionUrl  + '/comuser/menu',
+            menuRelationUpdateUrl = permissionUrl  + '/comuser/menu/update',
+            unitChildrenUrl       = sjwhUrl + '/comunit/children';
+
+        let table,
+            nextOrderIndex  = 0,
+            formSnapShot    = null,
+            tableHasLoaded  = false,
+            isEditWhiteMenu = true,
+            xmSelect        = {},
+            whiteMenuTrees  = {},
+            blackMenuTrees  = {},
+            blackMenuList   = [], // 后台查询的黑名单列表
+            blackMenuCheckedSnapshot =[]; // 黑名单选中快照，用户保留上次的选择状态
+
+
+        /* 防止表单重复提交 */
+        var noRepeatLock = true;
+        var noRepeat = function (fun) {
+            if (noRepeatLock) {
+                noRepeatLock = false;
+                try {
+                    fun();
+                } catch (e) {
+                    console.log(e);
+                }
+                setTimeout(function () {
+                    noRepeatLock = true;
+                }, 3000);
+            }
+        }
+
+        /* 判断是否是父子关系 */
+        window.isNotParent = function (id, pid, dataList) {
+            if (id == pid) return true;
+            for (var i = 0; i < dataList.length; i++) {
+                if (dataList[i].id == id) {
+                    if (dataList[i].pid == pid) {
+                        return false;
+                    } else {
+                        return isNotParent(dataList[i].pid, pid, dataList);
+                    }
+                }
+            }
+            return true;
+        }
+
+        /* 加载table */
+        var loadTable = function (param) {
+            layui.config({
+                base: '../../js/layui/ext/'
+            }).extend({
+                xmSelect: 'xm-select'
+            }).use(['table', 'layer', 'form', 'code', 'authtree', 'xmSelect'], function () {
+                let form     = layui.form,
+                    // xmSelect = layui.xmSelect,
+                    table    = layui.table
+                    layer    = layui.layer;
+
+                // xmSelect.render({
+                //     el: '#user-form-select-unit',
+                //     name:"unitId",
+                //     radio: true, // 单选模式
+                //     clickClose: true,
+                //     tree: {
+                //         show: true,
+                //         showFolderIcon: true,
+                //         showLine: true,
+                //         strict: false,
+                //         indent: 20,
+                //         expandedKeys: [ -1 ],
+                //         lazy: true,
+                //         load: function (item, cb) {
+                //             $.ajax({
+                //                 url: unitChildrenUrl+"?parentUnitId="+item.value,
+                //                 success: function (data) {
+                //                     cb(data.data);
+                //                 }
+                //             })
+                //         }
+                //     },
+                //     height: 'auto',
+                //     data() {
+                //         var dataList = [];
+                //         $.ajax({
+                //             async:false,
+                //             url: unitChildrenUrl+"?parentUnitId=",
+                //             success: function (data) {
+                //                 dataList = data.data;
+                //             }
+                //         })
+                //         return dataList;
+                //     }
+                // });
+
+                table.render({
+                    elem: '#table_user'
+                    , height: 'full-125'
+                    , url: listUrl, // 数据接口
+                    // ,data:[],
+                    where: param,
+                    request: {
+                        pageName: 'pageNum' // 页码的参数名称，默认：page
+                        , limitName: 'pageSize' // 每页数据量的参数名，默认：limit
+                    },
+                    page: true // 开启分页
+                    , cols: [[ // 表头
+                        { type: 'numbers', title: '序号', width: 150, fixed: 'left' },
+                        { field: 'userId', title: 'userId', width: 150, sort: true, fixed: 'left', hide: true },
+                        { field: 'userType', title: '用户类型编号', width: 150, sort: true, hide: true },
+                        { field: 'userTypeStr', title: '用户类型', width: 150, sort: true },
+                        { field: 'userName', title: '登录名', width: 150 },
+                        { field: 'realname', title: '真实姓名', width: 150 },
+                        { field: 'cert_id', title: '证件号', width: 150 },
+                        { field: 'mobile', title: '手机号', width: 150 },
+                        { field: 'email', title: '邮箱', width: 150 },
+                        { field: 'cstate', title: '状态', width: 150, templet: '#userStatus' },
+                        { field: 'operate_user', title: '操作用户', width: 150 },
+                        { field: 'addTime', title: '创建时间', width: 200 },
+                        { field: 'updateTime', title: '更新时间', width: 200 },
+                        { align: 'center', width: 250, fixed: 'right', toolbar: '#rawBar', title: '操作' }
+                    ]],
+                    defaultToolbar: [],
+                    error: function (obj, content) {
+                        console.log(obj);
+                    },
+                    toolbar: '#toolHeaderBar',
+                    parseData: function (res) { // res 即为原始返回的数据
+                        return {
+                            'code'  : res.status == 200 ? 0 : res.status, // 解析接口状态
+                            'msg'   : res.msg, // 解析提示文本
+                            'data'  : res.data.records, // 解析数据列表
+                            'count' : res.data.recordsTotal // 解析数据列表
+                        };
+                    },
+                    done: function (res) {
+                        if (res.data != null && res.data.length > 0) {
+                            nextOrderIndex = res.data[res.data.length - 1].listOrder + 1;
+                            // 逻辑删除行置灰
+                            res.data.forEach(function (item, index) {
+                                if (item.cstate == 4) {
+                                    var tr = $.find(".layui-table-box tbody tr[data-index='" + index + "']");
+                                    $(tr).css("color", "#bbbbbb");
+                                }
+                            });
+                        } else {
+                            nextOrderIndex = 1;
+                        }
+                    }
+                });
+
+                // 监听行按钮
+                table.on('tool(table_user)', function (ev) {
+                    var layer = layui.layer;
+                    if (ev.event === 'user-edit') {
+                        // 回显
+                        window.location.href = './userDetails.html?' + 
+                                'userId=' + ev.data.userId + '&userType='+ev.data.userType;
+                    } else if (ev.event === 'user-bind') {
+
+                        // ----------  绑定菜单黑白名单权限 ----------
+                        // 回显
+                        form.val('user-form-alert-bind',{
+                            'userId':ev.data.userId,
+                            "menuType":"white"
+                        });
+
+                        layer.open({
+                            type:1,
+                            title:'绑定菜单',
+                            area: ['800px','600px'],
+                            content:$('#user-div-alert-bind'),
+                            btn: ['确定', '取消'],
+                            btnAlign: 'c',
+                            yes: function (index, layero) {
+                                var c = $('#user-form-bind-submit').click();
+                            }
+                        });
+
+                        // 加载菜单树
+                        $.ajax({
+                            url: menuRelationUrl+"?userId="+ev.data.userId,
+                            dataType: 'json',
+                            success: function (data) {
+                                whiteMenuTrees = layui.authtree.listConvert(data.data.whiteMenuList,{startPid: '-'});
+                                blackMenuTrees = layui.authtree.listConvert(data.data.blackMenuList,{startPid: '-'});
+                                blackMenuList = data.data.blackMenuList;
+                                // 如果后台返回的不是树结构，请使用 authtree.listConvert 转换
+                                layui.authtree.render('#menu-white-tree', whiteMenuTrees, {
+                                    inputname: 'menuIds[]',
+                                    layfilter: 'menu-white-tree',
+                                    autowidth: true,
+                                    autoclose:false,
+                                    openall:true,
+                                    checkType:'checkbox'
+                                });
+                            }
+                        });
+
+                    } else if (ev.event === 'user-del') {
+                        layer.confirm('您确认要删除【' + ev.data.userName + '】吗？',
+
+                            function (i) {
+
+                            layer.confirm("删除数据可能对您的业务造成影响，您确定吗",                        function (index) {
+                                // var c = $('#score_kind_alert_confirm').click();
+                                $.ajax({
+                                    url: delUrl + '?userId=' + ev.data.userId,
+                                    type: 'post',
+                                    dataType: 'json',
+                                    contentType: 'application/json;charset=UTF-8',
+                                    success: function (res) {
+                                        if (res.status == 200) {
+                                            layui.layer.msg('删除成功！', {
+                                                time: 1000, //1s后自动关闭
+                                                end: function (o) {
+                                                    layui.layer.closeAll();
+                                                    $('#searchBtn').click();
+                                                }
+                                            });
+                                        } else {
+                                            layui.layer.msg(res.msg || '系统繁忙，请稍后重试', {
+                                                time: 1000, //1s后自动关闭
+                                                end: function (o) {
+                                                    layui.layer.closeAll();
+                                                }
+                                            });
+                                        }
+                                    },
+                                    error: function (req, msg) {
+                                        layui.layer.msg('系统繁忙，请稍后重试', {
+                                            time: 1000, //1s后自动关闭
+                                            end: function (o) {
+                                                layui.layer.closeAll();
+                                            }
+                                        });
+                                    }
+                                });
+                            })
+                            }
+                        );
+                    }
+                });
+
+                //监听表头按钮
+                table.on('toolbar(table_user)', function (ev) {
+
+                    if (ev.event === 'user-add') {
+
+                        var layer = layui.layer;
+                        layer.open({
+                            type     : 1,
+                            title    : '新增',
+                            area     : [ '580px', '595px' ],
+                            content  : $('#user-div-alert-add'),
+                            btn      : [ '确定', '取消' ],
+                            btnAlign : 'c',
+                            yes      : function (index, layero) {
+                                var c = $('#user-form-add-submit').click();
+                            }
+                        });
+                    }
+                });
+
+                // 监听form新增、修改
+                form.on('submit(user-form-add-submit)', function (data) {
+
+                    noRepeat(function () {
+                        let formParam = data.field,
+                            pwd       = formParam.userPwd,
+                            re_pwd    = formParam.reUserPwd;
+                        
+                        if (strTool.isBlank(pwd)) {
+                            layer.msg('请输入登录密码', { icon: 7, time: 1500 });
+                            return false;
+                        }
+                        if (!pwdTool.isPass(pwd)) {
+                            layer.msg('登录密码应包含数字、字母、特殊字符，长度为8~16位', { icon: 7, time: 2000 });
+                            return false;
+                        }
+                        if (strTool.isBlank(re_pwd)) {
+                            layer.msg('请再次输入登录密码', { icon: 7, time: 1500 });
+                            return false;
+                        }
+                        if (!pwdTool.isSame(pwd, re_pwd)) {
+                            layer.msg('两次输入的密码不一致，请重新输入', { icon: 7, time: 1500 });
+                            return false;
+                        }
+
+                        $.ajax({
+                            url         : addUrl,
+                            type        : 'post',
+                            dataType    : 'json',
+                            contentType : 'application/json;charset=UTF-8',
+                            data        : JSON.stringify(formParam),
+                            success     : function (res) {
+                                if (res.status == 200) {
+                                    layer.msg('操作成功！', {
+                                        time : 1500, 
+                                        icon : 1,
+                                        end  : function (o) {
+                                            layui.layer.closeAll();
+                                            $('#searchBtn').click();
+                                        }
+                                    });
+                                } else {
+                                    layer.msg(res.msg || '系统繁忙，请稍后重试', {
+                                        time : 1500, 
+                                        icon : 2,
+                                        end  : function (o) {
+                                            layui.layer.closeAll();
+                                        }
+                                    });
+                                }
+                            },
+                            error       : function (req, msg) {
+                                layer.msg('系统繁忙，请稍后重试', {
+                                    time : 1500, 
+                                    icon : 2,
+                                    end  : function (o) {
+                                        layui.layer.closeAll();
+                                    }
+                                });
+                            }
+                        });
+                        formSnapShot = null;
+                    });
+                    return false;
+                });
+                
+                /* 密码强度校验 */
+                $('#userPwd').on('keyup', e => {
+                    let pwd = $(e.currentTarget).val();
+
+                    if (pwdTool.isStrong(pwd)) {
+                        $('#pwd_msg b').html('强').css('color', '#138434');
+
+                    } else if (pwdTool.isMedium(pwd)) {
+                        $('#pwd_msg b').html('中').css('color', '#4151ec');
+
+                    }  else {
+                        $('#pwd_msg b').html('弱').css('color', '');
+                    }
+
+                    $('.pwd_msg').show();
+                });
+
+
+                //监听关联菜单树单选框
+                form.on('radio(user-form-menu-radio)', function (data) {
+                    //重置
+                    blackMenuCheckedSnapshot =[];
+                    if (data.value == 'black') {
+                        isEditWhiteMenu = false;
+                        layui.authtree.render('#menu-white-tree', blackMenuTrees, {
+                            inputname: 'authids[]',
+                            layfilter: 'menu-white-tree',
+                            autowidth: true,
+                            openall:true,
+                            checkType:'checkbox'
+                        });
+                    } else {
+                        isEditWhiteMenu = true;
+                        layui.authtree.render('#menu-white-tree', whiteMenuTrees, {
+                            inputname: 'authids[]',
+                            layfilter: 'menu-white-tree',
+                            autowidth: true,
+                            openall:true,
+                            autoclose:false,
+                            checkType:'checkbox'
+                        });
+                    }
+                });
+
+                // //禁止树close
+                // layui.authtree.on('deptChange(menu-white-tree)',function (data) {
+                //     //
+                //     layui.authtree.showAll(data.dst);
+                // });
+                /*
+                * 监听菜单树节点选择（黑名单选择联动效果）
+                * 选择节点 联动选择旗下所有节点，
+                * 不选节点，不选其上所有节点
+                */
+                layui.authtree.on('change(menu-white-tree)',function (data) {
+                    if (!isEditWhiteMenu) {
+                        // 获取最新选中
+                        var lastChecked = layui.authtree.getLastChecked('#menu-white-tree');
+                        var lastNotChecked = layui.authtree.getLastNotChecked('#menu-white-tree');
+                        if (lastChecked.length > 0) {
+                            //选中时选中所有子节点 无需处理 ，取消原有的父级联动
+                            //当前选中的节点 要排除父节点
+                            var currentChecked = data.value;
+                            var checkedList = layui.authtree.getChecked(data.dst);
+                            var checkedListNew = [];
+                            for (var i = 0; i < checkedList.length; i++) {
+                                if (isNotParent(currentChecked,checkedList[i],blackMenuList)) {
+                                    checkedListNew.push(checkedList[i]);
+                                }
+                            }
+
+                            var blackMenuListTemp = JSON.parse(JSON.stringify(blackMenuList));
+                            //更新选中状态
+                            for (var i = 0; i < blackMenuListTemp.length; i++) {
+                                blackMenuListTemp[i].checked = false;
+                                for (var j = 0; j <checkedListNew.length ; j++) {
+                                    if (blackMenuListTemp[i].id == checkedListNew[j]) {
+                                        blackMenuListTemp[i].checked = true;
+                                    }
+                                }
+                            }
+                            var treeData = layui.authtree.listConvert(blackMenuListTemp,{startPid: '-'});
+                            layui.authtree.render('#menu-white-tree', treeData, {
+                                inputname: 'authids[]',
+                                layfilter: 'menu-white-tree',
+                                autowidth: true,
+                                openall:true,
+                                checkType:'checkbox'
+                            });
+
+                        } else {
+                            //取消选中时 取消所有父节点  /原有的取消子节点的联动逻辑干掉！(layui bug 当节点不可选时 点击节点会有级联效果)
+                            var blackMenuListTemp = JSON.parse(JSON.stringify(blackMenuList));
+                            var currentNotChecked = data.value;
+                            var checkedList = layui.authtree.getChecked(data.dst);
+
+                            // 如果取消的节点不含当前节点 说明当前节点为disable状态
+                            var isClickDisable = true;
+                            var lastNotChecked = layui.authtree.getLastNotChecked('#menu-white-tree');
+                            for (var i = 0; i <lastNotChecked.length ; i++) {
+                                if (lastNotChecked[i] == currentNotChecked) {
+                                    isClickDisable = false;
+                                }
+                            }
+                            if (isClickDisable) {
+                                checkedList = checkedList.concat(lastNotChecked);
+                            }
+
+                            var checkedListNew = [];
+                            for (var i = 0; i < checkedList.length; i++) {
+                                if (isNotParent(currentNotChecked,checkedList[i],blackMenuList)) {
+                                    checkedListNew.push(checkedList[i]);
+                                }
+                            }
+
+                            //更新选中状态
+                            for (var i = 0; i < blackMenuListTemp.length; i++) {
+                                blackMenuListTemp[i].checked = false;
+                                for (var j = 0; j <checkedListNew.length ; j++) {
+                                    if (blackMenuListTemp[i].id == checkedListNew[j]) {
+                                        blackMenuListTemp[i].checked = true;
+                                    }
+                                }
+                            }
+
+                            var treeData = layui.authtree.listConvert(blackMenuListTemp,{startPid: '-'});
+                            layui.authtree.render('#menu-white-tree', treeData, {
+                                inputname: 'authids[]',
+                                layfilter: 'menu-white-tree',
+                                autowidth: true,
+                                openall:true,
+                                checkType:'checkbox'
+                            });
+                        }
+                    }
+                })
+
+                //监听关联菜单树提交
+                form.on('submit(user-form-bind-submit)', function (data) {
+
+                    noRepeat(function () {
+                        var formParam = data.field;
+                        $.ajax({
+                            url: menuRelationUpdateUrl,
+                            type: 'post',
+                            dataType: 'json',
+                            contentType: 'application/json;charset=UTF-8',
+                            data: JSON.stringify(formParam),
+                            success: function (res) {
+                                if (res.status == 200) {
+                                    layui.layer.msg('操作成功！', {
+                                        time: 1000, //1s后自动关闭
+                                        end: function (o) {
+                                            layui.layer.closeAll();
+                                        }
+                                    });
+                                } else {
+                                    layui.layer.msg(res.msg || '系统繁忙，请稍后重试', {
+                                        time: 1000, //1s后自动关闭
+                                        end: function (o) {
+                                            layui.layer.closeAll();
+                                        }
+                                    });
+                                }
+                            },
+                            error: function (req, msg) {
+                                layui.layer.msg('系统繁忙，请稍后重试', {
+                                    time: 1000, //1s后自动关闭
+                                    end: function (o) {
+                                        layui.layer.closeAll();
+                                    }
+                                });
+                            }
+                        });
+                    });
+                    return false;
+                });
+
+            });
+        }
+        //监听查询
+        layui.use(['form','table'],function () {
+
+            //自定义FORM 校验规则
+            layui.form.verify({
+                notBlank: function (value, item) { //value：表单的值、item：表单的DOM对象
+                    if (value == null || value =="") {
+                        return '必填项不能为空';
+                    }
+                }
+            });
+
+            layui.form.on('submit(user_query)', function (data) {
+                layui.table.reload('table_user',{where:{"userType":data.field.userType,'userName':data.field.userName}});
+                return false;
+            });
+        });
+
+        loadTable({});
+
+    </script>
+</body>
+</html>

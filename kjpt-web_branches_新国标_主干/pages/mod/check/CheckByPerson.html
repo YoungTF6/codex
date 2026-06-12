@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>以人员方式审核</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/iife.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/js/kjpt_encrypt.js"></script>
+    <style>
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+    </style>
+</head>
+<body style="background-color: white;">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!-- 查询区域 -->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" id="queryArea"
+             style="background-color: #f5f5f5;">
+            <div class="layui_mess">
+                <div class="layui_display">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span data-id="lblYear" data-name="">年度</span></label>
+                        <div class="layui-input-block">
+                            <div data-id="lblYear"></div>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span data-id="lblScoreLevel" data-name="" data-label="" data-check-parent="1">学分分类</span></label>
+                        <div class="layui-input-block">
+                            <div id="scoreLevelSelector" style="width: 165px;"></div>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">人员状态</label>
+                        <div class="layui-input-block">
+                            <select name="personStateId" id="personStateIdSelector" lay-filter="">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                    <!--<div class="layui-inline">-->
+                    <!--    <label class="layui-form-label">活动类型</label>-->
+                    <!--    <div class="layui-input-block">-->
+                    <!--        <select name="scoreTypeVal" id="scoreTypeValSelector" lay-filter="">-->
+                    <!--            <option value="7">全部</option>-->
+                    <!--            <option value="4">继续教育活动</option>-->
+                    <!--            <option value="2">院内活动</option>-->
+                    <!--            <option value="1">个人活动</option>-->
+                    <!--        </select>-->
+                    <!--    </div>-->
+                    <!--</div>-->
+                    <div class="layui-inline">
+                        <label class="layui-form-label">活动名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="projName" id="projNameInput" placeholder="请填写项目名称关键字"
+                                   autocomplete="off"
+                                   class="layui-input"/>
+                        </div>
+                    </div>
+                    <!-- row2 -->
+                    <div class="layui-inline">
+                        <label class="layui-form-label">审核状态</label>
+                        <div class="layui-input-block">
+                            <select name="checkState" id="csSelector">
+                                <option value="">全部</option>
+                                <option value="0" selected>未审核</option>
+                                <option value="3">审核通过</option>
+                                <option value="2">审核不通过</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">职称</label>
+                        <div class="layui-input-block" style="min-width: 168px;">
+                            <div id="titleTreeSelector" style="height: 38px;"></div>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">人员类别</label>
+                        <div class="layui-input-block">
+                            <select name="medicaltype">
+                                <option value="">全部</option>
+                                <option value="1">西医类别</option>
+                                <option value="2">中医类别</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">活动日期</label>
+                        <div class="layui-input-inline" style="float: left;">
+                            <input type="text" name="startDate" class="layui-input" id="startDateSelector"
+                                   autocomplete="off"
+                                   placeholder="选择开始日期">
+                        </div>
+                        <div class="layui-form-mid" style="margin: 0 5px;">-</div>
+                        <div class="layui-input-inline" style="float: left;">
+                            <input type="text" name="endDate" class="layui-input" id="endDateSelector"
+                                   autocomplete="off"
+                                   placeholder="选择结束日期">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">查询项</label>
+                        <div class="layui-input-block">
+                            <div style="width: 38%; display: inline-block;">
+                                <select id="queryOption">
+                                    <option value="personNo">人员编号</option>
+                                    <option value="personName">人员姓名</option>
+                                    <option value="certId">身份证号</option>
+                                </select>
+                            </div>
+                            <div style="width: 50%; display: inline-block;">
+                                <input type="text" id="queryKeyword" placeholder="请输入关键字"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui_display">
+                    <button class="layui-btn layui-btn-sm" lay-submit
+                            onclick="reloadPersonTable()" style="margin:auto 0">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- 数据表格 -->
+        <div class="layui-card-body layui_body_box" style="padding-left: 0;padding-right: 0">
+            <table class="layui-table" id="personTable" lay-filter="personTable" style="margin: 0;"></table>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/html" id="operationCell">
+    <a class="layui-btn layui-btn-xs btn-row" lay-event="scoreDetailBtn">学分明细</a>
+</script>
+<script type="text/html" id="table_toolbar">
+    {{# if (cancheckbypids()) { }}
+    <input type="checkbox" name="layTableCheckbox" value="cp" title="本页全选" lay-filter="layTableAllChoose">
+    <a class='layui-btn layui-btn-sm' lay-event='approveBtn' style="margin-left: 10px;">审核通过</a>
+    <a class='layui-btn layui-btn-sm layui-btn-danger' lay-event='rejectBtn'>审核不通过</a>
+    {{# } }}
+</script>
+<script type="text/javascript" src="/js/constantPage/projectConstant.js"></script>
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        lat: 'lat'
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'xmSelect', 'lat'], function () {
+        let table = layui.table;
+        let layer = layui.layer;
+        let form = layui.form;
+        let laydate = layui.laydate;
+        let dropdown = layui.dropdown;
+        let element = layui.element;
+        let $ = layui.jquery;
+        let xmSelect = layui.xmSelect;
+        let lat = layui.lat;
+        let gLayerIndex;
+        let gReason;
+        let gAction;
+        let gTitleTreeData = [], gTitleTreeSelector, gCheckState, gCheckStates;
+        dogetconfig('fun_check_score_by_person_list,value_forbid_some_operate_on_last_year_data', null);
+        window.reloadPersonTable = reloadPersonTable;
+        window.solveReason = solveReason;
+        window.cancheckbypids = cancheckbypids;
+        $(function () {
+            setmedicaltype();
+            if (_isNingxia) {
+                $('#scoreTypeValSelector').val('1').attr('disabled', 'true').toggleClass('layui-disabled');
+                form.render('select');
+            }
+        });
+        $(function () {
+            lat.renderPersonState('#personStateIdSelector');
+            _lbl_inst.sdysel = lat.renderDaySelector('#startDateSelector', aMonthAgo(), {min: `${_cur_year}-01-01`, max: `${_cur_year}-12-31`});
+            _lbl_inst.edysel = lat.renderDaySelector('#endDateSelector', today(), {min: `${_cur_year}-01-01`, max: `${_cur_year}-12-31`});
+            getTitleTreeData().then(response => {
+                let jsonRes = response.data;
+                if (jsonRes.success) {
+                    gTitleTreeData = jsonRes.data;
+                }
+            }).catch(error => {
+                layer.msg('error:加载titleTreeData');
+            }).finally(() => {
+                gTitleTreeSelector = lat.renderTitleTreeSelector('#titleTreeSelector', gTitleTreeData, {
+                    tree: {
+                        strict: false,
+                        clickExpand: true
+                    }
+                });
+            });
+            renderPersonTable();
+        });
+        table.on('toolbar(personTable)', function (obj) {
+            let checkStatus = table.checkStatus(obj.config.id),
+                selectedRowArr = checkStatus.data,
+                event = obj.event;
+            // selectedRowArr = selectedRowArr.filter(selectedRow => canCheck(selectedRow));
+            if (selectedRowArr.length < 1) {
+                layer.msg('请选择要审核的人员', {icon: 7, time: 1500});
+                return false;
+            }
+            let comPersonIdList = [];
+            for (let i in selectedRowArr) {
+                comPersonIdList.push(selectedRowArr[i].comPersonId);
+            }
+            if ('approveBtn' === event) {
+                gReason = '';
+                if (needpassreason()) {
+                    gLayerIndex = layer.open({
+                        type: 2,
+                        shade: 0.4,
+                        shadeClose: true,
+                        title: '审核意见',
+                        content: `./modals/ReasonModal.html?phase=3&state=3`,
+                        area: ['800px', '460px'],
+                        end: function (layero, index) {
+                            if (ModalActionEnum.CONFIRM === gAction) {
+                                docheckbatch(comPersonIdList, CheckStateEnum.APPROVE, 'approve');
+                            }
+                        }
+                    });
+                } else {
+                    docheckbatch(comPersonIdList, CheckStateEnum.APPROVE, 'approve');
+                }
+            } else if ('rejectBtn' === event) {
+                gReason = '';
+                gLayerIndex = layer.open({
+                    type: 2,
+                    shade: 0.4,
+                    shadeClose: true,
+                    title: '不通过原因',
+                    content: `./modals/ReasonModal.html?phase=3&state=2`,
+                    area: ['800px', '600px'],
+                    end: function (layero, index) {
+                        if (ModalActionEnum.CONFIRM === gAction) {
+                            docheckbatch(comPersonIdList, CheckStateEnum.REJECT, 'reject');
+                        }
+                    }
+                });
+            }
+        });
+        function solveReason(reason, action) {
+            gReason = reason;
+            gAction = action;
+            layer.close(gLayerIndex);
+        }
+        function needpassreason() {
+            if (_isJilin) return false;
+            return true;
+        }
+        function docheckbatch(comPersonIdList, state, action) {
+            let msg = '<span style="color: #666666;">&nbsp;正在审核&nbsp;···</span>';
+            let load_index = layer.msg(msg, {icon: 16, shade: 0.3, time: 0});
+            let selSd = $('input[name="startDate"]').val(), selEd = $('input[name="endDate"]').val();
+            let params = {
+                'onlyCanCheckFlag': true,
+                'scoreTypeVal': 7, // $('#scoreTypeValSelector').val(),
+                'checkState': gCheckState,
+                'checkStates': gCheckStates,
+                'startDate': selSd ? sec2unixs(toDayHeader(selSd)) : '',
+                'endDate': selEd ? sec2unixs(toDayTail(selEd)) : '',
+                'comPersonIds': comPersonIdList.toString(),
+                'standardKindId': _standardKindId,
+                'operateCheckState': state,
+                'operateFlowChainState': getFcsByCs(state),
+                'checkMemo': gReason,
+                'checkUnit': _unitId,
+                'checkUser': _unitId,
+                'unitUserType': _uut,
+                'action': `${action}-byperson`,
+                'fcs': getFcsByCs(state),
+                'fp': fp,
+                'userId': _userId,
+                'notslids': _isJilin ? '773a3d80-c128-11f0-89a6-005056a64c01,773a45c8-c128-11f0-89a6-005056a64c01,773a458c-c128-11f0-89a6-005056a64c01,773a4546-c128-11f0-89a6-005056a64c01,773a4500-c128-11f0-89a6-005056a64c01,773a41f4-c128-11f0-89a6-005056a64c01' : null,
+            };
+            byPersonCheckBatchAction(params).then((response) => {
+                let jsonRes = response.data;
+                if (jsonRes.success) {
+                    layer.msg('审核完成', {icon: 1, time: 1500});
+                    table.reload('personTable');
+                } else {
+                    layer.msg(jsonRes.msg, {icon: 2, time: 1500});
+                }
+            }).catch(error => {
+                layer.msg('审核失败', {icon: 2, time: 1500});
+            }).finally(() => {
+                layer.close(load_index);
+            });
+        }
+        table.on('tool(personTable)', function (obj) {
+            let personRowData = obj.data;
+            if ('scoreDetailBtn' === obj.event) {
+                showScoreDetailModal(personRowData);
+            }
+        });
+        function getSifter() {
+            const cs = $('#csSelector').val();
+            const csEq0 = (cs.length > 0) && (0 === toNum(cs));
+            gCheckState = csEq0 ? null : cs;
+            gCheckStates = csEq0 ? '0,4' : null;
+            let queryOption = $('#queryOption');
+            let queryKeyword = $('#queryKeyword');
+            const medicaltype = toNum($('select[name=medicaltype]').val());
+            let titletypes = null, unittypes = null;
+            if (_isGov) {
+                unittypes = medicaltype === 1 ? '1,0' : (medicaltype === 2 ? '2' : null);
+            } else {
+                titletypes = medicaltype === 1 ? _titleTypes1 : (medicaltype === 2 ? _titleTypes2 : null);
+            }
+            return {
+                'unitId': pickUnitId(_unitId),
+                'depth': getDepthPlus(),
+                'scoreTypeVal': 7, // $('#scoreTypeValSelector').val(),
+                'personNo': $(queryOption).val() === 'personNo' ? $(queryKeyword).val() : '',
+                'personName': $(queryOption).val() === 'personName' ? $(queryKeyword).val() : '',
+                'certId': $(queryOption).val() === 'certId' ? $(queryKeyword).val() : '',
+                'personStateId': $('#personStateIdSelector').val(),
+                'projName': $('#projNameInput').val(),
+                'checkState': gCheckState,
+                'checkStates': gCheckStates,
+                // 'flowChainState': fcsFilter.flowChainState,
+                // 'excludeFcs': fcsFilter.excludeFcs,
+                // 'includeFcsList': fcsFilter.includeFcsList,
+                // 'excludeFcsList': fcsFilter.excludeFcsList,
+                // 'scoreLevel': $('#scoreLevelSelector').val(),
+                'scoreLevelIds': _lbl_inst.getVal('lblScoreLevel_ids'), // gScoreLevelSelector ? gScoreLevelSelector.getValue('valueStr') : '',
+                'titleId': gTitleTreeSelector ? gTitleTreeSelector.getValue('valueStr') : '',
+                'startDate': toDayHeader($('input[name="startDate"]').val()),
+                'endDate': toDayTail($('input[name="endDate"]').val()),
+                // 'statex': '___1',
+                'unitTypes': unittypes,
+                'titleTypes': titletypes,
+            };
+        }
+        function renderPersonTable() {
+            table.render({
+                elem: '#personTable',
+                id: 'personTable',
+                url: huayi_personorg_url + 'omme/person/scored/page',
+                method: 'post',
+                contentType: 'application/json',
+                page: true,
+                limit: getPageSize(),
+                limits: [10, 50, 100, 150, 200],
+                height: 'full-182',
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                where: getSifter(),
+                request: {
+                    pageName: 'pageNum',  // 页码的参数名称，默认：page
+                    limitName: 'pageSize'  // 每页数据量的参数名，默认：limit
+                },
+                parseData: function (res) {
+                    return {
+                        'code': res.status === 200 ? 0 : res.status, // 解析接口状态
+                        'msg': res.message, // 解析提示文本
+                        'count': res.data.recordsTotal, // 解析数据长度
+                        'data': res.data.records, // 解析数据列表
+                        'page': res.data.pageNum, // 当前页
+                        'limit': res.data.pageSize // 每页条数
+                    }
+                },
+                toolbar: '#table_toolbar',
+                cols: [[
+                    {
+                        title: '选择', width: 60, align: 'center', fixed: 'left', hide: !cancheckbypids(), templet: function (data) {
+                            return '<input type="checkbox" name="layTableCheckbox" lay-skin="primary">';
+                        }
+                    },
+                    {fixed: 'left', title: '学分明细', width: 100, align: 'center', templet: '#operationCell'},
+                    {field: 'personName', title: '姓名', width: 120, align: 'center', sort: true},
+                    {field: 'certId', title: '证件号', width: 172, align: 'center', sort: true},
+                    {field: 'titleName', title: '职称', width: 120, align: 'center', sort: true},
+                    {field: 'deptName', title: '科室', width: 150, align: 'center', sort: true},
+                    {field: 'personStateName', title: '人员状态', width: 120, align: 'center', sort: true},
+                    {field: 'personNo', title: '人员编号', width: 150, align: 'center', sort: true},
+                    {field: 'unitName', title: '单位名称', minWidth: 200, align: 'center', sort: true}
+                ]]
+            });
+        }
+        function reloadPersonTable() {
+            table.reload('personTable', {
+                where: getSifter()
+            });
+        }
+        function cancheckbypids() {
+            let json = JSON.parse(localStorage.getItem('tmp_common_config') || '{}');
+            let res = ('t' === json['fun_check_score_by_person_list'])
+                && (5 === _uut)
+                && ('218000' !== _unitId);
+            // res = true;
+            return res;
+        }
+        function showScoreDetailModal(personRowData) {
+            let selSd = $('input[name="startDate"]').val();
+            let selEd = $('input[name="endDate"]').val();
+            let params = {
+                comPersonId: personRowData.comPersonId,
+                personNo: personRowData.personNo,
+                personName: personRowData.personName,
+                titleName: personRowData.titleName,
+                unitName: personRowData.unitName,
+                scoreTypeVal: 7, // $('#scoreTypeValSelector').val(),
+                checkState: gCheckState,
+                checkStates: gCheckStates,
+                // flowChainState: fcsFilter.flowChainState,
+                // excludeFcs: fcsFilter.excludeFcs,
+                // includeFcsList: fcsFilter.includeFcsList,
+                // excludeFcsList: fcsFilter.excludeFcsList,
+                startDate: selSd ? sec2unixs(toDayHeader(selSd)) : '',
+                endDate: selEd ? sec2unixs(toDayTail(selEd)) : ''
+            };
+            layer.open({
+                type: 2,
+                shade: 0.4,
+                shadeClose: true,
+                title: personRowData.personName + '的学分明细',
+                content: './modals/ByPersonModal.html?' + jsonStr2urlParam(JSON.stringify(params)),
+                area: ['100%', '100%']
+            });
+        }
+    });
+</script>
+<script type="text/javascript" src="/pages/mod/js/label_data.js"></script>
+<script type="text/javascript" src="/pages/mod/libs/vendor.gq12mdzl.d3ec9qak.js"></script>
+</html>

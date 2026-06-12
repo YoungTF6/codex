@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>reason</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.4 -->
+    <!--<link rel="stylesheet" href="/js/layui-v2.6.4/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="/js/layui-v2.6.4/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+</head>
+<body style="background-color: white;">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-tab" lay-filter="state_tab">
+            <ul class="layui-tab-title">
+                <li lay-id="3" class="tab-default layui-this">审核通过</li>
+                <li lay-id="2" class="tab-default">审核不通过</li>
+                <li lay-id="1" class="tab-default">退回</li>
+            </ul>
+        </div>
+        <!-- 数据表格 -->
+        <div class="layui-card-body layui_body_box" style="padding-left: 0;padding-right: 0">
+            <table class="layui-table" id="reasonTable" lay-filter="reasonTable" style="margin: 0;"></table>
+        </div>
+    </div>
+</div>
+<div class="hide" id="someModal">
+    <div id="reasonFormModal">
+        <form class="layui-form" id="reasonForm" lay-filter="reasonForm">
+            <input type="hidden" name="reasonId"/>
+            <div class="layui-inline" style="padding: 20px;">
+                <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>适用阶段</label>
+                <div class="layui-input-block">
+                    <select name="phase" lay-verify="required">
+                        <option></option>
+                        <option value="1">项目申报</option>
+                        <option value="2">项目执行</option>
+                        <option value="3">学分审核</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline" style="padding: 20px;">
+                <div class="layui-input-inline">
+                    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>原因</label>
+                    <div class="layui-input-block">
+                        <textarea type="text" name="reason" placeholder="请输入（最多200字）" autocomplete="off"
+                                  class="layui-input"
+                                  lay-verify="required|reason"></textarea>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <div style="display: flex;justify-content: center">
+                <a class="layui-btn layui-btn-primary layui-layer-close" style="position: relative" href="javascript:;">取消</a>
+                <a class="layui-btn" type="submit" lay-submit lay-filter="reasonFormSubmit">保存</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+<!-- operation cell-->
+<script type="text/html" id="operationCell">
+    <a class="layui-btn layui-btn-xs btn-row" lay-event="editReason">编辑</a>
+</script>
+<!-- toolbar -->
+<script type="text/html" id="tableToolbar">
+    <div class="layui_mess">
+        <div class="layui_display">
+            <a class='layui-btn layui-btn-sm' lay-event='addReason' style="float: right;margin-right: -120px;">添加</a>
+        </div>
+    </div>
+</script>
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        lat: 'lat'
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'xmSelect', 'lat'], function () {
+        let table = layui.table;
+        let layer = layui.layer;
+        let form = layui.form;
+        let laydate = layui.laydate;
+        let dropdown = layui.dropdown;
+        let element = layui.element;
+        let $ = layui.jquery;
+        let xmSelect = layui.xmSelect;
+        let lat = layui.lat;
+        const _phaseEnum = {
+            '0': '',
+            '1': '项目申报',
+            '2': '项目执行',
+            '3': '学分审核',
+        };
+        let gLayerIndex = -1;
+        let gState = CheckStateEnum.APPROVE;
+        let gIsEdit = false;
+        window.refreshReasonTable = refreshReasonTable;
+        layer.ready(function () {
+            console.info('1.layer.ready');
+        });
+        window.onload = function () {
+        }
+        $(function () {
+            renderReasonTable();
+        });
+        element.on('tab(state_tab)', function (elem) {
+            gState = $(this).attr('lay-id');
+            refreshReasonTable();
+        });
+        table.on('tool(reasonTable)', function (obj) {
+            let rowData = obj.data;
+            if ('editReason' === obj.event) {
+                console.info('editReason');
+                showReasonFormModal(rowData);
+            }
+        });
+        table.on('toolbar(reasonTable)', function (obj) {
+            if ('addReason' === obj.event) {
+                console.info('addReason');
+                showReasonFormModal({
+                    'reasonId': '',
+                    'reason': '',
+                    'phase': ''
+                });
+            }
+        });
+        form.on('submit(reasonFormSubmit)', function (data) {
+            saveOrUpdateReason(data.field);
+            return false;
+        });
+        form.verify({
+            reason: [/^[\s\S]{1,200}$/, '最多200个汉字']
+        });
+        function saveOrUpdateReason(reason) {
+            let visit;
+            if (gIsEdit) {
+                visit = huayi_sjwh_url + 'reason/update';
+            } else {
+                visit = huayi_sjwh_url + 'reason/save';
+                reason.unitId = _unitId;
+                reason.state = gState;
+            }
+            postAction(visit, reason).then(response => {
+                let jsonRes = response.data;
+                if (jsonRes.success) {
+                    lat.okMsg('已保存');
+                    layer.close(gLayerIndex);
+                    refreshReasonTable();
+                } else {
+                    lat.failMsg(jsonRes.msg);
+                }
+            }).catch(error => {
+                lat.errorMsg('error:保存审核意见');
+            }).finally(() => {
+            });
+        }
+        function showReasonFormModal(reason) {
+            gIsEdit = reason && reason.reasonId;
+            gLayerIndex = layer.open({
+                type: 1,
+                shade: 0.4,
+                shadeClose: true,
+                title: gIsEdit ? '编辑' : '添加',
+                content: $('#reasonFormModal'),
+                area: ['600px', '420px'],
+                success: function (layero, index) {
+                    form.val('reasonForm', reason);
+                    $('#reasonFormModal').show();
+                    $('#someModal').show();
+                },
+                end: function () {
+                    $('#reasonFormModal').hide();
+                    $('#someModal').hide();
+                }
+            });
+        }
+        function renderReasonTable() {
+            table.render({
+                id: 'reasonTable',
+                elem: '#reasonTable',
+                height: 'full-100',
+                toolbar: '#tableToolbar',
+                defaultToolbar: [],
+                url: huayi_sjwh_url + 'reason/page',
+                method: 'POST',
+                contentType: 'application/json',
+                loading: true,
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                where: getSifter(),
+                request: {
+                    pageName: 'pageNum', // 页码的参数名称，默认：page
+                    limitName: 'pageSize' // 每页数据量的参数名，默认：limit
+                },
+                parseData: function (res) {
+                    return {
+                        'code': res.status === 200 ? 0 : res.status, // 解析接口状态
+                        'msg': res.message, // 解析提示文本
+                        'count': res.data.recordsTotal, // 解析数据长度
+                        'data': res.data.records, // 解析数据列表
+                        'page': res.data.pageNum, // 当前页
+                        'limit': res.data.pageSize // 每页条数
+                    }
+                },
+                cols: [[
+                    {field: 'addTime', title: '序号', width: 60, align: 'center', templet: (data) => data.LAY_INDEX},
+                    {
+                        field: 'phase',
+                        title: '适用阶段',
+                        width: 260,
+                        align: 'center',
+                        sort: true,
+                        templet: (data) => _phaseEnum[getOrDefault(data.phase, 0)]
+                    },
+                    {field: 'reason', title: '意见', minWidth: 260, align: 'center', sort: true},
+                    {title: '操作', width: 80, align: 'center', templet: '#operationCell'},
+                ]],
+                data: [{
+                    personNo: "123"
+                }],
+                done: function (res, curr, count) {
+                }
+            });
+        }
+        function getSifter() {
+            return {
+                state: gState,
+                unitId: _unitId
+            };
+        }
+        function refreshReasonTable() {
+            table.reload('reasonTable', {
+                where: getSifter()
+            });
+        }
+    });
+</script>
+<style>
+    [name="phase"] {
+        width: 400px;
+    }
+    [name="reason"] {
+        width: 400px;
+        height: 200px;
+    }
+</style>
+</html>

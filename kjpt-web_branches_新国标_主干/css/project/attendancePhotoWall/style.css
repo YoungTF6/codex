@@ -1,0 +1,387 @@
+html {
+    width: 100%;
+  }
+  
+  body {
+    width: 100%;
+    position: relative;
+  }
+  
+  * {
+    font-family: "微软雅黑" !important;
+  }
+  
+  img {
+    border: none;
+  }
+  
+  a {
+    text-decoration: none;
+  }
+  
+  .check_container {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+  }
+  .bigbox{
+    flex: 1;
+    margin:0 10px;
+    position: relative;
+  }
+  .left_box{
+    flex-grow: 4;
+  }
+  
+  .left_detail {
+    width: 100%;
+    height: 55px;
+    text-align: center;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    background-color: #FFF2DF;
+  }
+  
+  .detail_tit {
+    display: inline-block;
+    font-size: 18px;
+    color: #ad7526;
+    line-height: 55px;
+    background: url("/img/project/attendancePhotoWall/course_icon.png") no-repeat left center;
+    background-size: 25px;
+    padding-left: 35px;
+  }
+  
+  .left_ul {
+    width: 100%;
+    float: left;
+  }
+  
+  .left_lis {
+    width: 100%;
+    float: left;
+  /*  margin-top: 8%;*/
+    margin-top: 25px;
+  }
+  
+  .left_top {
+    width: 100%;
+    float: left;
+    font-size: 16px;
+    color: #999999;
+  }
+  
+  .left_news {
+    width: 100%;
+    float: left;
+    font-size: 16px;
+    color: #333333;
+    margin-top: 5px;
+    /* overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; */
+  }
+  
+  .place_icon {
+    width: calc(100% - 30px);
+    float: left;
+    font-size: 16px;
+    margin-top: 10px;
+    color: #333333;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    background: url("/img/project/attendancePhotoWall/place_icon.png") no-repeat left center;
+    background-size: 18px;
+    padding-left: 30px;
+  }
+  
+  .cent_box {
+    flex-grow: 10;
+    width: 60%;
+    min-height: 100%;
+    height: auto;
+    background: url("/img/project/attendancePhotoWall/bg.png") no-repeat;
+    background-size: 100% 100%;
+    position: relative;
+  }
+  
+  .cent_tit {
+    font-size: 22px;
+    color: white;
+    text-align: center;
+    padding:16px 0;
+    background: url(/img/project/attendancePhotoWall/bgTitle.png) no-repeat;
+    background-size: 100%;
+    width: 50%;
+    min-width: 420px;
+    margin: 0px auto 10px;
+  }
+  
+  .cent_tit span {
+    font-size: 22px;
+    color: #ffbc5d;
+  }
+  
+  .cont_box {
+    width: 100%;
+    margin: 0px auto 0px;
+    height: auto;
+  }
+  .cont_inline_box{
+      position: relative;
+      width: 100%;
+      height: 0px;
+      background-color: #FFF;
+      padding-bottom: 100%;
+      margin: 20px auto;
+  }
+  .cont_box img{
+    margin: 0 auto;
+  }
+  
+  .cent_img {
+    width: calc(100% - 50px);
+    display: block;
+    float: left;
+    border-radius: 20px;
+    background-color: white;
+    padding: 25px;
+  }
+  
+  .cent_foot {
+    width: 80%;
+    height: 40px;
+    margin: 5px auto 10px;
+    text-align: center;
+  }
+  
+  .cent_lines {
+    position: relative;
+    text-align: center;
+    display: inline-block;
+    padding: 0px 20px;
+    color: white;
+  }
+
+  .cent_lines::before{
+    content: "";
+    width: 100%;
+    position: absolute;
+    border-bottom: 1px solid white;
+    left: -120px;
+    top: 10px;
+  }
+  .cent_lines::after{
+    content: "";
+    width: 100%;
+    position: absolute;
+    border-bottom: 1px solid white;
+    right: -120px;
+    top: 10px;
+  }
+  
+  .cent_text {
+    width: 60%;
+    float: left;
+    font-size: 18px;
+    color: white;
+    text-align: center;
+    text-align-last: center;
+    line-height: 40px;
+    background: none;
+    border: none;
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background-color: #34394B;
+    cursor: pointer;
+  }
+  .right_box{
+    flex-grow: 5;
+  }
+  
+  .right_top {
+    width: 100%;
+    height: 55px;
+    text-align: center;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    background-color: #FFF2DF;
+  }
+  
+  .right_tit {
+    display: inline-block;
+    font-size: 18px;
+    color: #ad7526;
+    line-height: 55px;
+    background: url("/img/project/attendancePhotoWall/sta_icon.png") no-repeat left center;
+    background-size: 25px;
+    padding-left: 35px;
+  }
+  
+  .right_ul {
+    width: 100%;
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  
+  .right_lis {
+    width: 100%;
+    float: left;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed #808080;
+  }
+  .right_img_box{
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    float: left;
+    display: block;
+    overflow: hidden;
+  }
+  .right_img {
+    width: 100%;
+    min-height: 100%;
+    /* border-radius: 50%;
+    float: left;
+    display: block; */
+  }
+  
+  .right_cont {
+    width: calc(100% - 105px);
+    float: left;
+    margin-left: 20px;
+    position: relative;
+  }
+  
+  .right_news {
+    width: 100%;
+    float: left;
+    font-size: 16px;
+    color: #333333;
+    margin-top: 3px;
+  }
+  
+  .right_text {
+    width: 100%;
+    float: left;
+    font-size: 14px;
+    color: #808080;
+    margin-top: 6px;
+  }
+  
+  .right_prove {
+    width: 60px;
+    height:60px;
+    display: block;
+    position: absolute;
+    right: 2%;
+  }
+  
+  #slide {
+    position: absolute;
+    width: 100%;
+    height: calc(100% - 100px);
+    overflow: hidden;
+    top: 55px;
+    right: 0;
+  }
+  .lis_sub{
+    width: calc(100% - 20px);
+    float: left;
+    padding: 10px;
+    background-color: white;
+  }
+  .sub_img {
+    width: 18px;
+    float: left;
+    display: block;
+  }
+  .lit_tit{
+    float: left;
+    font-size: 16px;
+    color: #999999;
+    line-height: 20px;
+    margin-left: 10px;
+  }
+  .lit_text{
+    float: left;
+    font-size: 16px;
+    color: #333333;
+    margin-top: 15px;
+    margin-left: 30px;
+  }
+  
+.pic_box{
+    position: relative;
+    width: calc(100% - 80px);
+    height: 0;
+    margin: 0px auto;
+    padding-bottom: 64%;
+    overflow: hidden;
+}
+.right_hidden_img img{
+    width: 100%;
+}
+.right_hidden_img{
+    width: 0px;
+    height: 0px;
+    border-radius: 50%;
+    position: absolute;
+    right: 0px;
+}
+.u-flyer {
+    display: block;
+    width: 150px;
+    height: 150px;
+    position: fixed;
+    z-index: 9999;
+    border-radius: 50%;
+}
+.m-sidebar {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+.pic_box div{
+    position: absolute;
+    text-align: center;
+    left: 0px;
+    right: 0px;
+    bottom: 10px;
+    margin: auto;
+    color: #FFF;
+    font-size: 24px;
+    z-index: 999;
+    letter-spacing: 3px;
+}
+
+.left_course_box{
+    position: absolute;
+    width: 100%;
+    height: calc(100% - 100px);
+    overflow: hidden;
+    top: 55px;
+    left: 0;
+}
+.left_ul{
+    width: calc(100% + 20px);
+    height: 100%;
+    overflow-y: scroll;
+    float: unset;
+}
+.right_ul{
+    transition: all 1s;
+    transition-timing-function: steps(1000,start);
+}
+.right_container {
+  /* width: calc(100% + 20px); */
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+}
+.right_container::-webkit-scrollbar {
+  width:0;
+}

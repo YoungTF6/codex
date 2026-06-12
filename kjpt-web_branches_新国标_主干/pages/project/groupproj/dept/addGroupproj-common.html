@@ -1,0 +1,117 @@
+
+<form class="layui-form" id="groupProjForm" lay-filter="addGroupProjForm">
+    <input type="hidden" name="groupProjId">
+    <div class="layui-form-item">
+        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md6">
+            <label class="layui-form-label"><i class="required-item"></i>举办年度</label>
+            <div class="layui-input-block">
+                <select name="cmeYear" id="cmeYearForm" lay-filter="cmeYearForm" lay-verify="required">
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md6">
+            <label class="layui-form-label"><i class="required-item"></i>活动名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="groupProjName" lay-verify="required|groupProjName" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md6">
+            <label class="layui-form-label required" id="lblScoreLevel">活动级别</label>
+            <div class="layui-input-block">
+                <input type="text" autocomplete="off" class="layui-input" 
+                        lay-verify="required" lay-filter="scoreLevelForm" id="scoreLevelForm" name="scoreLevel" placeholder="请选择">
+            </div>
+        </div>
+        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md6">
+            <label class="layui-form-label required" id="lblActivityForm"></label>
+            <div class="layui-input-block">
+                <select name="holdType" id="holdTypeFrom" lay-verify="required">
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md6">
+            <label class="layui-form-label required" id="lblActivityContent"></label>
+            <div class="layui-input-block">
+                <select name="scoreType" id="scoreType" lay-filter="scoreType"></select>
+            </div>
+        </div>
+        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md6 renamexxx" id="period-container">
+            <label class="layui-form-label" id="lblPeriod"><i class="required-item"></i>学时</label>
+            <div class="layui-input-block">
+                <input type="number" name="period" id="period" min="1" lay-verify="required|period" autocomplete="off" 
+                        class="layui-input number_ph">
+            </div>
+        </div>
+        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md6" id="medicalType-container">
+            <label class="layui-form-label required" id="lblMedicalSystem"></label>
+            <div class="layui-input-block">
+                <select name="medicalType" id="medicalType" lay-verify="required">
+                    <option value="">请选择</option>
+                    <option value="1">西医</option>
+                    <option value="2">中医</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md6">
+            <label class="layui-form-label">考核方式</label>
+            <div class="layui-input-block">
+                <select name="checkType" id="checkTypeSelector">
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md6" id="limitPerson-container">
+            <label class="layui-form-label"><i class="required-item"></i>拟授分人数</label>
+            <div class="layui-input-block">
+                <input type="number" name="limitPerson" id="limitPerson"  min="0" lay-verify="required|limitPerson" autocomplete="off" 
+                        class="layui-input" />
+            </div>
+        </div>
+        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md6" id="score-container">
+            <label class="layui-form-label"><i class="required-item"></i>学分</label>
+            <div class="layui-input-block">
+                <input type="number" name="score" id="score" min="0" lay-verify="required|score" autocomplete="off" 
+                        class="layui-input number_ph">
+            </div>
+        </div>
+        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md6">
+            <label class="layui-form-label"><i class="required-item"></i>二级学科</label>
+            <div class="layui-input-block">
+                <select name="knowledgeTwoId" lay-filter="twoKnowledgeIdFrom" id="twoKnowledgeIdFrom" lay-verify="required" lay-search="true">
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md6">
+            <label class="layui-form-label"><i class="required-item"></i>三级学科</label>
+            <div class="layui-input-block">
+                <select name="knowledgeId" lay-filter="knowledgeIdSelector" id="knowledgeThreeFrom" lay-search="" lay-verify="required">
+                </select>
+            </div>
+        </div>
+        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md6">
+            <label class="layui-form-label" id="noLabel">其他编号</label>
+            <div class="layui-input-block">
+                <input type="text" name="otherNo" lay-verify="otherNo" autocomplete="off" class="layui-input" />
+            </div>
+        </div>
+        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md6">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <input type="text" name="remark" lay-verify="remark" autocomplete="off" class="layui-input" />
+            </div>
+        </div>
+    </div>
+    
+    <div class="layui-form-item">
+        <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+            <div class="div-btn">
+                <button class="layui-btn" type="submit" lay-submit lay-filter="saveBack">保存并返回列表</button>
+                <button class="layui-btn" type="submit" lay-submit lay-filter="nextStep">下一步完善举办周期</button>
+            </div>
+        </div>
+    </div>
+</form>
+

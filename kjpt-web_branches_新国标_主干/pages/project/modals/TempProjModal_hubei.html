@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <title>已公布项目管理（单位）</title>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <script type="text/javascript" src="../../../js/constantPage/projectConstant.js"></script>
+    <script type="text/javascript" src="../../../js/jquery-3.5.1.min.js"></script>
+
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="../../../js/axios.min.js"></script>
+    <script type="text/javascript" src="../../../js/auth.js"></script>
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+    <script type="text/javascript" src="../../../js/api/manage.js"></script>
+    <script type="text/javascript" src="../../../js/moment.min.js"></script>
+    <script type="text/javascript" src="../../../js/api/number2.js"></script>
+    <style type="text/css">
+        html {
+            background-color: white;
+        }
+   
+        .layui-form.layui-border-box.layui-table-view {
+            margin: 0 !important;
+        }
+
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+
+        .layui-table-tool-temp {
+            padding-right: 0;
+        }
+
+        .layui-form-select dl {
+            max-height: 250px;
+            /* 这里根据实际情况设置相应的下拉弹出选项框的最大高度 */
+        }
+        .layui-form-label {
+            width:100px;
+            padding:9px 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="tempProjModalHubei" class="layui_mess"  style="margin-top:8px; width: 100%;">
+        <form class="layui-form" id="tempProjForm" lay-filter="tempProjForm1" style="margin: 25px">
+            <!-- row0 --><!-- layui-col-space5 -->
+            <input type="hidden" name="projId">
+
+            <!-- row1 -->
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>举办年度</label>
+                    <div class="layui-input-block">
+                        <select name="cmeYear" id="cmeYear" lay-verify="required" lay-filter="cmeYear">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>项目名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="projName" lay-verify="required" autocomplete="off"
+                            class="layui-input">
+                    </div>
+                </div>
+            </div>
+
+            <!-- row2 -->
+            <div class="layui-form-item">
+                
+
+                <div class="layui-inline">
+                    <!-- 项目级别 -->
+                    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span><label name="lblProjectLevel"></label></label>
+                    <div class="layui-input-block">
+                        <!-- <select name="scoreLevel" id="scoreLevel" lay-verify="required">
+                            <option value=""></option>
+                               <option value="f42a0bb0-b89a-4d11-9f09-a6bb00c0e434">会级Ⅱ类</option> 
+                        </select> -->
+                        <input type="text" autocomplete="off" class="layui-input" 
+                        lay-filter="scoreLevel" id="scoreLevel" name="scoreLevel" placeholder="请选择">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                        <!-- 举办方式 -->
+                        <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span><label name="lblActivityForm"></label></label>
+                        <div class="layui-input-block">
+                            <select name="holdType" id="holdType" lay-verify="required">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                </div>
+            </div>
+           
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <!-- 活动内容 -->
+                    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span><label name="lblActivityContent"></label></label>
+                    <div class="layui-input-block">
+                        <select name="scoreLevelContent" id="scoreLevelContent" lay-filter="scoreLevelContent"></select>
+                    </div>
+                </div>
+                    <!-- 活动类别 -->
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span><label name="lblActivityType"></label></label>
+                    <div class="layui-input-block">
+                        <select name="projType" id="projType">
+                            <option value="">全部</option>
+                            <option value="1">推荐项目</option>
+                            <option value="2">推广项目</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+            
+                <div class="layui-inline">
+                        <!-- 所属医学体系 -->
+                    <label class="layui-form-label"><span style="color: red;">*&nbsp;</span><label name="lblMedicalSystem" style="padding-right:1px;"></label></label>
+                        <div class="layui-input-block">
+                            <select name="medicalType" id="medicalTypeSelector" lay-verify="required">
+                                <option value=""></option>
+                                <option value="1">西医</option>
+                                <option value="2">中医</option>
+                            </select>
+                        </div>
+                    </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>举办形式</label>
+                    <div class="layui-input-block">
+                        <select name="holdForm" id="holdForm" lay-verify="required">
+                            <option value=""></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+                     
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>拟开始日期</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="startDate" class="layui-input" id="startDate"
+                            lay-verify="required" autocomplete="off" placeholder="请输入开始日期">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>拟结束日期</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="endDate" class="layui-input" id="endDate" lay-verify="required"
+                            placeholder="请输入结束日期"  autocomplete="off">
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">拟举办天数</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="holdDay" id="hubeiHoldDay" autocomplete="off" class="layui-input layui-disabled" disabled>
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>举办地点</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="studyAddress" autocomplete="off" class="layui-input" lay-verify="required">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>总学时</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="period" id="hubeiPeriod" min="0" lay-verify="required" autocomplete="off"
+                                class="layui-input number_ph">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>学分</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="score" id="hubeiScore" min="0" lay-verify="required" autocomplete="off" readonly
+                            class="layui-input number_ph layui-disabled">
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- row7 -->
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>二级学科</label>
+                    <div class="layui-input-block">
+                        <select name="knowledgeTwo" lay-filter="knowledgeTwo" id="knowledgeTwo"
+                                lay-verify="required" lay-search="true">
+                            <option value=""></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>三级学科</label>
+                    <div class="layui-input-block">
+                        <select name="knowledgeId" lay-filter="knowledgeId" id="knowledgeId"
+                                lay-verify="required" lay-search="">
+                            <option value=""></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- row8 -->
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>讲授理论学时数</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="theoryTime"  id="hubeiTheoryTime" min="0" lay-verify="required" autocomplete="off"
+                            class="layui-input number_ph">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>实验（技术示范）时数</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="demoTime" id="hubeiDemoTime" min="0" autocomplete="off" class="layui-input number_ph"
+                            lay-verify="required">
+                    </div>
+                </div>
+            </div>
+
+            <!-- row9 -->
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>项目负责人</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="projManager" lay-verify="required" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>项目负责人联系电话</label>
+                    <div class="layui-input-block">
+                        <input type="number" min="0" name="projManagerTelephone" lay-verify="required|telephone"
+                            autocomplete="off"
+                            class="layui-input number_ph">
+                    </div>
+                </div>
+            </div>
+
+            <!-- row10 -->
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">拟授分人数</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="limitPerson" min="0" autocomplete="off" 
+                            class="layui-input number_ph">
+                    </div>
+                </div>
+                <div class="layui-inline"></div>
+            </div>
+
+            <!-- row11 -->
+            <div style="text-align: center;">
+                <!-- <button class="layui-btn layui-btn-primary" lay-filter="tpfCancel" onclick="javascript:;">取消</button>-->
+                <a class="layui-btn layui-btn-primary layui-layer-close" style="position: relative"
+                href="javascript:;">取消</a>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                <button class="layui-btn" type="submit" lay-submit lay-filter="hubeiTpfSubmit">保存</button>
+            </div>
+
+        </form>
+    </div>
+</body>
+
+<script>
+    layui.config({
+        base: '../../../js/layui/ext/'
+    }).extend({
+        treeSelect: 'treeSelect'
+    });
+    layui.use(['table', 'form', 'laydate',  'treeSelect', 'lat'], function () {
+        var form = layui.form;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var laydate = layui.laydate;
+        var treeSelect = layui.treeSelect;
+        let lat = layui.lat;
+        var laydateStart;
+        var laydateEnd;
+        
+        
+        //获取套
+        window.getCmeStandardKindId = function () {
+            return localStorage.getItem("standardkind-id");
+        }
+        //获取单位
+        window.getUnitId = function () {
+            return localStorage.getItem("unit-id");
+        }
+
+        window.init = function () {
+            $('#tempProjModalHubei').find('input').val('');
+            yearInit();
+            dateInit();
+            datelimit($("#cmeYear").val());
+            initScoreLevelSel();
+            initHoldTypeSel();
+            initScoreLevelContentSel();
+            initKnowledgeSelBatch();
+            lat.renderHoldForm('#holdForm');
+        }
+
+        window.yearInit = () => {
+            let curYear = (new Date()).getFullYear();
+            $("#cmeYear").append(`<option value='${curYear}'>${curYear}</option>`);
+        }
+
+        window.dateInit = () => {
+            laydateStart = laydate.render({elem:"#startDate", type: 'date', trigger: 'click'});
+            laydateEnd = laydate.render({elem:"#endDate", type: 'date', trigger: 'click',      
+                done: function (value, date, endDateObj) {
+                    $("#hubeiHoldDay").val("");
+                    let startDateStr = $("#startDate").val();
+                    let endDateStr = $("#endDate").val();
+                    let startDate = Date.parse(new Date(startDateStr));
+                    let endDate = Date.parse(new Date(endDateStr));
+                    let day = (endDate - startDate) / (24 * 60 * 60 * 1000) + 1;
+                    if (day <= 0) {
+                        layer.msg("结束日期应该大于开始日期");
+                    } else {
+                        $("#hubeiHoldDay").val(day);
+                    }}
+                });
+        }
+
+        window.datelimit = (cmeYear) => {
+            $.ajax({
+                async: false,
+                url:  huayi_sjwh_url + "cmeYear",
+                data: { cmeYear:cmeYear,cmeStandardKindId: window.getCmeStandardKindId() },
+                success: function(res) {
+                    let data = res.data;
+                    let startDate = "";
+                    let endDate = "";
+                    if(data != null && data.length > 0) {
+                        startDate = data[0].startDate;
+                        endDate = data[0].endDate;
+                        startD = new Date(startDate);
+                        endD = new Date(endDate);
+
+                        minMaxObj = {
+                            min:{ year: startD.getFullYear(),month: startD.getMonth(), date: startD.getDate()}, 
+                            max:{ year: endD.getFullYear(),month: endD.getMonth(), date:  endD.getDate()+1}
+                        };
+                        laydateStart.config.min =  minMaxObj.min;
+                        laydateStart.config.max =  minMaxObj.max;
+                        laydateEnd.config.min =  minMaxObj.min;
+                        laydateEnd.config.max =  minMaxObj.max;
+                    }
+                }
+            });
+        }
+
+        window.initScoreLevelSel = () => {
+            let year = $('#cmeYear').val(); 
+            window.scoreLevelSel && (treeSelect.destroy('scoreLevel'), $('#scoreLevel').val(''));
+            window.scoreLevelSel = treeSelect.render({
+                elem    : '#scoreLevel',
+                data    : huayi_sjwh_url + 'option/scoreLevel/tree/' + getCmeStandardKindId() + '/' + year + '/1__',
+                type    : 'get',
+                search  : true,
+                style   : {
+                    folder  : { enable: false }, // 父节点图标
+                    line    : { enable: true} // 连接线
+                },
+                click   : d => {
+                        initHoldTypeSel(); 
+                        initScoreLevelContentSel();
+                        
+                  
+                },
+                disabledParent: true,
+                success : d => (initHoldTypeSel(), initScoreLevelContentSel())
+            });
+        }
+
+        window.initHoldTypeSel = () => {
+            let keyName     = projectLabels.lblProjectLevel,
+                scoreLevel  = $('#scoreLevel').val();
+            $.ajax({
+                url     : huayi_sjwh_url + 'option/holdType/list/' + getCmeStandardKindId() + '/' + scoreLevel + '/1__',
+                async   : false,
+                success : re => {
+                    if (re.status == 200) {
+                        let $item = $('#holdType');
+                        $item.empty().append($('<option value="">请选择</option>'));
+                        $.each(re.data, (i, d) => $item.append($('<option value="' + d.holdTypeId + '">' + d.holdTypeName + '</option>')));
+                    } else layer.msg(keyName + '加载失败', { icon: 7, time: 1500 });
+                },
+                error   : () => layer.msg(keyName + '加载失败', { icon: 7, time: 1500 })
+            });
+            form.render();
+        }
+
+        
+        window.initScoreLevelContentSel = () => {
+            let keyName     = projectLabels.lblActivityContent,
+                scoreLevel  = $('#scoreLevel').val();
+            $.ajax({
+                url     : huayi_sjwh_url + 'option/scoreLevelContent/list',
+                data    : { scoreLevel: scoreLevel },
+                async   : false,
+                success : re => {
+                    if (re.status == 200) {
+                        let $item = $('#scoreLevelContent');
+                        $item.empty().append($('<option value="">请选择</option>'));
+                        $.each(re.data, (i, d) => $item.append($('<option value="' + d.value + '">' + d.scoreLevelContentName + '</option>')));
+                    } else layer.msg(keyName + '加载失败', { icon: 7, time: 1500 });
+                },
+                error   : () => layer.msg(keyName + '加载失败', { icon: 7, time: 1500 })
+            });
+            form.render();
+        }
+
+        window.initKnowledgeSel = (sel, name, data, callback) => {
+            $(sel).find('option:gt(0)').remove();
+            $.ajax({
+                async   : false,
+                url     : huayi_sjwh_url + 'comKnowledge',
+                data    : { ...data, ...getVerParams() },
+                success : re => {
+                    if (re.success == true) {
+                        let data = re.data;
+                        data.forEach(item => $(sel).append(`<option value="${item.knowledgeId}">${item.knowledgeName}</option>`));
+                        if (typeof callback == 'function') callback(data);
+                        form.render("select");
+                    }
+                    else layer.msg(name + '加载失败', { icon: 7, time: 1500 });
+                },
+                error   : () => layer.msg(name + '加载失败', { icon: 7, time: 1500 })
+            });
+        }
+        window.initKnowledgeSelBatch = () => {
+            initKnowledgeSel('#knowledgeTwo', '二级学科', { knowledgeType: 2 });
+            $('#knowledgeId').find('option:gt(0)').remove();
+            form.on('select(knowledgeTwo)', data => initKnowledgeSel('#knowledgeId', '三级学科', { knowledgeType: 3, knowledgeTwoId: data.value }));
+        }
+        window.getVerParams = () => {
+            return {
+                cmeStandardKindId   : getCmeStandardKindId(),
+                versionYear         : $('#cmeYear').val()
+            };
+        }
+        
+        window.calHubeiScore = function() {
+            let holdDay = $("#hubeiHoldDay").val() == "" ? 0 : $("#hubeiHoldDay").val();
+            let period = $("#hubeiPeriod").val() == "" ? 0 : $("#hubeiPeriod").val();
+            let holdDayScore = holdDay * 2;
+            let periodScore = Math.floor(period / 3);
+            let score = holdDayScore < periodScore ? holdDayScore : periodScore;
+            $("#hubeiScore").val(score);
+        }
+
+        $("#hubeiHoldDay").change(calHubeiScore);
+        $("#hubeiPeriod").change(calHubeiScore);
+        $("#hubeiDemoTime").blur(function () {
+            let period = $("#hubeiPeriod").val();
+            let theoryTime = $("#hubeiTheoryTime").val();
+            let demoTime = $("#hubeiDemoTime").val();
+
+            if ((parseInt(theoryTime) + parseInt(demoTime)) != parseInt(period)) {
+                layer.msg('总学时"不等于"理论学时"和"实验技术学时"之和');
+                $("#hubeiDemoTime").val("");
+            }
+        });
+
+
+        form.on('select(cmeYear)',function(data) {
+            datelimit(data.value);
+            initScoreLevelSel();
+            initKnowledgeSelBatch();
+        });
+
+        form.on('submit(hubeiTpfSubmit)', function (data) {
+            let fields = JSON.parse(JSON.stringify(data.field))
+            console.log(fields);
+            fields.unitId = localStorage.getItem("unit-id");
+            fields.deptId = localStorage.getItem("dept-id");
+            fields.startDate = toDayHeader(fields.startDate);
+            fields.endDate = toDayTail(fields.endDate);
+            fields.checkType = "7e152a7d-dc01-4e88-918e-9b2f00eb28a0";
+            fields.remark = "";
+            fields.userCreate = localStorage.getItem("unit-id");
+            fields.cmeStandardKindId = "73ba18db-33fd-4746-ab41-9beb009f69a1";
+            //项目分类  1 公布项目--项目申报  2 公布项目--项目备案  3 手工添加项目  4 临时项目
+            fields.projectCategory=3;
+
+            $.ajax({
+                type: "post",
+                async: false,
+                url: huayi_projectscore_url + "tempProj/saveTempProjByOrdiUnit",
+                data: JSON.stringify(fields),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    if (data.success == true) {
+                        layer.msg("添加成功", { icon: 1, time: 2000 }, function () {
+                            parent.reloadTable();
+                            var index = parent.layer.getFrameIndex(window.name); 
+                            parent.layer.close(index); 
+                           
+                        });
+                    } else {
+                        layer.msg(data.msg);
+                    }
+                },
+                error: function () {
+                    layer.msg("数据发送失败");
+                }
+
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        form.verify({
+            telephone: [/(^$)|^\d{8,11}$/, '电话格式不正确']
+        });
+
+        $(function() {
+            renderLables();
+            init();
+        });
+        
+
+
+    });
+
+</script>
+
+

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>举办前通知及议程查看</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+    <link rel="stylesheet" href="../../../js/layui/ext/selectInput/selectInput.css" media="all">
+    <script src="../../../js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="../../../js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script src="../../../js/constant.js"></script>
+    <style type="text/css">
+        .layui-border-green {
+            color: green;
+            border-color: green;
+        }
+    </style>
+
+</head>
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div id="btnsArea">
+            <div class="layui-btn-container">
+            </div>
+        </div>
+
+        <div id="ViewArea" style="margin:0px 0px; padding:0px 0px; text-align: center; overflow: hidden; position: relative; background-color: #f2f2f2;">
+
+            <iframe id="pdfFrame" src='' frameborder="0" width="100%" height="100%"></iframe>
+
+            <img id="imgView" src='' style="height: 100%; width: auto; max-width: 100%; object-fit: contain; display:none; cursor: grab; transition: transform 0.1s ease-out;"/>
+
+            <div id="imgToolbar" style="display: none; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); padding: 5px 15px; border-radius: 20px; z-index: 999;">
+                <div class="layui-btn-group">
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" style="color: white; border: none; background: transparent;" onclick="imgAction('zoomIn')" title="放大"><i class="layui-icon layui-icon-add-1"></i></button>
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" style="color: white; border: none; background: transparent;" onclick="imgAction('zoomOut')" title="缩小"><i class="layui-icon layui-icon-subtraction"></i></button>
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" style="color: white; border: none; background: transparent;" onclick="imgAction('rotateLeft')" title="向左旋转"><i class="layui-icon layui-icon-refresh" style="transform: scaleX(-1); display:inline-block;"></i></button>
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" style="color: white; border: none; background: transparent;" onclick="imgAction('rotateRight')" title="向右旋转"><i class="layui-icon layui-icon-refresh"></i></button>
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" style="color: white; border: none; background: transparent;" onclick="imgAction('reset')" title="复位"><i class="layui-icon layui-icon-fonts-clear"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+
+</html>
+
+<script>
+    const USERTYPE = localStorage.getItem("user-type");
+    const UNITUSERTYPE = localStorage.getItem("unit-user-type");
+    const USERNAME = localStorage.getItem("user-name");
+    const UNITID = localStorage.getItem("unit-id");
+    const DEPTID = localStorage.getItem("dept-id");
+    const CMESTANDARDKINDID = localStorage.getItem("standardkind-id");
+</script>
+
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        tool: 'tool'
+    });
+
+    // --- 【新增】图片状态变量 ---
+    let imgState = {
+        scale: 1,
+        rotate: 0,
+        x: 0,
+        y: 0
+    };
+    let isDragging = false;
+    let startX, startY;
+
+    // --- 【新增】应用变换的函数 ---
+    function applyTransform() {
+        const img = $("#imgView");
+        // 使用 translate3d 开启硬件加速，提升流畅度
+        img.css("transform", `translate3d(${imgState.x}px, ${imgState.y}px, 0) rotate(${imgState.rotate}deg) scale(${imgState.scale})`);
+    }
+
+    // --- 【新增】工具栏按钮点击事件 ---
+    window.imgAction = function(type) {
+        switch(type) {
+            case 'zoomIn':
+                imgState.scale += 0.2;
+                break;
+            case 'zoomOut':
+                if (imgState.scale > 0.2) imgState.scale -= 0.2;
+                break;
+            case 'rotateLeft':
+                imgState.rotate -= 90;
+                break;
+            case 'rotateRight':
+                imgState.rotate += 90;
+                break;
+            case 'reset':
+                imgState = { scale: 1, rotate: 0, x: 0, y: 0 };
+                break;
+        }
+        applyTransform();
+    }
+
+    layui.use(['tool'], function () {
+        var tool = layui.tool;
+        let arr = layui.sessionData("projContract")["noticeArr"];
+
+        window.viewFile = function (obj) {
+            $(obj).attr("class", "layui-btn layui-btn-radius");
+            $(obj).siblings().attr("class", "layui-btn layui-btn-radius layui-btn-primary layui-border-green");
+
+            let filePath = $(obj).attr("filePath");
+            filePath = tool.getComAliyunUrl(filePath);
+
+            if(filePath.toLocaleLowerCase().indexOf(".pdf") > 0) {
+                let pre = "/js/pdfjs/web/viewer.html?file=";
+                $("#pdfFrame").attr("src", pre + encodeURIComponent(filePath) );
+                $("#pdfFrame").show();
+                $("#imgView").hide();
+                $("#imgToolbar").hide(); // 【新增】看PDF时隐藏图片工具栏
+            } else {
+                $("#imgView").attr("src", filePath );
+                $("#pdfFrame").hide();
+                $("#imgView").show();
+                $("#imgToolbar").show(); // 【新增】看图片时显示工具栏
+
+                // 复位状态
+                imgAction('reset');
+            }
+        }
+
+        $(function () {
+            // ... 原有的按钮生成逻辑保持不变 ...
+            if(arr && arr.length > 0) {
+                arr.forEach(obj => {
+                    let $btn = $(`<button type="button" class="layui-btn layui-btn-radius layui-btn-primary layui-border-green" fileName="${obj.fileName}" filePath="${obj.filePath}" onclick='viewFile(this)'>${obj.fileName}</button>`);
+                    $('.layui-btn-container').append($btn);
+                });
+            }
+
+            function resizeFrame() {
+                var windowHeight = $(window).height();
+                var headerHeight = $('#btnsArea').outerHeight(true);
+                var paddingOffset = 30;
+                var frameHeight = windowHeight - headerHeight - paddingOffset;
+                $("#ViewArea").css("height", frameHeight + "px");
+            }
+            resizeFrame();
+            $(window).resize(function() { resizeFrame(); });
+
+            // 默认点击第一个按钮
+            if($('.layui-btn-container button').length > 0){
+                $('.layui-btn-container button:eq(0)').click();
+            }
+
+            // --- 【新增】图片交互逻辑 (滚轮缩放 + 拖拽) ---
+            const $img = $("#imgView");
+            const $container = $("#ViewArea");
+
+            // 1. 鼠标滚轮缩放
+            $container.on('wheel', function(e) {
+                if ($img.is(":visible")) {
+                    e.preventDefault();
+                    if (e.originalEvent.deltaY < 0) {
+                        imgState.scale += 0.1; // 向上滚放大
+                    } else {
+                        if (imgState.scale > 0.2) imgState.scale -= 0.1; // 向下滚缩小
+                    }
+                    applyTransform();
+                }
+            });
+
+            // 2. 鼠标拖拽图片 (Pan)
+            $img.on('mousedown', function(e) {
+                if(e.which !== 1) return; // 只响应左键
+                e.preventDefault();
+                isDragging = true;
+                startX = e.clientX - imgState.x;
+                startY = e.clientY - imgState.y;
+                $img.css('cursor', 'grabbing');
+            });
+
+            $(document).on('mousemove', function(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                imgState.x = e.clientX - startX;
+                imgState.y = e.clientY - startY;
+                applyTransform();
+            });
+
+            $(document).on('mouseup', function() {
+                if (isDragging) {
+                    isDragging = false;
+                    $img.css('cursor', 'grab');
+                }
+            });
+        });
+    });
+</script>

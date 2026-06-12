@@ -1,0 +1,272 @@
+:root {
+  --proj_field_height: 973px;
+  --prin_field_height: 454px;
+}
+html,
+body {
+  width: 100%;
+  font-weight: bold !important;
+}
+body {
+  position: relative;
+  width: 800px !important;
+  margin: 0 auto !important;
+  user-select: none;
+}
+table {
+  border-collapse: collapse;
+}
+img {
+  border: none;
+}
+a,
+input,
+span,
+label,
+li,
+select,
+button,
+dl,
+div,
+table {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-appearance: none;
+}
+textarea,
+button,
+input,
+select {
+  outline: none;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+}
+.container {
+  width: 210mm !important;
+  margin: 0 auto;
+}
+.loading_container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  text-align: center;
+  vertical-align: middle;
+}
+.loading_container img {
+  width: 64px;
+  height: 64px;
+  margin: auto;
+  content: url("/img/loading.gif");
+}
+.catalog {
+  z-index: 19891015;
+  width: 247px;
+  height: 628px;
+  position: fixed;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: -15px;
+  overflow: visible;
+}
+.catalog .ul_box {
+  padding: 10px;
+  position: relative;
+  overflow: auto;
+}
+.catalog .ul_box ul {
+  list-style-type: disc;
+  margin: 0;
+  padding: 0;
+}
+.catalog .ul_box ul li {
+  line-height: 26px;
+  margin-left: 20px;
+  overflow: visible;
+  list-style-type: disc;
+}
+.catalog .ul_box ul li a {
+  color: #333;
+  text-decoration: none;
+}
+.catalog .ul_box ul li a cite {
+  font-weight: normal;
+  font-style: normal;
+}
+.download_container {
+  padding: 20px;
+  box-sizing: border-box;
+}
+.download_container #download_btn {
+  float: right;
+  position: relative;
+  z-index: 999;
+}
+.a4_portrait {
+  width: 210mm !important;
+  height: 297mm !important;
+  background: white;
+  margin: 0 auto;
+  margin-bottom: 5mm;
+  padding: 40px;
+  box-sizing: border-box;
+  position: relative;
+  box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
+}
+.text_box .xmnum_box {
+  display: flex;
+  justify-content: flex-end;
+}
+.text_box .xmnum_box p {
+  width: 264px;
+  font-size: 16px;
+}
+.text_box .tit_box {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 220px 0 360px 0;
+}
+.text_box .tit_box h1 {
+  padding: 10px 0;
+  font-size: 28px;
+}
+.text_box .xmmess_box {
+  display: flex;
+  justify-content: center;
+}
+.text_box .xmmess_box ul li {
+  display: flex;
+  padding: 16px 0;
+}
+.text_box .xmmess_box ul li p {
+  flex: 1;
+  font-size: 16px;
+}
+.text_box .xmmess_box ul li span {
+  width: 470px;
+  border-bottom: 1px solid #333;
+  font-size: 16px;
+}
+.text_box .text_center {
+  text-align: center;
+}
+.text_item {
+  width: 80%;
+  margin: 0 auto;
+  margin-top: 60px;
+}
+.text_item h1 {
+  text-align: center;
+  font-size: 24px;
+  padding-bottom: 60px;
+}
+.text_item p {
+  font-size: 20px;
+  line-height: 34px;
+  color: #333;
+}
+.knowledge_box {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+.knowledge_box table {
+  width: 86%;
+}
+.knowledge_box table caption {
+  vertical-align: middle;
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  border: none;
+}
+.knowledge_box table tr td {
+  text-align: left;
+  border: 0.8px dashed #333;
+  vertical-align: middle;
+  padding: 4px;
+  font-size: 11px;
+  color: #333;
+}
+.knowledge_box table tr .sub_title {
+  font-weight: bold;
+}
+.table_box {
+  display: flex;
+  justify-content: center;
+}
+.table_box table {
+  width: 100%;
+}
+.table_box table tr td,
+.table_box table caption {
+  border: 1px solid #333;
+  vertical-align: middle;
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+  color: #333;
+}
+.table_box table caption {
+  vertical-align: middle;
+  text-align: center;
+  border: 1px solid #333;
+  border-bottom: none;
+  padding: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+.table_box table tr td textarea {
+  width: 100%;
+  font-size: 14px;
+  line-height: 22px;
+}
+.table_box table tr td label {
+  line-height: 22px;
+}
+.proj_text {
+  white-space: pre-wrap;
+  word-break: break-all;
+  text-align: left;
+  height: var(--proj_field_height);
+}
+.prin_text {
+  white-space: pre-wrap;
+  word-break: break-all;
+  text-align: left;
+  height: var(--prin_field_height);
+}
+.opinion_unit {
+  width: 100px;
+}
+.opinion_text {
+  height: 264px;
+  resize: none;
+}
+#remark {
+  resize: none;
+}
+.txt_title {
+  font-size: 17px !important;
+}
+.txt_content {
+  font-size: 16px !important;
+}
+.foot_num {
+  width: fit-content;
+  line-height: 20px;
+  margin: 0 auto;
+  position: absolute;
+  bottom: 12px;
+  left: 49%;
+  font-weight: lighter;
+}
+/*# sourceMappingURL=preview.css.map */

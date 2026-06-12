@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>外省人员电子学分证书打印</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="../../../js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script type="text/javascript" src="../../../js/jquery-3.5.1.min.js"></script>
+    <script src="../../../js/layui-v2.6.8/layui/layui.js"></script>
+    <script type="text/javascript" src="../../../js/tools/verification.js"></script>
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <script type="text/javascript" src="../../../js/axios.min.js"></script>
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <!-- <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script> -->
+    <script src="../../../js/common.js"></script>
+
+    <script src="../../../js/tools/aes-tool.js"></script>
+    <script type="text/javascript" src="../../../js/front_captcha.js"></script>
+    <script src="../../../js/crypto-js-v3.1.2/rollups/aes.js"></script>
+    <script type="text/javascript" src="../../../login_files/js/verify.js"></script>
+    <div class="OverWindows"></div>
+    <script type="text/javascript" src="../../../js/tools/form_validation_tool.js"></script>
+</head>
+<style>
+    .login_item {
+        background: url(cme_province_proj_score_login_bg.png) no-repeat;
+        width: 1000px;
+        height: 841px;
+        margin: 0 auto;
+        overflow: hidden;
+        /*         
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: url(cme_province_proj_score_login_bg.png) no-repeat center;
+        background-size: 100% 100%; */
+        /* box-sizing: border-box; */
+        /* -webkit-transition: all 1s ease-in-out;
+        transition: all 1s ease-in-out; */
+        /* top: 0; */
+    }
+
+    .loginForm {
+        padding-top: 25%;
+        padding-left: 25%;
+        /* position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto; */
+    }
+</style>
+
+<body style="background: #3e8dca;">
+    <div class="login_item" id="loginDiv">
+        <div id="addScore" class="loginForm">
+            <form class="layui-form" style="padding: 30px;" id="form-addScore" lay-filter="add-score">
+                <div class="layui-form-item">
+                    <div class="layui-inline" style="display: block;">
+                        <label class="layui-form-label">身份证号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="certId" id="certId" autocomplete="off" class="layui-input"
+                                lay-verify="required" placeholder="">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline" style="display: block;">
+                        <label class="layui-form-label">手机号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="phone" id="phone" autocomplete="off" class="layui-input"
+                                lay-verify="required" placeholder="">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline" style="display: block;">
+                        <label class="layui-form-label">验证码</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="code" id="code" autocomplete="off" class="layui-input"
+                                lay-verify="required" placeholder="">
+                            <button class="layui-btn layui-btn-primary layui-border-blue layui-btn-sm"
+                                style="margin-top: 5px;" id="codeBtn" name="code_btn">获取验证码</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item" id="submitScore">
+                    <div style="padding-top: 10px; padding-left: 100px;">
+                        <button class="layui-btn" lay-submit lay-filter="submitScore">查询</button>
+                        <!-- <button id="closeBtn" type="close" class="layui-btn layui-btn-primary">关闭</button> -->
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <div class="layui-card" id="listDiv" style="display: none;">
+        <!--        搜索框区域-->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="background-color: #f5f5f5;">
+            <div class="layui_mess">
+                <div class="layui_display">
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">年度</label>
+                        <div class="layui-input-block">
+                            <select name="year" lay-filter="layui-select-year" id="year" lay-verify="1">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">审核状态</label>
+                        <div class="layui-input-block">
+                            <select name="checkState" lay-filter="checkState" id="checkState" lay-verify="1">
+                                <option value=""></option>
+                                <option value="0">未审核</option>
+                                <option value="1">审核通过</option>
+                                <option value="2">审核不通过</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline" style="padding-left: 20px">
+                        <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="loaderTable()"
+                            lay-filter="table-search" data-type="reload">
+                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                        </a>
+                    </div>
+                </div>
+                <div class="layui_display">
+                    <div class="layui-inline">
+                        <span id="personInfo">你好! </span>
+                        <a class="layui-btn layui-btn-xs btn-row" id="searchBtn" onclick="logout()"
+                            style="color: #1E9FFF; background-color: #f5f5f5;">退出</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-card-body layui_body_box">
+            <table class="layui-table" id="cmeProvinceProjScoreList" lay-filter="cmeProvinceProjScoreList"
+                    style="margin: 0px 0px;">
+            </table>
+        </div>
+    </div>
+    <script type="text/html" id="bar">
+        <span style="margin-left: 5px;"><input type="checkbox" name="like1[read]" id="checkboxCurrent"
+                                               lay-filter="checkboxCurrent" title="本页全选"></span>
+        <button class="layui-btn layui-btn-sm" lay-event="expert">导出学分证书</button>
+    </script>
+    <script>
+         layui.config({
+            base: '/js/layui/ext/'
+        }).extend({
+            tool: 'tool'
+        });
+        layui.use(['table', 'form', 'element', 'laydate', 'tool'], function () {
+            var $ = layui.jquery
+                , table = layui.table
+                , element = layui.element
+                , form = layui.form
+                , laydate = layui.laydate
+                , tool = layui.tool
+                , layer = layui.layer;
+            // 获取验证码 CD
+            let InterValObj, // timer变量，控制时间
+                count = 60, // 间隔函数，1秒执行
+                curCount; // 当前剩余秒数
+
+            
+            var personInfo = '';
+            var certId = tool.getParamFromUrl("certId");
+            var neimeng_tao = '08e44437-5789-44e0-8ff8-9ecb00a6348a';
+
+            var neimengScoreLevel = ['6926b861-5d4a-44af-8ca3-9f0a01000b93', '39c007e9-fce7-4dcd-9b0c-9ecb00a6a5ef'];
+
+
+            form.on('submit(submitScore)', function (data) {
+                console.log(data);
+                const mobile = $('#phone').val();
+                const code = $('#code').val();
+                certId = $('#certId').val();
+
+                var isSuccess = checkCode(mobile, code);
+                if (isSuccess) {
+                    layer.open({
+                        type: 1,
+                        content: $('#listDiv'),
+                        area: ['100%', '100%'],
+                        title: "学分列表",
+                        scrollbar: false,
+                        end: function () {
+                            logout();
+                        }
+                    });
+                    loaderTable();
+                } else {
+                    layer.msg('验证失败');
+                }
+                return false;
+                $.ajax({
+                    type: 'post',
+                    url: URL,
+                    data: datas,
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.status === 200) {
+                            $("#form-addScore")[0].reset();
+                            // layer.close(layer.index);
+                            layer.closeAll();
+                            layer.msg(msg);
+                            table.reload('cmeProvinceProjScoreList');
+                        } else if (res.status === 500) {
+                            layer.msg(res.msg);
+                        }
+                        console.log(layer.index);
+                    },
+                    error: function () {
+                        layer.msg("发送请求失败");
+                    }
+                })
+                return false;
+            });
+
+
+            /* 获取验证码 */
+            $('#codeBtn').on('click', () => {
+                const mobile = $('#phone').val();
+                if (strTool.isBlank(mobile)) {
+                    layer.msg('<sapn style="color: #666666;">请输入手机号</sapn>',
+                        { icon: 7, time: 1500 });
+                    return false;
+                }
+                if (!phoneTool.isMobile(mobile)) {
+                    layer.msg('<sapn style="color: #666666;">请输入正确的手机号</sapn>',
+                        { icon: 7, time: 1500 });
+                    return false;
+                }
+
+                const sendSmsAction = () => {
+                    $('#codeBtn').css('pointer-events', 'none').addClass('layui-disabled');
+                    layer.msg('发送短信验证码')
+                    // 发送短信验证码
+                    $.ajax({
+                        url: huayi_mcenter_url + 'message/code/send',
+                        type: 'post',
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        data: JSON.stringify({
+                            'msgCodeType': 'LOGIN',
+                            'phone': encodeAesString(mobile).toString()
+                        }),
+                        success: (res) => {
+                            debugger
+                            if (res.success == true) {
+                                layer.msg('<sapn style="color: #666666;">验证码已发送，请注意查收</sapn>',
+                                    {icon: 1, time: 1500});
+
+                                // 重获验证码倒计时
+                                curCount = count;
+                                $('#codeBtn').html(curCount + '秒后重获');
+                                InterValObj = window.setInterval(SetRemainTime, 1000);
+
+                            } else {
+                                layer.msg('<sapn style="color: #666666;">' + res.msg + '</sapn>',
+                                    {icon: 7, time: 1500});
+                                $('#codeBtn').css('pointer-events', '').removeClass('layui-disabled');
+                            }
+                        },
+                        error: (xhr, status, error) => {
+                            layer.msg('<sapn style="color: #666666;">验证码发送失败</sapn>',
+                                {icon: 2, time: 1500});
+                            $('#codeBtn').css('pointer-events', '').removeClass('layui-disabled');
+                        }
+                    });
+                }
+
+                if (typeof FrontCaptcha !== "undefined") {
+                    // 情况A：页面引用了 front_captcha.js -> 弹窗滑块 -> 成功后发短信
+                    FrontCaptcha.init(() => {
+                        sendSmsAction();
+                    });
+                } else {
+                    // 情况B：没引用滑块 -> 直接发短信 (防止报错)
+                    sendSmsAction();
+                }
+
+                return false;
+            });
+
+            $('#closeBtn').on('click', () => {
+                window.opener = null;
+
+                window.open('', '_self');
+
+                window.close();
+                window.close();
+            });
+            /* 手机验证码验证 */
+            var checkCode = function (mobile, code) {
+                let result = false;
+                $.ajax({
+                    url: huayi_mcenter_url + 'message/code/check',
+                    type: 'post',
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    async: false,
+                    data: JSON.stringify({
+                        'msgCodeType': 'LOGIN',
+                        "phone": encodeAesString(mobile).toString(),
+                        "code": encodeAesString(code).toString()
+                    }),
+                    success: (res) => {
+                        if (res.success == true) {
+                            result = true;
+                        } else {
+                            layer.msg('<sapn style="color: #666666;">' + res.msg + '</sapn>',
+                                { icon: 7, time: 1500 });
+                        }
+                    },
+                    error: (xhr, status, error) => {
+                        layer.msg('<sapn style="color: #666666;">手机验证码验证失败</sapn>',
+                            { icon: 2, time: 1500 });
+                    }
+                });
+
+                return result;
+            }
+
+            /* 获取验证码 CD */
+            var SetRemainTime = () => {
+                if (curCount == 0) {
+                    window.clearInterval(InterValObj); // 停止计时器
+                    $('#codeBtn').css('pointer-events', '').html('重获验证码').removeClass('layui-disabled');
+                } else {
+                    $('#codeBtn').html(--curCount + '秒后重获');
+                }
+            }
+
+            // 表格配置
+            window.loaderTable = function () {
+                if(!certId){
+                    layer.msg('<sapn style="color: #666666;">证件号不可为空</sapn>',
+                        { icon: 7, time: 1500 });
+                    return
+                }
+                table.render({
+                    elem: '#cmeProvinceProjScoreList',
+                    url: huayi_projectscore_url + 'cmeProvinceProjScore/relationList',
+                    toolbar: '#bar',
+                    defaultToolbar: ['filter'],
+                    where: {
+                        certId: certId,
+                        checkState: $('#checkState').val(),
+                        year: $('#year').val(),
+                    },
+                    cols: [[ //表头
+                        {
+                            field: 'CheckCustom', title: '选择', align: 'center', width: 60,
+                            templet: function (d) {
+                                let templateHtml = '<input type="checkbox" name="layTableCheckbox" ' +
+                                    'lay-skin="primary" value="' + d.scoreId + '"><i class="layui-icon"></i>';
+                                // 判断本条数据是否需要加载checkbox
+                                return d.checkState != 1 || ('08e44437-5789-44e0-8ff8-9ecb00a6348a' ==d.cmeStandardKindId  && !neimengScoreLevel.includes(d.scoreLevel)) 
+                                            ? '<img src="../../../img/score/disableIcon.png" style="width:20px;">' : templateHtml
+                            }
+                        },
+                        {field: 'scoreId', title: 'ID', sort: true, hide: 'true'}
+                        , {field: 'projName', title: '项目名称'}
+                        , {field: 'projNo', title: '项目编号', sort: true, width: 120}
+                        , {field: 'personName', title: '姓名'}
+                        , {field: 'certId', title: '身份证号', width: 180}
+                        , {field: 'startDate', title: '开始日期', sort: true, width: 105}
+                        , {field: 'endDate', title: '截止日期', sort: true, width: 105}
+                        , {field: 'score', title: '学分', sort: true, width: 80}
+                        , {field: 'period', title: '学时', width: 80}
+                        , {field: 'scoreLevelName', title: '学分级别', sort: true, align: 'center', width: 190}
+                        , {field: 'certificateNo', title: '证书编号', sort: true, align: 'center', width: 140
+                            , templet: function (d) {
+                                return d.cmeStandardKindId == neimeng_tao ? '' : d.certificateNo;
+                            }
+                        }
+                        , {field: 'unitName', title: '发证机构', sort: true, align: 'center', width: 170}
+                        , {
+                            field: 'checkState', title: '审核状态', sort: true,
+                            templet: function (data) {
+                                let checkStateText;
+                                switch (data.checkState) {
+                                    case "0":
+                                        checkStateText = "未审核";
+                                        break;
+                                    case "1":
+                                        checkStateText = "审核通过";
+                                        break;
+                                    case "2":
+                                        checkStateText = "审核不通过";
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                return checkStateText;
+                            }
+                        }
+                    ]],
+                    cellMinWidth: 100,
+                    id: "cmeProvinceProjScoreList",
+                    height: 'full-200',
+                    page: true,
+                    limit: 10,
+                    limits: [10, 50, 100, 150, 200],
+                    parseData: function (res) {
+                        if (res && res.data && res.data.records.length > 0 && personInfo.length == 0) {
+                            var datas = res.data.records;
+                            personInfo += '你好! ' + datas[0].personName + ' (' + certId + ') ';
+                        }
+                        $("#personInfo").html(personInfo);
+                        return {
+                            "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                            "msg": res.message, //解析提示文本
+                            "count": res.data.recordsTotal, //解析数据长度
+                            "data": res.data.records, //解析数据列表
+                            "page": res.data.pageNum, //当前页
+                            "limit": res.data.pageSize, //每页条数
+                        }
+                    },
+                    request: {
+                        pageName: 'pageNum', //页码的参数名称，默认：page
+                        limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                    },
+                    done: function (res, curr, count) {
+                        // 自定义 2
+                        for (var i = 0; i < res.data.length; i++) {
+                            var state = res.data[i].checkState; // 根据status状态判断，不为0时，禁止勾选
+                            var checkboxCurrent = $('#checkboxCurrent').is(':checked');
+                            var templateHtml = '';
+                            // 如果全选
+                            if (checkboxCurrent) {
+                                var index = res.data[i]['LAY_TABLE_INDEX'];
+                                // 如果已公布
+                                if (state == null) {
+                                    $(".layui-table tr[data-index=" + index + "] input[type='checkbox']").prop('checked', true);
+                                    $(".layui-table tr[data-index=" + index + "] input[type='checkbox']").next().addClass('layui-form-checked');
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+            // 初始化表格
+            // loaderTable();
+
+            //本页全选
+            form.on('checkbox(checkboxCurrent)', function (data) {
+                debugger
+                if (data.elem.checked) {
+                    // $("#checkboxAll").prop("checked",false);
+                    var child = $("input[name='layTableCheckbox']");
+                    child.each(function (index, item) {
+                        item.checked = true;
+                    });
+                } else {
+                    var child = $("input[name='layTableCheckbox']");
+                    child.each(function (index, item) {
+                        item.checked = false;
+                    });
+                }
+                form.render('checkbox');
+            });
+
+            // 导出学分证书
+            table.on('toolbar(cmeProvinceProjScoreList)', function (obj) {
+                var scoreIdList = [];
+                if (obj.event == 'expert') {
+                    var child = $('input[name="layTableCheckbox"]');
+                    child.each(function (index, item) {
+                        if (item.checked === true) {
+                            scoreIdList.push(item.defaultValue);
+                        }
+                    });
+                    if (scoreIdList.length < 1) {
+                        layer.msg('请先选择学分', {icon: 7, time: 1500});
+                        return false;
+                    }
+
+                    // 内蒙仅可导出国家级/自治区级学分证书
+
+
+                    let scoreIds = scoreIdList.join(',');
+                    console.log('scoreIdList: ', scoreIdList);
+                    console.info('scoreIds: ', scoreIds);
+
+                    let visit = huayi_sjwh_url + 'audit/pdf/down/fps/' + scoreIds; // 4
+                    downloadFile(visit, {}, '外省人员学分证书.pdf');
+                    return false;
+
+                }
+                return false;
+            })
+
+            // 年度下拉框
+            var date = new Date();
+            var year = date.getFullYear();
+            var options;
+            for (var i = 0; i < 5; i++) {
+                options += '<option value="' + year + '">' + year + '年</option>';
+                year = year - 1;
+            }
+            $('#year').append(options);
+            form.render('select');
+            
+            window.logout = function () {
+                // parent.layer.closeAll();
+                parent.location.reload()
+                layer.msg('退出成功');
+            }
+        });
+    </script>
+</body>
+
+</html>

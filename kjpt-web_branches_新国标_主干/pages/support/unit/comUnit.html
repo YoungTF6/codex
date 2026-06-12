@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>单位表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+        media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="../../../js/tools/form_validation_tool.js"></script>
+
+    <script type="text/javascript" src="../../../js/axios.min.js"></script>
+    <script type="text/javascript" src="../../../js/auth.js"></script> 
+
+    
+    <script src="/js/tools/aes-tool.js"></script> 
+    <script src="/js/crypto-js-v3.1.2/rollups/aes.js"></script>
+    <script src="/pages/support/js/managerLogin.js"></script>
+    
+    <style>
+        xm-select>.xm-body .xm-search>i {
+            left: 10px;
+        }
+        #add-comUnit .layui-form-label {
+            width: 100px;
+        }
+    </style>
+
+
+</head>
+
+<body>
+    
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <!--        搜索框区域-->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+                <blockquote class="layui-form layui-form-item layui-elem-quote one-btn" lay-filter="query-form">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">请选择地区</label>
+                        <div class="layui-input-block">
+                            <select name="standardKindId" id="standardKindSearch" lay-filter="standard-kind-search" lay-search>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">查询项</label>
+                        <div class="layui-input-block">
+                            <span style="width:130px;display:inline-block;">
+                                <select id="select_column">
+                                    <option value="cu.unit_id">单位编号</option>
+                                    <option value="cu.unit_name">单位名称</option>
+                                    <option value="cu.parent_unit">上级单位编号</option>
+                                    <option value="cu2.unit_name">上级单位名称</option>
+                                    <option value="us.user_name">登录账号</option>
+                                </select>
+                            </span>
+                            <span style="width:140px;display:inline-block;">
+                                <input type="text" name="description" id="text_value" placeholder="请输入"
+                                    autocomplete="off" class="layui-input">
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="loaderTable()"
+                            lay-filter="table-search" data-type="reload">
+                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                        </a>
+                    </div>
+                </blockquote>
+            </div>
+
+            <!--        表格区域-->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="comUnit" lay-filter="comUnit" style="margin: 0px 0px;">
+                </table>
+            </div>
+            <!--
+        &lt;!&ndash; 单位配置弹窗 &ndash;&gt;
+        <iframe src="comUnitConfig.html" onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);this.remove()"></iframe>
+-->
+            <!--       添加弹窗&ndash;&gt;-->
+            <iframe src="comUnitAdd.html"
+                onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);this.remove()"></iframe>
+
+        </div>
+
+        <!-- 单位级别维护 -->
+        <form class="layui-form" id="editUnitLevelForm" style="display:none;">
+            <div class="layui-form-item" id="InfoInCardCheck"></div>
+            <div id="demo1" class="xm-select-demo" style="width:400px; padding-left:50px;display:none;"></div>
+
+            <div class="layui-form-item">
+                <div class="layui-inline" style="text-align: left;">
+                    <label class="layui-form-label">单位级别：</label>
+                    <div class="layui-input-inline width250">
+                        <select id="select_cme_unit_level">
+                            <option value="">请选择</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+
+        <div id="getMobileCode" style="display:none;">
+            <form class="layui-form" id="form-getMobileCode">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">手机号:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="mobile" placeholder="请输入手机号" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">验证码:</label>
+                    <div class="layui-input-inline">
+                        <input autocomplete="off" type="text"  id="code" placeholder="请输入验证码" autocomplete="new-password" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">
+                        <a class="layui-btn layui-btn-radius layui-btn-sm" id="getCode">获取验证码</a>
+                    </div>
+                </div>
+            </form>
+            <div style="text-align:center">
+                <a class="layui-btn layui-btn-radius layui-btn-sm" id="verifyCode">登录</a>
+            </div>
+
+        </div>
+    </div>
+  
+</body>
+
+</html>
+
+<!--表格内数据编辑、注销按钮-->
+<script type="text/html" id="rowBar">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal" lay-event="edit"><i
+            class="layui-icon layui-icon-edit"></i>编辑</a>
+    <!-- <a class="layui-btn layui-btn-xs  layui-btn-normal" lay-event="config"><i
+            class="layui-icon layui-icon-set-sm"></i>开关</a> -->
+    {{# if(d.userStatus == 1 ){  }}
+        <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="off"><i
+            class="layui-icon layui-icon-delete"></i>注销</a>
+    {{# }else{  }}
+        <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="on"><i
+            class="layui-icon layui-icon-edit"></i>启用</a>
+    {{# } }}
+</script>
+
+<script type="text/html" id="editUnitLevel">
+    <a class="layui-btn layui-btn-xs " lay-event="editUnitLevel">单位级别维护</a>
+</script>
+<script type="text/html" id="openGroupproj">
+    <input type="checkbox" value="" lay-skin="switch" lay-text="开启|关闭">
+</script>
+
+<!-- 单位注销后隐藏进入单位版按钮 -->
+<script type="text/html" id="unitSysBar">
+    {{# if(d.userStatus == 1 ){  }}
+        <a class="layui-btn layui-btn-xs btn-row" lay-event="unitSys" style="color: #1E9FFF;">进入单位版</a>
+    {{# }else{  }}
+    {{# } }}
+</script>
+
+<script type="text/html" id="bar">
+    <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="add"><i class="layui-icon">&#xe654;</i>新增</a>
+</script>
+<script>
+    const NINGXIA="eee87ca0-7df1-426c-aae3-7cae782b4d6b";
+    const GANSU = "7068a5c0-2cd3-471a-90b9-9bf100aec95a";
+    // 全局配置及引入相关的模块
+    var format_url = /\\|\/$/gi;
+    // var domain =huayi_permission_url.replace(format_url,"");
+    var sjwhUrl = huayi_sjwh_url.replace(format_url, "");
+    var personorgUrl = huayi_personorg_url.replace(format_url, "");
+    var unitTop10Url = personorgUrl + "/comunit/search/top10";
+
+    var unitListUrl = personorgUrl + '/comunit/list';
+    var standardKindListUrl = sjwhUrl + "/cmestandardkind/list/condition";
+
+    var unitGrantLevelListUrl = personorgUrl + "/comunit/grant/level/list";
+
+
+    var latestUnitStatus = { 'unitUserType': 11, 'isRoot': 0 };
+
+    layui.config({
+        base: '../../../js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select'
+    }).use(['form', 'table', 'layer', 'xmSelect'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var xmSelect = layui.xmSelect;
+
+        var cmeYearArr = [], maxYear = '';
+        let standardKindIdObj = {}, nowScoreLevelObj = {};
+        var unitMainId, userMobile, unitUserId;
+
+        var unitId = localStorage.getItem("unit-id")
+            , standardkindId = localStorage.getItem("standardkind-id")
+            , userId = localStorage.getItem("user-id")
+            ;
+
+        //单位授分级别
+        var levelSelect = xmSelect.render({
+            el: '#unit-form-select-level',
+            name: "hospitalLevel",
+            radio: true,
+            // filterable: true,
+            tips: "请选择单位级别",
+            searchTips: '请输入单位级别',
+            data() {
+                return [];
+            }
+        });
+
+        // 服务器搜索回显下拉框 套或者上级单位
+        var dySelect = xmSelect.render({
+            el: '#unit-form-select-dy',
+            name: "parentUnit",
+            radio: true,
+            filterable: true,
+            remoteSearch: true,
+            tips: "请选择单位",
+            searchTips: '请输入单位名称',
+            on: function (data) {
+
+                if (!data.isAdd) {
+                    levelSelect.setValue([]);
+                    levelSelect.update({
+                        data: []
+                    });
+                }
+
+                if (data.isAdd && data.change.length > 0) {
+
+                    levelSelect.setValue([]);
+                    var param = { cmeStandardKindId: '', parentUnit: '' };
+
+                    if (data.change[0].type == 'standard') {
+                        param.cmeStandardKindId = data.change[0].value;
+                    } else {
+                        param.parentUnit = data.change[0].value;
+                    }
+                    $.ajax({
+                        url: unitGrantLevelListUrl,
+                        type: 'post',
+                        contentType: 'application/json;charset=UTF-8',
+                        data: JSON.stringify(param),
+                        success: function (res) {
+                            console.log(res);
+                            if (res.status == 200) {
+
+                                levelSelect.update({
+                                    data() {
+                                        var dataList = [];
+                                        if (res.data != null && res.data.length > 0) {
+                                            for (var i = 0; i < res.data.length; i++) {
+                                                dataList.push({ 'name': res.data[i].unitLevelName, 'value': res.data[i].unitLevelId });
+                                            }
+                                        }
+                                        console.log(dataList);
+                                        return dataList;
+                                    }
+                                });
+                            }
+                        },
+                        error: {}
+                    })
+                }
+            },
+            remoteMethod: function (val, reload, show) {
+                if (!val) {
+                    return reload([]);
+                }
+                $.ajax({
+                    url: unitTop10Url + "?searchType=11&unitName=" + val,
+                    type: 'get',
+                    success: function (res) {
+                        if (res.status == 200) {
+                            reload(res.data);
+                        }
+                    },
+                    error: reload([])
+                })
+            }
+        });
+
+        // 切换套选择框或上级选择框
+        window.updateDySelect = function (type) {
+
+            if (type == 'unitParent') {
+                dySelect.setValue([]);
+                dySelect.update({
+                    radio: true,
+                    name: "parentUnit",
+                    filterable: true,
+                    remoteSearch: true,
+                    tips: "请选择单位",
+                    searchTips: '请输入单位名称',
+                    remoteMethod: function (val, reload, show) {
+                        if (!val) {
+                            return reload([]);
+                        }
+                        $.ajax({
+                            url: unitTop10Url + "?searchType=11&unitName=" + val,
+                            type: 'get',
+                            success: function (res) {
+                                if (res.status == 200) {
+                                    reload(res.data);
+                                }
+                            },
+                            error: reload([])
+                        })
+                    }
+                });
+            } else {
+                $.ajax({
+                    url: standardKindListUrl,
+                    type: 'post',
+                    data: { topUnitNull: true },
+                    success: function (res) {
+                        if (res.status == 200) {
+                            dySelect.setValue([]);
+                            dySelect.update({
+                                radio: true,
+                                filterable: true,
+                                remoteSearch: false,
+                                name: "cmeStandardKindId",
+                                tips: "请选择套",
+                                searchTips: '请输入套名称',
+                                data() {
+                                    var dataList = [];
+                                    if (res.data != null && res.data.length > 0) {
+                                        for (var i = 0; i < res.data.length; i++) {
+                                            dataList.push({ 'name': res.data[i].description, 'value': res.data[i].cmeStandardKindId, 'type': 'standard' });
+                                        }
+                                    }
+                                    return dataList;
+                                }
+                            });
+                        }
+                    },
+                    error: function (e) {
+
+                    }
+                })
+            }
+        }
+
+
+
+        // 表格相关操作
+        // 表格配置
+        window.loaderTable = function () {
+            var standardKindSearch = $('#standardKindSearch').val();
+            var keyword = $("#text_value").val();
+            keyword = keyword.replace(/(^\s*)|(\s*$)/g, "");
+            // 查询条件为空不加载
+            if (strTool.isBlank(standardkindId)) {
+                layer.msg('该账号未配置套权限');
+                return false;
+            }
+            // TODO 查询条件必输, 开发时关闭
+            if(strTool.isBlank(standardKindSearch) && strTool.isBlank(keyword)){
+                layer.msg('请输入查询条件');
+                return false;
+            }
+            table.render({
+                elem: '#comUnit',
+                url: unitListUrl,
+                title: '用户表',
+                defaultToolbar: [],
+                where: {
+                    cmeStandardKindIds: strTool.isBlank(standardKindSearch) ? standardkindId : standardKindSearch,
+                    unitName: $('#unitName').val(),
+                    keywordColumn: $("#select_column").val(),
+                    keyword: keyword,
+                    urlSource: "support/unit/comUnit.html"
+                },
+                cols: [[
+                    { align: 'center', width: 120, toolbar: '#editUnitLevel', title: '单位级别维护', fixed: 'left' },
+                    { align: 'center', width: 120,  title: '举办院内活动', fixed: 'left',templet: function (d) {
+                            let html = "";
+                            if(d.unitUserType == 2) {
+                                let checked = d.openGroupProj ? 'checked="checked"' : "";
+                                let disabled = (d.cmeStandardKindId==NINGXIA || d.cmeStandardKindId==GANSU) ? "" : "disabled";
+                                html = `<div class="layui-form"><input type="checkbox" ${checked} ${disabled} unitId="${d.unitId}"  lay-filter="toggleAllow" lay-skin="switch" lay-text="开启|关闭"></div>`;
+                            }
+                            return html;
+                        } },
+                    { align: 'center', width: 150, toolbar: '#rowBar', title: '操作', fixed: 'left' },
+                    { align: 'center', width: 110, toolbar: '#unitSysBar', title: '进入单位版', fixed: 'left' },
+                    { field: 'unitId', title: '单位编号', width: 110, sort: true },
+                    { field: 'unitName', title: '单位名称', width: 200, sort: true },
+                    { field: 'userName', title: '登录账号', width: 110, sort: true },
+                    { field: 'parentUnit', title: '上级单位编号', width: 130, sort: true },
+                    { field: 'parentUnitName', title: '上级单位', width: 150, sort: true },
+                    { field: 'unitLevelName', title: '单位级别', width: 180, sort: true },
+                    { field: 'description', title: '套名称', width: 120, sort: true },
+                    {
+                        field: 'unitUserType', title: '机构账号类型', width: 200, sort: true, templet:
+                            function (d) {
+                                if (d.unitUserType == 5) {
+                                    return '卫生行政部门账号(政府版--省厅) ';
+                                } else if (d.unitUserType == 4) {
+                                    return '卫生行政部门账号(政府版--市州卫建委、大学) ';
+                                } else if (d.unitUserType == 3) {
+                                    return '卫生行政部门账号(政府版--区县卫建委) ';
+                                } else if (d.unitUserType == 2) {
+                                    return '机构用户(单位版)';
+                                } else {
+                                    return '未定义';
+                                }
+                            }
+                    },
+                    {
+                        field: 'userStatus', title: '单位状态', width: 110, sort: true, templet:
+                            function (d) {
+                                if (d.userStatus == 1) {
+                                    return '正常 ';
+                                } else if (d.userStatus == 4) {
+                                    return '注销';
+                                } else {
+                                    return '未定义';
+                                }
+                            }
+                    },
+                ]],
+                toolbar: '#bar',
+                cellMinWidth: 100,
+                id: "comUnit",
+                height: 'full-155',
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    if (res.status == 200) {
+                        return {
+                            "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                            "msg": res.message, //解析提示文本
+                            "count": res.data.recordsTotal, //解析数据长度
+                            "data": res.data.records, //解析数据列表
+                            "page": res.data.pageNum, //当前页
+                            "limit": res.data.pageSize, //每页条数
+                        }
+                    } else {
+                        layer.msg(res.msg);
+                        return false;
+                    }
+
+                },
+                request: {
+                    pageName: 'pageNum', //页码的参数名称，默认：page
+                    limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                }
+            });
+        };
+
+        // 初始化表格
+         // 监听头部新增按钮
+         table.on('toolbar(comUnit)', function (obj) {
+            debugger
+            var datas = obj.data;
+            document.getElementById("form-ComUnit").reset();
+            if (obj.event === 'add') {
+                layer.open({
+                    type: 1,
+                    title: '新增',
+                    content: $('#add-comUnit'),
+                    skin: '',
+                    area: ['850px', '500px'],
+                })
+            }
+        });
+
+        // 监听行内按钮
+        table.on('tool(comUnit)', function (obj) {
+            var datas = obj.data;
+            if (obj.event === 'edit') {
+                // layer.open({
+                //     type: 2,
+                //     title: '人员信息',
+                //     content: 'comUnitDetail.html?unitId=' + obj.data.unitId,
+                //     area: ['900px', '600px']
+                // });
+                window.location.href = './comUnitDetail.html?unitId=' + obj.data.unitId;
+            } else if (obj.event === 'config') {
+                window.location.href = './comUnitConfig.html?unitId=' + obj.data.unitId;
+            } else if (obj.event === 'unitSys') {
+                debugger
+
+                // 获取登录用户手机号
+                $.ajax({
+                    async: false,
+                    type: "get",
+                    url: huayi_permission_url + "comuser/detail",
+                    data: { userId: localStorage.getItem("user-id") },
+                    success: function (res) {
+                        debugger
+                        if (res.success == true) {
+                            userMobile = res.data.base.mobile;
+                        } else {
+                            layer.msg("获取配置出错");
+                        }
+                    },
+                    error: function () {
+                        layer.msg("获取配置出错");
+                    }
+                });
+              
+                unitMainId = datas.unitMainId;
+                unitUserId = datas.userId;
+                var formGetMobileCode = $("#form-getMobileCode")[0];
+                formGetMobileCode.reset();
+                formGetMobileCode[0].value = userMobile;
+                form.render();
+                layer.open({
+                    type: 1,
+                    title: '手机验证码',
+                    content: $('#getMobileCode'),
+                    area: ['400px', '200px']
+                });
+            } else if (obj.event === 'off') {
+                layer.confirm('确认注销', { icon: 3, title: '提示' }, function () {
+                    $.ajax({
+                        type: 'post',
+                        url: huayi_permission_url + 'comuser/cancel?unitId=' + datas.unitId + '&cstate=' + 4,
+                        contentType: 'application/json;charset=UTF-8',
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.status === 200) {
+                                layer.msg("注销成功");
+                                table.reload('comUnit');
+                            } else {
+                                layer.msg(res.msg);
+                            }
+                        }
+                    });
+                })
+            } else if (obj.event === 'on') {
+                layer.confirm('确认启用', { icon: 3, title: '提示' }, function () {
+                    $.ajax({
+                        type: 'post',
+                        url: huayi_permission_url + 'comuser/cancel?unitId=' + datas.unitId + '&cstate=' + 1,
+                        contentType: 'application/json;charset=UTF-8',
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.status === 200) {
+                                layer.msg("启用成功");
+                                table.reload('comUnit');
+                            } else {
+                                layer.msg(res.msg);
+                            }
+                        }
+                    });
+                })
+            } else if (obj.event === 'editUnitLevel') {
+                loadYearCheckBox(datas.cmeStandardKindId);
+                initUnitLevelSelect(datas.cmeStandardKindId);
+                var unitId = datas.unitId;
+                layer.open({
+                    type: 1,
+                    title: '维护',
+                    btn: ['单位级别修改', '取消'],
+                    // closeBtn: 1,
+                    yes: function (index, layero) {
+                        // 校验整理数据
+                        var cmeYears = [];
+                        var cmeYearStr = '';
+                        var containsNowYear = false, nowYear = (new Date).getFullYear();
+                        $('#editUnitLevelForm').find('input[type=checkbox]:checked').each(function () {
+                            let title = $(this).attr("title");
+                            // 是否包含当前年度
+                            if (title == maxYear) {
+                                containsNowYear = true;
+                            }
+                            if (title != '全部') {
+                                cmeYears.push(title);
+                                cmeYearStr += title + ', ';
+                            }
+                        });
+                        if (cmeYears.length <= 0) {
+                            layer.msg('请选择年度')
+                            return false;
+                        }
+                        cmeYearStr = cmeYearStr.substring(0, cmeYearStr.length - 2);
+
+                        // 全选
+                        var isAllCheck = $("#allInputUpdate")[0].checked;
+                        var select_unit_level = $("#select_cme_unit_level");
+                        var hospitalLevelName = select_unit_level[0].selectedOptions[0].text;
+                        var hospitalLevel = select_unit_level.val();
+                        if (hospitalLevel == '') {
+                            layer.msg('请选择单位级别')
+                            return false;
+                        }
+                        var confirmMsg = '确定将: \r\n<p style="color: red">';
+                        if (isAllCheck) {
+                            confirmMsg += '所有';
+                        } else {
+                            confirmMsg += cmeYearStr;
+                        }
+                        confirmMsg += '年度单位级别改为' + hospitalLevelName + '!</p>';
+                        layer.confirm(confirmMsg, {
+                            icon: 3,
+                            title: '提示'
+                        }, function () {
+                            layer.closeAll();
+                            layer.msg('正在进行变更, 请勿重复提交')
+                            var fileds = {
+                                "cmeYears": cmeYears,
+                                "hospitalLevel": hospitalLevel,
+                                "unitId": unitId,
+                                "unitMainId": datas.unitMainId,
+                                "containsNowYear": containsNowYear,
+                                "userId": userId
+                            };
+                            console.log(fileds)
+                            console.log(JSON.stringify(fileds))
+                            $.ajax({
+                                type: 'post',
+                                url: huayi_personorg_url + 'comunit/updateUnitLevel',
+                                headers: {
+                                    'Authorization': localStorage.getItem('token'),
+                                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                                },
+                                data: JSON.stringify(fileds),
+                                contentType: 'application/json;charset=UTF-8',
+                                dataType: 'json',
+                                success: function (res) {
+                                    if (res.status === 200) {
+                                        alert('维护成功')
+                                        table.reload('comUnit');
+                                    }else{
+                                        layer.close(layer.index);
+                                        layer.msg("修改失败, 请联系技术支持");
+                                        console.log(res.msg);
+                                    }
+                                },
+                                error: function () {
+                                    layer.msg("请求失败");
+                                }
+                            });
+
+                        });
+                    },
+                    btnAlign: 'c',
+                    content: $('#editUnitLevelForm'),
+                    skin: '',
+                    area: ['800px', '450px'],
+                })
+            }
+        });
+
+        // form表单相关操作
+        //监听单选框相关，添加单位的类别 是否为顶级单位
+        //
+        form.on('select(unitUserTypeSelect)', function (data) {
+            console.log(data.elem.name); //得到radio原始DOM对象
+            console.log(data.value); //被点击的radio的value值
+            latestUnitStatus[data.elem.name] = data.value;
+
+            /**
+             * 如果是单位版 则顶级选项不可选 必选上级单位
+             * 如果是政府版 选择顶级选项 则必选上级单位 套只读
+             * 如果是政府版 未选择上级选项 则必选套
+             */
+            if (latestUnitStatus.unitUserType == 2) {//单位类型
+
+                //顶级按钮逻辑
+                $(".unit-add-root.unit-add-root-1").removeAttr("checked");
+                $(".unit-add-root.unit-add-root-0").prop("checked", true);
+                $(".unit-add-root").attr("disabled", "disabled");
+                form.render();
+
+                //父级单位选择框 查询行政类别的单位 和 套
+                $('.unit-form-select-dy.unit-form-select-dy-label').html("上级单位");
+                // window.renderParentSelect();
+                window.updateDySelect("unitParent");
+
+
+            } else {//行政类型
+
+                //顶级按钮逻辑
+                $(".unit-add-root").removeAttr("disabled");
+                form.render();
+
+                //父级单位选择框 清空父级 置为disabled
+                if (latestUnitStatus.isRoot == 1) {
+                    //当添加的单位为行政根节点时
+                    $('.unit-form-select-dy.unit-form-select-dy-label').html("选择套标准");
+                    window.updateDySelect("tao");
+
+                } else {
+                    //当添加的单位为行政普通节点
+                    $('.unit-form-select-dy.unit-form-select-dy-label').html("上级单位");
+                    window.updateDySelect("unitParent");
+                }
+            }
+        });
+
+        form.on('switch(toggleAllow)', function(data){
+
+            let datas = {"unitId":data.elem.attributes['unitId'].nodeValue,"openGroupProj":data.elem.checked};
+            $.ajax({
+                type: "post",
+                url: huayi_personorg_url + 'comunit/unitToggleOpenGroupproj',
+                dataType: "json",
+                data: JSON.stringify(datas),
+                contentType: "application/json",
+                success: function(res) {
+                    if(res.success) {
+                        layer.msg("处理成功",{icon:1});
+                        //loaderTable();
+                    } else {
+                        layer.msg(res.msg,{icon:2});
+                    }
+
+                },
+                error: function() {
+                    layer.msg("发送请求失败",{icon:2});
+                }
+            });
+      
+
+        });
+
+        form.verify({
+            hospi: function(value,item) {
+                let beProv;
+                let beCity;
+                if($(item).attr("name") == "beProvincialHospital") {
+                    beProv = value;
+                    beCity = $("[name='beCitialHospital']").val();
+                }
+                if($(item).attr("name") == "beCitialHospital") {
+                    beCity = value;
+                    beProv = $("[name='beProvincialHospital']").val();
+                }
+                if(beProv=='true' && beCity=='true') {
+                    return "单位不能既是省属又是市属";
+                }
+            }
+        })
+
+        // 新增/修改表单提交
+        form.on('submit(submit)', function (data) {
+            // 用于判断是新增还是修改
+            var datas = JSON.stringify(data.field);
+            var URL = huayi_personorg_url + 'comunit/save';
+
+            $.ajax({
+                type: 'post',
+                url: URL,
+                data: datas,
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    if (res.status == 200) {
+                        layui.layer.msg('操作成功！', {
+                            time: 2000, //1s后自动关闭
+                            end: function (o) {
+                                layui.layer.closeAll();
+                                $('#searchBtn').click();
+                            }
+                        });
+                    } else {
+                        layui.layer.msg(res.msg || '系统繁忙，请稍后重试', {
+                            time: 1000, //1s后自动关闭
+                            end: function (o) {
+                                // layui.layer.closeAll();
+                            }
+                        });
+                    }
+                },
+                error: function () {
+                    layer.msg("添加失败，请稍后重试");
+                }
+            })
+            return false;
+        })
+
+        // 加载单位级别
+        var initUnitLevelSelect = function (cmeStandardKindId) {
+            $.ajax({
+                async: false,
+                url: huayi_sjwh_url + "cmeUnitLevel/listNoPage",
+                data: { cmeStandardKindId: cmeStandardKindId },
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                dataType: "json",
+                success: function (result) {
+                    if (result.success == true) {
+                        var cmeUnitLeveList = result.data;
+                        var unitLevelId = "";
+                        var unitLevelName = "";
+                        $("#select_cme_unit_level").html("<option></option>");
+                        for (var i = 0; i < cmeUnitLeveList.length; i++) {
+                            unitLevelId = cmeUnitLeveList[i].unitLevelId.toUpperCase();
+                            unitLevelName = cmeUnitLeveList[i].unitLevelName;
+                            var $option = $("<option value='" + unitLevelId + "' title='" + unitLevelName + "'>" + unitLevelName + "</option>");
+                            $("#select_cme_unit_level").append($option);
+                        }
+                    }
+                    else {
+                        layer.msg(result.msg);
+                    }
+                }
+            });
+        }
+        // 年度选择复选框, 从cme_year获取数据
+        var loadYearCheckBox = function (cmeStandardKindId) {
+            $.ajax({
+                url: huayi_sjwh_url + 'cmeYear?cmeStandardKindId=' + cmeStandardKindId,
+                type: 'get',
+                dataType: 'json',
+                success: res => {
+                    if (res.status == '200') {
+                        var years = res.data;
+                        // 保存最大年度
+                        maxYear = years[0].cmeYear;
+                        var length = years.length > 15 ? 15 : years.length;
+                        if (length > 0) {
+                            var checkboxs = `<label class="layui-form-label">年度：</label>
+                                    <input lay-skin="primary" type="checkbox" name="type" 
+                                    lay-filter="allInputUpdate"  id="allInputUpdate" title="全部"/>`;
+                            $('#InfoInCardCheck').html("");
+                            cmeYearArr = [];
+                            for (var i = 0; i < length; i++) {
+                                // checkboxs += '<input type="checkbox" name="cmeYear" value="' + years[i].cmeYearId
+                                // + '" title="' + years[i].cmeYear + '" lay-skin="primary">';
+                                checkboxs += `<input type="checkbox"     
+                                    class="checkInfoInSlot" name="checkInfoInSlot" lay-filter = 
+                                    "inputCheckOne" lay-skin="primary" title="${years[i].cmeYear}" 
+                                    id="inputSlot-${years[i].cmeYear}">`;
+
+                                cmeYearArr.push({ name: years[i].cmeYear, value: years[i].cmeYear });
+                            }
+                            $('#InfoInCardCheck').append(checkboxs);
+                            form.render();
+                            var demo1 = xmSelect.render({
+                                el: '#demo1',
+                                toolbar: {
+                                    show: true,
+                                },
+                                paging: true,
+                                data: cmeYearArr
+                            });
+                        }
+                    } else {
+                        layer.msg('获取往年学分录入配置信息失败');
+                    }
+                },
+                error: (xhr, status, error) => {
+                    layer.msg('网络异常，请稍后后再试');
+                }
+            });
+        }
+
+        //点击全选, 勾选
+        form.on('checkbox(allInputUpdate)', function (data) {
+            let child = $(".checkInfoInSlot");
+            child.each(function (index, item) {
+                item.checked = data.elem.checked;
+            });
+            form.render('checkbox');
+        });
+
+        // 全选时有一个取消选中，改为未全选
+        form.on('checkbox(inputCheckOne)', function (data) {
+            let child = $(".checkInfoInSlot").length;// 复选框总数
+            let childed = $("input[name='checkInfoInSlot']:checked").length; // 选中的复选框总数
+            if (childed == child) {
+                $("#allInputUpdate").prop("checked", true);
+            } else {
+                $("#allInputUpdate").prop("checked", false);
+            }
+            form.render('checkbox');
+        });
+
+        //套
+        let standardKindInit = function () {
+            var standardkindIdArr = standardkindId.split(",");
+            console.log(standardkindIdArr);
+            commonAjax('get', huayi_sjwh_url + "cmestandardkind/list/all", {},
+                function () { layer.msg("套加载失败"); },
+                function (res) {
+                    let options = '<option value="" > 请选择套标准 </option>';
+                    for (let tempObj of res.data) {
+                        if (standardkindIdArr.includes(tempObj.cmeStandardKindId)) {
+                            standardKindIdObj[tempObj.cmeStandardKindId] = {
+                                description: tempObj.description,
+                                topUnitId: tempObj.topUnitId
+                            };
+                            options += '<option top-unit-id="' + tempObj.topUnitId + '" value="' + tempObj.cmeStandardKindId + '">' + tempObj.description + '</option>';
+                        }
+                    }
+                    $('#standardKindSearch').append(options);
+                    $('#standardKindForm').append(options);
+                    form.render('select');
+                });
+        }
+
+        window.layClose = function () {
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //再执行关闭
+        }
+
+        //公共ajax
+        let commonAjax = function (type = "get", url, data, failFun, successFun) {
+            $.ajax({
+                type: type,
+                url: url,
+                data: data,
+                success: function (res) {
+                    if (res.status != 200) {
+                        layer.msg(res.msg);
+                        return;
+                    }
+                    successFun(res);
+                },
+                error: function (res) {
+                    failFun();
+                }
+            });
+        }
+        // Esc关闭弹窗
+        window.onkeyup = function (ev) {
+            var key = ev.keyCode || ev.which;
+            if (key == 27) {
+                layer.close(layer.index);
+                console.log('layer.index = ' + layer.index)
+            }
+        }
+
+
+
+        $("#getCode").click(function () {
+            var myreg = /^[1][3,4,5,7,8,9][0-9]{9}$/;
+            debugger
+            mobile = $("#mobile").val();
+            if (mobile === "") {
+                layer.msg("请输入手机号")
+                return
+            } else if (!myreg.test(mobile)) {
+                layer.msg("请输入正确的手机号")
+                return
+            }
+            console.log(mobile);
+            mobile=encodeAesString(mobile).toString();
+            // 发送短信验证码
+            $.ajax({
+                url: huayi_mcenter_url + 'message/code/send',
+                type: 'post',
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify({
+                    'msgCodeType': 'LOGIN',
+                    'phone': mobile,
+                }),
+                success: (res) => {
+                    if (res.success == true) {
+                        layer.msg("获取验证码成功")
+                        // layer.msg('<sapn style="color: #666666;">验证码已发送，请注意查收</sapn>', 
+                        //         { icon : 1, time : 1500 });
+
+                        // // 重获验证码倒计时
+                        // curCount = count;
+                        // $('#login_' + cur_login + ' [name=code_btn]').html(curCount + '秒后重获');
+                        // InterValObj = window.setInterval(SetRemainTime, 1000);
+
+                    } else {
+                        layer.msg("获取验证码失败")
+                        // layer.msg('<sapn style="color: #666666;">' + res.msg + '</sapn>', 
+                        //         { icon : 7, time : 1500 });
+                        // $('#login_' + cur_login + ' [name=code_btn]').css('pointer-events', '').removeClass('layui-disabled');
+                    }
+                },
+                error: (xhr, status, error) => {
+                    layer.msg('<sapn style="color: #666666;">验证码发送失败</sapn>',
+                        { icon: 2, time: 1500 });
+                    $('#login_' + cur_login + ' [name=code_btn]').css('pointer-events', '').removeClass('layui-disabled');
+                }
+            });
+        })
+
+        // 验证验证码
+        $("#verifyCode").click(function () {
+            var mobile =$("#mobile").val().toString();
+            var code = $("#code").val().toString();
+            $.ajax({
+                url: huayi_mcenter_url + 'message/code/check',
+                type: 'post',
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify({
+                    'msgCodeType': 'LOGIN',
+                    'phone': encodeAesString(mobile).toString(),
+                    'code': encodeAesString(code).toString()
+                }),
+                success: (res) => {
+                    if (res.success == true) {
+                        // 验证成功后发送登录请求，将localStorage替换成返回的信息,然后重定向到首页     
+                        debugger
+                        loginUnitByUnitMainId()
+                    } else {
+                        layer.msg("手机验证失败")
+                        // layer.msg('<sapn style="color: #666666;">' + res.msg + '</sapn>', 
+                        //         { icon : 7, time : 1500 });
+                    }
+                    // $('.verify-refresh').click();
+                },
+                error: (xhr, status, error) => {
+                    layer.msg("手机验证失败")
+                    // layer.msg('<sapn style="color: #666666;">手机验证码验证失败</sapn>', 
+                    //         { icon : 2, time : 1500 });
+                    // $('.verify-refresh').click();
+                }
+            });
+        })
+
+        //获取配置的值
+        window.getConfig = function (config_name) {
+            $.ajax({
+                async: false,
+                type: "post",
+                url: huayi_sjwh_url + "cmeCommonConfig/getConfigByUnitFromRedis",
+                data: { unitId: localStorage.getItem("unit-id"), configNames: config_name },
+                success: function (res) {
+                    debugger
+                    if (res.success == true) {
+                        window[config_name] = res.data[config_name];
+                    } else {
+                        layer.msg("获取配置出错");
+                    }
+                },
+                error: function () {
+                    layer.msg("获取配置出错");
+                }
+            });
+        }
+
+        window.loginUnitByUnitMainId = function () {
+            debugger;
+            $.ajax({
+                url: huayi_permission_url + 'loginByTechnicalSupport',
+                type: 'post',
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify({
+                    'unitMainId': unitMainId,
+                    'userId': unitUserId,
+                    'mobile': $("#mobile").val(),
+                    'type': "2",
+                    'technicalSupportId': localStorage.getItem("user-id"),
+                    'userName': localStorage.getItem("user-name")
+                }),
+                success: (data, textStatus, xhr) => {
+                    debugger
+                    let datas = data.data;
+                    if (data.status == 200) {
+                        // 验证成功后发送登录请求，将localStorage替换成返回的信息,然后重定向到首页
+                        localStorage.clear();
+                        localStorage.setItem('login-url', window.location.href);
+                        localStorage.setItem('token', xhr.getResponseHeader('Authorization') || '');
+                        localStorage.setItem('token-exp-time', xhr.getResponseHeader('token-exp-time') || 0);
+                        localStorage.setItem('refresh-token', xhr.getResponseHeader('refresh-token') || '');
+                        localStorage.setItem('user-id', xhr.getResponseHeader('KJPT-USER-ID') || '');
+                        localStorage.setItem('unit-id', datas.unitId || '');
+                        localStorage.setItem('unit-name', datas.unitName || '');
+                        localStorage.setItem('standardkind-id', datas.standardKindId || '');
+                        localStorage.setItem('user-name', datas.userName || '');
+                        localStorage.setItem('user-type', datas.userType || '');
+                        localStorage.setItem('unit-user-type', datas.unitUserType || 0);
+                        if (datas.userType == "13") {
+                            localStorage.setItem('dept-id', datas.deptId || '');
+                            localStorage.setItem('dept-name', datas.deptName || '');
+                        }
+                        if (datas.userType == "11") {
+                            localStorage.setItem('manager-medical-type', datas.managerMedicalType || '');
+                        }
+                        // 添加文件验证cookie
+                        setFileVerifyCookie(xhr);
+                        localStorage.removeItem('menu-unit-id');
+                        // 进入单位版后直接切到顶层首页，避免误执行 close 造成当前标签页闪退
+                        window.top.location.href = "/index.html";
+                    } else {
+                        layer.msg(data.msg)
+                        return
+                    }
+                },
+                error: (xhr, status, error) => {
+                    layer.msg("手机验证失败")
+                }
+            });
+
+        }
+        // 初始化函数
+        layer.ready(function () {
+            standardKindInit();//套初始化
+            // TODO 默认查询, 开发时打开
+            // loaderTable();
+            // layer.msg("提示")
+        })
+    });
+
+</script>

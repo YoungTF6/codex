@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>zixue.list</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <!-- base -->
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <script type="text/javascript" src="/js/api/base64.min.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+</head>
+<body style="background-color: white;">
+<div class="layui-fluid custom-ignore">
+    <div class="layui-card">
+        <!-- 查询区域 -->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto custom-ignore" id="queryArea" style="background-color: #f5f5f5;">
+            <div class="layui_mess custom-ignore">
+                <div class="layui_display only_person hide">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">自学时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" autocomplete="off" data-id="rangeSel" id="range1" class="layui-input" placeholder="至">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui_display only_unit hide">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">年度</label>
+                        <div class="layui-input-block">
+                            <select name="cmeYear"></select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label custom-ignore">自学时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" autocomplete="off" data-id="rangeSel" id="range2" class="layui-input" placeholder="至">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">姓名</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="personName" placeholder="" autocomplete="off" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">人员编号</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="personNo" placeholder="" autocomplete="off" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">事前</label>
+                        <div class="layui-input-block">
+                            <select name="befState">
+                                <option></option>
+                                <option value="20">未审核</option>
+                                <option value="23">审核通过</option>
+                                <option value="22">审核不通过</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline inghide">
+                        <label class="layui-form-label">事中</label>
+                        <div class="layui-input-block">
+                            <select name="ingState">
+                                <option></option>
+                                <option value="20">未审核</option>
+                                <option value="23">审核通过</option>
+                                <option value="22">审核不通过</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">自学结果</label>
+                        <div class="layui-input-block">
+                            <select name="resState">
+                                <option></option>
+                                <option value="20">未审核</option>
+                                <option value="23">审核通过</option>
+                                <option value="22">审核不通过</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui_display">
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-sm btnRounded" lay-submit onclick="refreshTable({page: {curr: 1}})">
+                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 数据表格 -->
+        <div class="layui-card-body layui_body_box custom-ignore" style="padding-left: 0;padding-right: 0">
+            <table class="layui-table custom-ignore" id="table_id" lay-filter="table_id"
+                   style="margin: 0;"></table>
+        </div>
+    </div>
+</div>
+</body>
+<!-- template-toolbar -->
+<script type="text/html" id="table_toolbar">
+    <div class="">
+        <li class="layui-input-inline only_person hide" style="margin-left: 10px;">
+            <a class='check_btn layui-btn layui-btn-sm' lay-event='add'>自学申请</a>
+        </li>
+        <li class="layui-input-inline only_unit hide" style="float: right; margin-right: 10px;">
+            <a class="check_btn layui-btn layui-btn-sm" lay-event="excel">导出Excel</a>
+        </li>
+    </div>
+</script>
+<script type="text/javascript">
+    layui.config({
+        base: '/js/layui/ext/',
+    }).extend({
+        xmSelect: 'xm-select',
+        excel: 'excel',
+        lat: 'lat'
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'xmSelect', 'lat', 'excel'], function () {
+        let table = layui.table, layer = layui.layer, form = layui.form, laydate = layui.laydate, dropdown = layui.dropdown, element = layui.element, $ = layui.jquery, xmSelect = layui.xmSelect, lat = layui.lat, excel = layui.excel;
+        let gLayerIndex = -1, gPageNum = 1, gconf = null;
+        window.refreshTable = refreshTable;
+        window.viewfile = function (url) {
+            lat.previewThumb(url);
+        }
+        $(function () {
+            lat.renderDayRangeSel('#range1', yearFirstDay(), today());
+            lat.renderDayRangeSel('#range2', yearFirstDay(), today());
+            lat.renderCmeYear('select[name=cmeYear]');
+            if (_isGuangdong || _isNeimeng) {
+                $('.inghide').hide();
+            }
+            if (_isPerson) {
+                $('.only_person').show();
+                renderTable();
+            } else {
+                $('.only_unit').show();
+                renderTable();
+            }
+        });
+        table.on('tool(table_id)', function (obj) {
+            let rowData = obj.data;
+            if ('detail' === obj.event) {
+                showModal(rowData.id);
+            }
+        });
+        table.on('toolbar(table_id)', function (obj) {
+            let checkStatus = table.checkStatus(obj.config.id);
+            let selectedRowArr = checkStatus.data;
+            if ('add' === obj.event) {
+                if (_isHenan || _isNeimeng) {
+                    inconf(() => {
+                        showModal('');
+                    });
+                } else {
+                    showModal('');
+                }
+            }
+            if ('excel' === obj.event) {
+                lay_exportExcel('table_id', '自学.xlsx', 'xlsx', false);
+            }
+        });
+        function inconf(cb) {
+            const abc = function () {
+                if (moment().isBetween(gconf.startTime, gconf.endTime)) {
+                    cb();
+                } else {
+                    lat.failMsg(`不在${gconf.unitName}设置的审请时间内(${gconf.startTime.substring(0, 10)}至${gconf.endTime.substring(0, 10)})`);
+                }
+            }
+            if (gconf) {
+                abc();
+            } else {
+                postAction(`${huayi_sjwh_url}zixue/conf`, {'unitId': _unitId, 'cmeYear': _cur_year}).then(resp => {
+                    let jsonRes = resp.data;
+                    if (jsonRes.success) {
+                        let arr = jsonRes.data;
+                        if (arr && arr.length > 0) {
+                            gconf = arr[0];
+                        } else {
+                            gconf = {'startTime': '1970-01-01 00:00:00', 'endTime': '2099-01-01 00:00:00'};
+                        }
+                        abc();
+                    } else {
+                        lat.failMsg('加载配置数据');
+                    }
+                }).catch(error => {
+                    lat.errorMsg('加载配置数据');
+                });
+            }
+        }
+        function showModal(id) {
+            gLayerIndex = layer.open({
+                type: 2,
+                shade: 0.4,
+                shadeClose: true,
+                title: '自学',
+                content: `/pages/mod/zixue/modals/zixue.html?id=${id}&pid=${_pid}`,
+                area: ['72%', '92%'],
+                success: function (layero, index) {
+                },
+                end: function () {
+                    refreshTable();
+                }
+            });
+        }
+        function renderTable() {
+            table.render({
+                id: 'table_id',
+                elem: '#table_id',
+                height: 'full-100',
+                toolbar: '#table_toolbar',
+                defaultToolbar: [],
+                url: `${huayi_sjwh_url}zixue/page`,
+                method: 'POST',
+                contentType: 'application/json',
+                loading: true,
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                where: getSifter(),
+                request: {
+                    pageName: 'pageNum', // 页码的参数名称，默认：page
+                    limitName: 'pageSize' // 每页数据量的参数名，默认：limit
+                },
+                parseData: function (res) {
+                    let page = res.data || {};
+                    gPageNum = page.pageNum;
+                    return {
+                        'code': 200 === res.status ? 0 : res.status, // 解析接口状态
+                        'msg': res.message || res.msg, // 解析提示文本
+                        'count': page.recordsTotal, // 解析数据长度
+                        'data': page.records, // 解析数据列表
+                        'page': page.pageNum, // 当前页
+                        'limit': page.pageSize // 每页条数
+                    }
+                },
+                done: function (res, curr, count) {
+                    gPageNum = curr;
+                    if (_isPerson) $('.only_person').show();
+                    else $('.only_unit').show();
+                },
+                error: function (error, msg) {
+                    let a = error.status, b = error.statusText, c = error.responseText;
+                    $('.layui-table-main').html(`<div class="layui-none">${a}-${b}</div>`);
+                },
+                cols: [[
+                    {
+                        field: '', title: '自学明细', minWidth: 100, align: 'center', sort: false, templet: data => {
+                            let txt = '查看审核';
+                            if (_isPerson) txt = '维护';
+                            return `<a class="layui-btn layui-btn-xs btn-row" lay-event="detail">${txt}</a>`;
+                        }
+                    },
+                    {field: 'personNo', title: '人员编号', minWidth: 120, align: 'center', sort: true, hide: _isPerson,},
+                    {field: 'personName', title: '姓名', minWidth: 100, align: 'center', sort: true, hide: _isPerson,},
+                    {field: 'cmeYear', title: '年度', minWidth: 80, align: 'center', sort: true,},
+                    {
+                        field: 'cmeYear', title: '职称', minWidth: 140, align: 'center', sort: false, templet: data => {
+                            if (!data.epList) return '';
+                            let a = data.epList.sort((a, b) => +b.cme_year - +a.cme_year);
+                            for (let i = 0; i < a.length; ++i) {
+                                if (a[i].cme_year < data.cmeYear) return `${a[i].title_name}`;
+                            }
+                            return '';
+                        }
+                    },
+                    {field: 'startDate', title: (typeof _isNeimeng !== 'undefined' && _isNeimeng) ? '自学周期' : '自学时间', minWidth: 200, align: 'center', sort: true, templet: data => `${data.startDate} 至 ${data.endDate}`},
+                    {field: 'content', title: (typeof _isNeimeng !== 'undefined' && _isNeimeng) ? '学习目标' : '自学内容', minWidth: 280, align: 'center', sort: false,},
+                    {
+                        field: 'planText', title: '学习计划', minWidth: 220, align: 'center', sort: false, hide: typeof _isNeimeng === 'undefined' || !_isNeimeng, templet: function (data) {
+                            if (!data.planText) return '';
+                            var pt = String(data.planText);
+                            var titleAttr = pt.replace(/\s+/g, ' ').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+                            var shortRaw = pt.length > 48 ? pt.substring(0, 48) + '…' : pt;
+                            var bodyHtml = shortRaw.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+                            return '<span title="' + titleAttr + '">' + bodyHtml + '</span>';
+                        }
+                    },
+                    {
+                        field: 'scoreLevelName', title: '学分子分类', minWidth: 240, align: 'center', sort: true, hide: _zi.isselht(), templet: data => {
+                            if (data.scoreLevelName) return data.scoreLevelName;
+                            if (!data.scoreLevelId) return '';
+                            else return (_isNeimeng ? {
+                                '2da91f28-2272-11f1-8a80-005056a64c01': '在期刊上发表论文或综述',
+                                '2da91f64-2272-11f1-8a80-005056a64c01': '科研项目',
+                                '2da91fa0-2272-11f1-8a80-005056a64c01': '出版医学著作',
+                                '2da91fd2-2272-11f1-8a80-005056a64c01': '发表医学译文',
+                                '2da9200e-2272-11f1-8a80-005056a64c01': '授课或带教',
+                                '2da9204a-2272-11f1-8a80-005056a64c01': '专业考试命题',
+                                '2da92086-2272-11f1-8a80-005056a64c01': '开展健康宣教',
+                            } : {
+                                'a9cbee45-0a8f-44b8-a944-2be7a3b89d31': '医院授课、带教、开展健康宣教',
+                                '871b9447-2178-43fe-8195-ac7964f1e2cb': '参与专业考试命题',
+                                '3edea98d-3410-425f-955d-330f65401c93': '参与技能竞赛',
+                                '11675c2e-7766-11f0-a33e-fa163e2ff656': '开展健康宣教',
+                                'edf982f6-2aa5-4859-8ef5-16dcf5ad5837': '发表论文',
+                                '0b5a961d-9d1e-409f-907a-6fb3d568cf93': '出版著作',
+                                '90590f39-9940-4904-b37e-f6670b7bab27': '编制行业标准和团体标准',
+                                '21dc33f6-6739-4361-8cee-1c61bfd8d008': '承担教学和科研课题',
+                                'f72ef11a-a9a0-11f0-a183-fa163e2ff656': '其他自学形式',
+                            })[data.scoreLevelId];
+                        }
+                    },
+                    {
+                        field: 'formId', title: '自学形式', minWidth: 200, align: 'center', sort: true, hide: _zi.isselsl(), templet: data => {
+                            if (!data.formId) return '';
+                            let formMap = {
+                                '1873fd05-f3e0-49cf-93ba-cdaa31be96c2': '文献阅读与考核',
+                                '4b11c645-af1e-42c0-a05e-69b5db0d7ff9': '病例分析或实践反思',
+                                '0f22f26e-9f16-4e89-8818-ce5b44e27ff3': '音频/视频课程（需配套考核）',
+                                'dab16eab-be92-43b4-98fc-0a7065d84157': '自学书籍或教材（需考试）',
+                                'b73ff51a-31c8-444a-b2b1-a12300eb5f13': '',
+                                '3b5c8ffd-2ecd-44b7-8da3-9ecb00a8c4d2': '其他自学形式',
+                            };
+                            return Object.prototype.hasOwnProperty.call(formMap, data.formId) ? formMap[data.formId] : '其他';
+                        }
+                    },
+
+                    {field: 'befState', title: '自学申请', minWidth: 100, align: 'center', sort: false, templet: data => stateTxt(data.befState)},
+                    {field: 'ingState', title: '学习过程', minWidth: 100, align: 'center', sort: false, templet: data => stateTxt(data.ingState), hide: _isGuangdong || _isNeimeng,},
+                    {field: 'resState', title: '自学结果', minWidth: 100, align: 'center', sort: false, templet: data => stateTxt(data.resState)},
+                    {field: 'plannedScore', title: '拟学学分', minWidth: 100, align: 'center', sort: true, hide: !_isGuangdong,},
+                    {field: 'score', title: '分值', minWidth: 80, align: 'center', sort: true,},
+                    {field: 'scoreDate', title: '授分时间', minWidth: 160, align: 'center', sort: true,},
+                ]],
+                data: [{
+                    personNo: "123"
+                }],
+            });
+        }
+        function stateTxt(state) {
+            if (0 === state) return '未提交';
+            if (20 === state) return '未审核';
+            if (22 === state) return '审核不通过';
+            if (23 === state) return '审核通过';
+            return '';
+        }
+        function refreshTable(ec, pageNum) {
+            let c = {where: getSifter()};
+            ec ? $.extend(true, c, ec) : '';
+            table.reload('table_id', c);
+        }
+        function getSifter() {
+            let id = _isPerson ? 'range1' : 'range2';
+            return {
+                'comPersonId': _pid,
+                'unitId': _unitId,
+                'depth': _depth,
+                'cmeYear': $('select[name=cmeYear]').val(),
+                'startDate': toDayHeader(lat.parseDayRange(`#${id}`).start),
+                'endDate': toDayTail(lat.parseDayRange(`#${id}`).end),
+                'personNo': $('input[name=personNo]').val(),
+                'personName': $('input[name=personName]').val(),
+                'befState': $('select[name=befState]').val(),
+                'ingState': $('select[name=ingState]').val(),
+                'resState': $('select[name=resState]').val(),
+            };
+        }
+    });
+</script>
+<style>
+    .layui_mess {
+        display: flex;
+        justify-content: space-between;
+    }
+    .layui-form-select .layui-input {
+        padding-right: 0;
+    }
+    .layui-table-tool-temp {
+        padding-right: 0;
+    }
+</style>
+</html>

@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+
+    <link rel="stylesheet" href="../../../css/person/reset.css" />
+    <link rel="stylesheet" href="../../../css/person/style.css" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <!-- <script type="text/javascript" src="../../js/global_ajax_setting.js"></script> -->
+
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+    <style>
+        .ztree li span.button {
+            vertical-align: inherit !important;
+        }
+
+        .layui-form-label-my {
+            text-align: center;
+            width: unset;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body" style="margin:0 auto;">
+                <div class="layui-form" lay-filter="feeForm">
+
+                    <input type="hidden" id="projContractFundsId" name="projContractFundsId" />
+                    <input type="hidden" id="projContractId" name="projContractId" />
+
+                    <fieldset class="layui-elem-field" style="margin-top: 10px; padding: 30px;">
+                        <legend style="color:rgba(235, 39, 39, 0.514);text-align: left;font-weight: bold; font-size: 18px;;">
+                            项目经费收入预算</legend>
+
+                        <div class="layui-form-item">
+
+                            <label class="layui-form-label">培训费收费标准(元/人):</label>
+                            <div class="layui-input-block">
+                                <label class="layui-form-label layui-form-label-my">招收学员</label>
+                                <input type="number" id="studyNum" name="studyNum" class="layui-input" style="width:10%;float:left;" lay-verify="required|number"
+                                />
+                                <label class="layui-form-label layui-form-label-my">人 * 收费</label>
+                                <input type="number" id="incomeStandardPer" name="incomeStandardPer" class="layui-input" style="width:10%;float:left;" lay-verify="required|number"
+                                />
+                                <label class="layui-form-label layui-form-label-my">元/人=合计收培训费</label>
+                                <input type="number" id="incomeStandardTotal" name="incomeStandardTotal" class="layui-input" style="width:15%;float:left;"
+                                    lay-verify="required|number|incomeStandardTotalCheck" />
+                                <label class="layui-form-label layui-form-label-my">元</label>
+                            </div>
+
+                        </div>
+
+                        <div class="layui-form-item">
+
+                            <label class="layui-form-label" style="padding:9px 0px;width:100px;">单位配套经费:</label>
+                            <div class="layui-input-block">
+                                <input type="number" id="incomeUnitSupport" name="incomeUnitSupport" class="layui-input" style="width:15%;float:left;" lay-verify="required|number"
+                                />
+                                <label class="layui-form-label layui-form-label-my">元</label>
+                            </div>
+
+                        </div>
+
+                        <div class="layui-form-item">
+
+                            <label class="layui-form-label">其他经费:</label>
+                            <div class="layui-input-block">
+                                <input type="number" id="incomeOther" name="incomeOther" class="layui-input" style="width:15%;float:left;" lay-verify="required|number"
+                                />
+                                <label class="layui-form-label layui-form-label-my">元</label>
+                                <label class="layui-form-label layui-form-label-my">经费来源:</label>
+                                <input type="text" id="incomeOtherSource" name="incomeOtherSource" class="layui-input" style="width:25%;" lay-verify="incomeOtherSource"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+
+                            <label class="layui-form-label">预计总收入:</label>
+                            <div class="layui-input-block">
+                                <input type="number" id="incomeTotal" name="incomeTotal" class="layui-input" style="width:15%;float:left;" lay-verify="required|number|incomeTotalCheck"
+                                />
+                                <label class="layui-form-label layui-form-label-my">元</label>
+                            </div>
+                        </div>
+
+                    </fieldset>
+
+                    <fieldset class="layui-elem-field" style="margin-top: 10px; padding: 30px;">
+                        <legend style="color:rgba(235, 39, 39, 0.514);text-align: left;font-weight: bold; font-size: 18px;;">
+                            项目经费支出预算</legend>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">专家讲课费:</label>
+                                <div class="layui-input-block">
+
+                                    <label class="layui-form-label layui-form-label-my">1.中级技术职称人员 &nbsp; &nbsp;</label>
+                                    <input type="number" id="expendZhongjiExpertCount" name="expendZhongjiExpertCount" class="layui-input" style="width:10%;float:left;"
+                                        lay-verify="required|number|intCheck" />
+                                    <label class="layui-form-label layui-form-label-my"> 人， 合计金额</label>
+                                    <input type="number" id="expendZhongjiExpertTotal" name="expendZhongjiExpertTotal" class="layui-input" style="width:18%;float:left;"
+                                        lay-verify="required|number" />
+                                    <label class="layui-form-label layui-form-label-my">元</label>
+
+                                    <label class="layui-form-label layui-form-label-my" style="clear:left;"> 2.副高级技术职称人员</label>
+                                    <input type="number" id="expendFugaoExpertCount" name="expendFugaoExpertCount" class="layui-input" style="width:10%;float:left;"
+                                        lay-verify="required|number|intCheck" />
+                                    <label class="layui-form-label layui-form-label-my"> 人， 合计金额</label>
+                                    <input type="number" id="expendFugaoExpertTotal" name="expendFugaoExpertTotal" class="layui-input" style="width:18%;float:left;"
+                                        lay-verify="required|number" />
+                                    <label class="layui-form-label layui-form-label-my">元</label>
+
+                                    <label class="layui-form-label layui-form-label-my" style="clear:left;"> 3.正高级技术职称人员</label>
+                                    <input type="number" id="expendZhenggaoExpertCount" name="expendZhenggaoExpertCount" class="layui-input" style="width:10%;float:left;"
+                                        lay-verify="required|number|intCheck" />
+                                    <label class="layui-form-label layui-form-label-my"> 人， 合计金额</label>
+                                    <input type="number" id="expendZhenggaoExpertTotal" name="expendZhenggaoExpertTotal" class="layui-input" style="width:18%;float:left;"
+                                        lay-verify="required|number" />
+                                    <label class="layui-form-label layui-form-label-my">元</label>
+
+                                    <label class="layui-form-label layui-form-label-my" style="clear:left;"> 4.院士、全国知名专家</label>
+                                    <input type="number" id="expendYuanshiExpertCount" name="expendYuanshiExpertCount" class="layui-input" style="width:10%;float:left;"
+                                        lay-verify="required|number|intCheck" />
+                                    <label class="layui-form-label layui-form-label-my"> 人， 合计金额</label>
+                                    <input type="number" id="expendYuanshiExpertTotal" name="expendYuanshiExpertTotal" class="layui-input" style="width:18%;float:left;"
+                                        lay-verify="required|number" />
+                                    <label class="layui-form-label layui-form-label-my">元</label>
+
+                                    <label class="layui-form-label layui-form-label-my" style="clear:left;">总额共计</label>
+                                    <input type="number" id="expendExpertTotal" name="expendExpertTotal" class="layui-input" style="width:18%;float:left;" lay-verify="required|number|expendExpertTotalCheck"
+                                    />
+                                    <label class="layui-form-label layui-form-label-my">元</label>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+
+                            <label class="layui-form-label">场地租赁费:</label>
+                            <div class="layui-input-block">
+                                <input type="number" id="expendPlaceRent" name="expendPlaceRent" class="layui-input" style="width:18%;float:left;" lay-verify="required|number"
+                                />
+                                <label class="layui-form-label layui-form-label-my">元</label>
+                            </div>
+
+                        </div>
+                        <div class="layui-form-item">
+
+                            <label class="layui-form-label">设备租赁费:</label>
+                            <div class="layui-input-block">
+                                <input type="number" id="expendEquipmentRent" name="expendEquipmentRent" class="layui-input" style="width:18%;float:left;"
+                                    lay-verify="required|number" />
+                                <label class="layui-form-label layui-form-label-my">元</label>
+                            </div>
+
+                        </div>
+                        <div class="layui-form-item">
+
+                            <label class="layui-form-label">材料印刷费:</label>
+                            <div class="layui-input-block">
+                                <input type="number" id="expendTxtPrint" name="expendTxtPrint" class="layui-input" style="width:18%;float:left;" lay-verify="required|number"
+                                />
+                                <label class="layui-form-label layui-form-label-my">元</label>
+                            </div>
+
+                        </div>
+                        <div class="layui-form-item">
+
+                            <label class="layui-form-label">工作人员劳务费:</label>
+                            <div class="layui-input-block">
+                                <input type="number" id="expendWorkerSalary" name="expendWorkerSalary" class="layui-input" style="width:18%;float:left;"
+                                    lay-verify="required|number" />
+                                <label class="layui-form-label layui-form-label-my">元</label>
+                            </div>
+
+                        </div>
+                        <div class="layui-form-item">
+
+                            <label class="layui-form-label">其它费用:</label>
+                            <div class="layui-input-block">
+                                <input type="number" id="expendOther" name="expendOther" class="layui-input" style="width:18%;float:left;" lay-verify="required|number"
+                                />
+                                <label class="layui-form-label layui-form-label-my">元</label>
+                            </div>
+
+                        </div>
+                        <div class="layui-form-item">
+
+                            <label class="layui-form-label">支出总额:</label>
+                            <div class="layui-input-block">
+                                <input type="number" id="expendTotal" name="expendTotal" class="layui-input" style="width:18%;float:left;" lay-verify="required|number|expendTotalCheck"
+                                />
+                                <label class="layui-form-label layui-form-label-my">元</label>
+                            </div>
+
+                        </div>
+
+                    </fieldset>
+
+                    <fieldset class="layui-elem-field" style="margin-top: 10px; padding: 30px;">
+                        <legend style="color:rgba(235, 39, 39, 0.514);text-align: left;font-weight: bold; font-size: 18px;;">
+                            须知</legend>
+                        <div>1、专家讲课费发放标准参照《浙江省财政厅 中共浙江省委组织部关于印发浙江省省级机关培训费管理规定的通知》（浙财行〔2022〕13号）</div>
+                        <div>2、工作人员劳务费发放参照《省级预算商品和服务支出标准表》执行；</div>
+                        <div>3、所有支出费用须有章可循且符合财务审计相关要求。</div>
+
+                    </fieldset>
+
+
+                    <div class="layui-btn-container" style="text-align: center">
+                        <button class="layui-btn layui-btn-primary" id="btnCancel">返回列表</button>
+                        <button type="submit" class="layui-btn" lay-submit="" lay-filter="btnSave" id="btnSave">保存本页</button>
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
+
+
+<script>
+
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+
+    });
+
+
+
+    layui.use(['form', 'jquery', 'layer', "laydate"], function () {
+        var $ = layui.jquery;
+        var form = layui.form;
+        var layer = layui.layer;
+        var laydate = layui.laydate;
+
+        var projId = parent.window["projId"];
+        var downId = parent.window["downId"];
+        window.getProjContractId = function() {
+            return parent.window["projContractId"];
+        }
+        var projContractId =  getProjContractId();
+        var oper = parent.window["oper"];
+        var main = layui.sessionData("projContract")["main"];
+
+        var commonObj = {
+            get projContractId() { return getProjContractId(); },
+            projId: projId,
+            downId: downId,
+            userCreate: localStorage.getItem("user-name"),
+            userUpdate: localStorage.getItem("user-name")
+        }
+
+        window.getUnitId = function () {
+            return localStorage.getItem("unit-id");
+        }
+        window.getCmeStandardKindId = function () {
+            return localStorage.getItem("standardkind-id");
+        }
+
+
+        window.initAll = function () {
+            if (oper == "details") {
+                $(".layui-form").find("input").prop("disabled", "disabled").addClass("layui-disabled");
+                $(".layui-form").find("checkbox").prop("disabled", "disabled").addClass("layui-disabled");
+                $(".layui-form").find("select").prop("disabled", "disabled").addClass("layui-disabled");
+                $(".layui-form").find("textArea").prop("disabled", "disabled").addClass("layui-disabled");
+                $("#btnSave").hide();
+            }
+
+        }
+
+        window.getQualityData = function () {
+            if (projContractId != null && projContractId != "") {
+                let url = huayi_projectscore_url + `cmeProjContract/projContractPartInfo/${projContractId}/CmeProjContractFunds`;
+                $.ajax({
+                    url: url,
+                    type: "get",
+                    success: function (res) {
+                        if (res.success) {
+                            let cmeProjContractFunds = res.data.cmeProjContractFunds;
+                            if (cmeProjContractFunds != null) {
+                                form.val("feeForm", cmeProjContractFunds);
+                                form.render();
+                            }
+
+                        } else {
+                            layer.msg(res.msg, { icon: 2 });
+                        }
+                    },
+                    error: function (res) {
+                        layer.msg("发送数据失败", { icon: 2 });
+                    }
+                });
+            }
+        }
+
+        form.on('submit(btnSave)', function (data) {
+
+            let url = huayi_projectscore_url + `cmeProjContract/projContractPartInfo/${projContractId}/CmeProjContractFunds`;
+            let feeData = { ...data.field, ...commonObj };
+            let submitData = { "cmeProjContractFunds": feeData };
+
+            $.ajax({
+                url: url,
+                data: JSON.stringify(submitData),
+                type: "post",
+                contentType: "application/json",
+                dataType: "json",
+                success: function (res) {
+                    if (res.success) {
+
+                        layer.msg("保存成功", { icon: 1 });
+                        parent.getFullFlag('CmeProjContractFunds');
+                    } else {
+                        layer.msg(res.msg, { icon: 2 });
+                    }
+                },
+                error: function () {
+                    layer.msg("发送数据失败", { icon: 2 });
+                }
+            });
+            return false;
+        });
+
+
+        $("#btnCancel").click(function () {
+            parent.closeLayer();
+        });
+
+
+      
+        window.calincomeStandardTotal = function () {
+            let studyNum = $("#studyNum").val();
+            let incomeStandardPer = $("#incomeStandardPer").val();
+            if (studyNum != "" && incomeStandardPer != "") {
+                $("#incomeStandardTotal").val(Number(studyNum) * Number(incomeStandardPer));
+            }
+        }
+
+        window.calincomeTotal = function () {
+            //incomeTotalCheck  studyNum incomeStandardPer incomeUnitSupport incomeOther
+            let studyNum = $("#studyNum").val();
+            let incomeStandardPer = $("#incomeStandardPer").val();
+            let incomeUnitSupport = $("#incomeUnitSupport").val();
+            let incomeOther = $("#incomeOther").val(); 
+            if (studyNum != "" && incomeStandardPer != "" && incomeUnitSupport !="" && incomeOther != "") {
+                $("#incomeTotal").val(Number(studyNum) * Number(incomeStandardPer) + Number(incomeUnitSupport) + Number(incomeOther));
+            }
+        }
+
+        $("#studyNum").blur(function() {
+            calincomeStandardTotal();
+            calincomeTotal();
+        });
+        $("#incomeStandardPer").blur(function() {
+            calincomeStandardTotal();
+            calincomeTotal();
+        });
+
+        $("#incomeUnitSupport").blur(calincomeTotal);
+        $("#incomeOther").blur(calincomeTotal);
+
+
+        window.calexpendExpertTotal = function() {
+              //expendExpertTotalCheck expendZhongjiExpertTotal expendFugaoExpertTotal 
+            //expendZhenggaoExpertTotal expendYuanshiExpertTotal
+            let expendZhongjiExpertTotal = $("#expendZhongjiExpertTotal").val();
+            let expendFugaoExpertTotal = $("#expendFugaoExpertTotal").val();
+            let expendZhenggaoExpertTotal = $("#expendZhenggaoExpertTotal").val();
+            let expendYuanshiExpertTotal = $("#expendYuanshiExpertTotal").val(); 
+            if (expendZhongjiExpertTotal != "" && expendFugaoExpertTotal != "" && expendZhenggaoExpertTotal !="" && expendYuanshiExpertTotal != "") {
+                $("#expendExpertTotal").val(Number(expendZhongjiExpertTotal) + Number(expendFugaoExpertTotal) + Number(expendZhenggaoExpertTotal) + Number(expendYuanshiExpertTotal));
+            }
+        }
+
+
+        window.calexpendTotal = function() {
+
+            let expendZhongjiExpertTotal = $("#expendZhongjiExpertTotal").val();
+            let expendFugaoExpertTotal = $("#expendFugaoExpertTotal").val();
+            let expendZhenggaoExpertTotal = $("#expendZhenggaoExpertTotal").val();
+            let expendYuanshiExpertTotal = $("#expendYuanshiExpertTotal").val(); 
+          
+            let expendPlaceRent = $("#expendPlaceRent").val();
+            let expendEquipmentRent = $("#expendEquipmentRent").val();
+            let expendTxtPrint = $("#expendTxtPrint").val();
+            let expendWorkerSalary = $("#expendWorkerSalary").val(); 
+            let expendOther = $("#expendOther").val(); 
+            
+            if ( expendZhongjiExpertTotal != "" && expendFugaoExpertTotal != "" && expendZhenggaoExpertTotal !="" && expendYuanshiExpertTotal != ""
+                && expendPlaceRent != "" && expendEquipmentRent != "" && expendTxtPrint !="" && expendWorkerSalary != "" && expendOther != "") {
+                $("#expendTotal").val(Number(expendZhongjiExpertTotal) + Number(expendFugaoExpertTotal) + Number(expendZhenggaoExpertTotal) + Number(expendYuanshiExpertTotal)
+                    + Number(expendPlaceRent) + Number(expendEquipmentRent) +  Number(expendTxtPrint) + Number(expendWorkerSalary) 
+                   +  Number(expendOther));
+            }
+        }
+
+        
+        $("#expendZhongjiExpertTotal").blur(function() {
+            calexpendExpertTotal();
+            calexpendTotal();
+        });
+        $("#expendFugaoExpertTotal").blur(function() {
+            calexpendExpertTotal();
+            calexpendTotal();
+        });
+        $("#expendZhenggaoExpertTotal").blur(function() {
+            calexpendExpertTotal();
+            calexpendTotal();
+        });
+        $("#expendYuanshiExpertTotal").blur(function() {
+            calexpendExpertTotal();
+            calexpendTotal();
+        });
+
+        
+        $("#expendPlaceRent").blur(calexpendTotal);
+        $("#expendEquipmentRent").blur(calexpendTotal);
+        $("#expendTxtPrint").blur(calexpendTotal);
+        $("#expendWorkerSalary").blur(calexpendTotal);
+        $("#expendOther").blur(calexpendTotal);
+
+
+
+
+        form.verify({
+
+            incomeOtherSource: function (value, item) {
+                let incomeOtherNum = Number($("#incomeOther").val());
+                if (incomeOtherNum > 0 && value == '') {
+                    return "经费来源不能为空";
+                }
+            },
+
+            intCheck: function (value, item) {
+                let isInteger = Number.isInteger(Number(value));
+                if (!isInteger) {
+                    return "必须是整数";
+                }
+            },
+            //incomeStandardTotalCheck studyNum incomeStandardPer
+            incomeStandardTotalCheck: function (value, item) {
+                let studyNum = Number($("#studyNum").val());
+                let incomeStandardPer = Number($("#incomeStandardPer").val());
+                if (Number(value) != studyNum * incomeStandardPer) {
+                    return "合计收培训费数目不对";
+                }
+            },
+            //incomeTotalCheck  studyNum incomeStandardPer incomeUnitSupport incomeOther
+            incomeTotalCheck: function (value, item) {
+                let studyNum = Number($("#studyNum").val());
+                let incomeStandardPer = Number($("#incomeStandardPer").val());
+                let incomeUnitSupport = Number($("#incomeUnitSupport").val());
+                let incomeOther = Number($("#incomeOther").val());
+                if (Number(value) != studyNum * incomeStandardPer + incomeUnitSupport + incomeOther) {
+                    return "预计总收入数目不对";
+                }
+            },
+
+            //expendExpertTotalCheck expendZhongjiExpertTotal expendFugaoExpertTotal 
+            //expendZhenggaoExpertTotal expendYuanshiExpertTotal
+            expendExpertTotalCheck: function (value, item) {
+                let expendZhongjiExpertTotal = Number($("#expendZhongjiExpertTotal").val());
+                let expendFugaoExpertTotal = Number($("#expendFugaoExpertTotal").val());
+                let expendZhenggaoExpertTotal = Number($("#expendZhenggaoExpertTotal").val());
+                let expendYuanshiExpertTotal = Number($("#expendYuanshiExpertTotal").val());
+                if (Number(value) != expendZhongjiExpertTotal + expendFugaoExpertTotal + expendZhenggaoExpertTotal + expendYuanshiExpertTotal) {
+                    return "专家讲课费总额数目不对";
+                }
+            },
+            //expendTotalCheck expendPlaceRent expendEquipmentRent expendTxtPrint 
+            //expendWorkerSalary expendOther
+            expendTotalCheck: function (value, item) {
+                let expendZhongjiExpertTotal = Number($("#expendZhongjiExpertTotal").val());
+                let expendFugaoExpertTotal = Number($("#expendFugaoExpertTotal").val());
+                let expendZhenggaoExpertTotal = Number($("#expendZhenggaoExpertTotal").val());
+                let expendYuanshiExpertTotal = Number($("#expendYuanshiExpertTotal").val());
+
+                let expendPlaceRent = Number($("#expendPlaceRent").val());
+                let expendEquipmentRent = Number($("#expendEquipmentRent").val());
+                let expendTxtPrint = Number($("#expendTxtPrint").val());
+                let expendWorkerSalary = Number($("#expendWorkerSalary").val());
+                let expendOther = Number($("#expendOther").val());
+
+                if (Number(value) != expendZhongjiExpertTotal + expendFugaoExpertTotal + expendZhenggaoExpertTotal + expendYuanshiExpertTotal
+                    + expendOther + expendPlaceRent + expendEquipmentRent + expendTxtPrint + expendWorkerSalary) {
+                    return "支出总额数目不对";
+                }
+            },
+
+
+
+        });
+
+
+        $(function () {
+            window.initAll();
+            getQualityData();
+        });
+    });
+
+</script>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>singlePhotoModal_2</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.4 -->
+    <!--<link rel="stylesheet" href="/js/layui-v2.6.4/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="/js/layui-v2.6.4/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <script type="text/javascript" src="/js/api/base64.min.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+</head>
+<body style="background-color: white;">
+<div class="layui-tab layui-tab-card" lay-filter="file_tab">
+    <ul class="layui-tab-title">
+        <!--<li class="layui-this">tab1</li>-->
+        <!--<li>tab2</li>-->
+        <!--<li>tab3</li>-->
+        <!--<li>tab4</li>-->
+        <!--<li>tab5</li>-->
+        <!--<li>tab6</li>-->
+    </ul>
+    <div class="layui-tab-content">
+        <!--<div class="layui-tab-item layui-show">1</div>-->
+        <!--<div class="layui-tab-item">2</div>-->
+        <!--<div class="layui-tab-item">3</div>-->
+        <!--<div class="layui-tab-item">4</div>-->
+        <!--<div class="layui-tab-item">5</div>-->
+        <!--<div class="layui-tab-item">6</div>-->
+        <iframe allowtransparency="true" id="layui-layer-iframe99" name="layui-layer-iframe1"
+                onload2="ifmload()"
+                class="" src="">
+        </iframe>
+    </div>
+</div>
+</body>
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        lat: 'lat',
+        tool: 'tool'
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'xmSelect', 'lat','tool'], function () {
+        let table = layui.table;
+        let layer = layui.layer;
+        let form = layui.form;
+        let laydate = layui.laydate;
+        let dropdown = layui.dropdown;
+        let element = layui.element;
+        let $ = layui.jquery;
+        let tool = layui.tool;
+        let xmSelect = layui.xmSelect;
+        let lat = layui.lat;
+        let gLayerIndex = -1;
+        let gCurSrc;
+        window.ifmload = function () {
+            this.className = '';
+            (this.contentDocument || this.contentWindow.document).body.style.backgroundColor = 'whitesmoke';
+        }
+        let _arr = [{
+            'scorePhotoUrl': 'http://222.143.64.114:8017/file/individualScoreManage/a6280900-a9c2-11ec-84d6-fa163e9b64fb/2025/162903/1762766705791-ad9eb5d1-f391-4f6f-88e7-389ab9f4688b.png',
+            'fileName': '李莉图片.png',
+            'photoSize': '123'
+        }, {
+            'scorePhotoUrl': 'http://222.143.64.114:8017/file/individualScoreManage/a6280900-a9c2-11ec-84d6-fa163e9b64fb/2025/162903/1762767305382-274f4aed-efaf-460b-a326-4d2ce82455e8.jpg',
+            'fileName': '杜秋燕.jpg',
+            'photoSize': '267.0'
+        }, {
+            'scorePhotoUrl': 'http://222.143.64.114:8017/file/individualScoreManage/a6280900-a9c2-11ec-84d6-fa163e9b64fb/2023/162907/1698285667470-fbd6efb7-af44-4ad7-8f93-f174f3fa1b2e.pdf',
+            'fileName': '秦娜1.pdf',
+            'photoSize': '138.9'
+        }];
+        const _fileArr = JSON.parse(getOrDefault(localStorage.getItem('tmp_single_photo'), JSON.stringify(_arr)));
+        layer.ready(function () {
+            $('.layui-layer-title', parent.document).hide();
+            renderTab();
+            element.tabChange('file_tab', 0);
+        });
+        $(function () {
+        });
+        element.on('tab(file_tab)', function (data) {
+            let layId = +(this.getAttribute('lay-id'));
+            let file = _fileArr[layId];
+            setContent(file.previewUrl)
+        });
+        function renderTab() {
+            let $tabTitle = $('.layui-tab-title');
+            $tabTitle.empty();
+            _fileArr.forEach((file, idx) => {
+                let url = file.scorePhotoUrl;
+                // if (isImg(url)) file.previewUrl = kkurl(url);
+                // else file.previewUrl = kkurl(url);
+                if (isImg(url)) file.previewUrl = tool.getComAliyunUrl(url);
+                else file.previewUrl = tool.getComAliyunUrl(url);
+                file.idx = idx;
+                let isFirst = 0 === idx;
+                $tabTitle.append(`<li lay-id="${idx}" class="${isFirst ? 'layui-this' : ''}">${file.fileName}</li>`)
+                isFirst && setContent(file.previewUrl);
+            });
+        }
+        function setContent(src) {
+            if (src !== gCurSrc) {
+                gCurSrc = src;
+                let $iframe = $('.layui-tab-content iframe');
+                $iframe.attr('src', src);
+            }
+        }
+    });
+</script>
+<style>
+    .layui-tab-title {
+        background-color: white !important;
+        border-bottom-style: none;
+    }
+    .layui-tab-title li {
+        background-color: lightgrey;
+        border-radius: 60px;
+        margin: 6px 4px !important;
+        line-height: 34px;
+    }
+    .layui-tab-title .layui-this {
+        background-color: #5FB878 !important;
+    }
+    .layui-tab-title .layui-this:after {
+        border-style: none;
+    }
+    .layui-tab-content iframe {
+        border-style: none;
+        width: 100%;
+        height: 36rem;
+        /*background-color: whitesmoke;*/
+    }
+</style>
+</html>

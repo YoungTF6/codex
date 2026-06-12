@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>近三天举办的项目</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+        media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+
+    <script type="text/javascript" src="../../../js/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <style>
+        .polyv-url-box{
+            display: flex;
+            align-items: center;
+            justify-self: center;
+            width: 90%;
+            height: 90%;
+            margin: auto;
+        }
+        .polyv-box-flex{
+            width: 100%;
+        }
+        .polyv-box-flex>div{
+            margin: 10px 0px;
+        }
+        .polyv-box-flex>div:nth-child(1){
+            color: #3c3c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <!--        表格区域-->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="threeDayHoldProj" lay-filter="threeDayHoldProj"></table>
+            </div>
+            <!-- 弹窗,展示链接 -->
+            <!-- <div id="showPolyvUrl" style=" display:none;text-align: center;width: 100%;height:100%">
+                <div class="polyv-url-box">
+                    <div class="polyv-box-flex">
+                        <div>直播观看地址</div>
+                        <div class="polyv-url js-polyv-url"></div>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+    </div>
+    
+<!--表格内数据编辑、删除按钮、holdQualification是举办权限，如果为true才能举办-->
+<script type="text/html" id="rowBar">
+    {{# if(d.channelId !=null && d.channelId != "") {  }}
+    <a class="layui-btn layui-btn-xs" lay-event="viewPolyv">观看直播</a>
+    {{# } }}
+    <!-- <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="viewUrl">直播信息浏览</a> -->
+</script>
+
+<script>
+    // 全局配置及引入相关的模块
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        tool: 'tool',
+    });
+
+    layui.use(['table', 'form', 'laydate', 'tool'], function () {
+        var table = layui.table, form = layui.form, $ = layui.jquery, tool = layui.tool;
+        var laydate = layui.laydate;
+        var cmeStandardKindId = localStorage.getItem("standardkind-id");
+        window.layer = layui.layer;
+        window.loading;
+        window.ajaxNum = 0;
+
+        //关闭closeLoading的判断
+        let closeLoading = function () {
+            ajaxNum--;
+            if (ajaxNum <= 0 && loading) layer.close(loading);
+        }
+        //打开加载
+        let openLoading = function () {
+            if (ajaxNum == 0) loading = layer.msg('加载中', { icon: 16, shade: 0.3, time: 0 });
+            ajaxNum++;
+        }
+        //公共ajax
+        let commonAjax = function (type = "get", url, data, failFun, successFun) {
+            openLoading();
+            $.ajax({
+                type: type,
+                url: url,
+                data: data,
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    closeLoading();
+                    if(res.status != 200) {
+                        layer.msg(res.msg);
+                        return;
+                    }
+                    successFun(res);
+                },
+                error: function (res) {
+                    closeLoading();
+                    failFun();
+                }
+            });
+        }
+
+        let getThreeDayDown = function() {
+            let downUrl = huayi_projectscore_url + 'projPolyv/getThreeDayDown?cmeStandardKindId='+cmeStandardKindId;
+            commonAjax("post",downUrl,{},
+                function(){
+                    layer.msg("系统异常");
+                },
+                function(res){
+                    if (res.status === 200) {
+                        getDownCources(res.data);
+                    }
+                    else { layer.msg(res.msg); }
+                })
+        }
+  
+        //获取该周期的课程信息
+        let getDownCources = function (downData) {
+            //渲染表格
+            table.render({
+                elem: '#threeDayHoldProj',
+                data: downData,
+                cols: [[
+                    { align: 'center', minWidth: 80, toolbar: '#rowBar', title: '操作', fixed: 'left' },
+                    { field: 'projName', title: '项目名称', sort: true, align: "center" },
+                    { field: 'batch', title: '批次', sort: true, align: "center",
+                        templet: function (d) {
+                            return `第${d.batch}批次`;
+                        } 
+                    },
+                    { field: 'unitName', title: '举办单位', sort: true, align: "center" },
+                    { field: 'startDt', title: '开始时间', sort: true, align: "center"},
+                    { field: 'endDt', title: '结束时间', sort: true, align: "center"}
+                ]],
+                cellMinWidth: 100,
+                id: "threeDayHoldProj",
+                page: false,
+                limit: 1000,
+                done: function (res, curr, count) {  },
+                error: function () {  }
+            });
+        }
+
+        // 监听行内按钮
+        table.on('tool(threeDayHoldProj)', function (obj) {
+            var datas = obj.data;
+            obj.event == "viewPolyv" && goViewPolyv(datas.downId);
+            // obj.event == "viewUrl" && viewUrl(datas);
+        });
+
+        //进入直播观看页面
+        let goViewPolyv = function(downId) {
+            let viewUrl = huayi_projectscore_url + 'projPolyv/getUserWatchUrl?downId='+downId;
+            commonAjax("post",viewUrl,{},
+                function(){
+                    layer.msg("系统异常");
+                },
+                function(res){
+                    if (res.status === 200) {
+                        window.open(res.data);
+                    }
+                    else { layer.msg(res.msg); }
+                })
+        }
+
+        //查看直播链接，拥有外部登录
+        // let viewUrl = function(data) {
+        //     if(data.channelId==null || data.channelId ==""){
+        //         layer.msg("该项目未建立直播信息");
+        //         return;
+        //     }
+        //     //获取外部链接
+        //     let polyvUrl = "https://live.polyv.cn/watch/"+data.channelId;
+        //     layer.open({
+        //         type: 1,
+        //         title: '直播信息浏览',
+        //         content: $('#showPolyvUrl'),
+        //         area: ['90%', '150px'],
+        //         success: function(){
+        //             let htmlText = `
+        //                 <div class="js-polyv-url">${polyvUrl}</div>
+        //                 `;
+        //             $(".js-polyv-url").html(htmlText);
+        //         },
+        //         cancel: function(index, layer){}
+        //     });
+        // }
+
+
+        //页面初始化
+        let htmlInit = function () {
+            getThreeDayDown();
+        }
+        htmlInit();
+
+    });
+</script>
+</body>
+
+</html>

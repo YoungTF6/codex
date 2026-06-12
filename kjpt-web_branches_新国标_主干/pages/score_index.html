@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学分上报管理</title>
+    <!-- LayUI CSS -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css">
+    <!-- LayUI JS -->
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <style type="text/css">
+        .layui-table-view .layui-form-checkbox, .layui-table-view .layui-form-radio, .layui-table-view .layui-form-switch{ margin-right: 10px;margin-bottom: 10px; }
+        .warning-text { color: red; margin-left: 20px; }
+    </style>
+</head>
+<body>
+    <div class="layui-form">
+        <div class="layui-fluid">
+            <div class="layui-card">
+                <div class="layui-card-header layuiadmin-card-header-auto">
+                    <blockquote class="layui-form-item layui-elem-quote one-btn">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">年度</label>
+                                <div class="layui-input-inline">
+                                    <select id="cme_year" name="cme_year" lay-verify="required">
+                                        <!-- 动态生成年度选项 -->
+                                    </select>
+                                </div>
+                                <label class="layui-form-label">人员编号</label>
+                                <div class="layui-input-inline">
+                                    <input id="person_no" name="person_no" type="text" class="layui-input" placeholder="人员编号" />
+                                </div>
+                                <label class="layui-form-label">同步状态</label>
+                                <div class="layui-input-inline">
+                                    <select id="submit_status" name="submit_status" lay-verify="required">
+                                        <option value="">全部</option>
+                                        <option value="未上报">未上报</option>
+                                        <option value="未同步">未同步</option>
+                                        <option value="同步成功">同步成功</option>
+                                        <option value="同步失败">同步失败</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">科室</label>
+                                <div class="layui-input-inline">
+                                    <select id="dept_id" name="dept_id" lay-verify="required">
+                                        <option value="">全部</option>
+                                    </select>
+                                </div>
+                                <input type="button" class="layui-btn layui-btn-sm" data-type="reload" id="btn_search"
+                                    value="查询" />
+                            </div>
+                            <div class="layui-inline">
+                                <span class="warning-text">注：本页仅统计已达标学员</span>
+                            </div>
+                        </div>
+                    </blockquote>
+                </div>
+                <div class="layui-card-body" style="padding: 0 0">
+                    <div class="layui-table-tool" style="width: auto; background-color: white;">
+                        <table id="train_info" lay-filter="train_info"></table>
+                        <script type="text/html" id="table-toolbar">
+                            <div class="layui-form layui-btn-container">
+                                <input type="checkbox" id="{{d.comPersonId}}" data-title-id="{{d.titleId}}" data-unit-id="{{d.unitId}}" {{# if(d.submitStatus != '未上报'){ }}disabled{{# } }} name="check_line" title="选中" lay-skin="switch" lay-text="选中|不选">
+                            </div>
+                        </script>
+                        <script type="text/html" id="main_toolbar">
+                          <div class="layui-form layui-btn-container">
+                            <div class="layui-unselect layui-input-inline">
+                                <button class="layui-btn layui-btn-sm" lay-event="checkAllthisPage">本页全选</button>
+                                <button class="layui-btn layui-btn-sm" lay-event="checkAll">全选</button>
+                                <button class="layui-btn layui-btn-sm layui-btn-green" lay-event="multi_submit">批量上报</button>
+                                <button class="layui-btn layui-btn-sm layui-btn-warm" lay-event="exportExcel">导出Excel</button>
+                            </div>
+                          </div>
+                        </script>
+                        <script type="text/html" id="table_viewdetail">
+                          <div class="layui-form">
+                            <div class="layui-unselect layui-input-inline">
+                                <button class="layui-btn layui-btn-xs" lay-event="bxk">专业课</button>
+                                <button class="layui-btn layui-btn-xs" lay-event="xxk">选修课</button>
+                            </div>
+                          </div>
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <script type="text/javascript">
+        // 配置对象，统一管理ip端口
+        var config = {
+            baseUrl: huayi_projectscore_url
+        };
+        var unit = localStorage.getItem('unit-id')
+        console.log(unit)
+        
+        // 检查后端连接
+        function checkBackendConnection() {
+            console.log('正在检查后端连接...');
+            console.log('请求URL：', config.baseUrl + '/score/submit/getDeptTree');
+            
+            $.ajax({
+                url: config.baseUrl + '/score/submit/getDeptTree',
+                type: 'get',
+                dataType: 'json',
+                crossDomain: true,
+                success: function(response) {
+                    console.log('后端连接成功：', response);
+                },
+                error: function(xhr, status, error) {
+                    console.log('后端连接失败：', xhr, status, error);
+                    console.log('请检查：1. 后端服务是否启动 2. 端口是否正确 3. 是否存在跨域问题');
+                }
+            });
+        }
+        
+        // 页面加载时检查后端连接
+        checkBackendConnection();
+        
+        layui.config({
+            base: "https://cdn.91huayi.com/hywupload/common/layui/v121/std/" //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use(['form', 'table', 'laydate', 'jquery', 'layer'], function () {
+            var form = layui.form,
+                table = layui.table,
+                laydate = layui.laydate,
+                $ = layui.jquery,
+                layer = layui.layer;
+
+            // 动态生成年度选项
+            function generateYearOptions() {
+                var cmeYearSelect = $('#cme_year');
+                // 清空现有选项
+                cmeYearSelect.empty();
+                // 添加"全部"选项
+                cmeYearSelect.append('<option value="">全部</option>');
+                // 生成当前年份和前5年的选项
+                var currentYear = new Date().getFullYear() - 1;
+                for (var i = 0; i <= 5; i++) {
+                    var year = currentYear - i;
+                    var option = '<option value="' + year + '"';
+                    if (i === 0) {
+                        option += ' selected';
+                    }
+                    option += '>' + year + '</option>';
+                    cmeYearSelect.append(option);
+                }
+                form.render('select');
+            }
+            
+            // 调用函数生成年度选项
+            generateYearOptions();
+
+            // 渲染表格
+            var main_table = table.render({
+                elem: '#train_info'
+                , height: 'full-198'
+                , loading: true
+                , toolbar: '#main_toolbar'
+                , method: 'post'
+                , contentType: 'application/json;charset=utf-8'
+                , defaultToolbar: ['filter']
+                , title: '学分数据表'
+                , page: true //开启分页
+                , cols: [
+                    [ //表头
+                        {fixed: 'left', title: '操作', toolbar: '#table-toolbar', width: 85 }
+                        , { fixed: 'left', title: '查看', width: 140, toolbar: '#table_viewdetail' }
+                        , { field: 'cmeYear', title: '年度', sort: false, width: 75 }
+                        , { field: 'personNo', title: '人员编号', width: 110 }
+                        , { field: 'personName', title: '姓名', sort: true, width: 85 }
+                        , { field: 'sex', title: '性别', sort: true, width: 80 }
+                        , { field: 'deptName', title: '科室', sort: true, width: 90 }
+                        , { field: 'titleName', title: '职称', sort: true, width: 90 }
+                        , { field: 'spec', title: '专业', sort: true, width: 90 }
+                        , { field: 'certId', title: '证件号', sort: true, width: 175 }
+                        , { field: 'personState', title: '人员状态', sort: true, width: 90 }
+                        , { field: 'passResult', title: '达标状态', sort: true, width: 110 }
+                        , { field: 'totalScore', title: '专业课总学分', sort: true, width: 110 }
+                        , { field: 'totalPeriod', title: '专业课总学时', sort: true, width: 110 }
+                        // , { field: 'xxkScore', title: '选修课总学分', sort: true, width: 110 }
+                        , { field: 'xxkPeriod', title: '选修课总学时', sort: true, width: 110 }
+                        , { field: 'submitStatus', title: '同步状态', sort: false, width: 150}
+                        , { field: 'submitTime', title: '上报时间', sort: true, width: 180 }
+                    ]
+                ]
+                , url: config.baseUrl + '/score/submit/query' //数据接口
+                , request: { pageName: 'pageNum', limitName: 'pageSize' }
+                , where: {
+                    cmeYear: $("#cme_year").val(),
+                    personNo: $("#person_no").val(),
+                    deptId: $("#dept_id").val(),
+                    submitStatus: $("#submit_status").val(),
+                    unitId: unit
+                }
+                , parseData: function(res) {
+                    console.log('表格数据解析：', res);
+                    console.log('查询条件：',  $("#cme_year").val(),
+                        ' personNo:' ,$("#person_no").val(),
+                        ' deptId:', $("#dept_id").val(),
+                        ' submitStatus:' ,$("#submit_status").val(),
+                        ' unitId:' ,unit)
+                    return {
+                        "code": res.status == 200 ? 0 : 1,
+                        "msg": res.msg,
+                        "count": res.data.total,
+                        "data": res.data.list
+                    };
+                }
+            });
+            
+            // 查询按钮点击事件
+            $("#btn_search").click(function () {
+                //执行重载
+                main_table.reload({
+                    where: {
+                        cmeYear: $("#cme_year").val(),
+                        personNo: $("#person_no").val(),
+                        deptId: $("#dept_id").val(),
+                        submitStatus: $("#submit_status").val(),
+                        unitId:unit
+                    }
+                    , page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    , height: 'full-158'
+                    , loading: true
+                });
+            });
+            
+            form.render();
+
+            var is_check_all = false;
+            var is_check_this_page = false;
+            
+            // 加载科室树数据并填充到下拉列表
+            function loadDeptTree() {
+                $.ajax({
+                    url: config.baseUrl + '/score/submit/getDeptTree',
+                    type: 'get',
+                    dataType: 'json',
+                    crossDomain: true,
+                    success: function(response) {
+                        if (response.success) {
+                            var deptSelect = $('#dept_id');
+                            // 清空现有选项（保留"全部"选项）
+                            deptSelect.find('option:not(:first)').remove();
+                            // 填充科室数据
+                            if (Array.isArray(response.data)) {
+                                response.data.forEach(function(dept) {
+                                    var deptId = dept.id || dept.deptId;
+                                    var deptName = dept.label || dept.deptName;
+                                    if (deptId && deptName) {
+                                        deptSelect.append('<option value="' + deptId + '">' + deptName + '</option>');
+                                    }
+                                });
+                            } else if (response.data && response.data.list) {
+                                // 如果数据在list字段中
+                                response.data.list.forEach(function(dept) {
+                                    var deptId = dept.id || dept.deptId;
+                                    var deptName = dept.label || dept.deptName;
+                                    if (deptId && deptName) {
+                                        deptSelect.append('<option value="' + deptId + '">' + deptName + '</option>');
+                                    }
+                                });
+                            }
+                            // 重新渲染表单
+                            form.render('select');
+                        } else {
+                            layer.alert('加载科室树失败：' + response.msg);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        layer.alert('加载科室树失败，请检查网络连接！');
+                    }
+                });
+            }
+            
+            // 页面加载时获取科室树数据
+            loadDeptTree();
+
+            // 表格工具栏事件
+            table.on('toolbar(train_info)', function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id);
+                switch (obj.event) {
+                    case 'checkAllthisPage':
+                        is_check_this_page = !is_check_this_page;
+                        is_check_all = false;
+                        console.log('本页全选：', is_check_this_page);
+                        $("[name='check_line']:enabled").prop("checked", is_check_this_page);
+                        form.render("checkbox");
+                        break;
+                    case 'checkAll':
+                        is_check_all = !is_check_all;
+                        is_check_this_page = false;
+                        console.log('全选：', is_check_all);
+                        $("[name='check_line']:enabled").prop("checked", is_check_all);
+                        form.render("checkbox");
+                        break;
+                    case 'multi_submit':
+                        // var selectedItems = [];
+                        // var doms = $("[name='check_line']:checked");
+                        // doms.each(function (i, item) {
+                        //     var comPersonId = $(this).attr("id");
+                        //     var titleId = $(this).data("title-id");
+                        //     var unitId = $(this).data("unit-id");
+                        //     selectedItems.push({
+                        //         comPersonId: comPersonId,
+                        //         titleId: titleId,
+                        //         unitId: unitId
+                        //     });
+                        // });
+                        //
+                        // if (selectedItems.length === 0) {
+                        //     layer.alert("请选择要上报的人员");
+                        //     return;
+                        // }
+                        //
+                        // console.log('选中的人员：', selectedItems);
+                        //
+                        // // 构建检查条件参数
+                        // var checkParams = [];
+                        // selectedItems.forEach(function(item) {
+                        //     checkParams.push({
+                        //         titleId: item.titleId,
+                        //         unitId: item.unitId,
+                        //         personId: item.comPersonId
+                        //     });
+                        // });
+                        //
+                        // // 检查是否可以导入，是否在时间范围内
+                        // console.log('正在检查上报条件...');
+                        // console.log('请求URL：', config.baseUrl + '/score/submit/checkSubmitConditionBatch');
+                        // console.log('请求参数：', checkParams);
+                        //
+                        // $.ajax({
+                        //     url: config.baseUrl + '/score/submit/checkSubmitConditionBatch',
+                        //     type: "post",
+                        //     contentType: "application/json;charset=utf-8",
+                        //     data: JSON.stringify(checkParams),
+                        //     crossDomain: true,
+                        //     success: function (conditionResponse) {
+                        //         console.log('检查上报条件成功：', conditionResponse);
+                        //
+                        //         // 检查是否所有人员都通过检查
+                        //         var allPass = true;
+                        //         var failedReasons = [];
+                        //
+                        //         if (conditionResponse.data && conditionResponse.data.checkResults) {
+                        //             conditionResponse.data.checkResults.forEach(function(result) {
+                        //                 if (!result.canSubmit) {
+                        //                     allPass = false;
+                        //                     failedReasons.push(result.message);
+                        //                 }
+                        //             });
+                        //         }
+                        //
+                        //         if (!allPass) {
+                        //             layer.alert('检查失败：' + failedReasons.join('；'));
+                        //             return;
+                        //         }
+                        //
+                        //         // 构建上报参数
+                        //         var submitParams = [];
+                        //         selectedItems.forEach(function(item) {
+                        //             submitParams.push({
+                        //                 cmeYear: $("#cme_year").val(),
+                        //                 comPersonId: item.comPersonId,
+                        //                 titleId: item.titleId,
+                        //                 state: 0, // 初始状态设为0
+                        //                 totalScore: item.totalScore || null,
+                        //                 totalPeriod: item.totalHours || null,
+                        //                 gdrstSwapstate: null,
+                        //                 message: '',
+                        //                 logState: null
+                        //             });
+                        //         });
+                        //         console.log('上报参数：', submitParams);
+                        //
+                        //         // 执行批量插入
+                        //         console.log('正在执行批量插入...');
+                        //         console.log('请求URL：', config.baseUrl + '/score/submit/checkConditionBatch');
+                        //
+                        //         $.ajax({
+                        //             url: config.baseUrl + '/score/submit/checkConditionBatch',
+                        //             type: "post",
+                        //             contentType: "application/json;charset=utf-8",
+                        //             data: JSON.stringify(submitParams),
+                        //             crossDomain: true,
+                        //             success: function (response) {
+                        //                 console.log('执行批量插入成功：', response);
+                        //                 var message = "";
+                        //                 if (response.success) {
+                        //                     // 检查实际的执行结果
+                        //                     if (response.data) {
+                        //                         var successCount = response.data.successCount || 0;
+                        //                         var failCount = response.data.failCount || 0;
+                        //                         var failDetails = response.data.failDetails || [];
+                        //
+                        //                         if (successCount > 0) {
+                        //                             message = "成功提交" + successCount + "条数据";
+                        //                             if (failCount > 0) {
+                        //                                 message += "，失败" + failCount + "条数据";
+                        //                                 if (failDetails.length > 0) {
+                        //                                     message += "。失败原因：" + failDetails.map(function(detail) {
+                        //                                         return detail.message;
+                        //                                     }).join('；');
+                        //                                 }
+                        //                             }
+                        //                         } else {
+                        //                             message = "提交失败：";
+                        //                             if (failDetails.length > 0) {
+                        //                                 message += failDetails.map(function(detail) {
+                        //                                     return detail.message;
+                        //                                 }).join('；');
+                        //                             } else {
+                        //                                 message += (response.data.msg || response.msg || "未知错误");
+                        //                             }
+                        //                         }
+                        //                     } else {
+                        //                         message = "提交失败：" + (response.msg || "未知错误");
+                        //                     }
+                        //                 } else {
+                        //                     message = "提交失败：" + (response.msg || "未知错误");
+                        //                 }
+                        //                 layer.alert(message);
+                        //                 $("#btn_search").click();
+                        //             },
+                        //             error: function(xhr, status, error) {
+                        //                 console.log('执行批量插入失败：', xhr, status, error);
+                        //                 layer.alert("网络错误，请检查网络连接！错误信息：" + error);
+                        //             },
+                        //             dataType: "json"
+                        //         });
+                        //     },
+                        //     error: function(xhr, status, error) {
+                        //         console.log('检查上报条件失败：', xhr, status, error);
+                        //         layer.alert("检查上报条件失败，请重试！错误信息：" + error);
+                        //     },
+                        //     dataType: "json"
+                        // });
+                        // break;
+
+                        var selectedIds = [];
+                        var doms = $("[name='check_line']:checked");
+                        doms.each(function () {
+                            selectedIds.push($(this).attr("id"));
+                        });
+
+                        if (selectedIds.length === 0) {
+                            layer.alert("请选择要上报的人员");
+                            return;
+                        }
+
+                        var submitStatusFlag = is_check_all ? 1 : 0; // 本页全选 0，全选 1
+                        var submitParams = {
+                            cmeYear: $("#cme_year").val(),
+                            personNo: $("#person_no").val(),
+                            deptId: $("#dept_id").val(),
+                            unitId: unit,
+                            status: submitStatusFlag,
+                            comPersonIds: selectedIds.join(',')
+                        };
+
+                        console.log('单位上报参数：', submitParams);
+                        console.log('请求URL：', config.baseUrl + '/score/submit/unitReport');
+
+                        $.ajax({
+                            url: config.baseUrl + '/score/submit/unitReport',
+                            type: "post",
+                            contentType: "application/json;charset=utf-8",
+                            data: JSON.stringify(submitParams),
+                            crossDomain: true,
+                            success: function (response) {
+                                console.log('单位上报成功：', response);
+                                var message = "";
+                                if (response.success) {
+                                    message = response.msg || "上报成功";
+                                } else {
+                                    message = "上报失败：" + (response.msg || "未知错误");
+                                }
+                                layer.alert(message);
+                                $("#btn_search").click();
+                            },
+                            error: function(xhr, status, error) {
+                                console.log('单位上报失败：', xhr, status, error);
+                                layer.alert("网络错误，请检查网络连接！错误信息：" + error);
+                            },
+                            dataType: "json"
+                        });
+                        break;
+
+                    case 'exportExcel':
+                        // 构建导出参数
+                        var exportParams = {
+                            cmeYear: $("#cme_year").val(),
+                            personNo: $("#person_no").val(),
+                            deptId: $("#dept_id").val(),
+                            submitStatus: $("#submit_status").val(),
+                            unitId:unit
+                        };
+                        
+                        console.log('正在导出Excel...');
+                        console.log('请求URL：', config.baseUrl + '/score/submit/exportExcel');
+                        console.log('请求参数：', exportParams);
+                        
+                        // 显示加载动画
+                        var loadingIndex = layer.msg('正在导出Excel，请稍候...', {
+                            icon: 16,
+                            shade: [0.3, '#333'],
+                            time: 0,
+                            offset: 'auto'
+                        });
+
+                        // 使用jQuery的ajax来处理文件下载
+                        console.log('发送导出Excel请求');
+
+                        $.ajax({
+                            url: config.baseUrl + '/score/submit/exportExcel',
+                            type: 'POST',
+                            contentType: 'application/json;charset=utf-8',
+                            data: JSON.stringify(exportParams),
+                            crossDomain: true,
+                            timeout: 60000, // 60秒超时
+                            xhrFields: {
+                                responseType: 'blob'
+                            },
+                            success: function(blob) {
+                                console.log('导出Excel成功，开始处理文件');
+                                // 关闭加载动画
+                                layer.close(loadingIndex);
+
+                                // 创建一个下载链接
+                                var url = URL.createObjectURL(blob);
+                                var a = document.createElement('a');
+                                a.href = url;
+                                a.download = '学分数据_' + new Date().getTime() + '.xlsx';
+                                document.body.appendChild(a);
+                                a.click();
+                                document.body.removeChild(a);
+                                URL.revokeObjectURL(url);
+                                console.log('文件下载完成');
+                            },
+                            error: function(xhr, status, error) {
+                                console.log('导出Excel失败：', status, error);
+                                // 关闭加载动画
+                                layer.close(loadingIndex);
+
+                                if (status === 'timeout') {
+                                    layer.alert('导出Excel超时，请重试！');
+                                } else if (status === 'error') {
+                                    layer.alert('网络错误，请检查网络连接！');
+                                } else {
+                                    layer.alert('导出Excel失败，请重试！状态码：' + xhr.status);
+                                }
+                            }
+                        });
+
+                        break;
+                }
+            });
+            
+            // 表格行工具事件
+            table.on("tool(train_info)", function (obj) {
+                var control = this;
+                var btn_disabled = $(control).hasClass("layui-btn-disabled");
+                var nomal_disabled = $(control).prop("disabled");
+                if (btn_disabled || nomal_disabled) {
+                    return false;
+                }
+                var data = obj.data; //获得当前行数据
+                console.log('年度:',data.cmeYear)
+                var layEvent = obj.event; //获得 lay-event 对应的值
+                var tr = obj.tr; //获得当前行 tr 的DOM对象
+
+                // var cme_year = $("#cme_year").val();
+                // console.log('年度:',cme_year)
+
+                if (layEvent === 'bxk') {//专业课
+                     layer.open({
+                        type: 2,
+                        title: '查看专业课',
+                        content: 'score-submit-details.html?zykId=' + data.comPersonId + '&cmeYear=' + data.cmeYear,
+                        area: ['80%', '60%'],
+                    })
+                } else if (layEvent === 'xxk') { //选修课
+                     layer.open({
+                        type: 2,
+                        title: '查看选修课',
+                        content: 'score-submit-details.html?xxkId=' + data.comPersonId + '&cmeYear=' + data.cmeYear,
+                        area: ['80%', '60%'],
+                    })
+                }
+            });
+        });
+        
+        // 打开详情页
+        function layuiOpen(url) {
+            layer.open({
+                type: 2,
+                title: '送审明细',
+                content: url,
+                area:['1000px','550px']
+            });
+        }
+        
+        // 日期格式化
+        function Format(datetime, fmt) {
+            if (parseInt(datetime) == datetime) {
+                if (datetime.length == 10) {
+                    datetime = parseInt(datetime) * 1000;
+                } else if (datetime.length == 13) {
+                    datetime = parseInt(datetime);
+                }
+            }
+            datetime = new Date(datetime);
+            var o = {
+                "M+": datetime.getMonth() + 1,                 //月份   
+                "d+": datetime.getDate(),                    //日   
+                "h+": datetime.getHours(),                   //小时   
+                "m+": datetime.getMinutes(),                 //分   
+                "s+": datetime.getSeconds(),                 //秒   
+                "q+": Math.floor((datetime.getMonth() + 3) / 3), //季度   
+                "S": datetime.getMilliseconds()             //毫秒   
+            };
+            if (/(y+)/.test(fmt))
+                fmt = fmt.replace(RegExp.$1, (datetime.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o)
+                if (new RegExp("(" + k + ")").test(fmt))
+                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            return fmt;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<div id="add-comUnit" style=" display:none;text-align: center">
+
+    <form class="layui-form" style="padding: 30px;" id="form-ComUnit" lay-filter="add-filter">
+
+        <!-- <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>单位类别</label>
+                <div class="layui-input-inline">
+                    <input type="radio" name="unitUserType" value="11" title="行政" checked >
+                    <input type="radio" name="unitUserType" value="12" title="单位">
+                </div>
+            </div>
+        </div> -->
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>单位行政级别</label>
+                <div class="layui-input-inline">
+                    <select name="unitUserType" lay-verify="required" lay-filter="unitUserTypeSelect" class="unitUserTypeSelect">
+                        <option value="">请选择</option>
+                        <option value="5">行政机构(省级)</option>
+                        <option value="4">行政机构(地市)</option>
+                        <option value="3">行政机构(区县)</option>
+                        <option value="2">普通机构</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>顶级单位</label>
+                <div class="layui-input-inline">
+                    <input type="radio" class="unit-add-root unit-add-root-1" name="isRoot" value="1" title="是" >
+                    <input type="radio" class="unit-add-root unit-add-root-0" name="isRoot" value="0" title="否" checked>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>单位类型</label>
+                <div class="layui-input-inline">
+                    <select name="unitType" lay-verify="required">
+                        <option value="">请选择</option>
+                        <option value="0">中医和综合单位</option>
+                        <option value="1">综合单位</option>
+                        <option value="2">中医单位</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="unit-form-select-dy  unit-form-select-dy-label layui-form-label" >上级单位</label>
+                <div class="unit-form-select-dy layui-input-inline" id="unit-form-select-dy" ></div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">计算达标级别</label>
+                <div class="layui-input-inline" id="unit-form-select-level" ></div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>单位名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="unitName" lay-verify="required" placeholder="单位名称" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">联系人姓名</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="contact" placeholder="联系人姓名" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">电话</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="telephone" placeholder="电话" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="submit">提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>

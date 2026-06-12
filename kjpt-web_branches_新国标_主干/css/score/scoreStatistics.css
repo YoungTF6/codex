@@ -1,0 +1,183 @@
+.layui-card-body.layui_body_box {
+    padding: 0 !important;
+    border-left: 1px solid #e6e6e6;
+    border-right: 1px solid #e6e6e6;
+}
+
+.tab-default.layui-this{
+    border-top: 1px solid #e6e6e6;
+    border-left: 1px solid #e6e6e6;
+    border-right: 1px solid #e6e6e6;
+}
+.layui-tab-content {
+    padding: 0 !important;
+}
+
+.layui-form.layui-border-box.layui-table-view {
+    margin: 0px 10px !important;
+}
+
+/* card tabs */
+.tab-default.layui-this {
+    background-color: #f5f5f5 !important;
+    color: #404040 !important;
+}
+
+.tab-default.layui-this:hover {
+    color: #404040;
+}
+
+.tab-default.layui-this:after {
+    border: 0;
+}
+
+
+/* 新增代码 */
+
+.layui_mess {
+    display: flex;
+    justify-content: space-between;
+}
+.layui-form-select .layui-input {
+    padding-right: 0;
+}
+.tab-title {
+    display: flex;
+}
+.tab-title li {
+    margin-right: 20px;
+    padding: 8px 0;
+    text-align: center;
+    cursor: pointer;
+}
+.qh_tab {
+    color: #00cdba;
+    border-bottom: 2px solid #00cdba;
+}
+.layui-table-tool-temp{
+    padding-right: 0;
+}
+.select-mul-box{
+    width: 180px;
+    vertical-align: top;
+    display: inline-block;
+}
+.layui-card-header .layui-icon {
+    line-height: initial;
+    position: initial;
+    margin-top: 0;
+}
+.xz_item{
+    margin-left: 40px;
+    margin-bottom: 14px;
+}
+#knowledgeTreeBox{
+    display: none;
+    position: absolute;
+    top:44px;
+    padding:10px;
+    width: 210px;
+    height: 250px;
+    overflow: auto;
+    background: #fff;
+    z-index: 999;
+    animation-name: xm-upbit;
+    animation-duration: 0.3s;
+    animation-fill-mode: both;
+    box-shadow: 0 2px 4px rgb(0 0 0 / 12%);
+}
+.js-icon{
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    border-top-color: #c2c2c2;
+    border-top-style: solid;
+    transition: all .3s;
+    -webkit-transition: all .3s;
+}
+.point-input{
+    cursor: pointer;
+}
+.knowledge-tree-select{
+    position: absolute;
+    cursor: pointer;
+    width: 99%;
+    height: 92%;
+    border: 1px solid #e6e6e6;
+    left: 0px;
+    top: 0px;
+}
+.knowledge-tree-select:hover{
+    border-color: #C0C4CC;
+}
+.ts-knowledge-tips{
+    color: #999999;
+    padding: 0 10px;
+    position: absolute;
+    display: flex;
+    height: 100%;
+    align-items: center;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.ts-icon-expand{
+    margin-top: -9px;
+    transform: rotate(180deg);
+}
+.ts-knowledge-label{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-size: 14px;
+    font-weight: 400;
+    text-overflow: ellipsis;
+    user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+.ts-single-row{
+    position: absolute;
+    top: 0;
+    bottom: 0px;
+    left: 0px;
+    right: 30px;
+    overflow: auto hidden;
+}
+.ts-knowledge-scroll{
+    overflow-y: hidden;
+}
+.ts-label-content{
+    line-height: 30px;
+    display: flex;
+    padding: 3px 10px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+}
+.ts-label-block{
+    height: 26px;
+    line-height: 26px;
+    display: flex;
+    position: relative;
+    padding: 0px 0px 0px 5px;
+    margin: 2px 5px 2px 0;
+    border-radius: 3px;
+    align-items: baseline;
+    color: #FFF;
+    background-color: rgb(0, 150, 136);
+}
+.ts-iconfont{
+    font-family: "xm-iconfont" !important;
+    font-size: 16px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.ts-knowledge-scroll .ts-label-content .ts-label-block i{
+    margin: 0px 4px;
+}
+.layui-treeSelect .ztree li {
+    line-height: 19.5px !important;
+}

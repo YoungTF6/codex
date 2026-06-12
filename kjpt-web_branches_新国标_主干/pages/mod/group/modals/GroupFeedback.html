@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>group-feedback</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
+
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+
+    <!-- 2.6.4 -->
+    <!--<link rel="stylesheet" href="/js/layui-v2.6.4/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="/js/layui-v2.6.4/layui/layui.js"></script>-->
+
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script><script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+
+</head>
+<body style="background-color: white;">
+
+<div class="layui-fluid">
+    <div class="layui-card">
+
+        <!-- 数据表格 -->
+        <div class="layui-card-body layui_body_box" style="padding-left: 0;padding-right: 0">
+            <table class="layui-table" id="cycleTable" lay-filter="cycleTable"
+                   style="margin: 0;"></table>
+        </div>
+
+    </div>
+</div>
+
+</body>
+
+
+<script type="text/html" id="operationCell">
+    {{# if(d.flState > 0) { }}
+    <!-- <a class="layui-btn layui-btn-xs btn-row" lay-event="viewFeedback">已反馈</a> -->
+    <a class="layui-btn layui-btn-xs btn-row" lay-event="editFeedback">已反馈</a>
+    {{# } else { }}
+    <a class="layui-btn layui-btn-xs btn-row layui-btn-warm btn-warm-row" lay-event="editFeedback">未反馈</a>
+    {{# } }}
+</script>
+
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        lat: 'lat'
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'upload', 'lat'], function () {
+        let table = layui.table;
+        let layer = layui.layer;
+        let form = layui.form;
+        let laydate = layui.laydate;
+        let dropdown = layui.dropdown;
+        let element = layui.element;
+        let $ = layui.jquery;
+        let upload = layui.upload;
+        let lat = layui.lat;
+
+        const _gProjId = getOrDefault(getUrlParamByName('g_proj_id'), PseudoNull.UUID);
+        const _gScoreLevelId = getOrDefault(getUrlParamByName('g_score_level_id'), PseudoNull.UUID);
+
+        let gLayerIndex = -1;
+        let gDownId;
+
+        layer.ready(function () {
+            renderCycleTable();
+            loadCycleList();
+        });
+
+
+        // page.cycle ========================================================
+
+        function loadCycleList() {
+            let visit = `${huayi_sjwh_url}group/feedback/cycle/list/${_gProjId}`;
+            getAction(visit).then(response => {
+                let jsonRes = response.data;
+                if (jsonRes.success) {
+                    gCycleVoList = jsonRes.data;
+                } else {
+                    lat.failMsg(jsonRes.msg);
+                }
+            }).catch(error => {
+                lat.errorMsg('error:加载周期列表');
+            }).finally(() => {
+                reloadCycleTable();
+            });
+        }
+
+        function renderCycleTable() {
+            table.render({
+                id: 'cycleTable',
+                elem: '#cycleTable',
+                height: 'full-100',
+                defaultToolbar: [],
+                loading: true,
+                cols: [[
+                    {title: '操作', minWidth: 188, align: 'center', fixed: 'left', templet: '#operationCell'},
+                    {
+                        field: 'batch',
+                        title: '批次',
+                        minWidth: 120,
+                        align: 'center',
+                        sort: true,
+                        templet: (data) => '第' + data.LAY_INDEX + '批次'
+                    },
+                    {field: 'startDate', title: '开始日期', minWidth: 120, align: 'center', sort: true},
+                    {field: 'endDate', title: '结束日期', minWidth: 120, align: 'center', sort: true}
+                ]],
+                data: [{
+                    startDate: "2023-09-09"
+                }],
+                done: function (res, curr, count) {
+
+                }
+            });
+        }
+
+        function reloadCycleTable() {
+            table.reload('cycleTable', {
+                data: gCycleVoList
+            });
+        }
+
+        table.on('tool(cycleTable)', function (obj) {
+            let rowData = obj.data;
+            gDownId = rowData.downId;
+            if ('editFeedback' === obj.event) {
+                let limitvalue = judgeAndApply(rowData.downId, rowData.endDate);
+                if (!limitvalue) {
+                    return;
+                }
+                showFbModal('edit');
+            } else if ('viewFeedback' === obj.event) {
+                showFbModal('view');
+            }
+        });
+
+        //判断反馈时限
+        let judgeAndApply = function(downId, endDtValue) {
+            let limitvalue = true;
+                $.ajax({
+                    type: 'POST',
+                    url: huayi_projectscore_url + "cmeProjFeedbackInfo/getFeedbackLimit",
+                    async:false,
+                    data: {
+                        endDt:endDtValue,
+                        scoreLevelId: _gScoreLevelId,
+                        unitId:localStorage.getItem("unit-id")
+                    },
+                    success: function (res) {
+                        if(res.status != 200) {
+                            layer.msg(res.msg);
+                            limitvalue = false;
+                            return limitvalue;
+                        }
+                    },
+                    error: function (res) {
+                        layer.msg(res.msg);
+                        limitvalue = false;
+                        return limitvalue;
+                    }
+                });
+            return limitvalue;
+        }
+
+        function showFbModal(action) {
+            _isGov && (action = 'view');
+            let haveParent = top !== self;
+            let lay = haveParent ? parent.layer : layer;
+            gLayerIndex = lay.open({
+                type: 2,
+                shade: 0.6,
+                shadeClose: true,
+                title: '执行情况反馈',
+                content: `/pages/mod/group/modals/GroupFeedback2.html?action=${action}&g_proj_id=${_gProjId}&down_id=${gDownId}`,
+                area: ['100%', '100%'],
+                success: function (layero, index) {
+
+                },
+                end: function (layero, index) {
+                    loadCycleList();
+                }
+            });
+        }
+
+
+    });
+</script>
+
+<style>
+
+</style>
+
+</html>

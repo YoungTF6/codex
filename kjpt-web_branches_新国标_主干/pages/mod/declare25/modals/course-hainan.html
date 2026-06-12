@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>d25.course.hainan</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <!-- base -->
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <!--<script src="/pages/mod/js/kjpt.js"></script>-->
+    <script src="/pages/mod/js/kjpt.js"></script>
+    <script type="text/javascript" src="/pages/mod/js/options.js"></script>
+</head>
+<body style="background-color: white;">
+<div id="course_modal">
+    <form id="course_form" class="layui-form" lay-filter="course_form">
+        <input type="hidden" name="courseId"/>
+        <!-- row -->
+        <div class="layui-form-item">
+            <div class="layui-col-sm4">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="teacherName" lay-verify="required" autocomplete="off" class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-sm4 yuzhong_hide">
+                <label class="layui-form-label">证件类型</label>
+                <div class="layui-input-block">
+                    <select name="certType" lay-verify="" lay-filter="certType"></select>
+                </div>
+            </div>
+            <div class="layui-col-sm4 yuzhong_hide">
+                <label class="layui-form-label">证件号码</label>
+                <div class="layui-input-block">
+                    <input type="text" name="idCardNo" lay-verify="" autocomplete="off" class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-col-sm4">
+                <label class="layui-form-label">专业技术职务</label>
+                <div class="layui-input-block">
+                    <div id="titleSel" lay-verify="required_p"></div>
+                </div>
+            </div>
+            <div class="layui-col-sm4 yuzhong_hide">
+                <label class="layui-form-label">主要研究方向</label>
+                <div class="layui-input-block">
+                    <input type="text" name="researchDirection" lay-verify="researchDirection" autocomplete="off" class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-sm4 yuzhong_hide">
+                <label class="layui-form-label">从事专业</label>
+                <div class="layui-input-block">
+                    <div id="specialitySel" name="speciality" lay-verify="required_p"></div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-col-sm4">
+                <label class="layui-form-label">所在单位</label>
+                <div class="layui-input-block">
+                    <input type="text" name="workUnit" lay-verify="required|workUnit" autocomplete="off" class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-sm4 yuzhong_hide">
+                <label class="layui-form-label">联系电话</label>
+                <div class="layui-input-block">
+                    <input type="text" name="phone" lay-verify="required|myPhone" autocomplete="off" class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-sm4 only_yuzhong">
+                <label class="layui-form-label">授课教师类别</label>
+                <div class="layui-input-block">
+                    <input type="text" name="researchDirection" lay-verify="teacherType" autocomplete="off" class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-col-sm4 yuzhong_hide">
+                <label class="layui-form-label">讲授题目</label>
+                <div class="layui-input-block">
+                    <input type="text" name="teachTopic" lay-verify="required" autocomplete="off" class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-sm8">
+                <label class="layui-form-label">授课内容</label>
+                <div class="layui-input-block">
+                    <input type="text" name="content" lay-verify="required|content" autocomplete="off" class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-col-sm4">
+                <label class="layui-form-label" id="period_label">讲授学时</label>
+                <div class="layui-input-block">
+                    <input type="number" name="period" lay-verify="required|period" autocomplete="off" class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-sm4 yuzhong_hide">
+                <label class="layui-form-label">教学方法</label>
+                <div class="layui-input-block">
+                    <select name="teachingMethod" lay-verify="required" lay-filter="teachingMethod"></select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-input-block">
+            <div class="form_btn_box">
+                <!--<button type="reset" class="layui-btn layui-btn-sm layui-btn-primary">重置</button>-->
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" id="btn_cancel">取消</button>
+                <button type="submit" class="layui-btn layui-btn-sm" lay-submit lay-filter="confirm">确定</button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+<script type="text/javascript" src="/js/api/number.js"></script>
+<script type="text/javascript" src="/pages/mod/declare25/js/course.js"></script>
+<style>
+    div > label:has(+ div > *[lay-verify^=required])::before {
+        content: '*';
+        color: red;
+        font-weight: 600;
+        margin-right: 3px;
+    }
+    #course_modal {
+        padding: 24px;
+    }
+    #course_modal .layui-form-label {
+        width: 124px !important;
+        padding-left: 0;
+    }
+    #course_modal .layui-input-block {
+        margin-left: 140px;
+    }
+    #course_modal .form_btn_box {
+        margin: auto;
+        width: fit-content;
+    }
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none !important;
+        margin: 0;
+    }
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+</style>
+</html>

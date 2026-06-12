@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>gov.reset</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.4 -->
+    <!--<link rel="stylesheet" href="/js/layui-v2.6.4/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="/js/layui-v2.6.4/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/constantPage/projectConstant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+</head>
+<body style="background-color: white;">
+<!-- 查询区域 -->
+<div class="layui-form layui-card-header layuiadmin-card-header-auto" id="queryArea"
+     style="background-color: #f5f5f5;">
+    <div class="layui_mess">
+        <div class="layui_display">
+            <div class="layui-inline">
+                <label class="layui-form-label">单位编号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="unitId" placeholder="请输入" autocomplete="off"
+                           class="layui-input"/>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">单位名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="unitName" placeholder="请输入"
+                           autocomplete="off" class="layui-input"/>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <button class="layui-btn layui-btn-sm btnRounded" lay-submit
+                        onclick="refreshTable()">
+                    <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                </button>
+            </div>
+            <div id="addUnit" class="layui-inline" style="float: right;">
+                <button class="layui-btn layui-btn-sm" onclick="addUnit()">添加单位</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 数据表格 -->
+<div class="layui-card-body layui_body_box" style="padding-left: 0;padding-right: 0">
+    <table class="layui-table" id="unitTable" lay-filter="unitTable"
+           style="margin: 0;"></table>
+</div>
+</body>
+<!-- operation cell-->
+<script type="text/html" id="operationCell">
+    {{# if(d.userId) { }}
+    <a class="layui-btn layui-btn-xs layui-btn-danger btn-danger-row" lay-event="reset">重置密码</a>
+    {{# } else { }}
+    <a class="layui-btn layui-btn-xs layui-btn-disabled btn-row btn-disabled-row">重置密码</a>
+    {{# } }}
+</script>
+<script type="text/html" id="rowAdmin">
+    <a class="layui-btn layui-btn-xs" lay-event="viewAdminInfo"
+       style="color: #ffb82e;background-color: transparent;">查看</a>
+</script>
+<script type="text/html" id="updateUnit">
+    {{# if(d.unitUserType == 2) { }}
+    <a class="layui-btn layui-btn-xs" lay-event="updateUnit"
+       style="color: #ffb82e;background-color: transparent;">维护</a>
+    {{# } }}
+</script>
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        lat: 'lat'
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'xmSelect', 'lat'], function () {
+        let table = layui.table;
+        let layer = layui.layer;
+        let form = layui.form;
+        let laydate = layui.laydate;
+        let dropdown = layui.dropdown;
+        let element = layui.element;
+        let $ = layui.jquery;
+        let xmSelect = layui.xmSelect;
+        let lat = layui.lat;
+        let gLayerIndex = -1;
+        const cmeStandardKindId = localStorage.getItem("standardkind-id");
+        window.refreshTable = refreshTable;
+        layer.ready(function () {
+        });
+        $(function () {
+            renderUnitTable();
+        });
+        table.on('tool(unitTable)', function (obj) {
+            let rowData = obj.data;
+            if ('reset' === obj.event) {
+                layer.confirm('密码重置后不可恢复，请确认是否重置', {
+                    title: '提示',
+                    btn: ['确定', '取消']
+                }, function () {
+                    // console.info('yes');
+                    doreset(rowData.userId, rowData.unitId);
+                }, function () {
+                    // console.info('cancel');
+                });
+            } else if (obj.event === 'viewAdminInfo') {
+                layer.open({
+                    type: 2,
+                    title: '',
+                    content: '../unit/comUnitManager.html?userId=' + rowData.userId,
+                    area: ['660px', '380px'],
+                })
+            } else if (obj.event === 'updateUnit') {
+                layer.open({
+                    type: 2,
+                    title: '',
+                    content: 'comUnitDetail.html?unitId=' + rowData.unitId,
+                    area: ['80%', '80%'],
+                })
+            }
+        });
+        function doreset(userId, unitId) {
+            if (!userId) {
+                lat.failMsg('没有userId');
+                return;
+            }
+            // console.info('reset, userId: %s, unitId: %s', userId, unitId);
+            let visit = huayi_personorg_url + 'alternative/reset';
+            let params = {
+                userId: userId,
+                unitId: unitId,
+                operUnitId: _unitId,
+                operUserId: _userId,
+            };
+            postAction(visit, params).then(response => {
+                let jsonRes = response.data;
+                if (jsonRes.success) {
+                    layer.alert('密码已重置，新密码为 ' + jsonRes.data + ' ，请妥善保存！', {
+                        title: '提示'
+                    });
+                } else {
+                    lat.failMsg(jsonRes.msg);
+                }
+            }).catch(error => {
+                lat.errorMsg('error: reset');
+            }).finally(() => {
+            });
+        }
+        function renderUnitTable() {
+            table.render({
+                id: 'unitTable',
+                elem: '#unitTable',
+                height: 'full-100',
+                defaultToolbar: [],
+                url: huayi_personorg_url + 'alternative/unit/page',
+                method: 'POST',
+                contentType: 'application/json',
+                loading: true,
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                where: getSifter(),
+                request: {
+                    pageName: 'pageNum', // 页码的参数名称，默认：page
+                    limitName: 'pageSize' // 每页数据量的参数名，默认：limit
+                },
+                parseData: function (res) {
+                    return {
+                        'code': res.status === 200 ? 0 : res.status, // 解析接口状态
+                        'msg': res.message, // 解析提示文本
+                        'count': res.data.recordsTotal, // 解析数据长度
+                        'data': res.data.records, // 解析数据列表
+                        'page': res.data.pageNum, // 当前页
+                        'limit': res.data.pageSize // 每页条数
+                    }
+                },
+                cols: [[
+                    {field: 'unitId', title: '单位编号', minWidth: 120, align: 'center', sort: true},
+                    //用户名
+                    {field: 'userName', title: '用户名', minWidth: 120, align: 'center', sort: true},
+                    {field: 'unitName', title: '单位名称', minWidth: 120, align: 'center', sort: true},
+                    {field: 'parentUnitName', title: '上级单位', minWidth: 120, align: 'center', sort: true},
+                    // {field: 'userName', title: '登录账号', minWidth: 120, align: 'center', sort: true},
+                    // {field: 'realname', title: '帐号名称', minWidth: 120, align: 'center', sort: true},
+                    {field: 'center', width: 100, toolbar: '#updateUnit', title: '维护单位', align: 'center'},
+                    { align: 'center', width: 120,  title: '内部培训',hide: cmeStandardKindId != StandardKind.ZHE_JIANG,
+                        templet: function (d) {
+                            let html = "";
+                            if(d.unitUserType == 2) {
+                                let checked = d.openGroupProj ? 'checked="checked"' : "";
+                                html = `<div class="layui-form"><input type="checkbox" ${checked} unitId="${d.unitId}"  lay-filter="toggleAllow" lay-skin="switch" lay-text="开启|关闭"></div>`;
+                            }
+                            return html;
+                        }
+                    },
+                    {field: 'center', width: 130, toolbar: '#rowAdmin', title: '管理员信息', align: 'center', hide: cmeStandardKindId == StandardKind.ZHE_JIANG},
+                    {title: '操作', minWidth: 188, align: 'center', templet: '#operationCell'}
+                ]],
+                data: [{
+                    userId: "userId",
+                    unitId: "unitId"
+                }],
+                done: function (res, curr, count) {
+                }
+            });
+        }
+        function refreshTable() {
+            table.reload('unitTable', {
+                where: getSifter()
+            });
+        }
+        function getSifter() {
+            return {
+                unitId: _unitId,
+                cmeStandardKindId: cmeStandardKindId,
+                searchUnitId: $('input[name=unitId]').val(),
+                searchUnitName: $('input[name=unitName]').val()
+            };
+        }
+        // 打开添加单位弹窗
+        window.addUnit = function () {
+            layer.open({
+                type: 2,
+                title: '',
+                content: 'comUnitDetail.html',
+                area: ['80%', '80%'],
+            })
+        }
+
+        form.on('switch(toggleAllow)', function(data){
+
+            let datas = {"unitId":data.elem.attributes['unitId'].nodeValue,"openGroupProj":data.elem.checked,cmeStandardKindId:cmeStandardKindId };
+            $.ajax({
+                type: "post",
+                url: huayi_personorg_url + 'comunit/unitToggleOpenGroupproj',
+                dataType: "json",
+                data: JSON.stringify(datas),
+                contentType: "application/json",
+                success: function(res) {
+                    if(res.success) {
+                        layer.msg("处理成功",{icon:1});
+                        //loaderTable();
+                    } else {
+                        layer.msg(res.msg,{icon:2});
+                    }
+                },
+                error: function() {
+                    layer.msg("发送请求失败",{icon:2});
+                }
+            });
+        });
+
+    });
+</script>
+<style>
+</style>
+</html>
