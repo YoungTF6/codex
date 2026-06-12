@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>项目备案表</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!-- <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+        media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script type="text/javascript" src="/js/api/cpt.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script> -->
+
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <script type="text/javascript" src="/js/api/number.js"></script>
+    <!-- <script type="text/javascript" src="/js/api/declare.js"></script> -->
+    <!-- <script type="text/javascript" src="/js/fineReport/common.js"></script> -->
+
+</head>
+<style>
+    .layui-disabled {
+        color: #000 !important;
+        /* background-color: #f2f2f2 !important; */
+        /* border-color: #f2f2f2 !important; */
+        /* cursor: not-allowed; */
+    }
+</style>
+
+<body style="background-color: white;">
+
+    <div class="layui-fluid">
+
+    </div>
+    <div style="padding-left: 50px;">
+        <button class="layui-btn" id="download" lay-filter="download">下载</button>
+    </div>
+    <h1 style="text-align: center; padding-bottom: 50px;">继续医学教育项目备案表</h1>
+    <div id="projectDetailPage4">
+        <form class="page-form layui-form" action="" id="projectRecord" lay-filter="projectRecord">
+            <input type="hidden" name="pageNum" value=4>
+
+            <!-- row1 -->
+            <div class="layui-form-item">
+                <div class="layui-col-md3">
+                    <label class="layui-form-label"><span style="color:red">*&nbsp;</span> 原申报代码:</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="projectCode" name="projectCode" lay-verify="required|teachObject"
+                            autocomplete="off" disabled class="layui-input layui-disabled" placeholder="请输入">
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    <label class="layui-form-label"><span style="color:red">*&nbsp;</span>项目名称:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="projectName" lay-verify="required|teachObject" autocomplete="off"
+                            disabled class="layui-input layui-disabled" placeholder="请输入">
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    <label class="layui-form-label"><span style="color:red">*&nbsp;</span>项目负责人:</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="principalPersonName" name="principalPersonName"
+                            lay-verify="required|teachObject" autocomplete="off" disabled
+                            class="layui-input layui-disabled" placeholder="请输入">
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    <label class="layui-form-label"><span style="color:red">*&nbsp;</span>项目负责人电话:</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="phone" name="phone" lay-verify="required|teachObject" autocomplete="off"
+                        disabled class="layui-input layui-disabled" placeholder="请输入">
+                    </div>
+                </div>
+            </div>
+
+            <!-- row2 -->
+            <div class="layui-form-item">
+                <div class="layui-col-md3">
+                    <label class="layui-form-label"><span style="color:red">*&nbsp;</span>申报单位:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="applyUnit" lay-verify="required|holdPlace" autocomplete="off" disabled
+                            class="layui-input layui-disabled" placeholder="请输入">
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    <label class="layui-form-label"><span style="color:red">*&nbsp;</span>联系人:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="applyLinkman" min="0" lay-verify="required" autocomplete="off"
+                        disabled  class="layui-input number_ph layui-disabled" placeholder="请输入">
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    <label class="layui-form-label"><span style="color:red">*&nbsp;</span>联系人电话:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="applyUnitPhone" min="0" lay-verify="required"
+                            autocomplete="off" disabled  class="layui-input number_ph layui-disabled" placeholder="请输入">
+                    </div>
+                </div>
+            </div>
+
+            <!-- row3 -->
+            <div class="layui-form-item">
+                <div class="layui-col-md3">
+                    <label class="layui-form-label"><span style="color:red">*&nbsp;</span>主办单位:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="unitName" lay-verify="required|holdPlace" autocomplete="off" disabled
+                            class="layui-input layui-disabled" placeholder="请输入">
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    <label class="layui-form-label"><span style="color:red">*&nbsp;</span>联系人:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="unitLinkman" min="0" lay-verify="required" autocomplete="off"
+                            disabled  class="layui-input number_ph layui-disabled" placeholder="请输入">
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    <label class="layui-form-label"><span style="color:red">*&nbsp;</span>联系人电话:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="unitPhone" min="0" lay-verify="required" autocomplete="off"
+                            disabled  class="layui-input number_ph layui-disabled" placeholder="请输入">
+                    </div>
+                </div>
+            </div>
+
+            <!-- row4 -->
+
+            <div class="layui-form-item">
+                <div class="layui-col-md6">
+                    <label class="layui-form-label"><span style="color:red">*&nbsp;</span>起止日期:</label>
+                    <div class="layui-input-block">
+                        <p id="courseVOList"></p>
+                        <!-- <input type="text" name="courseVOList" lay-verify="required|unitName" autocomplete="off"
+                               class="layui-input" placeholder="请输入"> -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-col-md3">
+                    <label class="layui-form-label"><span style="color:red">*&nbsp;</span>举办期限:</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="days" name="days" lay-verify="required" autocomplete="off"
+                            disabled class="layui-input layui-disabled" placeholder="请输入">
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    <label class="layui-form-label"><span style="color:red">*&nbsp;</span>举办地点:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="holdPlace" min="0" lay-verify="required|holdPlace" autocomplete="off"
+                            disabled class="layui-input layui-disabled" placeholder="请输入">
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    <label class="layui-form-label"><span style="color:red">*&nbsp;</span>应授学分:</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="score" name="score" lay-verify="required" autocomplete="off"
+                            disabled class="layui-input layui-disabled" placeholder="请输入">
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    <label class="layui-form-label"><span style="color:red">*&nbsp;</span>实授学分:</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="factScore" id="factScore" min="0" lay-verify="required|score" autocomplete="off"
+                        disabled class="layui-input layui-disabled" placeholder="请输入">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-col-md10" style="padding-left: 20px;">
+                    <div class="layui-tab-content" style="padding: 0;border: 1px dashed #009688">
+                        <div class="layui-tab-item layui-show">
+                            <table class="layui-table" id="cycleTable" lay-filter="cycleTable" lay-size="sm"
+                                style="margin: 0;">
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md2" id="addCycleDiv">
+                    <a id="addCycleBtn" class='layui-btn layui-btn-sm' lay-event='addCycle'
+                        onclick="addCycle()">添加周期</a>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-col-md3">
+                    <label class="layui-form-label"><span style="color:red">*&nbsp;</span>实际举办期限:</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="factDays" name="factDays" lay-verify="" autocomplete="off"
+                        disabled class="layui-input layui-disabled" placeholder="请输入">
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    <label class="layui-form-label"><span style="color:red">*&nbsp;</span>拟招学员人数:</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="number" id="number" min="0" lay-verify="required|number" autocomplete="off"
+                         class="layui-input" placeholder="请输入">
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    <label class="layui-form-label"><span style="color:red">*&nbsp;</span>拟授学分:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="score" id="proposedScore" lay-verify="required" autocomplete="off"
+                         class="layui-input" placeholder="请输入">
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    <label class="layui-form-label"><span style="color:red">*&nbsp;</span>实际举办地点:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="factPlace" lay-verify="required" autocomplete="off"
+                            class="layui-input" placeholder="请输入">
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <div class="layui-col-md12">
+                    <label class="layui-form-label"><span style="color:red">*&nbsp;</span>教学对象:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="teachObject" min="0" lay-verify="required|teachObject"
+                            autocomplete="off" class="layui-input" placeholder="请输入">
+                    </div>
+                </div>
+            </div>
+
+            <!-- <div class="layui-form-item">
+                <div class="page-row-item" style="padding: 20px;">
+                    <label>申报单位意见:</label>
+                    <div>
+                        <textarea name="" placeholder="" class="layui-textarea layui-disabled" disabled></textarea>
+                    </div>
+                </div>
+                <div class="page-row-item" style="padding: 20px;">
+                    <label>卫健委继续医学教育委员会审批意见:</label>
+                    <div>
+                        <textarea name="" placeholder="" class="layui-textarea layui-disabled" disabled></textarea>
+                    </div>
+                </div>
+
+            </div> -->
+            <!-- row8 -->
+            <div class="layui-form-item" style="padding-bottom: 20px;">
+                <div class="layui-col-md12">
+                    <label class="layui-form-label">备注:</label>
+                    <div class="layui-input-block">
+                        <!-- <textarea name="remark" placeholder="最多100个汉字" class="layui-textarea" autocomplete="off" -->
+                        <!-- lay-verify="remark"></textarea> -->
+                        <input type="text" name="remark" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- row9 -->
+            <div class="layui-form-item" id="saveDiv">
+                <div class="layui-col-sm12">
+                    <div style="text-align: center;">
+                        <button class="layui-btn" type="submit" lay-submit lay-filter="save">保存</button>
+                        <button class="layui-btn" type="submit" lay-submit lay-filter="saveToNext">保存并上报</button>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+
+
+
+
+</body>
+
+<script type="text/html" id="cycToolbar">
+    <a class='layui-btn layui-btn-sm' lay-event='addCycle'>添加周期</a>
+</script>
+
+<!-- cycleTable: dateStart cell -->
+<script type="text/html" id="cycDsTpl">
+    <input type="text" name="dateStart" class="cycle-date" id="dateStartSel{{d.LAY_TABLE_INDEX}}" placeholder="开始日期"
+           autocomplete="off" class="layui-input">
+</script>
+<!-- cycleTable: dateEnd cell -->
+<script type="text/html" id="cycDeTpl">
+    <input type="text"  name="dateEnd" class="cycle-date" id="dateEndSel{{d.LAY_TABLE_INDEX}}" placeholder="结束日期"
+           autocomplete="off" class="layui-input">
+</script>
+<!-- cycleTable: Operation Cell -->
+<script type="text/html" id="cycOperCell">
+    <a class="layui-btn layui-btn-xs btn-row delCycle" id="delCycle" lay-event="delCycle">移除</a>
+</script>
+
+<script>
+    // 全局配置及引入相关的模块
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        tool: 'tool',
+        xmSelect: 'xm-select',
+    }).use(['table', 'form', 'element', 'tool'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var element = layui.element;
+        let laydate = layui.laydate;
+        let tool = layui.tool;
+        var userid = localStorage.getItem("unit-id");
+        var my = new Date();
+
+        const _unitId = localStorage.getItem('unit-id');
+        const _cmeStandardKindId = localStorage.getItem('standardkind-id');
+        const _userId = localStorage.getItem('user-id');
+
+        // let gProjectId = '4b8e1927-0616-4e01-8adc-ae1c014445b8';
+        // let beianProjectId = '4b8e1927-0616-4e01-8adc-ae1c014445b8';
+        let gProjectId = getOrDefault(getUrlParamByName('projectId'), '');
+        let beianProjectId = getOrDefault(getUrlParamByName('projectBeiAnId'), '');
+        let type = getOrDefault(getUrlParamByName('type'), '');
+        let holdYear = getOrDefault(getUrlParamByName('holdYear'), '');
+        let newProjectId = beianProjectId ? beianProjectId : uuid();
+        const GUANGXI = "4a6d91fb-8ba4-4560-a801-9c6f00e6d999";
+
+        window.addCycle = addCycle;
+        let gCycleArr = [];
+
+        console.log(gProjectId)
+
+        // 广西禁用拟招学员人数和拟授学分
+        if(_cmeStandardKindId == GUANGXI){
+            $("#number").attr("disabled", true);
+            $("#number").addClass("layui-disabled");
+            $("#proposedScore").attr("disabled", true);
+            $("#proposedScore").addClass("layui-disabled");
+        }
+
+        // 保存
+        form.on('submit(save)', function (data) {
+            console.info('sava.....');
+            saveRecord(1, data.field);
+            return false;
+        });
+
+        // 保存并上报
+        form.on('submit(saveToNext)', function (data) {
+            layer.confirm('上报后将无法修改信息，请确认是否直接上报？', {
+                title: '确认',
+                btn: ['确定', '取消'],
+                icon: 3
+            }, function () {
+                console.info('savaToNext.....');
+                saveRecord(2, data.field);
+            });
+            return false;
+        });
+
+        // 保存或上报备案信息
+        function saveRecord(savaType, fields) {
+            if (savaType == 2) {
+                fields.saveType = 2;
+            }
+            var projectId = newProjectId;
+            console.log('projectId-uuid,' + projectId);
+            if (beianProjectId) {
+                fields.projectId = beianProjectId; // 备案id 
+            } else {
+                fields.projectId = projectId; // 备案id 
+            }
+            fields.previousId = gProjectId; // 原项目id
+            fields.projectCode = '';
+            fields.flowName = '通用项目申报流程';
+
+            fields.cmeStandardKindId = _cmeStandardKindId,
+                fields.unitId = _unitId;
+            gCycleArr.forEach((cycle, index) => {
+                cycle.batchId = index + 1;
+            });
+            if(gCycleArr.length == 0){
+                layer.msg('请添加举办周期')
+                return false;
+            }
+
+            try {
+                gCycleArr.forEach((cycleVo, index) => {
+                    if(cycleVo.dateStart == '' || cycleVo.dateEnd == ''){
+                        throw new Error('周期的开始日期结束日期不可为空')
+                    }
+                });
+            } catch (e) {
+                layer.msg('周期的开始日期结束日期不可为空')
+                return false;
+            };
+            gCycleArr.forEach((cycleVo, index) => {
+                if(cycleVo.dateStart == '' || cycleVo.dateEnd == ''){
+                    layer.msg('周期的开始日期结束日期不可为空')
+                    return false;
+                }
+            });
+            fields.projectBatchList = gCycleArr;
+            fields.userId = localStorage.getItem("user-id");
+            fields.userType = localStorage.getItem("user-type");
+            console.log(fields);
+
+            $.ajax({
+                async: false,
+                type: "post",
+                url: huayi_projectscore_url + "fineReport/record",
+                contentType: 'application/json;charset=UTF-8',
+                data: JSON.stringify(fields),
+                dataType: 'json',
+                success: function (res) {
+                    if (res.success == true) {
+                        parent.layer.closeAll();
+                        parent.layer.msg('备案成功')
+                    } else {
+                        layer.msg("备案失败");
+                    }
+                },
+                error: function () {
+                    layer.msg("备案异常");
+                }
+            });
+
+        }
+
+        // 原项目信息
+        function getProjectInfo() {
+            $.ajax({
+                type: "post",
+                url: huayi_projectscore_url + "declare/detail/" + gProjectId,
+                data: {
+                    getLevelsByStandardId: localStorage.getItem("standardkind-id"),
+                    holdYear: holdYear,
+                    unitId: userid
+                },
+                dataType: 'json',
+                success: function (data) {
+                    $.each(data.data, function (index, item) {
+                        $('#CmeComScoreLevel').append(new Option(item.scoreLevelName, item.scoreLevelId)); //往下拉菜单里添加元素
+                    })
+                    form.render('select'); //刷新select选择框渲染
+                },
+                error: function (data) {
+                    layer.msg("响应失败");
+                }
+            });
+        };
+
+        // index
+        function loadProjectDetail_(projectId, beianProjectId) {
+            if (projectId) {
+                // 获取原项目信息
+                var projectInfo;
+                recordProjDetailById(projectId).then(response => {
+                    let jsonRes = response.data;
+                    if (jsonRes.success) {
+                        console.log('projectInfo')
+                        projectInfo = jsonRes.data;
+                        console.log(projectInfo)
+                    } else {
+                        tool.failMsg(jsonRes.msg);
+                    }
+                }).catch(error => {
+                    console.log(error)
+                    tool.errorMsg('error:加载项目信息');
+                }).finally(() => {
+                    console.log('加载项目信息')
+                    loadForm(projectInfo);
+
+                    // 获取备案项目信息(修改)
+                    if (beianProjectId) {
+                        recordProjDetailById(beianProjectId).then(response => {
+                            let jsonRes = response.data;
+                            if (jsonRes.success) {
+                                console.log('beianProjectId');
+                                console.log(jsonRes.data);
+                                // 加载备案项目信息
+                                loadForm(jsonRes.data)
+
+                                // 加载原项目信息 (原项目编号, 举办期限, 应授学分 )
+                                $("#projectCode").val(projectInfo.projectCode);
+                                $("#days").val(projectInfo.days);
+                                $("#score").val(projectInfo.score);
+                                $("#factScore").val(projectInfo.factScore);
+
+                                form.render();
+                                gCycleArr = jsonRes.data.cycleVOList;
+                                console.log('加载备案项目信息')
+                            } else {
+                                tool.failMsg(jsonRes.msg);
+                            }
+                        }).catch(error => {
+                            console.log(error)
+                            tool.errorMsg('error:加载项目信息');
+                        }).finally(() => {
+                            loadCycTable();
+                            view();
+                        });
+                    } else {
+                        loadCycTable();
+                    }
+                });
+
+            }
+        }
+
+        function loadCycTable() {
+            // cycleTable
+            table.render({
+                id: 'cycleTable',
+                elem: '#cycleTable',
+                // toolbar: '#cycToolbar',
+                defaultToolbar: [],
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                page: false,
+                cols: [[
+                    { field: 'periodId', title: '', align: 'center', minWidth: 60, sort: false, hide: true },
+                    {
+                        field: '',
+                        title: '举办批次',
+                        minWidth: 60,
+                        align: 'center',
+                        templet: (data) => '第' + data.LAY_INDEX + '批次'
+                    },
+                    {
+                        field: 'dateStart',
+                        title: '开始日期',
+                        align: 'center',
+                        minWidth: 120,
+                        sort: false,
+                        hide: false,
+                        templet: '#cycDsTpl'
+                    },
+                    {
+                        field: 'dateEnd',
+                        title: '结束日期',
+                        align: 'center',
+                        minWidth: 120,
+                        sort: false,
+                        hide: false,
+                        templet: '#cycDeTpl'
+                    },
+                    {
+                        field: 'operate',
+                        title: '操作',
+                        align: 'center',
+                        minWidth: 66,
+                        sort: false,
+                        hide: false,
+                        templet: '#cycOperCell'
+                    }
+                ]],
+                data: gCycleArr ? gCycleArr : [],
+                done: function (res, curr, count) {
+                    gProjCycRendered = true;
+                    if (gCycleArr.length > 0) {
+                        gCycleArr.forEach((cycleVo, index) => {
+                            // console.info('index: %s, %s', index, JSON.stringify(cycleVo));
+                            renderCycDateSel('dateStart', index, cycleVo.dateStart);
+                            renderCycDateSel('dateEnd', index, cycleVo.dateEnd);
+                        });
+                    }
+                }
+            });
+        }
+
+        // 加载项目信息
+        function loadForm(projData) {
+            // 项目信息
+            form.val('projectRecord', projData);
+            // 项目负责人
+            $("#principalPersonName").val(projData.principalVO.personName);
+            $("#phone").val(projData.principalVO.phone);
+            // 起止日期
+            holdDates = projData.holdDates;
+            // var holdDates = '第1批2022-09-18至2022-09-18\n第2批2022-09-18至2022-09-18\n'
+            if(holdDates) holdDates = holdDates.replace('\n', '<br>');
+            // 防止加载备案信息覆盖原项目信息
+            if(!projData.previousId){
+                if (projData.holdDates) {
+                    document.getElementById("courseVOList").innerHTML = holdDates;          // 课题名称
+                } else {
+                    renderCycle(projData.cycleVOList)
+                }
+            }
+            form.render();
+        };
+
+
+        // 批次起止日期
+        function renderCycle(cycleVoList) {
+            if (cycleVoList && cycleVoList.length > 0) {
+                var dateStr = '';
+                cycleVoList.forEach((cycleVo, index) => {
+                    let batchNum = index + 1;
+                    if (cycleVoList.length === index) {
+                        dateStr += ('第' + batchNum + '批次  ' + cycleVo.dateStart + ' 至 ' + cycleVo.dateEnd);
+                    } else {
+                        dateStr += ('第' + batchNum + '批次  ' + cycleVo.dateStart + ' 至 ' + cycleVo.dateEnd) + '<br><br>';
+                    }
+                });
+                console.log(dateStr)
+                document.getElementById("courseVOList").innerHTML = dateStr;
+            }
+        }
+
+        $(function () {
+            loadProjectDetail_(gProjectId, beianProjectId);
+            
+        });
+            // 浏览时禁用表单
+        function view(){
+            if (type == 'view') {
+                var readForm = layui.$('[lay-filter="projectRecord"]')
+                readForm.find('input,textarea,select').prop('disabled', true).addClass("layui-disabled");
+                readForm.find('.layui-layedit iframe').contents().find('body').prop('contenteditable', false);
+                layui.form.render();
+
+                document.getElementById("saveDiv").style.display = "none";
+                document.getElementById("addCycleDiv").style.display = "none";
+                document.getElementById("delCycle").style.display = "none";
+                var lis = document.getElementsByClassName("delCycle");
+				for (var i = 0; i < lis.length; i++) {
+                    lis[i].style.display = "none";
+				}
+
+                // $(".layui-table").find('tr[data-index="'+dataIndex+'"]').find('td').data('edit', false)
+
+            }
+        }
+
+        function addCycle() {
+            if (gCycleArr.length >= 5) {
+                tool.failMsg('最多能添加五个周期');
+                return false;
+            }
+            gCycleArr.push({
+                'projectId': newProjectId,
+                'periodId': uuid(),
+                'fresh': true,
+                'dateStart': '',
+                'dateEnd': '',
+                'batchId': 1,
+                'unitId': _unitId
+            });
+            table.reload('cycleTable', { data: gCycleArr });
+        }
+
+        // page4
+        table.on('tool(cycleTable)', function (obj) {
+            let rowData = obj.data;
+            if ('delCycle' === obj.event) {
+                gCycleArr = gCycleArr.filter(cycle => cycle.periodId !== rowData.periodId);
+                table.reload('cycleTable', { data: gCycleArr });
+            }
+        });
+
+        // page4. soe: dateStart or dateEnd
+        function renderCycDateSel(soe, rowIndex, initVal) {
+            laydate.render({
+                elem: '#' + soe + 'Sel' + rowIndex,
+                format: 'yyyy-MM-dd',
+                trigger: 'click',
+                value: initVal,
+                change: function (value, date, endDate) {
+                    //
+                },
+                done: function (value, date, endDate) {
+                    const _isStart = 'dateStart' === soe;
+                    const _isEnd = 'dateEnd' === soe;
+                    const _preEnd = (0 === rowIndex) ? '1970-01-01' : gCycleArr[rowIndex - 1]['dateEnd'];
+                    const _nextStart = (rowIndex === gCycleArr.length - 1) ? '2199-01-01' : gCycleArr[rowIndex + 1]['dateStart'];
+                    const _curStart = _isStart ? value : gCycleArr[rowIndex]['dateStart'];
+                    const _curEnd = _isEnd ? value : gCycleArr[rowIndex]['dateEnd'];
+                    let verify = true;
+                    
+                    if (_isStart) {
+                        if (_curEnd && !moment(toDayHeader(_curStart), DateTimePattern.SECOND).isBefore(moment(toDayTail(_curEnd), DateTimePattern.SECOND))) {
+                            tool.failMsg('开始日期不能大于结束日期');
+                            verify = false;
+                        }
+                        if (_preEnd && moment(toDayHeader(_curStart), DateTimePattern.SECOND).isBefore(moment(toDayTail(_preEnd), DateTimePattern.SECOND))) {
+                            tool.failMsg('开始日期不能小于上一周期结束日期');
+                            verify = false;
+                        }
+                        let curYear = _curStart.substring(0, 4);
+                        let curHoldYear = parseInt(holdYear) + 1;
+                        if(curYear != curHoldYear){
+                            tool.failMsg('开始日期仅可选择当前举办年度内');
+                            verify = false;
+                        }
+                        // 实际举办期限, 默认取第一批次
+                        if(rowIndex == 0 && _curEnd){
+                            const daysDiff = (date, date2) => Math.ceil(Math.abs(date - date2) / 86400000);
+                            let diffDays = daysDiff(new Date(_curStart), new Date(_curEnd));
+                            $('#factDays').val(diffDays + 1);
+                        }
+                    } else if (_isEnd) {
+                        if (_curStart && moment(toDayTail(_curEnd), DateTimePattern.SECOND).isBefore(moment(toDayHeader(_curStart), DateTimePattern.SECOND))) {
+                            tool.failMsg('结束日期不能小于开始日期');
+                            verify = false;
+                        }
+                        if (_nextStart && !moment(toDayTail(_curEnd), DateTimePattern.SECOND).isBefore(moment(toDayHeader(_nextStart), DateTimePattern.SECOND))) {
+                            tool.failMsg('结束日期不能大于下一周期开始日期');
+                            verify = false;
+                        }
+                        // 实际举办期限, 默认取第一批次
+                        if(rowIndex == 0 && _curStart){
+                            const daysDiff = (date, date2) => Math.ceil(Math.abs(date - date2) / 86400000);
+                            let diffDays = daysDiff(new Date(_curStart), new Date(_curEnd));
+                            $('#factDays').val(diffDays + 1);
+                        }
+                    }
+                    if (verify) {
+                        gCycleArr[rowIndex][soe] = value;
+                        // if (0 === rowIndex && _curStart && _curEnd) {
+                        //     let sd = moment(toDayHeader(_curStart), DateTimePattern.SECOND);
+                        //     let ed = moment(toDayTail(_curEnd), DateTimePattern.SECOND);
+                        //     let diff = Math.abs(sd.diff(ed, 'day')) + 1;
+                        //     $('input[name=days]').val(diff);
+                        // }
+                    } else {
+                        table.reload('cycleTable', { data: gCycleArr });
+                    }   
+
+                }
+            });
+        }
+
+        $("#download").click(function () {
+            layer.msg('正在下载');
+            axios({
+                method       : 'GET',
+                url: huayi_projectscore_url + "fineReport/word/download/" + beianProjectId,
+                responseType : 'blob',
+            }).then(function (res) {
+                if(!res.data || res.data.size <= 0){
+                    layer.msg('下载项目备案表失败')
+                    return;
+                }
+                let data       = res.data;
+                let blob       = new Blob([data], { type: 'application/octet-stream' });
+                let url        = URL.createObjectURL(blob);
+                let exportLink = document.createElement('a');
+
+                exportLink.setAttribute('download', '项目备案表.doc');
+                exportLink.href = url;
+                document.body.appendChild(exportLink);
+                exportLink.click();
+            });
+        });
+
+        // Esc关闭弹窗
+        window.onkeyup = function (ev) {
+            var key = ev.keyCode || ev.which;
+            if (key == 27) {
+                layer.close(layer.index);
+                console.log('layer.index = ' + layer.index)
+            }
+        }
+
+    });
+</script>
+
+</html>

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>简单地图</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <script src="../../../js/common.js"></script>
+    <style type="text/css">
+        html {
+            height: 100%;
+        }
+
+        body {
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #container {
+            height: 100%;
+        }
+
+        ul li {
+            list-style: none;
+        }
+
+        .div-wrap {
+            z-index: 10000;
+            position: fixed;
+            top: 2rem;
+            margin-left: 3rem;
+            padding: 1rem 1rem;
+            border-radius: .25rem;
+            background-color: #fff;
+            box-shadow: 0 2px 6px 0 rgba(27, 142, 236, 0.5);
+        }
+
+        .btn {
+            width: 75px;
+            height: 30px;
+            background-color: #fff;
+            color: rgba(27, 142, 236, 1);
+            font-size: 14px;
+            border: 1px solid rgba(27, 142, 236, 1);
+            border-radius: 5px;
+            margin: 0 5px;
+            text-align: center;
+            line-height: 30px;
+        }
+
+        .btn:hover {
+            background-color: rgba(27, 142, 236, 1);
+            color: #000;
+        }
+
+        .address_input {
+            width: 75px;
+            height: 30px;
+            background-color: #fff;
+            font-size: 14px;
+            border-radius: 5px;
+            margin: 0 5px;
+            line-height: 30px;
+        }
+
+        .div-wrap span {
+            font-size: 14px;
+            color: rgba(27, 142, 236, 1);
+        }
+
+        .div-wrap select {
+            width: 75px;
+            height: 30px;
+            background-color: #fff;
+            color: rgba(27, 142, 236, 1);
+            font-size: 14px;
+            border-radius: 5px;
+            margin: 0 5px;
+            text-align: center;
+            line-height: 30px;
+        }
+
+        .tangram-suggestion-main {
+            z-index: 100;
+        }
+    </style>
+    <script charset="utf-8"
+        src="https://map.qq.com/api/gljs?v=1.exp&libraries=service&key=NGSBZ-KNEK6-IGQS6-M3N6P-UEUJ6-L7BCI"></script>
+</head>
+
+<body>
+
+    <div class="div-wrap">
+        <div>
+            <span>考勤地址:</span>
+            <input type="text" id="keyword" style="width: 16rem;" class="address_input" oninput="getSuggestions()" />
+
+            <span>考勤范围:</span>
+            <select id="sel_fanwei" onchange="fanweiChange(this)">
+            </select>
+            <input class="btn" type="button" value="确 定" onclick="addAddress();" /><br />
+        </div>
+        <div id="searchResultPanel" style="border: 1px solid #C0C0C0; width: 150px; height: auto;
+            display: none; cursor: pointer; z-index: 100;">
+        </div>
+        <ul id="suggestionList">
+        </ul>
+    </div>
+
+    <!--   定义地图显示容器   -->
+    <div id="container"></div>
+</body>
+
+</html>
+
+
+<script>
+    var servicesk = "BYjWfpGVwm2XLl7JJ14XhQDOAU3IWLQ3";
+
+    var map;
+    var mapCenter = new TMap.LatLng(40.0402718, 116.2735831);
+    var suggestionList = [];
+    var search = new TMap.service.Search({ pageSize: 10 }); // 新建一个地点搜索类
+    var suggest;
+    var markers;
+    var infoWindowList = Array(10);
+    var standardkind = localStorage.getItem("standardkind-id");
+
+    addFanwei();
+    var IPLocation = new TMap.service.IPLocation();
+    var promise = IPLocation.locate({ "servicesk": servicesk });
+    var locationInfo = "";
+    var locationPosition = null;
+    promise.then(function (result) {
+
+        locationInfo = result.result.ad_info.province + result.result.ad_info.city + result.result.ad_info.district;
+        locationPosition = result.result.location;
+
+        document.getElementById("keyword").value = locationInfo;
+        mapCenter = locationPosition;
+
+        map = new TMap.Map('container', {
+            zoom: 18,
+            center: mapCenter,
+        });
+
+        suggest = new TMap.service.Suggestion({
+            // 新建一个关键字输入提示类
+            pageSize: 10, // 返回结果每页条目数
+            region: result.result.ad_info.city, // 限制城市范围
+            regionFix: false, // 搜索无结果时是否固定在当前城市
+        });
+        markers = new TMap.MultiMarker({
+            map: map,
+            geometries: [{
+                id: 0,
+                position: mapCenter,
+            }],
+        });
+        if(document.getElementById("sel_fanwei").value!=0) {
+            fanweiChange();
+        }
+
+    }, function (ErrorResult) {
+        map = new TMap.Map('container', {
+            zoom: 18,
+            center: mapCenter,
+        });
+        suggest = new TMap.service.Suggestion({
+            // 新建一个关键字输入提示类
+            pageSize: 10, // 返回结果每页条目数
+            regionFix: false, // 搜索无结果时是否固定在当前城市
+        });
+        markers = new TMap.MultiMarker({
+            map: map,
+            geometries: [{
+                id: 0,
+                position: mapCenter,
+            }],
+        });
+    });
+
+
+    function addFanwei() {
+        let htmlOption = ``;
+        let scoreLevel = getUrlParam("scoreLevel");
+        getConfig("value_attend_scope",scoreLevel);
+        let scopesStr = window["value_attend_scope"];
+        if(scopesStr != null && scopesStr != "") {
+            let scopeArr =  scopesStr.split(',');
+            let str = "";
+            scopeArr.forEach(function(scope){
+                if(scope == 0) {
+                    str = '<option value="0">无限制</option>';
+                } else {
+                    str = '<option value="'+scope+'">'+scope+'米</option>';
+                }
+               
+                htmlOption = htmlOption + str;
+            });
+
+        } else {
+            htmlOption = `<option value="0">无限制</option>
+                <option value="100">100米</option>
+                <option value="150">150米</option>
+                <option value="200">200米</option>
+                <option value="300">300米</option>
+                <option value="400">400米</option>
+                <option value="500">500米</option>`;
+        }
+        $("#sel_fanwei").html(htmlOption);
+        
+    }
+
+
+    function getSuggestions() {
+        // 使用者在搜索框中输入文字时触发
+        var suggestionListContainer = document.getElementById('suggestionList');
+        suggestionListContainer.innerHTML = '';
+        var keyword = document.getElementById('keyword').value;
+        if (keyword) {
+            suggest
+                .getSuggestions({ keyword: keyword, location: map.getCenter(), servicesk: servicesk })
+                .then((result) => {
+                    // 以当前所输入关键字获取输入提示
+                    suggestionListContainer.innerHTML = '';
+                    suggestionList = result.data;
+                    suggestionList.forEach((item, index) => {
+                        suggestionListContainer.innerHTML += `<li><a href="#" onclick="setSuggestion(${index})">${item.title}<span class="item_info">${item.address}</span></a></li>`;
+                    });
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
+    }
+
+    function setSuggestion(index) {
+        // 点击输入提示后，于地图中用点标记绘制该地点，并显示信息窗体，包含其名称、地址等信息
+        infoWindowList.forEach((infoWindow) => {
+            infoWindow.close();
+        });
+        infoWindowList.length = 0;
+        document.getElementById('keyword').value = suggestionList[index].title;
+        document.getElementById('suggestionList').innerHTML = '';
+        markers.setGeometries([]);
+        markers.updateGeometries([
+            {
+                id: '0', // 点标注数据数组
+                position: suggestionList[index].location,
+            },
+        ]);
+        mapCenter = suggestionList[index].location;
+        map.setCenter(mapCenter);
+        var radius = document.getElementById("sel_fanwei").value;
+        console.log("radius: " + radius);
+
+        drawCircle(mapCenter, parseInt(radius));
+    }
+
+    var circle;
+    function drawCircle(circleCenter, circleRadius) {
+        if (circle != null) {
+            circle.setMap(null);
+        }
+
+        circle = new TMap.MultiCircle({
+            map,
+            styles: { // 设置圆形样式
+                'circle': new TMap.CircleStyle({
+                    'color': 'rgba(41,91,255,0.16)',
+                    'showBorder': true,
+                    'borderColor': 'rgba(41,91,255,1)',
+                    'borderWidth': 2,
+                }),
+            },
+            geometries: [{
+                styleId: 'circle',
+                center: circleCenter,
+                radius: circleRadius
+            }],
+        });
+    }
+
+    function fanweiChange() {
+        var radius = document.getElementById("sel_fanwei").value;
+        if (mapCenter != null && mapCenter != undefined && radius != null && radius != undefined) {
+            map.resumeAnimation();
+            if (radius == 50) {
+                map.easeTo({ zoom: 18 });
+            }
+            if (radius == 100) {
+                map.easeTo({ zoom: 17 });
+            }
+            if (radius == 200) {
+                map.easeTo({ zoom: 16 });
+            }
+            if (radius == 500) {
+                map.easeTo({ zoom: 15 });
+            }
+            if (radius == 1000) {
+                map.easeTo({ zoom: 14 });
+            }
+            drawCircle(mapCenter, parseInt(radius));
+        }
+    }
+
+    function addAddress() {
+        var suggestionListContainer = document.getElementById('suggestionList');
+        //suggestionListContainer.innerHTML为空时，表示没有选择地址否则弹出提示框
+        if (suggestionListContainer.innerHTML != '' && suggestionListContainer.innerHTML != '\n        ') {
+            alert("请在列表中选择正确的地址");
+            return;
+        }
+
+        var obj = {};
+        obj.address = document.getElementById("keyword").value;
+        obj.fanwei = document.getElementById("sel_fanwei").value;
+        obj.lng=mapCenter.lng; //经度 Longitude 
+        obj.lat = mapCenter.lat; //纬度 Latitude
+        if (obj.lat == null || obj.lat == undefined || obj.lat == "") {
+            alert("请输入正确地址");
+            return;
+        }
+        parent.getBaiduMapAddress(obj);
+
+        // let study_address =  document.getElementById("keyword").value;
+        // let scope = document.getElementById("sel_fanwei").value;
+        // let lng = mapCenter.lng; //经度 Longitude 
+        // let lat = mapCenter.lat; //纬度 Latitude 
+        // alert("study_address:"+study_address+";scope"+scope+";lng"+lng+";lat"+lat);
+        // console.log(mapCenter); 
+        // alert("调用父页面，返回地址信息");
+    }
+
+     /* 获取配置 */
+    function getConfig(config_name, scoreLevel) {
+        $.ajax({
+            async   : false,
+            type    : 'post',
+            url     : huayi_sjwh_url + 'cmeCommonConfig/getConfigByUnitFromRedis',
+            data    : { 
+                unitId       : localStorage.getItem("unit-id"), 
+                configNames  : config_name,
+                scoreLevelId : scoreLevel
+            },
+            success : function (res) {
+                if (res.success == true) {
+                    window[config_name] = res.data[config_name];
+                } else {
+                    layer.msg('获取配置失败');
+                }
+            },
+            error   : function () {
+                layer.msg('获取配置失败');
+            }
+        });
+    }
+
+</script>

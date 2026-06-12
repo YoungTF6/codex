@@ -1,0 +1,142 @@
+
+.login_item{
+    /* position: absolute; */
+    width: 100%;
+    height: 100%;
+    /* box-sizing: border-box; */
+    /* -webkit-transition: all 1s ease-in-out;
+    transition: all 1s ease-in-out; */
+    /* top: 0; */
+}
+/*#tablet{
+    left: 0;
+}
+#wifi{
+    left: 100%;
+}
+#tablet.move{
+    left: -100%;
+}
+#wifi.move{
+    left: 0;
+} */
+.box_item{
+    height: 100%;
+    width: 100%;
+    background: url(login3/images/bg.png) no-repeat center;
+    background-size: 100% 100%;
+}
+
+#mpanel {
+    display: none; 
+    position: absolute !important; 
+    z-index: 2;
+    left: calc(50% - 200px);
+    top: calc(50% - 140px);
+}
+.mpanel_bg {
+    display: none; 
+    z-index: 1; 
+    background-color: rgb(0, 0, 0); 
+    opacity: 0.3;
+}
+.lb_box{
+    position: absolute;
+    left:50%;
+    top:2%;
+    z-index: 33333;
+    transform: translate(-50%,0);
+}
+.lb_box ul{
+    display: flex;
+    justify-content: center;
+}
+.lb_box ul li{
+    width: 14px;
+    height: 14px;
+    margin:0 16px;
+    border-radius: 50%;
+    cursor: pointer;
+    background:rgba(176,176,176,0.7);			
+}
+.lb_box ul li.actr{
+    width: 28px;
+    height: 14px;
+    border-radius: 14px;
+    background: rgba(41, 222, 32, 0.5);
+}
+.lb_tab{
+    display: none;
+}
+.lb_tab2{
+    display: block;
+}
+
+
+.hide {
+    display: none;
+}
+.warn {
+    color: #FF5722;
+}
+
+
+/* 双因子 */
+#two-factor-verification-layer {
+    overflow: visible;
+}
+.layer-base {
+    color: #333 !important;
+}
+.layer-base .layui-panel {
+    padding: 15px;
+}
+.layer-base .layui-panel p {
+    text-indent: 28px;
+    line-height: 25px;
+}
+#two-factor-verification .layui-form-item {
+    padding-top: 5px;
+}
+#two-factor-verification .layui-icon {
+    font-size: 20px;
+}
+#two-factor-verification .submit {
+    text-align: center;
+}
+/* #two-factor-verification .submit button {
+    padding: 0 50px;
+} */
+
+
+
+/* 修改密码 */
+#pwd-change .layui-form-label {
+    width: 70px;
+    padding: 9px 10px;
+}
+#pwd-change .layui-input-block {
+    padding-right: 10px;
+    margin-left: 90px;
+}
+#pwd-change .pwd-show {
+    background-size: 100%;
+    background-repeat: no-repeat;
+    float: right;
+    position: absolute;
+    top: 12px;
+    right: 17px;
+    height: 14px;
+    width: 20px;
+    cursor: pointer;
+}
+#pwd-change .layui-input {
+    padding-right: 33px;
+    font-size: 13px;
+}
+#pwd-change .pwd-show-open {
+    background-image: url(../img/eyes-open-max.png);
+}
+#pwd-change .pwd-show-close {
+    background-image: url(../img/eyes-close-max.png);
+}

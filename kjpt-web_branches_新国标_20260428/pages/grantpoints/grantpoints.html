@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>授分标准</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <link rel="stylesheet" href="../../css/ztree/metroStyle.css" type="text/css">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+<script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="../../js/jquery.ztree.core.js"></script>
+    <script type="text/javascript" src="../../js/jquery.ztree.excheck.js"></script>
+    <script type="text/javascript" src="../../js/jquery.ztree.exedit.js"></script>
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f6f6f6;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #aaa;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #747474;
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: #f6f6f6;
+        }
+
+        .layui-table-cell { /*最后的pic为字段的field*/
+            height: 100%;
+            max-width: 100%;
+        }
+
+        /*IE*/
+        * {
+            scrollbar-arrow-color: #ccc;
+            /*三角箭头的颜色*/
+            scrollbar-face-color: #ddd;
+            /*立体滚动条的颜色*/
+            scrollbar-3dlight-color: #fff;
+            /*立体滚动条亮边的颜色*/
+            scrollbar-highlight-color: #fff;
+            /*滚动条空白部分的颜色*/
+            scrollbar-shadow-color: #fff;
+            /*立体滚动条阴影的颜色*/
+            scrollbar-darkshadow-color: #fff;
+            /*立体滚动条强阴影的颜色*/
+            scrollbar-track-color: #fff;
+            /*立体滚动条背景颜色*/
+            scrollbar-base-color: #fff;
+            /*滚动条的基本颜色*/
+        }
+
+        /* 新增代码 */
+        html{
+            background: #fff;
+        }
+        .layui_mess {
+              display: flex;
+              justify-content: space-between;
+          }
+
+          .layui-form-select .layui-input {
+              padding-right: 0;
+          }
+    </style>
+</head>
+
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!--搜索框区域-->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="background-color: #f5f5f5;">
+            <div class="layui_mess">
+                <div class="layui_display">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">套选择</label>
+                        <div class="layui-input-block">
+                            <select name="grantscore_standard_id" lay-filter="grantscore_standard_id_filter" id="grantscore_standard_id" lay-verify="required" lay-search="">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">单位</label>
+                        <div class="layui-input-block">
+                            <select name="top_unit_id" lay-filter="jsqx_project_id_filter" id="top_unit_id" lay-verify="required" lay-search="">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">查询项</label>
+                        <div class="layui-input-block">
+                            <select name="selectName" lay-filter="jsqx_project_id_filter" id="selectName" lay-verify="required" lay-search="">
+                                <option value="">请选择</option>
+                                <option value="name">授分标准名称</option>
+                                <option value="description">授分标准规定</option>
+                                <option value="kind">类型</option>
+                                <option value="type">学分级别</option>
+                                <option value="unit_name">单元名称</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">包含</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="titlea" name="title" required  lay-verify="required" placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui_display">
+                    <div class="layui-inline">
+                        <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="renderTable()"
+                        lay-filter="LAY-app-order-search"
+                        data-type="reload">
+                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 表格区域-->
+        <div class="layui-card-body layui_body_box">
+            <table class="layui-table" id="typeTable" lay-filter="demo" style="margin: 0px 0px;">
+            </table>
+        </div>
+    </div>
+
+    <!-- 弹框内容 -->
+    <div id="score-kind-alert" style=" display:none;text-align: center">
+        <form class="layui-form" style = "padding: 30px;"  id="form1" lay-filter="formTest">
+
+            <div class="layui-form-item" style="display: none">
+                <div class="layui-inline">
+                    <label class="layui-form-label">主键id</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="grantscoreStandardId"  autocomplete="off" class="layui-input" >
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">选择套标准</label>
+                    <div class="layui-input-block">
+                        <select name="cmeStandardKindId" lay-verify="required" id="formCmeStandardKindId" lay-filter="formCmeStandardKindId">
+                            <option value="">请选择</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">选择最高单位</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="topUnitId" name="topUnitId" required  lay-verify="required" placeholder="点击选择单位" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">序号</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="id" required  lay-verify="required" placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 84px;padding-right: 0;">授分标准名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="name" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">类型</label>
+                    <div class="layui-input-block">
+                        <select lay-filter="selectKind" name="kind" lay-verify="required">
+                            <option value="01">按成员</option>
+                            <option value="02">按数量</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">学分类别</label>
+                    <div class="layui-input-block">
+                        <select name="type" id="xuefenleibie">
+                            <option value="">请选择</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!--根据数量增加-->
+            <div id="unitForm" style="display: none;">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">单元名称:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="unitName"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">单元数量:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="unitNum"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">单元学分:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="unitScore"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">最高限分:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="unitMaxscore"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+            </div>
+            </div>
+
+            <!-- 根据成员增加-->
+            <div id="selectOrder">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">成员1:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="order1"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">分1:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="score1"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">成员2:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="order2"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">分2:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="score2"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">成员3:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="order3"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">分3:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="score3"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">成员4:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="order4"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">分4:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="score4"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">成员5:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="order5"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">分5:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="score5"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">成员6:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="order6"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">分6:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="score6"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">成员7:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="order7"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">分7:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="score7"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">成员8:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="order8" placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">分8:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="score8"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">成员9:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="order9"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">分9:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="score9"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">成员10:</label>
+                    <div class="layui-input-block">
+                        <input type="" name="order10"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">分10:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="score10"  placeholder="请输入序号" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div class="layui-form-item">
+                <div style="text-align: center;">
+                    <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div id="topUnitIds-open" style="display: none">
+        <div>
+            <ul id="test2" class="ztree"></ul>
+        </div>
+    </div>
+
+
+</div>
+<!--判断自定义列模板-->
+<script type="text/html" id="stateTpl">
+    {{#  if(d.cstate == 1){ }}
+    可用
+    {{#  } else { }}
+    不可用
+    {{#  } }}
+</script>
+
+
+<!--列表工具栏-->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-sm" lay-event="edit">编辑</a>
+<!--    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>-->
+</script>
+<script type="text/html" id="barDemo1">
+    <a class="layui-btn layui-btn-sm" lay-event="add"><i class="layui-icon layui-icon-add-1 layuiadmin-button-btn"></i>新增</a>
+</script>
+<!--增加序号列-->
+<script type="text/html" id="rank">
+    {{d.LAY_TABLE_INDEX+1}}
+</script>
+
+<script>
+    layui.use(['table', 'layer', 'form','laypage'], function () {
+        var table = layui.table;
+        var form=layui.form;
+        var $=layui.jquery;
+        var laypage=layui.laypage;
+
+
+        window.renderTable = function () {
+            // 表格数据渲染
+            var tableIns=table.render({
+                elem: '#typeTable',
+                url: huayi_sjwh_url+'cmegrantscorestandard',
+                title: '课程类型列表',
+                defaultToolbar: [],
+                // initSort: {
+                //     field: 'rank' //排序字段，对应 cols 设定的各字段名
+                //     ,type: 'asc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
+                // },
+                //
+                where: {topunitId: $('#top_unit_id').val(), parama: $('#selectName').val(), title: $('#titlea').val(), grantscoreStandardId: $('#grantscore_standard_id').val()},
+                cols: [[
+                    {field: 'rank', title: '序号', width: 80, fixed: 'left', templet: '#rank',align:"center"},
+                    // {field: 'id', width: 80, fixed: 'left', title: '序号'},
+                    {field: 'topUnitId', width: 150, align: 'center', fixed: 'left', title: '套标准id', hide: true},
+                    {field: 'grantscoreStandardId', width: 150, align: 'center', fixed: 'left', title: '授分标准id', hide: true},
+                    {field: 'name', width: 200, fixed: 'left', title: '授分标准名称'},
+                    {field: 'description', width: 200, title: '授分标准规定'},
+                    {
+                        field: 'kind', align: 'center', title: '类型', templet:
+                            function (d) {
+                                if (d.kind == '01') {
+                                    return '成员';
+                                } else {
+                                    return '数量';
+                                }
+                            }
+                    },
+                    {field: 'type', align: 'center', title: '学分级别'},
+                    {field: 'unitName', align: 'center', title: '单元名称'},
+                    {field: 'unitNum', align: 'center', title: '单元数量'},
+                    {field: 'unitScore', align: 'center', title: '单元学分'},
+                    {field: 'unitMaxscore', align: 'center', title: '最高限分'},
+                    {field: 'score1', align: 'center', title: '分1'},
+                    {field: 'score2', align: 'center', title: '分2'},
+                    {field: 'score3', align: 'center', title: '分3'},
+                    {field: 'order1', align: 'center', title: '成员1'},
+                    {field: 'order2', align: 'center', title: '成员2'},
+                    {field: 'order3', align: 'center', title: '成员3'},
+                    {align: 'center', width: 250, fixed: 'right', width: 180, toolbar: '#barDemo', title: '操作'}
+                ]],
+                toolbar: '#barDemo1',
+                cellMinWidth: 100,
+                id: "typeTable",
+                height: 'full-155',
+                page: true,
+                limit: 30,
+                limits: [10, 20, 30, 40, 200],
+                parseData: function (res) {
+                    return {
+                        "code": res.code, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "count": res.data.total, //解析数据长度
+                        "data": res.data.records //解析数据列表
+                    }
+
+                }
+            });
+        }
+        // 查询按钮执行方法
+        renderTable();
+
+        // 主页及弹出页查询套标准下拉框
+        $().ready(function () {
+            // 加载套标准下拉框
+           $.ajax({
+               url: huayi_sjwh_url+'cmestandardkind',
+               success: function (res) {
+                   if (res.data.length>0) {
+                       for (var i = 0; i < res.data.length; i++) {
+                           $('#formCmeStandardKindId').append("<option value=\"" + res.data[i].cmeStandardKindId + "\">" + res.data[i].description + "</option>");
+                           $('#grantscore_standard_id').append("<option value=\"" + res.data[i].cmeStandardKindId + "\">" + res.data[i].description + "</option>");
+                           layui.form.render("select");
+                       }
+                   }else{
+
+                   }
+               }
+           });
+
+        });
+
+        // 主页选择套标准时，更新单位下拉框信息。
+        form.on('select(grantscore_standard_id_filter)',function (data) {
+
+            if(data.value!=null && data.value!=''){
+                var datas={'cmeStandardKindId': data.value}
+                $('#top_unit_id').find("option").remove();
+                $.ajax({
+                    url: huayi_personorg_url+'comunit',
+                    data: datas,
+                    contentType:'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.data.length>0) {
+                            for (var i = 0; i < res.data.length; i++) {
+                                $('#top_unit_id').append("<option value=\"" + res.data[i].topUnitId + "\">" + res.data[i].unitName + "</option>");
+                                $('#formCmeStandardKindId option[value='+data.value+']').attr("selected",true);
+                                layui.form.render("select");
+                            }
+                        }else{
+                            layui.form.render("select");
+                        }
+                    }
+                })
+            }else{
+                $('#top_unit_id').find("option").remove();
+                $('#top_unit_id').append("<option value=\"\">无数据</option>");
+                $('#grantscoreStandardId').find("option").remove();
+                $('#grantscoreStandardId').append("<option value=\"\">无数据</option>");
+                layui.form.render("select");
+            }
+
+        })
+
+
+        // 弹出框选择套标准时重新渲染单位树
+        form.on('select(formCmeStandardKindId)',function (data) {
+            if(data.value!=null && data.value!=''){
+                var datas={'grantscore_standard_id': data.value}
+                $('#topUnitid').find("option").remove();
+                $.ajax({
+                    url: huayi_personorg_url+'comunit',
+                    data: datas,
+                    contentType:'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.data.length>0) {
+                            for (var i = 0; i < res.data.length; i++) {
+                                $('#topUnitid').append("<option value=\"" + res.data[i].topUnitId + "\">" + res.data[i].unitName + "</option>");
+                                // $('#formCmeStandardKindId option[value='+data.value+']').attr("selected",true);
+                                layui.form.render("select");
+                            }
+                        }else{
+                            $('#topUnitid').append("<option value=''>" + "无数据" + "</option>");
+                            // $('#formCmeStandardKindId option[value='+data.value+']').attr("selected",true);
+                            layui.form.render("select");
+                            layui.form.render("select");
+                        }
+                    }
+                })
+            }else{
+                $('#formCmeStandardKindId').find("option").remove();
+                $('#formCmeStandardKindId').append("<option value=\"\">无数据</option>");
+                layui.form.render("select");
+            }
+
+        })
+        //监听头部工具条
+        table.on('toolbar(demo)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+                alert("触发编辑按钮");
+            }else if (obj.event === 'add') {
+                // 获取学分类别下拉框
+                // xuefenleibie
+                // $('#xuefenleibie').append("<option value='0000'>" + "测试"+ "</option>");
+                // layui.form.render("select");
+
+                $.ajax({
+                    url: huayi_sjwh_url+'cmecomscorelevel/list',
+                    data: {cmeStandardKindId: $('#grantscore_standard_id').val()},
+                    success: function (res) {
+                        if (res.data.length>0) {
+                            for (var i = 0; i < res.data.length; i++) {
+                                $('#xuefenleibie').append("<option value=\"" + res.data[i].scoreLevelId + "\">" + res.data[i].scoreLevelName + "</option>");
+                                layui.form.render("select");
+                            }
+                        }else{
+
+                        }
+                    }
+                });
+                layer.open({
+                    anim: 5,
+                    type:1,
+                    area:['800px','600px'],
+                    title: '添加新的授分标准',
+                    content: $('#score-kind-alert'),
+                    shade: 0,
+                    success: function () {
+                    }
+                });
+            }
+        });
+
+        //监听行内工具条
+        table.on('tool(demo)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+                var type=data.type;
+                if(type=='01'){
+                    $("#unitForm").hide();
+                    $("#selectOrder").show();
+                }else if(type=='02') {
+                    $("#unitForm").show();
+                    $("#selectOrder").hide();
+                }
+                layer.open({
+                    skin: 'layui-layer-molv',
+                    type:1,
+                    area:['800px','600px'],
+                    title: '修改授分标准',
+                    content: $('#score-kind-alert'),
+                    shade: 0,
+                    success: function (layero, index) {
+                        form.val('formTest',data);
+                    }
+
+                });
+            }
+        });
+
+        form.on('submit(formDemo)',function (data) {
+            debugger;
+            var URL;
+            var aa=$("input[name='grantscoreStandardId']").val();
+            if(aa==null || aa==''){
+                URL=huayi_sjwh_url+'cmegrantscorestandard'
+                console.log('新增方法');
+            }else{
+                URL=huayi_sjwh_url+'cmegrantscorestandard/edit'
+                console.log('修改方法');
+            }
+            var datas=JSON.stringify(data.field);
+            alert(datas)
+            $.ajax({
+                type: 'post',
+                url: URL,
+                data: datas,
+                contentType:'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    alert('发送请求成功');
+                },
+                error: function () {
+                    alert('发送请求失败');
+                }
+            })
+        });
+        //根据表单选择的类型展示不同的内容
+        form.on('select(selectKind)',function (data) {
+            var value=data.value;
+            if(value=='01'){
+                $("#unitForm").hide();
+                $("#selectOrder").show();
+            }else if(value=='02') {
+                $("#unitForm").show();
+                $("#selectOrder").hide();
+            }
+        })
+
+
+
+    });
+
+</script>
+
+<!--选择单位树-->
+<script>
+
+
+    var zTreeObj;
+    // zTree 的参数配置，深入使用请参考 API 文档（setting 配置详解）
+    var setting = {
+        // 可视界面相关配置
+        view: {
+            selectedMulti: false , //设置是否能同时选中多个节点
+            showIcon: false, //设置是否显示图标
+            showLine: true, //设置是否显示节点与节点之间的连线
+            showTitle: true, //设置是否显示节点的title显示信息
+        },
+        // 数据相关配置
+        data: {
+            // simpleData: true,
+            // idKey: 'unitId',
+            // pIdKey: 'parentUnit',
+            // rootPId: null,
+
+        },
+        // 复选框相关配置
+        check: {
+            enable: true, //是否显示radio/checkbox
+            autoCheckTrigger: false,
+            chkStyle: "radio",//值为checkbox或者radio表示
+            radioType:"all",
+            chkboxType: {"Y": "", "N": ""}//表示父子节点的联动效果，不联动
+        },
+        // 各类事件的回调函数配置
+        callback: {
+            // 点击节点时触发函数，加载子节点。
+            onClick: onClickThisNode,
+        },
+        // 异步加载配置
+        async: {
+            // enable: true,
+            // url: huayi_sjwh_url+'comunit/tree',
+            // autoParam: [],
+
+        },
+        // 编辑配置
+        edit: {
+
+        },
+    };
+    // zTree 的数据属性，深入使用请参考 API 文档（zTreeNode 节点数据详解）
+    var zNodes = [];
+
+    var datas=[];
+
+
+    // 点击input框弹出单位选择框
+    $('#topUnitId').click(function () {
+
+        $.ajax({
+            url: huayi_personorg_url+'comunit/tree',
+            data:{"unit_id": '',"cme_standard_kind_id" :$('#formCmeStandardKindId').val()},
+            // contentType:'application/json;charset=UTF-8',
+            // dataType: 'json',
+            success: function (res) {
+                if(res.data.length>0){
+                    for(var i=0;i<res.data.length-1;i++){
+                        var a={name: res.data[i].unitName,open:false,id: res.data[i].unitId}
+                        zNodes.push(a);
+                    }
+                }
+                layer.open({
+                    type: 1,
+                    content: $('#topUnitIds-open'),
+                    title: '选择单位',
+                    area:['400px','300px'],
+                    btn: ['确定','取消'],
+                    // 弹出成功后渲染第一层单位
+                    success: function(layero, index){
+                        $.fn.zTree.init($("#test2"), setting, zNodes);
+                    },
+                    // 点击确定按钮时，将选中的单位unit_id赋值给input框 并关闭当前层弹窗
+                    btn1: function () {
+                        var objs=$.fn.zTree.getZTreeObj("test2").getCheckedNodes(true);
+                        $('#topUnitId').val(objs[0].id);
+                        layer.close(layer.index);
+                    },
+                    // 点击取消按钮时执行相关语句
+                    btn2: function () {
+                        layer.close(layer.index);
+                    }
+                })
+            }
+        });
+    });
+
+    // 点击单位树节点时查询当前节点的子节点并渲染
+    function onClickThisNode(event ,treeId, treeNode) {
+        var objsa=$.fn.zTree.getZTreeObj(treeId);
+        var node = objsa.getNodeByTId(treeNode.tId);
+        if(!node.children) {
+            $.ajax({
+                url: huayi_sjwh_url+'comunit/tree',
+                data:{"unit_id": treeNode.id,"cme_standard_kind_id": $('#formCmeStandardKindId').val()},
+                success: function (res) {
+                    if(res.data.length>0){
+                        for(var i=0;i<res.data.length-1;i++){
+                            var a={name: res.data[i].unitName, id: res.data[i].unitId}
+                            datas.push(a);
+                        }
+                    }
+                    objsa.addNodes(treeNode,0,datas,false);
+                    datas=[];
+                }
+            })
+        }
+    }
+</script>
+
+
+</body>
+
+</html>

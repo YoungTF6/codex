@@ -1,0 +1,71 @@
+html {
+  width: 100%;
+  height: 100%;
+}
+* {
+  padding: 0;
+  margin: 0;
+}
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0;
+  background: #fff;
+  font-size: 12px;
+  color: #333;
+}
+div,
+form,
+ul,
+ol,
+li,
+span,
+p {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+img,
+a img {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  font-weight: normal;
+}
+ul,
+ol,
+li {
+  list-style: none;
+}
+table,
+td,
+input {
+  font-size: 12px;
+  padding: 0;
+}
+a,
+input,
+label {
+  outline: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  border: none;
+  table-layout: fixed;
+}
+table td {
+  word-break: break-all;
+  word-wrap: break-word;
+}

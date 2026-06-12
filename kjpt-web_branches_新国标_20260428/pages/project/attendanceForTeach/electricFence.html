@@ -1,0 +1,350 @@
+﻿<!DOCTYPE html>
+<html>
+<head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <title></title>
+    <style type="text/css">
+        html
+        {
+            height: 100%;
+        }
+        body
+        {
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+        #container
+        {
+            height: 100%;
+        }
+        ul li
+        {
+            list-style: none;
+        }
+        .div-wrap
+        {
+            z-index: 100;
+            position: fixed;
+            top: 2rem;
+            margin-left: 3rem;
+            padding: 1rem 1rem;
+            border-radius: .25rem;
+            background-color: #fff;
+            box-shadow: 0 2px 6px 0 rgba(27, 142, 236, 0.5);
+        }
+        .btn
+        {
+            width: 75px;
+            height: 30px;
+            background-color: #fff;
+            color: rgba(27, 142, 236, 1);
+            font-size: 14px;
+            border: 1px solid rgba(27, 142, 236, 1);
+            border-radius: 5px;
+            margin: 0 5px;
+            text-align: center;
+            line-height: 30px;
+        }
+        .btn:hover
+        {
+            background-color: rgba(27, 142, 236, 1);
+            color: #000;
+        }
+        .address_input
+        {
+            width: 75px;
+            height: 30px;
+            background-color: #fff;
+            font-size: 14px;
+            border-radius: 5px;
+            margin: 0 5px;
+            line-height: 30px;
+        }
+        .div-wrap span
+        {
+            font-size: 14px;
+            color: rgba(27, 142, 236, 1);
+        }
+        .div-wrap select
+        {
+            width: 75px;
+            height: 30px;
+            background-color: #fff;
+            color: rgba(27, 142, 236, 1);
+            font-size: 14px;
+            border-radius: 5px;
+            margin: 0 5px;
+            text-align: center;
+            line-height: 30px;
+        }
+        .tangram-suggestion-main
+        {
+            z-index: 100;
+        }
+    </style>
+
+    <script type="text/javascript" src="https://api.map.baidu.com/api?type=webgl&v=1.0&ak=tkwIvzbviOELh1D7FpYLxlenbnNZQm2T"></script>
+</head>
+<body runat="server">
+    <div id="container">
+    </div>
+    <div style="z-index: 100;">
+        <div class="div-wrap">
+            <span>考勤地址:</span>
+            <input type="text" id="address" style="width: 16rem;" class="address_input" />
+            <span>考勤范围:</span>
+            <select id="sel_fanwei" onchange="fanweiChange(this)">
+                <option value="0">无限制</option>
+                <!-- <option value="50" selected>50米</option> -->
+                <option value="100">100米</option>
+                <option value="150">150米</option>
+                <option value="200">200米</option>
+                <option value="300">300米</option>
+                <option value="400">400米</option>
+                <option value="500">500米</option>
+                <!-- <option value="1000">1000米</option> -->
+            </select>
+            <input class="btn" type="button" value="确 定" onclick="addAddress();" /><br />
+        </div>
+        <div id="searchResultPanel" style="border: 1px solid #C0C0C0; width: 150px; height: auto;
+            display: none; cursor: pointer; z-index: 100;">
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+   //设置关闭按钮
+   //  $(function () {
+   //      window.parent.document.getElementsByClassName("layui-layer-maxmin")[0].style.display = "none";
+   //      window.parent.document.getElementsByClassName("layui-layer-close2")[0].style.top = "0px";
+   //      window.parent.document.getElementsByClassName("layui-layer-close2")[0].style.right = "0px";
+   //  });
+
+
+    // 百度地图API功能
+    function G(id) {
+        return document.getElementById(id);
+    }
+
+    var browserType = myBrowser();
+    var map = new BMapGL.Map("container");
+    var point = new BMapGL.Point(116.331398, 39.897445);
+    map.centerAndZoom(point, 12);
+
+    //获取当前位置，如果浏览器不支持，则获取当前城市
+    var geoLocate = new BMapGL.Geolocation();
+    var myCity = new BMapGL.LocalCity();
+    if (browserType == "Chrome" || browserType == "Safari") {
+        myCity.get(locateToMyCity);
+    } else {
+        geoLocate.getCurrentPosition(function (r) {
+            if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+                locateToMyLocation(r);
+            }
+            else {
+                myCity.get(locateToMyCity);
+            }
+        }, { enableHighAccuracy: true })
+    }
+
+    map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放;
+
+    //定位到当前城市
+    function locateToMyCity(result) {
+        point = result.point;
+        var cityName = result.name;
+        G("address").value = cityName;
+        map.setCenter(cityName);
+    }
+    //定位到当前位置
+    function locateToMyLocation(r) {
+        point = r.point;
+        var address_text = "";
+        if (r.address.street != "") {
+            address_text = r.address.city + r.address.country + r.address.street + r.address.street_number;
+            G("address").value = address_text;
+        }
+        else {
+            G("address").value = address_text;
+        }
+        map.centerAndZoom(point, 17);
+        addCircleOverlay();
+    }
+
+
+    //获取天安门点
+    function getTianAnMenPoint() {
+        var point = new BMapGL.Point(116.404, 39.915);
+        return point;
+    }
+
+
+    //添加各种控件
+    var scaleCtrl = new BMapGL.ScaleControl();  // 添加比例尺控件
+    map.addControl(scaleCtrl);
+    var zoomCtrl = new BMapGL.ZoomControl();  // 添加缩放控件
+    map.addControl(zoomCtrl);
+    var locationControl = new BMapGL.LocationControl();  // 添加缩放控件
+    map.addControl(locationControl);
+
+
+    //建立一个自动完成的对象
+    var ac = new BMapGL.Autocomplete(
+		{
+		    "input": "address"
+		, "location": map
+		});
+
+    //鼠标放在下拉列表上的事件
+    ac.addEventListener("onhighlight", function (e) {
+        var str = "";
+        var _value = e.fromitem.value;
+        var value = "";
+        if (e.fromitem.index > -1) {
+            value = _value.province + _value.city + _value.district + _value.street + _value.business;
+        }
+        str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+
+        value = "";
+        if (e.toitem.index > -1) {
+            _value = e.toitem.value;
+            value = _value.province + _value.city + _value.district + _value.street + _value.business;
+        }
+        str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+        G("searchResultPanel").innerHTML = str;
+    });
+
+    //鼠标点击下拉列表后的事件
+    var myValue;
+    ac.addEventListener("onconfirm", function (e) {
+        var _value = e.item.value;
+        myValue = _value.province + _value.city + _value.district + _value.street + _value.business;
+        G("searchResultPanel").innerHTML = "onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+
+        function myFun() {
+            point = local.getResults().getPoi(0).point;    //获取第一个智能搜索的结果
+            addCircleOverlay(point);
+        }
+        var local = new BMapGL.LocalSearch(map, { //智能搜索
+            onSearchComplete: myFun
+        });
+        local.search(myValue);
+    });
+
+
+
+    //添加中心标注和圆形覆盖物
+    function addCircleOverlay() {
+        //清除覆盖物
+        map.clearOverlays();
+        //添加中心标注
+        var marker = new BMapGL.Marker(point);        // 创建标注
+        map.addOverlay(marker);                     // 将标注添加到地图中
+
+        var fanwei = G("sel_fanwei").value;
+        //添加圆形
+        var circle = new BMapGL.Circle(point, fanwei, { strokeColor: "#60E9AD", fillColor: "#A5BFF7", strokeWeight: 0.5, strokeOpacity: 0.5, fillOpacity: 0.5 }); //创建圆
+        map.addOverlay(circle);                     // 将圆添加到地图中
+
+        map.centerAndZoom(point, 17);
+    }
+
+    function jingwei() {
+        map.addEventListener('click', function (e) {
+            alert('点击位置经纬度：' + e.latlng.lng + ',' + e.latlng.lat);
+        });
+    }
+
+    function fanweiChange(obj) {
+        var sel_fanwei_value = $(obj).find("option:selected").val();
+        var zoom = 17;
+        if (sel_fanwei_value >= 1000) {
+            zoom = 15;
+        }
+        else if (sel_fanwei_value >= 500) {
+            zoom = 16;
+        } else {
+            zoom = 17;
+        }
+        //清除覆盖物
+        map.clearOverlays();
+        //添加中心标注
+        var marker = new BMapGL.Marker(point);        // 创建标注
+        map.addOverlay(marker);                     // 将标注添加到地图中
+        //添加圆形
+        var circle = new BMapGL.Circle(point, sel_fanwei_value, { strokeColor: "#60E9AD", fillColor: "#A5BFF7", strokeWeight: 0.5, strokeOpacity: 0.5, fillOpacity: 0.5 }); //创建圆
+        map.addOverlay(circle);                     // 将圆添加到地图中
+
+        map.centerAndZoom(point, zoom);
+    }
+
+
+    function myBrowser() {
+        var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+        var isOpera = userAgent.indexOf("Opera") > -1; //判断是否Opera浏览器
+        var isIE = userAgent.indexOf("compatible") > -1
+            && userAgent.indexOf("MSIE") > -1 && !isOpera; //判断是否IE浏览器
+        var isEdge = userAgent.indexOf("Edge") > -1; //判断是否IE的Edge浏览器
+        var isFF = userAgent.indexOf("Firefox") > -1; //判断是否Firefox浏览器
+        var isSafari = userAgent.indexOf("Safari") > -1
+            && userAgent.indexOf("Chrome") == -1; //判断是否Safari浏览器
+        var isChrome = userAgent.indexOf("Chrome") > -1
+            && userAgent.indexOf("Safari") > -1; //判断Chrome浏览器
+
+        if (isIE) {
+            var reIE = new RegExp("MSIE (\\d+\\.\\d+);");
+            reIE.test(userAgent);
+            var fIEVersion = parseFloat(RegExp["$1"]);
+            if (fIEVersion == 7) {
+                return "IE7";
+            } else if (fIEVersion == 8) {
+                return "IE8";
+            } else if (fIEVersion == 9) {
+                return "IE9";
+            } else if (fIEVersion == 10) {
+                return "IE10";
+            } else if (fIEVersion == 11) {
+                return "IE11";
+            } else {
+                return "0";
+            } //IE版本过低
+            return "IE";
+        }
+        if (isOpera) {
+            return "Opera";
+        }
+        if (isEdge) {
+            return "Edge";
+        }
+        if (isFF) {
+            return "FF";
+        }
+        if (isSafari) {
+            return "Safari";
+        }
+        if (isChrome) {
+            return "Chrome";
+        }
+
+    }
+
+    function addAddress() {
+        var obj = {};
+        obj.address = $("#address").val();
+        obj.fanwei = $("#sel_fanwei").val();
+        obj.point = point;
+        obj.winName = window.name;
+        if (obj.point == null || obj.point == undefined || obj.point == "") {
+            alert("请输入正确地址");
+            return;
+        }
+        parent.getBaiduMapAddress(obj);
+    }
+
+
+
+</script>

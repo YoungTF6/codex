@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>预报名管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+<script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script type="text/javascript" src="../../js/axios.min.js"></script>
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+
+
+    <style>
+        /* #form-ProjectDicRegionYear .layui-inline-660 {
+            width: 80%;
+        } */
+    </style>
+</head>
+
+<body>
+
+    <div class="layui-fluid">
+
+        <!-- 周期列表 -->
+        <div id="cmeProjPosDownListBlock" class="layui-card">
+            <!--        表格区域         -->
+            <div class="layui-card-body layui_body_box">
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <table class="layui-table" id="cmeProjPosDownList" lay-filter="cmeProjPosDownList"
+                            style="margin: 0px 0px;">
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 预报名管理 -->
+        <div id="preRegisterConfigBlock" style="display: none;width: 100%;">
+            <div style="padding-bottom: 10px;">
+                <button type="button" class="layui-btn" id="returnDownList">返回周期列表</button>
+            </div>
+            <div class="layui-card">
+                <div class="layui-tab layui-tab-brief" lay-filter="preRegisterTabBrief">
+                    <ul class="layui-tab-title">
+                        <li lay-id="preRegisterConfig" class="layui-this">预报名管理</li>
+                        <li lay-id="preRegisterPersonList">预报名名单</li>
+                    </ul>
+                    <div class="layui-tab-content" style="height: 100%;">
+                        <!-- 预报名配置 -->
+                        <div class="layui-tab-item layui-show">
+                            <form class="layui-form" style="padding: 30px;" id="form-registerConfig"
+                                lay-filter="form-registerConfig">
+                                <div class="layui-form-item" style="display: none">
+                                    <div class="layui-inline layui-inline-660">
+                                        <label class="layui-form-label">主键</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="keyId" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="layui-form-item">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">
+                                            <font color="red">*&nbsp;</font>预报名人数上限(人)
+                                        </label>
+                                        <div class="layui-input-inline" style="margin-top: 8px;">
+                                            <input  disabled="true" name="maximum" class="layui-input" autocomplete="off" type="number"
+                                               required  maxlength="5"   max="99999"
+                                                onKeyUp="this.value=this.value.replace(/[^\.\d]/g,'');this.value=this.value.replace('.','');"  oninput="if(value>99999)value=99999">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">
+                                            <font color="red">*&nbsp;</font>其中本院人数占比(%)
+                                        </label>
+                                        <div class="layui-input-inline" style="margin-top: 8px;">
+                                            <input  disabled="true" name="proportion" class="layui-input" autocomplete="off"
+                                                type="number" required maxlength="2" oninput="if(value>100)value=100">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">预报名范围</label>
+                                        <div class="layui-input-inline">
+                                            <select  disabled="true" name="scope" lay-filter="scope">
+                                                <option value="0">不限制</option>
+                                                <option value="1">本省</option>
+                                                <option value="2">本市</option>
+                                                <option value="3">本县</option>
+                                                <option value="4">本单位</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="layui-form-item">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">预报名开始时间</label>
+                                        <div class="layui-input-inline" style="margin-top: 8px;">
+                                            <input disabled="true" type="text" name="startTime" id="startTime" autocomplete="off"
+                                                class="layui-input" placeholder="请选择">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">预报名结束时间</label>
+                                        <div class="layui-input-inline" style="margin-top: 8px;">
+                                            <input disabled="true" type="text" name="endTime" id="endTime" autocomplete="off"
+                                                class="layui-input" placeholder="请选择">
+                                        </div>
+                                    </div>
+
+                                    <div class="layui-inline" id="isPublishBlock">
+                                        <label class="layui-form-label">
+                                            是否开启预报名
+                                        </label>
+                                        <div class="layui-input-inline" style="margin-top: 8px;">
+                                            <select disabled="true" name="isPublish" lay-filter="isPublish">
+                                                <option value="false">否</option>
+                                                <option value="true">是</option>
+                                            </select>
+                                            <!-- <p style="color: red;">若选择公布，系统将根据您设置的报名范围进行公布，此范围内的学员即可进行预报名</p> -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">预报名专业:</label>
+                                    <div class="layui-input-block" id="zTreeSelectM"></div>
+                                </div>
+                                <div class="layui-form-item" style="display: none;">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">预报名专业</label>
+                                        <div class="layui-input-inline">
+                                            <div class="layui-inline-block">
+                                                <div class="eletree"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="layui-form-item">
+                                    <input id="addUser" name="addUser" class="layui-input-inline"
+                                        style="display: none;">
+                                </div>
+
+                            </form>
+                        </div>
+                        <!-- 预报名学员列表 -->
+                        <div class="layui-tab-item">
+
+                            <!--        搜索框区域-->
+                            <!-- <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+                            <blockquote class="layui-form layui-form-item layui-elem-quote one-btn" lay-filter="query-form">
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">keyId</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="keyId" id="keyId" placeholder="申报年度" autocomplete="off"
+                                   class="layui-input">
+                                    </div>
+                                </div>
+
+                                <div class="layui-inline">
+                                    <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="loaderTable()"
+                                        lay-filter="table-search" data-type="reload">
+                                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                                    </a>
+                                </div>
+                            </blockquote>
+                        </div> -->
+                            <div style="padding-left: 15px;margin-bottom: 10px;">
+                                <button type="button" class="layui-btn layui-btn-sm"
+                                    id="excelExportPerson">导出Excel</button>
+                            </div>
+                            <!--        表格区域-->
+                            <div class="layui-card-body layui_body_box">
+                                <table class="layui-table" id="preRegisterPerson" lay-filter="preRegisterPerson"
+                                    style="margin: 0px 0px;">
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!--表格内数据编辑、删除按钮-->
+    <script type="text/html" id="rowBar">
+    <a class="layui-btn layui-btn-xs" lay-event="addRegister" style="color: #ffb82e;background-color: transparent;">查看</a>
+
+</script>
+
+    <script>
+        layui.config({
+            base: '/js/layui/ext/'
+        }).extend({
+            eleTree: 'eleTree',
+            xmSelect: 'xm-select',
+            zTreeSelectM: 'zTreeSelectM'
+        });
+        // 全局配置及引入相关的模块
+        layui.use(['table', 'form', 'element', 'laydate', 'eleTree', 'xmSelect', 'zTreeSelectM'], function () {
+            var  table = layui.table
+                , element = layui.element
+                , form = layui.form
+                , laydate = layui.laydate
+                , xmSelect = layui.xmSelect
+                , eleTree = layui.eleTree
+                , zTreeSelectM = layui.zTreeSelectM
+                , layer = layui.layer;
+
+            var projId = '1533a709-8466-40ea-bb57-b3b587854a6f';
+            var downId = '1533a709-8466-40ea-bb57-b3b587854a6f';
+            var specArrs = [];
+             //解析url参数
+             let getParamFromUrl = function (paramName) {
+            debugger
+                let urlStr = location.search;
+                if (urlStr.indexOf(paramName) < 0 || urlStr.indexOf("?") < 0) return;
+                let paramKV = urlStr.substr(1).split("&");
+                for (let i = 0; i < paramKV.length; i++) {
+                    if (paramKV[i].indexOf(paramName) >= 0) {
+                        return paramKV[i].split("=")[1];
+                    }
+                }
+            }
+            var nowProjectId = getParamFromUrl("projectId");
+            if (nowProjectId != null && nowProjectId != "" && nowProjectId != undefined) {
+                projId = nowProjectId;
+            }
+
+            //日期
+            laydate.render({
+                elem: '#startTime',
+                type: 'datetime'
+            });
+            laydate.render({
+                elem: '#endTime',
+                type: 'datetime'
+            });
+
+            // 初始化专业列表
+            var el = eleTree({
+                el: '.eletree',
+                showCheckbox: true,
+                highlightCurrent: true,
+                data: [],
+                sort: true,
+                initSort: {
+                    field: 'order',
+                    type: 'asc'
+                },
+                request: {          // 对于树形数据字段名重定义
+                    name: "name",
+                    key: "id",
+                    children: "children",
+                    pid: "pid"
+                },
+
+            });
+            var industryTreeData = [];
+            var _zTreeSelectM
+            var getSpecTree = function () {
+                $.ajax({
+                    type: 'get',
+                    url: huayi_sjwh_url + 'comPersonSpec/tree',
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        
+                        var allNodes = el.getAllNodeData();
+                        if (allNodes.length > 0) {
+                            var rootId = allNodes[0].id;
+                            el.remove(rootId)
+                        }
+
+                        for(let i=0;i< res.length;i++){
+                           let firstClassSpecObj = res[i];
+                           //firstClassSpecObj.parentId="00000000-0000-0000-0000-000000000000";
+                           firstClassSpecObj.pid="00000000-0000-0000-0000-000000000000";
+                        }
+                        let data={};
+                        data.children=res;
+                        data.id="00000000-0000-0000-0000-000000000000";
+                        data.pid="";
+                        data.order=1;
+                        data.name="全部";
+                        data.personSpecName="全部";
+                        data.listOrder=1;
+                        data.personSpecId="00000000-0000-0000-0000-000000000000";
+                        data.parentId="";
+
+                        industryTreeData.push(data);
+                        console.log(industryTreeData);
+                        
+                        _zTreeSelectM = zTreeSelectM({
+                            elem: '#zTreeSelectM',//元素容器【必填】
+                            data: industryTreeData,//候选数据【必填】
+                            width: 600,  //设置了长度
+                            selected: [3, 6, 29],//默认值
+                            max: 10000,//最多选中个数
+                            name: 'field',//input的name 不设置与选择器相同(去#.)
+                            delimiter: ',',//值的分隔符
+                            field: { idName: 'id', titleName: 'name' },//候选项数据的键名
+                            zTreeSetting: { //zTree设置
+                                check: {
+                                    enable: true,
+                                    chkboxType: { "Y": "s", "N": "ps" }
+                                },
+                                data: {
+                                    simpleData: {
+                                        enable: false
+                                    },
+                                    key: {
+                                        name: 'name',
+                                        children: 'children'
+                                    }
+                                },
+                                callback: {
+                                    beforeDragOpen: false
+                                }
+                            }
+                        });
+                        el.append(res)
+                        el.setChecked(specArrs)
+                    }
+                });
+            }
+
+            getSpecTree();
+
+            var getPreRegisterConfig = function () {
+                $.ajax({
+                    type: 'get',
+                    url: huayi_projectscore_url + 'cmeProjPreRegisterConfig/' + projId + "/" + downId,
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        debugger
+                        console.log(res.data)
+                        if (res.data != null) {
+                            // 专业树
+                            var personSpecStr = res.data.personSpec;
+                            specArrs = personSpecStr.split(",");
+                            el.setChecked(specArrs);
+                            _zTreeSelectM.set(specArrs);
+                            // 表单
+                            form.val('form-registerConfig', {
+                                "maximum": res.data.maximum // "name": "value"
+                                , "proportion": res.data.proportion
+                                , "scope": res.data.scope
+                                , "personSpec": res.data.personSpec
+                                , "startTime": res.data.startTime
+                                , "endTime": res.data.endTime
+                                , "isPublish": res.data.isPublish + ""
+                                , "keyId": res.data.keyId
+                            });
+                        }
+
+                    }
+                });
+            }
+
+
+            // 表格配置
+            window.loaderTable = function () {
+                table.render({
+                    elem: '#cmeProjPosDownList',
+                    url: huayi_projectscore_url + 'cmeProjPreRegisterConfig/list',
+                    title: '项目周期',
+                    defaultToolbar: [],
+                    where: {
+                        projId: projId,
+                    },
+                    cols: [[
+                        { title: '操作', toolbar: '#rowBar', align: "center" },
+                        {
+                            field: 'batch', title: '举办批次', sort: true, align: "center",
+                            templet: function (data) {
+                                return "第" + data.batch + "批次";
+                            }
+                        },
+                        { field: 'startDt', title: '举办开始日期', align: "center" }
+                        , { field: 'endDt', title: '举办结束日期', align: "center" }
+                    ]],
+                    cellMinWidth: 100,
+                    id: "cmeProjPosDownList",
+                    height: 'full-90',
+                    parseData: function (res) {
+                        return {
+                            "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                            "msg": res.message, //解析提示文本
+                            "count": res.data.recordsTotal, //解析数据长度
+                            "data": res.data.records, //解析数据列表
+                            "page": res.data.pageNum, //当前页
+                            "limit": res.data.pageSize, //每页条数
+                        }
+
+                    },
+                    request: {
+                        pageName: 'pageNum', //页码的参数名称，默认：page
+                        limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                    }
+                });
+
+            };
+            // 初始化表格
+            loaderTable();
+
+            // 初始化预报名名单列表
+            window.loaderTablePerson = function () {
+                table.render({
+                    elem: '#preRegisterPerson',
+                    url: huayi_projectscore_url + 'cmeProjPreRegisterPerson/listRelated',
+                    title: '预报名名单',
+                    defaultToolbar: [],
+                    where: {
+                        projId: projId,
+                        downId: downId,
+                    },
+                    cols: [[
+                        // { field: 'keyId', title: '主键', sort: true, align: "center" },
+                        { field: 'personName', title: '姓名', sort: true, align: "center", width: "15%" },
+                        { field: 'titleName', title: '当前职称', sort: true, align: "center", width: "15%" },
+                        { field: 'deptName', title: '所在科室', sort: true, align: "center", width: "15%" },
+                        { field: 'unitName', title: '所在单位', sort: true, align: "center", width: "20%" },
+                        { field: 'specName', title: '专业', sort: true, align: "center", width: "15%" },
+                        { field: 'mobile', title: '联系方式', sort: true, align: "center", width: "15%" },
+                    ]],
+                    cellMinWidth: 100,
+                    id: "preRegisterPerson",
+                    // height: 'full-400',
+                    page: true,
+                    limit: 10,
+                    limits: [10, 50, 100, 150, 200],
+                    parseData: function (res) {
+                        debugger
+                        return {
+                            "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                            "msg": res.message, //解析提示文本
+                            "count": res.data.recordsTotal, //解析数据长度
+                            "data": res.data.records, //解析数据列表
+                            "page": res.data.pageNum, //当前页
+                            "limit": res.data.pageSize, //每页条数
+                        }
+
+                    },
+                    request: {
+                        pageName: 'pageNum', //页码的参数名称，默认：page
+                        limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                    }
+                });
+
+            };
+            // 进入预报名配置
+            table.on('tool(cmeProjPosDownList)', function (obj) {
+                debugger
+                downId = obj.data.downId;
+                if (obj.event == "addRegister") {
+                    $('#preRegisterConfigBlock').css("display", "inline-block");
+                    $('#cmeProjPosDownListBlock').css("display", "none");
+                    console.log("addRegister");
+                    element.tabChange('preRegisterTabBrief', 'preRegisterConfig');
+                    getPreRegisterConfig();
+                    loaderTablePerson();
+                    // 禁用字段
+                    zTreeSelectM.disable = true;
+                }
+            });
+
+            // 返回周期列表
+            layui.$('#returnDownList').on('click', function () {
+                _zTreeSelectM.set();//默认值
+                $('#cmeProjPosDownListBlock').css("display", "inline-block");
+                $('#preRegisterConfigBlock').css("display", "none");
+            });
+
+            // 导出Excel
+            layui.$('#excelExportPerson').on('click', function () {
+                //导出excel
+                axios({
+                    method: 'get',
+                    url: huayi_projectscore_url + 'cmeProjPreRegisterPerson/excelExportPerson?projId=' + projId + "&downId=" + downId,
+                    responseType: 'blob',
+                    headers: {
+                        "Accept": 'application/json',
+                        "Authorization": localStorage.getItem("token"),
+                        "KJPT-USER-ID": localStorage.getItem("user-id"),
+                        "cmestandard-id": localStorage.getItem("standardkind-id")
+                    },
+                    params: {
+                    }
+                }).then(function (res) {
+                    var data = res.data;
+                    var blob = new Blob([data], {type: 'application/octet-stream'});
+                    var url = URL.createObjectURL(blob);
+                    var exportLink = document.createElement('a');
+                    exportLink.setAttribute("download","预报名人员名单.xlsx");
+                    exportLink.href = url;
+                    document.body.appendChild(exportLink);
+                    exportLink.click();
+                })  
+            });
+
+            var change = function () {
+                //切换到指定Tab项
+                // element.tabChange('preRegisterTabBrief', 'preRegisterPersonList');
+            };
+            change();
+
+
+            form.on('submit(demo)', function (data) {
+                console.log('zTreeSelectM 当前选中的值名：', _zTreeSelectM.selected);
+                console.log('zTreeSelectM 当前选中的值：', _zTreeSelectM.values);
+                console.log('zTreeSelectM 当前选中的名：', _zTreeSelectM.names);
+
+                var formData = data.field;
+                console.log('表单对象：', formData);
+                return false;
+            })
+
+            //监听重置按钮
+            $('form').find(':reset').click(function () {
+                $('form')[0].reset();
+                _zTreeSelectM.set();//默认值
+                return false;
+            });
+
+            $("#set").on('click', function (e) {
+                _zTreeSelectM.set([4, 7, 13]);
+                return false;
+            })
+
+        });
+
+    </script>
+</body>
+
+</html>

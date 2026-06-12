@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学分上报审核</title>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <!--<script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <script type="text/javascript" src="../../../js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="../../../js/layui-v2.6.8/layui/layui.js"></script>
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+    <script type="text/javascript" src="../../../js/axios.min.js"></script>
+    <style type="text/css">
+        .layui-form {
+            margin: 0;
+        }
+        .search-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin: 10px;
+        }
+        .search-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .search-item {
+            margin-right: 25px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .search-item label {
+            margin-right: 8px;
+            white-space: nowrap;
+            font-weight: 500;
+            color: #303133;
+            font-size: 14px;
+        }
+        .search-item input,
+        .search-item select {
+            width: 150px;
+            padding: 5px 10px;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        .search-item input:focus,
+        .search-item select:focus {
+            outline: none;
+            border-color: #409eff;
+            box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+        }
+        .search-item input:hover,
+        .search-item select:hover {
+            border-color: #c0c4cc;
+        }
+        .date-range {
+            display: flex;
+            align-items: center;
+        }
+        .date-range span {
+            margin: 0 10px;
+            color: #606266;
+            font-size: 14px;
+        }
+        .date-input {
+            width: 130px !important;
+        }
+        .search-item button {
+            padding: 0 20px;
+            height: 32px;
+            line-height: 32px;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .btn-row {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-row button {
+            margin-right: 10px;
+        }
+        .status-info {
+            margin-left: 15px;
+            color: #666;
+        }
+        .toolbar {
+            background-color: #fff;
+            padding: 10px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+        }
+        .toolbar button {
+            margin-right: 10px;
+        }
+        .layui-btn {
+            background-color: #009688;
+        }
+        .layui-btn:hover {
+            background-color: #00897b;
+        }
+        .table-container {
+            background-color: #fff;
+        }
+        /* 确保表格工具栏显示 */
+        .layui-table-tool {
+            display: block !important;
+        }
+        .layui-table-tool-self {
+            display: block !important;
+        }
+        .layui-table-tool-panel {
+            z-index: 9999 !important;
+        }
+    </style>
+</head>
+<body style="background-color: #f5f5f5;">
+<div class="search-container">
+    <div class="search-row">
+        <div class="search-item">
+            <label>年度</label>
+            <select id="cme_year" name="cme_year">
+                <!-- 年度选项将通过JavaScript动态生成 -->
+            </select>
+        </div>
+        <div class="search-item date-range">
+                <label>上报日期</label>
+                <input type="text" class="layui-input date-input" id="start_date" readonly="" placeholder="不限" />
+                <span>至</span>
+                <input type="text" class="layui-input date-input" id="end_date" readonly="" placeholder="不限" />
+            </div>
+        <div class="search-item">
+            <label>单位编号</label>
+            <input type="text" id="unit_id" name="unit_id" placeholder="不限" autocomplete="off" class="layui-input" />
+        </div>
+        <div class="search-item">
+            <label>人员编号</label>
+            <input type="text" id="person_no" name="person_no" placeholder="不限" autocomplete="off" class="layui-input" />
+        </div>
+        <div class="search-item">
+            <label>人员姓名</label>
+            <input type="text" id="person_name" name="person_name" placeholder="不限" autocomplete="off" class="layui-input" />
+        </div>
+        <div class="search-item">
+            <label>审核状态</label>
+            <select id="sele_check_status">
+                <option value="">全部</option>
+                <option value="1">未审核</option>
+                <option value="2">审核通过</option>
+                <option value="3">不需要审核</option>
+                <option value="4">审核不通过</option>
+            </select>
+        </div>
+        <div class="search-item date-range">
+                <label>审核时间</label>
+                <input type="text" class="layui-input date-input" id="start_time2" readonly="" placeholder="不限" />
+                <span>至</span>
+                <input type="text" class="layui-input date-input" id="end_time2" readonly="" placeholder="不限" />
+            </div>
+        <div class="search-item">
+            <label>同步状态</label>
+            <select id="sele_submit_status">
+                <option value="">全部</option>
+                <option value="1">未同步</option>
+                <option value="2">同步成功</option>
+                <option value="4">同步失败</option>
+            </select>
+        </div>
+        <div class="search-item">
+            <button class="layui-btn" id="btn_serach"><i class="layui-icon layui-icon-search"></i>查询</button>
+        </div>
+    </div>
+    <div class="btn-row">
+        <button class="layui-btn" id="btn_config_date"><i class="layui-icon layui-icon-set-sm"></i>数据提交起止日期设置</button>
+        <span class="status-info">数据提交起止日期：<span id="lbl_date">未设置——未设置</span></span>
+        <button class="layui-btn" id="btn_config" style="margin-left: 20px;"><i class="layui-icon layui-icon-set-sm"></i>数据提交审核功能设置</button>
+        <span class="status-info">数据提交审核状态：<span id="lbl_check_status">未开启</span></span>
+    </div>
+</div>
+
+<div class="toolbar">
+    <button class="layui-btn" lay-event="checkAllthisPage">本页全选</button>
+    <button class="layui-btn" lay-event="checkAll">全选</button>
+    <button class="layui-btn" lay-event="pass">审核通过</button>
+    <button class="layui-btn" lay-event="no_pass">审核不通过</button>
+    <button class="layui-btn" lay-event="export">导出</button>
+    <!--<button class="layui-btn" lay-event="add_manual">手动添加</button>-->
+</div>
+
+<div class="table-container">
+    <table id="train_info" lay-filter="train_info"></table>
+
+    <script type="text/html" id="table-toolbar">
+        <div class="layui-form layui-btn-container">
+            <input type="checkbox" lay-filter="check_line" id="{{d.id}}" {{# if(d.gdrstSwapstate==0){ }} {{# } else { }}disabled{{# } }} name="check_line" title="选中" lay-skin="switch" lay-text="选中|不选">
+           <!-- <input type="checkbox" lay-filter="check_line" id="{{d.id}}" {{# if(d.gdrstSwapstate==0){ }} {{# } else { }}{{# } }} name="check_line" title="选中" lay-skin="switch" lay-text="选中|不选">-->
+        </div>
+    </script>
+</div>
+<div id="pop_time_setting" style="padding-top:15px;display:none;">
+    <div class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width:90px;">
+                上报开始日期</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" id="pop_start_time">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width:90px;">
+                上报截止日期</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" id="pop_end_time">
+            </div>
+        </div>
+    </div>
+</div>
+<div id="add_manual_div" style="padding-top:15px;display:none;">
+    <div class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width:90px;">
+                <span class="layui-badge-dot"></span>
+                人员编号</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" id="txt_add_person_no" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width:90px;">
+                人员姓名</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" id="txt_add_person_name" readonly="" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width:90px;">
+                所在单位</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" id="txt_add_unit_name" readonly="" />
+            </div>
+        </div>
+        <div class="layui-form-item" style="text-align:right;padding-right:10px;">
+            <button class="layui-btn layui-btn-sm" id="but_add_check" value="检查">检查</button>
+        </div>
+        <br />
+
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width:90px;">
+                <span class="layui-badge-dot"></span>
+                年　度</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" id="txt_add_year" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width:90px;">
+                <span class="layui-badge-dot"></span>
+                总学分</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" id="txt_add_score" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width:90px;">
+                <span class="layui-badge-dot"></span>
+                总学时</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" id="txt_add_period" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    layui.config({
+        base: 'https://cdn.staticfile.org/layui/2.6.8/'
+    }).use(['form', 'laydate', 'layer', 'jquery', 'table'], function () {
+        var layer = layui.layer,
+            $ = layui.jquery,
+            form = layui.form,
+            laydate = layui.laydate,
+            table = layui.table;
+
+        // 全局单位ID，供整个页面使用
+        var unitId = localStorage.getItem("unit-id") || "";
+        if (!unitId) {
+            console.warn("无法获取单位信息");
+        }
+
+        // 生成年度选项
+        function generateYearOptions() {
+            var currentYear = new Date().getFullYear();
+            var select = $('#cme_year');
+            select.empty();
+
+            // 生成最近10年的选项
+            for (var i = currentYear; i >= currentYear - 10; i--) {
+                select.append('<option value="' + i + '">' + i + '</option>');
+            }
+
+            form.render('select');
+        }
+        function Format(datetime, fmt) {
+            if (datetime === null || datetime === undefined) {
+                return "";
+            }
+            // 修复时间戳处理逻辑
+            if (typeof datetime === 'string') {
+                // 移除可能的非数字字符
+                datetime = datetime.replace(/[^\d]/g, '');
+            }
+            let timestamp = parseInt(datetime);
+            // 根据时间戳长度判断单位是秒还是毫秒
+            if (timestamp.toString().length === 10) {
+                timestamp *= 1000;
+            }
+            datetime = new Date(timestamp);
+            var o = {
+                "M+": datetime.getMonth() + 1,                 //月份
+                "d+": datetime.getDate(),                    //日
+                "h+": datetime.getHours(),                   //小时
+                "m+": datetime.getMinutes(),                 //分
+                "s+": datetime.getSeconds(),                 //秒
+                "q+": Math.floor((datetime.getMonth() + 3) / 3), //季度
+                "S": datetime.getMilliseconds()             //毫秒
+            };
+            if (/(y+)/.test(fmt))
+                fmt = fmt.replace(RegExp.$1, (datetime.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o)
+                if (new RegExp("(" + k + ")").test(fmt))
+                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            return fmt;
+        }
+
+        // 初始化年度选项
+        generateYearOptions();
+
+        // 获取设置信息
+        function loadSettings() {
+            unitId = localStorage.getItem("unit-id") || "";
+            if (!unitId) {
+                console.warn("无法获取单位信息");
+                return;
+            }
+            
+            $.ajax({
+                url: huayi_projectscore_url + 'core-submit-setting/getByUnitId',
+                type: 'get',
+                data: { unitId: unitId },
+                success: function (response) {
+                    if (response.success === true && response.data) {
+                        var setting = response.data;
+                        // 设置审核状态
+                        $("#lbl_check_status").text(setting.status === 1 ? "已开启" : "未开启");
+                        // 设置日期范围
+                        var startDate = setting.startDate ? setting.startDate : "未设置";
+                        var endDate = setting.endDate ? setting.endDate : "未设置";
+                        $("#lbl_date").text(startDate + "——" + endDate);
+                    } else {
+                        console.log("暂无设置信息");
+                        $("#lbl_check_status").text("未开启");
+                        $("#lbl_date").text("未设置——未设置");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("获取设置信息失败:", xhr.responseText);
+                    // 默认显示
+                    $("#lbl_check_status").text("未开启");
+                    $("#lbl_date").text("未设置——未设置");
+                }
+            });
+        }
+        
+        // 页面加载时获取设置信息
+        loadSettings();
+
+        // 渲染表格（页面加载时不请求接口；点击“查询”再加载数据）
+        var main_table = table.render({
+            elem: '#train_info'
+            , height: 'full-198'
+            , loading: false
+            , method: 'get'
+            , defaultToolbar: ['filter', 'columns']
+            , title: '专业课数据表'
+            , page: true //开启分页
+            , data: [] // 初始化空数据，避免页面加载时请求接口
+            , toolbar: true // 确保工具栏显示
+            , where: {
+                operate: "query"
+            },
+            request: {
+                pageName: 'pageNum' // 页码参数名，改为后端使用的 pageNum
+                , limitName: 'pageSize' // 将默认的limit改为pageSize
+            }
+            , cols: [
+                [ //表头
+                    {fixed: 'left', title: '操作', toolbar: '#table-toolbar', width: 100 }
+                    , { field: 'cmeYear', title: '年度', sort: false, width: 75 }
+                    , { field: 'personNo', title: '人员编号', sort: true, width: 110 }
+                    , { field: 'personName', title: '姓名', sort: false, width: 100, templet: function (d) {
+                        return d.personName || '';
+                    }}
+                    , { field: 'titleName', title: '职称', sort: false, width: 120 }
+                    , { field: 'unit', title: '单位编号', sort: true, width: 110 }
+                    , { field: 'unitName', title: '单位名称', sort: false, width: 200 }
+                    , { field: 'deptName', title: '科室', width: 100 }
+                    , { field: 'totalScore', title: '专业课总学分', sort: true, width: 150 }
+                    , { field: 'totalPeriod', title: '专业课总学时', sort: true, width: 150, templet: function (d) {
+                        return d.totalPeriod || '0';
+                    }}
+                    , { field: 'totalPeriodXxk', title: '选修课总学时', sort: true, width: 150, templet: function (d) {
+                        var str = "";
+                        if (d.totalPeriodXxk == undefined || d.totalPeriodXxk == null || d.totalPeriodXxk == 0)
+                            str = "不存在或未计算";
+                        else
+                            str = d.totalPeriodXxk;
+
+                        return str;
+                    }}
+                     // 修改审核状态列，添加状态文本映射
+                    , { field: 'checkState', title: '审核状态', sort: false, width: 110, templet: function(d) {
+                        var statusMap = {
+                            '1': '未审核',
+                            '2': '审核通过',
+                            '3': '不需要审核',
+                            '4': '审核不通过'
+                        };
+                        return statusMap[d.checkState] || '';
+                    }}
+                    , { field: 'checkTime', title: '审核时间', sort: true, width: 180, templet: '<div>{{ Format(d.checkTime,"yyyy-MM-dd hh:mm:ss")}}</div>' }
+                    , { field: 'gdrstSwapstate', title: '同步状态', sort: false, width: 110, templet: function (d) {
+                        var str = "";
+                        if (d.gdrstSwapstate == 0)
+                            str = "未同步";
+                        else if (d.gdrstSwapstate == 1)
+                            str = "同步中";
+                        else if (d.gdrstSwapstate == 2)
+                            str = "同步成功";
+                        else
+                            str = "同步失败";
+
+                        return str;
+                    }}
+                    , { field: 'addTime', title: '日志时间', sort: false, width: 180 }
+                    , { field: 'message', title: '日志信息', sort: false, width: 150 }
+
+                ]
+            ],
+            parseData: function (res) {
+                if(res.status === 200){
+                    // 处理不同格式的返回数据
+                    var count = 0;
+                    var data = [];
+                    var page = 1;
+                    var limit = 10;
+                    
+                    // 如果data是数组格式（正常表格数据）
+                    if(res.data && typeof res.data === 'object' && res.data.records){
+                        count = res.data.recordsTotal || 0;
+                        data = res.data.records || [];
+                        page = res.data.pageNum || 1;
+                        limit = res.data.pageSize || 10;
+                    }
+                    // 如果data是简单对象或数字（如审核返回的结果）
+                    else if(res.data !== undefined && res.data !== null){
+                        // 这种情况下通常是操作结果，不是表格数据
+                        // 可以设置默认值或者根据实际情况处理
+                        count = 0;
+                        data = [];
+                    }
+                    
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.message || res.msg, //解析提示文本
+                        "count": count, //解析数据长度
+                        "data": data, //解析数据列表
+                        "page": page, //当前页
+                        "limit": limit //每页条数
+                    }
+                }else{
+                    layer.msg("请求失败");
+                    console.log(res);
+                    return {
+                        "code": res.status || 500,
+                        "msg": res.message || res.msg || "请求失败",
+                        "count": 0,
+                        "data": [],
+                        "page": 1,
+                        "limit": 10
+                    };
+                }
+            },
+            done: function(res, curr, count){
+                // 表格渲染完成后执行
+                console.log('表格数据加载完成:', {
+                    currentPage: curr,
+                    totalCount: count,
+                    dataLength: res.data ? res.data.length : 0
+                });
+                
+                // 如果没有数据，显示提示信息
+                if(count === 0 && res.data && res.data.length === 0){
+                    console.log('暂无数据');
+                }
+            }
+        });
+
+        // 工具栏按钮点击事件
+        $('.toolbar button').on('click', function () {
+            var event = $(this).attr('lay-event');
+            switch (event) {
+                case 'checkAllthisPage':
+                    is_check_this_page = !is_check_this_page;
+                    is_check_all = false;
+                    $("[name='check_line']:enabled").prop("checked", is_check_this_page);
+                    form.render("checkbox");
+                    break;
+                case 'checkAll':
+                    is_check_all = !is_check_all;
+                    is_check_this_page = false;
+                    $("[name='check_line']:enabled").prop("checked", is_check_all);
+                    form.render("checkbox");
+                    break;
+                case 'pass':
+                    check(2);
+                    break;
+                case 'no_pass':
+                    check(4);
+                    break;
+                case 'export':
+                    exportData();
+                    break;
+                case 'add_manual':
+                    layer.open({
+                        title: "手动添加待上传记录（慎重使用）",
+                        type: 1,
+                        shadeClose: true, //点击遮罩关闭
+                        content: $('#add_manual_div'),
+                        btn: ['确认', '取消'],
+                        yes: function (index, layero) {
+                            var com_person_id = $("#but_add_check").data("com_person_id");
+                            var pass = $("#but_add_check").data("pass");
+                            if (pass != 1) {
+                                layer.msg("请先输入人员编号，点击【检查】按钮");
+                                return false;
+                            }
+                            var year = $('#txt_add_year').val();
+                            var score = $('#txt_add_score').val();
+                            var period = $('#txt_add_period').val();
+                            if (com_person_id && com_person_id.length > 10) {
+                                var regNum = /[1-9]\d*.\d*|0.\d*[1-9]\d*/i;
+                                var regYear = /20[1,2][0-9]/i;
+                                if (regNum.test(period) && regNum.test(score) && regYear.test(year)) {
+                                    $.ajax({
+                                        url: huayi_projectscore_url + 'ScoreSubmitZy/add',
+                                        type: "post",
+                                        data: {
+                                            operate: 'add_score',
+                                            com_person_id: com_person_id,
+                                            year: year,
+                                            score: score,
+                                            period: period
+                                        },
+                                        success: function (response) {
+                                            if (response.data) {
+                                                layer.alert("添加成功");
+                                                layer.close(index);
+                                            }
+                                            else {
+                                                layer.alert("添加失败，稍后再试！");
+                                            }
+                                        },
+                                        error: function () {
+                                            layer.alert("网络错误，请检查网络连接！");
+                                        },
+                                        dataType: "json"
+                                    })
+                                }
+                                else {
+                                    layer.msg("学分/年度信息有误，请核对");
+                                }
+                            }
+                            else {
+                                layer.msg("人员信息有误，请核对后点击【检查】按钮");
+                            }
+                        },
+                        btn2: function (index, layero) {
+                            layer.close(index)
+                        }
+                    });
+                    break;
+            }
+        });
+
+        // 表单开关事件
+        form.on('switch(check_line)', function (data) {
+            console.log(data.elem); //得到checkbox原始DOM对象
+            console.log(data.elem.checked); //开关是否开启，true或者false
+            console.log(data.value); //开关value值，也可以通过data.elem.value得到
+            console.log(data.othis); //得到美化后的DOM对象
+        });
+
+        // 审核功能设置按钮点击事件
+        $("#btn_config").on("click", function () {
+            layer.open({
+                title: '数据提交审核功能设置'
+                , content: '是否需要审核单位上报的课程信息？'
+                , closeBtn: 1//隐藏右上角关闭按钮
+                , btn: ['是', '否']
+                , btn1: function (index, layero) {
+                    //按钮【按钮一】的回调
+                    set(true);
+                    //如果你想关闭最新弹出的层，直接获取layer.index即可
+                    layer.close(layer.index); //它获取的始终是最新弹出的某个层，值是由layer内部动态递增计算的
+                }
+                , btn2: function (index, layero) {
+                    //按钮【按钮二】的回调
+                    set(false);
+                    //如果你想关闭最新弹出的层，直接获取layer.index即可
+                    layer.close(layer.index); //它获取的始终是最新弹出的某个层，值是由layer内部动态递增计算的
+                }
+            });
+        })
+
+        // 设置审核状态
+        function set(status) {
+            // 获取当前单位ID
+            unitId = localStorage.getItem("unit-id") || "";
+            if (!unitId) {
+                layer.alert("无法获取单位信息，请重新登录！");
+                return;
+            }
+            
+            var requestData = {
+                unitId: unitId,
+                status: status ? 1 : 0, // 1-开启 0-关闭
+                startDate: null, // 审核状态设置不涉及日期
+                endDate: null
+            };
+            
+            $.ajax({
+                url: huayi_projectscore_url +'core-submit-setting/addorupdate',
+                type: 'post',
+                contentType: "application/json;charset=UTF-8",
+                data: JSON.stringify(requestData),
+                success: function (response) {
+                    if (response.success === true || response.status === 200) {
+                        $("#lbl_check_status").text(status ? "已开启" : "未开启");
+                        layer.alert("设置成功");
+                    }
+                    else {
+                        layer.alert("设置失败，错误信息：" + (response.msg || response.message || "未知错误"));
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("设置审核状态请求失败:", xhr.responseText);
+                    layer.alert("请求发送失败，请重试！错误详情：" + error);
+                },
+                dataType: "json"
+            });
+        }
+
+        // 渲染日期选择器
+        laydate.render({
+            elem: '#start_date' //指定元素
+        });
+        laydate.render({
+            elem: '#end_date', //指定元素
+        });
+        laydate.render({
+            elem: '#pop_start_time' //指定元素
+        });
+        laydate.render({
+            elem: '#pop_end_time' //指定元素
+        });
+        laydate.render({
+            elem: '#start_time2' //指定元素
+        });
+        laydate.render({
+            elem: '#end_time2' //指定元素
+        });
+
+        // 查询按钮点击事件
+        $("#btn_serach").click(function () {
+            hasQueryExecuted = true; // 标记已执行查询
+            var menuUnitId = localStorage.getItem("menu-unit-id") || localStorage.getItem("unit-id") || "";
+            main_table.reload({
+                where: {
+                    operate: "query",
+                    startDate: $("#start_date").val(),
+                    endDate: $("#end_date").val(),
+                    unitId: $("#unit_id").val(),
+                    subUnitId: menuUnitId,
+                    personNo: $("#person_no").val(),
+                    personName: $("#person_name").val(),
+                    checkStatus: $("#sele_check_status").val(),
+                    syncStatus: $("#sele_submit_status").val(),
+                    startTime2: $("#start_time2").val(),
+                    endTime2: $("#end_time2").val(),
+                    cmeYear: $("#cme_year").val()
+                }
+                , page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+                , loading: true
+                , url: huayi_projectscore_url + 'ScoreSubmitZy/list' //数据接口
+            });
+        })
+
+        // 数据提交起止日期设置按钮点击事件
+        $("#btn_config_date").click(function () {
+            var index = layer.open({
+                type: 1,
+                title: '数据提交起止日期设置',
+                closeBtn: 0,
+                btnAlign: 'c',
+                offset:'25%',
+                content: $('#pop_time_setting'), //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+                btn: ['确认', '关闭'],
+                yes: function (index, layero) {
+                    var start_date = $("#pop_start_time").val();
+                    var end_date = $("#pop_end_time").val();
+                    if (start_date == '') {
+                        layer.confirm("清空开始日期后，单位即日起可提交数据。\r\n你确定要清空开始日期吗？", function () {
+                            if (end_date == '') {
+                                layer.confirm("清空结束日期后，单位随时可以提交数据。\r\n你确定要清空结束日期吗？", function () {
+                                    settime(start_date, end_date, index);
+                                })
+                            }
+                            else {
+                                settime(start_date, end_date, index);
+                            }
+                        })
+                    }
+                    else if (end_date == '') {
+                        layer.confirm("清空结束日期后，单位随时可以提交数据。\r\n你确定要清空结束日期吗？", function () {
+                            settime(start_date, end_date, index);
+                        })
+                    }
+                    else {
+                        settime(start_date, end_date, index);
+                    }
+                },
+                btn2: function (index, layero) {
+                    layer.close(layer.index);
+                }
+            })
+        })
+
+        // 设置日期
+        function settime(start_date, end_date, index) {
+            // 获取当前单位ID
+            unitId = localStorage.getItem("unit-id") || "";
+            if (!unitId) {
+                layer.alert("无法获取单位信息，请重新登录！");
+                return;
+            }
+            
+            var requestData = {
+                unitId: unitId,
+                status: 0, // 默认开启状态
+                startDate: start_date || null,
+                endDate: end_date || null
+            };
+            
+            $.ajax({
+                url: huayi_projectscore_url + 'core-submit-setting/addorupdate',
+                type: "post",
+                contentType: "application/json;charset=UTF-8",
+                data: JSON.stringify(requestData),
+                success: function (response) {
+                    if (response.success === true || response.status === 200) {
+                        //如果你想关闭最新弹出的层，直接获取layer.index即可
+                        layer.close(index); //它获取的始终是最新弹出的某个层，值是由layer内部动态递增计算的
+                        layer.alert("设置成功");
+                        start_date = start_date == "" ? "未设置" : start_date;
+                        end_date = end_date == "" ? "未设置" : end_date;
+                        $("#lbl_date").text(start_date + "——" + end_date);
+                    }
+                    else {
+                        layer.alert("设置失败,请稍后再试！错误信息：" + (response.msg || response.message || "未知错误"));
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("设置日期请求失败:", xhr.responseText);
+                    layer.alert("网络错误，请检查网络连接！错误详情：" + error);
+                },
+                dataType: "json"
+            })
+        }
+
+        var is_check_all = false;
+        var is_check_this_page = false;
+        var hasQueryExecuted = false; // 标记是否已执行过查询
+
+        // 检查按钮点击事件
+        $("#but_add_check").click(function () {
+            var person_no = $('#txt_add_person_no').val();
+            if (person_no != "" && /^\d{10}$/i.test(person_no)) {
+                $.ajax({
+                    url: huayi_projectscore_url + 'ScoreSubmitZy/getPersonInfo',
+                    type: "post",
+                    data: { operate: 'getPersonInfo', person_no: person_no },
+                    success: function (response) {
+                        if (response.result && response.result.code == 0) {
+                            var item = response.result.data[0];
+                            if (item != null && item != undefined) {
+                                var person_name = item.person_name;
+                                var unit_name = item.unit_name;
+                                var com_person_id = item.com_person_id;
+                                $('#txt_add_person_name').val(person_name);
+                                $('#txt_add_unit_name').val(unit_name);
+                                $("#but_add_check").data("pass", 1);
+                                $("#but_add_check").data("com_person_id", com_person_id);
+                            }
+                        }
+                        else {
+                            $('#txt_add_person_name').val("");
+                            $('#txt_add_unit_name').val("");
+                            $("#but_add_check").data("pass", 0);
+                            $("#but_add_check").data("com_person_id", "");
+                            layer.alert("查询失败，稍后再试！");
+                        }
+                    },
+                    error: function () {
+                        $('#txt_add_person_name').val("");
+                        $('#txt_add_unit_name').val("");
+                        $("#but_add_check").data("pass", 0);
+                        $("#but_add_check").data("com_person_id", "");
+                        layer.alert("网络错误，请检查网络连接！");
+                    },
+                    dataType: "json"
+                })
+            }
+            else {
+                $('#txt_add_person_name').val("");
+                $('#txt_add_unit_name').val("");
+                $("#but_add_check").data("pass", 0);
+                $("#but_add_check").data("com_person_id", "");
+                layer.msg("人员编号不符合规则");
+            }
+        })
+
+        // 审核函数
+        function check(status) {
+            var com_person_ids = [];
+            var doms = $(".layui-table-box [name='check_line']:checked");
+            doms.each(function (i, item) {
+                com_person_ids.push($(doms[i]).attr("id"));
+            });
+            if (com_person_ids.length == 0 && is_check_all == false) {
+                layer.alert("请先选择上报的人");
+                return false;
+            }
+            var data = {
+                operate: "submit",
+                isCheckAll: is_check_all,
+                comPersonId: com_person_ids.join(),
+                startDate: $("#start_date").val(),
+                endDate: $("#end_date").val(),
+                unitId: $("#unit_id").val(),
+                personNo: $("#person_no").val(),
+                personName: $("#person_name").val(),
+                checkStatus: $("#sele_check_status").val(),
+                syncStatus: $("#sele_submit_status").val(),
+                checkStatus2: status,
+                cmeYear: $("#cme_year").val()
+            }
+            $.ajax({
+                url: huayi_projectscore_url + 'ScoreSubmitZy/batch/approve',
+                type: "post",
+                data: data,
+                success: function (response) {
+                    if (response.data != undefined) {
+                        var successCount = response.data;
+                        // 确保successCount是有效的数字
+                        if(typeof successCount === 'number' && successCount >= 0){
+                            layer.alert("成功审核" + successCount + "条数据");
+                        } else if(typeof successCount === 'string' && !isNaN(successCount)){
+                            layer.alert("成功审核" + parseInt(successCount) + "条数据");
+                        } else {
+                            layer.alert("审核成功");
+                        }
+                    }
+                    else {
+                        layer.alert("提交失败,请稍后再试！");
+                    }
+                    $("#btn_serach").click();
+                },
+                error: function () {
+                    layer.alert("网络错误，请检查网络连接！");
+                },
+                dataType: "json"
+            })
+        }
+
+        // 导出函数
+        function exportData() {
+            var menuUnitId = localStorage.getItem("menu-unit-id") || localStorage.getItem("unit-id") || "";
+            var params = {};
+            
+            // 只有在执行过查询后才使用查询参数
+            if (hasQueryExecuted) {
+                params = {
+                    operate: "query",
+                    startDate: $("#start_date").val(),
+                    endDate: $("#end_date").val(),
+                    unitId: $("#unit_id").val(),
+                    subUnitId: menuUnitId,
+                    personNo: $("#person_no").val(),
+                    personName: $("#person_name").val(),
+                    checkStatus: $("#sele_check_status").val(),
+                    syncStatus: $("#sele_submit_status").val(),
+                    startTime2: $("#start_time2").val(),
+                    endTime2: $("#end_time2").val(),
+                    cmeYear: $("#cme_year").val()
+                };
+            } else {
+                // 未执行查询时，只传递基本参数
+                params = {
+                    operate: "query",
+                    subUnitId: menuUnitId,
+
+                };
+            }
+            
+            // 构建URL
+            var url = huayi_projectscore_url + 'ScoreSubmitZy/export';
+            var queryString = $.param(params);
+            if (queryString) {
+                url += '?' + queryString;
+            }
+            
+            // 使用XMLHttpRequest实现无新窗口下载
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            token_verify();
+            if(localStorage.getItem('token')){
+                xhr.setRequestHeader('Authorization', localStorage.getItem('token'));
+                xhr.setRequestHeader('KJPT-USER-ID', localStorage.getItem('user-id'));
+            }
+            xhr.responseType = 'blob';
+            
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    // 创建Blob对象
+                    var blob = new Blob([xhr.response], { type: 'application/vnd.ms-excel' });
+                    // 创建下载链接
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = url;
+                    a.download = '学分上报数据_' + new Date().getTime() + '.xls';
+                    document.body.appendChild(a);
+                    a.click();
+                    // 清理
+                    setTimeout(function() {
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    }, 100);
+                } else {
+                    layer.alert('导出失败，请稍后重试！');
+                }
+            };
+            
+            xhr.onerror = function() {
+                layer.alert('网络错误，请检查网络连接！');
+            };
+            
+            xhr.send();
+        }
+    });
+
+    // 日期格式化函数
+    function Format(datetime, fmt) {
+        if (datetime === null || datetime === undefined) {
+            return "";
+        }
+        console.log(parseInt(datetime));
+        if (parseInt(datetime) == datetime) {
+            if (datetime.length == 10) {
+                datetime = parseInt(datetime) * 1000;
+            } else if (datetime.length == 13) {
+                datetime = parseInt(datetime);
+            }
+        }
+        datetime = new Date(datetime);
+        var o = {
+            "M+": datetime.getMonth() + 1,                 //月份
+            "d+": datetime.getDate(),                    //日
+            "h+": datetime.getHours(),                   //小时
+            "m+": datetime.getMinutes(),                 //分
+            "s+": datetime.getSeconds(),                 //秒
+            "q+": Math.floor((datetime.getMonth() + 3) / 3), //季度
+            "S": datetime.getMilliseconds()             //毫秒
+        };
+        if (/(y+)/.test(fmt))
+            fmt = fmt.replace(RegExp.$1, (datetime.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt))
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,387 @@
+<!-- 1.外出进修（任务） -->
+<div id="scoreType1" style="display: none;" class="score-type-box">
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>事项</label>
+            <div class="layui-input-block">
+                <select name="jx_item" id="jx_item" lay-verify="required" lay-filter="jx_item">
+                    <option value="">请选择</option>
+                    <option value="进修或培训">进修或培训</option>
+                    <option value="对口支援">对口支援</option>
+                    <option value="东西部协作">东西部协作</option>
+                    <option value="政府指令性任务">政府指令性任务</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box jx_item_0">
+    </div>
+    <div class="layui-form-item-box jx_item jx_item_进修或培训">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>进修（培训）单位</label>
+            <div class="layui-input-block">
+                <input type="text" name="jx_unit" id="jx_unit" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box jx_item jx_item_对口支援">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>支援省份—支援单位</label>
+            <div class="layui-input-block">
+                <input type="text" name="support_unit" id="support_unit" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box jx_item jx_item_东西部协作">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>协助单位</label>
+            <div class="layui-input-block">
+                <input type="text" name="assist_unit" id="assist_unit" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box jx_item jx_item_政府指令性任务">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>任务内容</label>
+            <div class="layui-input-block">
+                <input type="text" name="task_content" id="task_content" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box" style="width: 98%;">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>时间段</label>
+            <div class="layui-inline">
+                <input type="text" class="layui-input" name="task_time" id="task_time" placeholder=" ~ ">
+            </div>
+        </div>
+    </div>
+    
+    <div class="layui-form-item-box">
+    </div>
+</div>
+
+ <!-- 2.在职学历（学位）教育 -->
+ <div id="scoreType2" style="display: none;" class="score-type-box">
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>学历教育</label>
+            <div class="layui-input-block">
+                <select name="education" id="education" lay-verify="required" lay-filter="">
+                    <option value="">请选择</option>
+                    <option value="本科">本科</option>
+                    <option value="硕士">硕士</option>
+                    <option value="博士">博士</option>
+                    <option value="其他">其他</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>就读学校</label>
+            <div class="layui-input-block">
+                <input type="text" name="school" id="school" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>就读年度</label>
+            <div class="layui-input-block">
+                <input type="text" name="study_year" id="study_year" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>年度考核情况</label>
+            <div class="layui-input-block">
+                <input type="text" name="examine_result" id="examine_result" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3.发表论文（发表当年） -->
+<!-- 4.发表综述（发表当年） -->
+<div id="scoreType3" style="display: none;" class="score-type-box">
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>论文级别</label>
+            <div class="layui-input-block">
+                <select name="paper_level" id="paper_level" lay-verify="required" lay-filter="" disabled>
+                    <option value="">请选择</option>
+                    <option value="SCI收录期刊">SCI收录期刊</option>
+                    <option value="中文核心期刊">中文核心期刊</option>
+                    <option value="普通期刊">普通期刊</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label">作者排名</label>
+            <div class="layui-input-block">
+                <input type="text" name="" lay-verify="" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div> -->
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>期刊名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="paper_name" id="paper_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>论文发表时间</label>
+            <div class="layui-input-block">
+                <input type="text" name="studyDate" id="paper_no" lay-verify="required"
+                    placeholder="请选择时间" autocomplete="off" class="layui-input" >
+                <!-- <input type="text" name="paper_no" id="paper_no" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input"> -->
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>论文名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="paper_content" id="paper_content" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 5.已批准的科研、教学项目（立项当年） -->
+<div id="scoreType5" style="display: none;" class="score-type-box">
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>项目级别</label>
+            <div class="layui-input-block">
+                <select name="proj_level" id="proj_level" lay-verify="required" lay-filter="" disabled>
+                    <option value="">请选择</option>
+                    <option value="国家级项目">国家级项目</option>
+                    <option value="省部级项目">省部级项目</option>
+                    <option value="市厅级项目或省级以上行业组织设立的课题">市厅级项目或省级以上行业组织设立的课题</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>项目排名</label>
+            <div class="layui-input-block">
+                <input type="text" name="proj_rank" id="proj_rank" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>立项单位</label>
+            <div class="layui-input-block">
+                <input type="text" name="proj_unit" id="proj_unit" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>项目名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="proj_name" id="proj_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 6.获得科技、教学成果奖励（获奖当年） -->
+<div id="scoreType6" style="display: none;" class="score-type-box">
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>奖励级别</label>
+            <div class="layui-input-block">
+                <select name="reward_level" id="reward_level" lay-verify="required" lay-filter="" disabled>
+                    <option value="">请选择</option>
+                    <option value="国家级项目">国家级项目</option>
+                    <option value="省部级项目">省部级项目</option>
+                    <option value="市厅级项目或省级以上行业组织设立的课题">市厅级项目或省级以上行业组织设立的课题</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>奖励名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="reward_name" id="reward_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>奖励单位</label>
+            <div class="layui-input-block">
+                <input type="text" name="reward_unit" id="reward_unit" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>获奖项目名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="reward_proj_name" id="reward_proj_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 7.获授权职务发明专利并完成转化，或牵头制定行业标准、地方标准、国家级临床诊疗指南、技术规范并通过相应机构批准的（当年，第一负责人） -->
+<div id="scoreType7" style="display: none;" class="score-type-box">
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>事项</label>
+            <div class="layui-input-block">
+                <input type="text" name="patent_item" id="patent_item" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>完成转化或通过批准时间</label>
+            <div class="layui-input-block">
+                <input type="text" name="studyDate" id="patent_time" lay-verify="required"
+                    placeholder="请选择时间" autocomplete="off" class="layui-input" >
+                <!-- <input type="text" name="patent_time" id="patent_time" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input"> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 8.公开出版专业学术著作、教材、科普书籍等（出版当年） -->
+<!-- 9.编译本专业学术著作（出版当年） -->
+<div id="scoreType8" style="display: none;" class="score-type-box">
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>出版书籍</label>
+            <div class="layui-input-block">
+                <select name="book_type" id="book_type" lay-verify="required" lay-filter="">
+                    <option value="">请选择</option>
+                    <option value="专业学术著作">专业学术著作</option>
+                    <option value="教材">教材</option>
+                    <option value="科普书籍">科普书籍</option>
+                    <option value="其他">其他</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label">分工</label>
+            <div class="layui-input-block">
+                <select name="" id="" lay-verify="required" lay-filter="">
+                    <option value="">请选择</option>
+                    <option value="主编">主编</option>
+                    <option value="副主编">副主编</option>
+                    <option value="编委">编委</option>
+                </select>                                                
+            </div>
+        </div>
+    </div> -->
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>书籍名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="book_name" id="book_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>出版单位</label>
+            <div class="layui-input-block">
+                <input type="text" name="book_unit" id="book_unit" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box">
+    </div>
+</div>
+
+<!-- 10.参加外省继续医学教育项目所获学分 -->
+<div id="scoreType10" style="display: none;" class="score-type-box">
+    <div class="layui-form-item-box" style="width: 98%;">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>项目名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="single_proj_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>项目编号</label>
+            <div class="layui-input-block">
+                <input type="text" name="single_proj_no" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>项目举办单位</label>
+            <div class="layui-input-block">
+                <input type="text" name="teachUnitName" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <!-- <input type="text" name="teachUnit" class="layui-input" style="display: none;"> -->
+
+    </div>
+    <!-- <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>项目公布单位</label>
+            <div class="layui-input-block">
+                <select name="pub_unit" id="pub_unit" lay-verify="required" lay-filter="">
+                    <option value="">请选择</option>
+                    <option value="国家卫健委公布项目">国家卫健委公布项目</option>
+                    <option value="省卫健委公布项目">省卫健委公布项目</option>
+                </select>  
+            </div>
+        </div>
+    </div> -->
+    <!-- 选省卫健委公布项目，填写具体哪里省卫健委公布项目 -->
+    <!-- <div class="layui-form-item-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label">具体省卫健委名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="pub_unit_name" lay-verify="pub_unit_name" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div> -->
+    <div class="layui-form-item-box">
+    </div>
+</div>
+
+<!-- <div class="score-type-box"> -->
+
+    <div class="layui-form-item-box hide scoreDiv">
+        <div class="layui-form-item">
+            <label class="layui-form-label">学分</label>
+            <div class="layui-input-block">
+                <input type="text" name="score" id="score_zj" disabled='true' lay-verify="scoreVerify"
+                    autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item-box hide scoreDiv" id="activityDateDiv">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">*&nbsp;</font>授予时间</label>
+            <div class="layui-input-block">
+                <input type="text" name="studyDate" id="activityDate"
+                    lay-verify="required" placeholder="请选择授予时间" autocomplete="off" class="layui-input" readonly>
+            </div>
+        </div>
+    </div>
+    
+    <div class="layui-form-item-box">
+    </div>

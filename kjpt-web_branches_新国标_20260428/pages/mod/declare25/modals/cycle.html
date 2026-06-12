@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>d25.cycle</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <!-- base -->
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script><script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+</head>
+<body style="background-color: white;">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!-- 数据表格 -->
+        <div class="layui-card-body layui_body_box">
+            <table class="layui-table" id="table_id" lay-filter="table_id"></table>
+        </div>
+        <div id="cycle_btn_box">
+            <button id="btn_cancel" class="layui-btn layui-btn-sm layui-btn-primary">取消</button>
+            <button id="btn_confirm" class="layui-btn layui-btn-sm">确定</button>
+        </div>
+    </div>
+</div>
+</body>
+<!-- cycleTable: toolbar -->
+<script type="text/html" id="cycToolbar">
+    <a class='layui-btn layui-btn-sm' lay-event='addCycle' style="float: right;">添加周期</a>
+</script>
+<!-- cycleTable: Operation Cell -->
+<script type="text/html" id="cycOperCell">
+    <a class="layui-btn layui-btn-xs btn-row btn-danger-row" lay-event="delCycle">移除</a>
+</script>
+<!-- cycleTable: dateStart cell -->
+<script type="text/html" id="cycDsTpl">
+    <input type="text" name="dateStart" class="cycle_date" id="dateStartSel{{d.LAY_TABLE_INDEX}}" placeholder="开始日期"
+           autocomplete="off" class="layui-input">
+</script>
+<!-- cycleTable: dateEnd cell -->
+<script type="text/html" id="cycDeTpl">
+    <input type="text" name="dateEnd" class="cycle_date" id="dateEndSel{{d.LAY_TABLE_INDEX}}" placeholder="结束日期"
+           autocomplete="off" class="layui-input">
+</script>
+<script type="text/javascript">
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        lat: 'lat'
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'xmSelect', 'lat'], function () {
+        let table = layui.table;
+        let layer = layui.layer;
+        let laydate = layui.laydate;
+        let $ = layui.jquery;
+        let xmSelect = layui.xmSelect;
+        let lat = layui.lat;
+        const _holdYear = +getOrDefault(getUrlParamByName('hold_year'), '2025');
+        const _cycleLimit = +getOrDefault(getUrlParamByName('limit'), '6');
+        let gCycleArr = JSON.parse(getOrDefault(localStorage.getItem('tmp_declare_cycles'), '[]'));
+        layer.ready(function () {
+            renderTable();
+            $('#btn_cancel').on('click', function () {
+                parent.layer.closeAll();
+            });
+            $('#btn_confirm').on('click', function () {
+                for (const c of gCycleArr) {
+                    if (!c.dateStart) {
+                        lat.failMsg('请选择开始日期');
+                        return;
+                    }
+                    if (!c.dateEnd) {
+                        lat.failMsg('请选择结束日期');
+                        return;
+                    }
+                }
+                localStorage.setItem('tmp_declare_cycles', JSON.stringify(gCycleArr));
+                parent.layer.closeAll();
+            });
+        });
+        table.on('toolbar(table_id)', function (obj) {
+            if ('addCycle' === obj.event) {
+                if (gCycleArr.length >= _cycleLimit) {
+                    lat.failMsg(`最多添加${_cycleLimit}个周期`);
+                } else {
+                    gCycleArr.push({
+                        'projectId': '',
+                        'periodId': uuid(),
+                        'fresh': true,
+                        'dateStart': '',
+                        'dateEnd': '',
+                        'batchId': 1,
+                        'unitId': _unitId
+                    });
+                    table.reload('table_id', {data: gCycleArr});
+                }
+            }
+        });
+        table.on('tool(table_id)', function (obj) {
+            let rowData = obj.data;
+            if ('delCycle' === obj.event) {
+                gCycleArr = gCycleArr.filter(cycle => cycle.periodId !== rowData.periodId);
+                table.reload('table_id', {data: gCycleArr});
+            }
+        });
+        function renderTable() {
+            table.render({
+                id: 'table_id',
+                elem: '#table_id',
+                defaultToolbar: [],
+                toolbar: '#cycToolbar',
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                page: false,
+                cols: [[
+                    {field: 'periodId', title: '', align: 'center', minWidth: 60, sort: false, hide: true},
+                    {field: '', title: '举办批次', minWidth: 60, align: 'center', templet: (data) => '第' + data.LAY_INDEX + '批次'},
+                    {field: 'dateStart', title: '开始日期', align: 'center', minWidth: 120, sort: false, templet: '#cycDsTpl'},
+                    {field: 'dateEnd', title: '结束日期', align: 'center', minWidth: 120, sort: false, templet: '#cycDeTpl'},
+                    {field: 'operate', title: '操作', align: 'center', minWidth: 66, sort: false, templet: '#cycOperCell'}
+                ]],
+                data: gCycleArr,
+                height: '325',
+                done: function (res, curr, count) {
+                    if (gCycleArr.length > 0) {
+                        gCycleArr.forEach((cycleVo, index) => {
+                            renderCycDateSel('dateStart', index, cycleVo.dateStart);
+                            renderCycDateSel('dateEnd', index, cycleVo.dateEnd);
+                        });
+                    }
+                }
+            });
+        }
+        function renderCycDateSel(soe, rowIndex, initVal) {
+            laydate.render({
+                elem: '#' + soe + 'Sel' + rowIndex,
+                format: 'yyyy-MM-dd',
+                trigger: 'click',
+                value: initVal,
+                min: _holdYear + '-01-01',
+                max: (_holdYear + (('dateStart' === soe) ? 0 : 99)) + '-12-31',
+                change: function (value, date, endDate) {
+                    //
+                },
+                done: function (value, date, endDate) {
+                    const _isStart = 'dateStart' === soe;
+                    const _isEnd = 'dateEnd' === soe;
+                    const _preEnd = (0 === rowIndex) ? '1970-01-01' : gCycleArr[rowIndex - 1]['dateEnd'];
+                    const _nextStart = (rowIndex === gCycleArr.length - 1) ? '2199-01-01' : gCycleArr[rowIndex + 1]['dateStart'];
+                    const _curStart = _isStart ? value : gCycleArr[rowIndex]['dateStart'];
+                    const _curEnd = _isEnd ? value : gCycleArr[rowIndex]['dateEnd'];
+                    let verify = true;
+                    if (_isStart) {
+                        if (_curEnd && !moment(toDayHeader(_curStart), DateTimePattern.SECOND).isBefore(moment(toDayTail(_curEnd), DateTimePattern.SECOND))) {
+                            lat.failMsg('开始日期不能大于结束日期');
+                            verify = false;
+                        }
+                        if (_preEnd && moment(toDayHeader(_curStart), DateTimePattern.SECOND).isBefore(moment(toDayTail(_preEnd), DateTimePattern.SECOND))) {
+                            lat.failMsg('开始日期不能小于上一周期结束日期');
+                            verify = false;
+                        }
+                        if (_isHunan && _curEnd) {
+                            let diff = parseDiff(_curStart, _curEnd);
+                            let days = $('input[name=days]').val();
+                            if (diff < days) {
+                                lat.failMsg('开始日期和结束日期的时间间隔需要大于等于举办期限');
+                                verify = false;
+                            }
+                        }
+                    } else if (_isEnd) {
+                        if (_curStart && moment(toDayTail(_curEnd), DateTimePattern.SECOND).isBefore(moment(toDayHeader(_curStart), DateTimePattern.SECOND))) {
+                            lat.failMsg('结束日期不能小于开始日期');
+                            verify = false;
+                        }
+                        if (_nextStart && !moment(toDayTail(_curEnd), DateTimePattern.SECOND).isBefore(moment(toDayHeader(_nextStart), DateTimePattern.SECOND))) {
+                            lat.failMsg('结束日期不能大于下一周期开始日期');
+                            verify = false;
+                        }
+                        if (_isHunan && _curStart) {
+                            let diff = parseDiff(_curStart, _curEnd);
+                            let days = $('input[name=days]').val();
+                            if (diff < days) {
+                                lat.failMsg('开始日期和结束日期的时间间隔需要大于等于举办期限');
+                                verify = false;
+                            }
+                        }
+                    }
+                    if (verify) {
+                        gCycleArr[rowIndex][soe] = value;
+                    }
+                    table.reload('table_id', {data: gCycleArr});
+                }
+            });
+        }
+    });
+</script>
+<style>
+    .cycle_date {
+        width: 100%;
+        height: 38px;
+        margin-top: -5px;
+        border: none;
+        text-align: center;
+    }
+    #cycle_btn_box {
+        width: fit-content;
+        margin: auto;
+    }
+</style>
+</html>

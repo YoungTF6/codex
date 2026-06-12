@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>外省人员学分录入审核</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="../../js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script src="../../js/layui-v2.6.8/layui/layui.js"></script>
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <script type="text/javascript" src="/js/common.js"></script>
+    <script type="text/javascript" src="/js/constantPage/projectConstant.js"></script>
+    <script type="text/javascript" src="../../js/tools/dict_tool.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <style>
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+
+
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+        .layui-treeSelect .ztree li {
+            line-height: 19.5px !important;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <!--        搜索框区域-->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="background-color: #f5f5f5;">
+                <div class="layui_mess">
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">举办年度</label>
+                            <div class="layui-input-block">
+                                <select name="cmeYear" id="cmeYear" lay-filter="cmeYear"></select>
+                            </div>
+                        </div>
+                        <div class="layui-inline  tree-select">
+                            <label class="layui-form-label" name="lblProjectLevel"></label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" 
+                                    lay-filter="scoreLevel" id="scoreLevel" name="scoreLevel" placeholder="请选择">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">项目编号</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="projNo" id="projNo" placeholder="项目编号" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">项目名称</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="projName" id="projName" placeholder="项目名称" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">姓名</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="personName" id="personName" placeholder="姓名" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">身份证号</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="certId" id="certId" placeholder="身份证号" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">审核状态</label>
+                            <div class="layui-input-block">
+                                <select name="checkState" lay-filter="checkState" id="checkState" lay-verify="1">
+                                    <option value=""></option>
+                                    <option value="0">未审核</option>
+                                    <option value="1">审核通过</option>
+                                    <option value="2">审核不通过</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline ">
+                            <label class="layui-form-label" name="lblMedicalSystem"></label>
+                            <div class="layui-input-block">
+                                <select name="medicalType" id="medicalType">
+                                    <option value="">全部</option>
+                                    <option value="1">西医</option>
+                                    <option value="2">中医</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="loaderTable()"
+                                lay-filter="table-search" data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="cmeProvinceProjScoreList" lay-filter="cmeProvinceProjScoreList"
+                    style="margin: 0px 0px;">
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/html" id="bar">
+        <span style="margin-left: 5px;"><input type="checkbox" name="like1[read]" id="checkboxCurrent"
+            lay-filter="checkboxCurrent" title="本页全选"></span>
+        <button class="layui-btn layui-btn-sm" lay-event="checkPass">审核通过</button>
+        <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="checkNoPass">审核不通过</button>
+    </script>
+    <script>
+        layui.config({
+            base        : '../../js/layui/ext/'
+        }).extend({
+            treeSelect  : 'treeSelect'
+        }).use(['table', 'form', 'element', 'laydate', 'treeSelect'], function () {
+            var $ = layui.jquery
+                , table = layui.table
+                , element = layui.element
+                , form = layui.form
+                , laydate = layui.laydate
+                , treeSelect = layui.treeSelect
+                , layer = layui.layer;
+
+            var unitId = localStorage.getItem("unit-id")
+                , configDictId = '00a74154-6853-11ec-9896-fa163e376cc4' // 学分级别配置
+                ;
+            var cmeStandardKindId = localStorage.getItem("standardkind-id");
+            // var menuUnitId = tool.isEmpty(localStorage.getItem("menu-unit-id"))?unitId: localStorage.getItem("menu-unit-id")
+            var menuUnitId = localStorage.getItem("menu-unit-id");
+            getConfig("value_forbid_some_operate_on_last_year_data",localStorage.getItem("unit-id"),null);
+            // 年度下拉框
+            var date = new Date();
+            var year = date.getFullYear();
+            var options;
+            for (var i = 0; i < 5; i++) {
+                options += '<option value="' + year + '">' + year + '年</option>';
+                year = year - 1;
+            }
+            $('#year').append(options);
+            form.render('select');
+
+            laydate.render({
+                elem: '#startDate',
+                type: 'date'
+            });
+            laydate.render({
+                elem: '#endDate',
+                type: 'date'
+            });
+
+            $('.layui_mess .layui-form-label').each((i, d) => {
+                let name = $(d).attr('name');
+                if (name) $(d).text(projectLabels[name] || '');
+            });
+            const yearCur = new Date().getFullYear();
+            /* 举办年度 */
+             for (let i = yearCur; i >= yearCur - 8; i--) {
+                $('#cmeYear').append($('<option value="' + i + '" ' + (i == yearCur ? 'selected' : '') + '>' + i + '</option>'));
+            }
+            form.on('select(cmeYear)', date => (initScoreLevelSel(), initKnowledgeSelBatch()));
+            window.initScoreLevelSel = () => {
+                let year = $('#cmeYear').val(); 
+                window.scoreLevelSel && (treeSelect.destroy('scoreLevel'), $('#scoreLevel').val(''));
+                window.scoreLevelSel = treeSelect.render({
+                    elem    : '#scoreLevel',
+                    data    : huayi_sjwh_url + 'option/scoreLevel/tree/' + dictTool.getStandardKindId() + '/' + year + '/1__',
+                    type    : 'get',
+                    search  : true,
+                    style   : {
+                        folder  : { enable: false }, // 父节点图标
+                        line    : { enable: true} // 连接线
+                    },
+                    click   : d => ({}),
+                    success : d => ({})
+                });
+                form.render();
+            };
+            initScoreLevelSel();
+              /* 所属医学体系 */
+              (dictTool.getStandardKindId() == StandardKind.NEI_MENG) && $('#medicalType').append("<option value='3'>蒙医</option>");
+
+            
+            // 表格配置
+            window.loaderTable = function () {
+                menuUnitId = localStorage.getItem("menu-unit-id")==null?localStorage.getItem("unit-id"):localStorage.getItem("menu-unit-id"),
+                table.render({
+                    elem: '#cmeProvinceProjScoreList',
+                    url: huayi_projectscore_url + 'cmeProvinceProjScore/relationList',
+                    toolbar: '#bar',
+                    where: {
+                        cmeStandardKindId: cmeStandardKindId,
+                        projName: $('#projName').val(),
+                        projNo: $('#projNo').val(),
+                        personName: $('#personName').val(),
+                        certId: $('#certId').val(),
+                        checkState: $('#checkState').val(),
+                        year: $('#cmeYear').val(),
+                        scoreLevel: $('#scoreLevel').val(),
+                        projType: $('#projType').val(),
+                        medicalType: $('#medicalType').val(),
+                        unitId: menuUnitId
+                    },
+                    cols: [[ //表头
+                        {
+                            field: 'CheckCustom', title: '选择', align: 'center', width: 60,
+                            templet: function (d) {
+                                let templateHtml = '';
+                                if(ableOperateLastYearData(d.startDate) == false) {
+                                    templateHtml = '<img src="../../img/score/disableIcon.png" style="width:20px;" alt="无法审核过往年度学分" onmouseenter="showTips(this)" onmouseleave="closeTips()">';
+                                } else if( d.checkState != 0 ) {
+                                    templateHtml = '<img src="../../img/score/disableIcon.png" style="width:20px;" alt="已审核" onmouseenter="showTips(this)" onmouseleave="closeTips()">';
+                                } else {
+                                    templateHtml = '<input type="checkbox" name="layTableCheckbox" lay-skin="primary" value="' + d.scoreId + '"><i class="layui-icon"></i>';
+                                }
+                                return templateHtml;
+                                
+                            }
+                        },
+                        { field: 'scoreId', title: 'ID', sort: true, hide: 'true' }
+                        , { field: 'projName', title: '项目名称' }
+                        , { field: 'projNo', title: '项目编号', sort: true , width: 120}
+                        , { field: 'personName', title: '姓名'}
+                        , { field: 'certId', title: '身份证号', width: 180 }
+                        , { field: 'startDate', title: '开始日期', sort: true, width: 105 }
+                        , { field: 'endDate', title: '截止日期', sort: true, width: 105 }
+                        , { field: 'score', title: '学分', sort: true, width: 80 }
+                        , { field: 'period', title: '学时', width: 80  }
+                        , { field: 'scoreLevelName', title: projectLabels.lblScoreLevel,align:'center', width: 190}
+                        , { field: 'certificateNo', title: '证书编号', align:'center', width: 140 }
+                        , { field: 'unitName', title: '发证机构',align:'center', width: 170 }
+                        , {
+                            field: 'checkState', title: '审核状态', width: 100,
+                            templet: function (data) {
+                                let checkStateText;
+                                switch (data.checkState) {
+                                    case "0":
+                                        checkStateText = "未审核";
+                                        break;
+                                    case "1":
+                                        checkStateText = "审核通过";
+                                        break;
+                                    case "2":
+                                        checkStateText = "审核不通过";
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                return checkStateText;
+                            }
+                        } , {field:'medicalType',title: '所属医学体系',align:"center",width:120,
+                            templet:function(d){
+                                if(d.medicalType == 1) return "西医";
+                                if(d.medicalType == 2) return "中医";
+                                if(d.medicalType == 3) return "蒙医"
+                                return "";
+                            }
+                        },
+                        {field:'projType',title: '活动类别',align:"center",width:100,
+                            templet:function(d){
+                                if(d.projType == 1) return "推荐项目";
+                                if(d.projType == 2) return "推广项目";
+                                if(d.projType == 3 || d.projType == 0) return "非项目类";
+                                return "";
+                            }
+                        },
+                    ]],
+                    // cellMinWidth: 100,
+                    id: "cmeProvinceProjScoreList",
+                    height: 'full-130',
+                    page: true,
+                    limit: 10,
+                    limits: [10, 50, 100, 150, 200],
+                    parseData: function (res) {
+                        return {
+                            "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                            "msg": res.message, //解析提示文本
+                            "count": res.data.recordsTotal, //解析数据长度
+                            "data": res.data.records, //解析数据列表
+                            "page": res.data.pageNum, //当前页
+                            "limit": res.data.pageSize, //每页条数
+                        }
+                    },
+                    request: {
+                        pageName: 'pageNum', //页码的参数名称，默认：page
+                        limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                    },
+                    done: function (res, curr, count) {
+                        // 自定义 2
+                        for (var i = 0; i < res.data.length; i++) {
+                            var state = res.data[i].checkState; // 根据status状态判断，不为0时，禁止勾选
+                            var checkboxCurrent = $('#checkboxCurrent').is(':checked');
+                            var templateHtml = '';
+                            // 如果全选
+                            if (checkboxCurrent) {
+                                var index = res.data[i]['LAY_TABLE_INDEX'];
+                                // 如果已公布
+                                if (state == null) {
+                                    $(".layui-table tr[data-index=" + index + "] input[type='checkbox']").prop('checked', true);
+                                    $(".layui-table tr[data-index=" + index + "] input[type='checkbox']").next().addClass('layui-form-checked');
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+            // 初始化表格
+            loaderTable();
+
+            //本页全选
+            form.on('checkbox(checkboxCurrent)', function (data) {
+                debugger
+                if (data.elem.checked) {
+                    // $("#checkboxAll").prop("checked",false);
+                    var child = $("input[name='layTableCheckbox']");
+                    child.each(function (index, item) {
+                        item.checked = true;
+                    });
+                } else {
+                    var child = $("input[name='layTableCheckbox']");
+                    child.each(function (index, item) {
+                        item.checked = false;
+                    });
+                }
+                form.render('checkbox');
+            });
+
+            // 监听头部审核按钮
+            table.on('toolbar(cmeProvinceProjScoreList)', function (obj) {
+                debugger
+                var ids = [];
+                var child = $('input[name="layTableCheckbox"]');
+                child.each(function (index, item) {
+                    if (item.checked === true) {
+                        ids.push(item.defaultValue);
+                    }
+                });
+                if (ids.length < 1) {
+                    layer.msg('请选择要操作的人员', { icon: 7, time: 1500 });
+                    return false;
+                }
+                console.log(ids);
+
+                var checkType;
+                if (obj.event == 'checkNoPass') {
+                    layer.msg('审核不通过')
+                    checkType = 2;
+                } else if (obj.event == 'checkPass') {
+                    layer.msg('审核通过')
+                    checkType = 1;
+                }
+                layer.confirm('审核确认', { icon: 3, title: '提示' }, function () {
+                    $.ajax({
+                        type: 'post',
+                        url: huayi_projectscore_url + 'cmeProvinceProjScore/batchCheck',
+                        data: {
+                            scoreIdList: ids,
+                            checkUnit: unitId,
+                            checkState: checkType
+                        },
+                        traditional: true,
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.status === 200) {
+                                layer.msg(res.msg);
+                                table.reload('cmeProvinceProjScoreList');
+                            } else if (res.status === 500) {
+                                layer.msg(res.msg);
+                            }
+                            console.log(layer.index);
+                        },
+                        error: function () {
+                            layer.msg("发送请求失败");
+                        }
+                    })
+                })
+
+                return false;
+            })
+
+            // Esc关闭弹窗
+            window.onkeyup = function (ev) {
+                var key = ev.keyCode || ev.which;
+                if (key == 27) {
+                    layer.close(layer.index);
+                    console.log('layer.index = ' + layer.index)
+                }
+            }
+            let gLayerIndex;
+            window.showTips = function (curDom){
+                let that = curDom;
+                let msg = $(that).attr('alt');
+                gLayerIndex = layer.tips(msg, that, {
+                    tips: [2, '#808080'],
+                });
+            };
+            window.closeTips = function (){
+                layer.close(gLayerIndex);
+            };
+
+            window.ableOperateLastYearData = function(studyDate) {
+                let cgv = window["value_forbid_some_operate_on_last_year_data"];
+                if(cgv == null || cgv == "" || localStorage.getItem("unit-user-type") == 5) {
+                    return true;
+                }
+
+                let able = true;
+                let studyDateYear =  new Date(studyDate).getFullYear();
+                let deadline = new Date(cgv);
+                let now = new Date();
+                if(parseInt(studyDateYear) < now.getFullYear()){
+                    if(deadline < now) {
+                        able = false;
+                    }
+                }
+                return able;
+            }
+        });
+    </script>
+</body>
+
+</html>

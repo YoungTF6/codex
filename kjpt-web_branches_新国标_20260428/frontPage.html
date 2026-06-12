@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>首页</title>
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no, viewport-fit=cover" />
+	<link rel="stylesheet" href="front/css/reset.css" />
+	<link rel="stylesheet" href="front/css/layout.css" />
+	<link rel="stylesheet" href="front/dist/gridstack.css" />
+	<link rel="stylesheet" type="text/css" href="front/css/default.css">
+	<script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+	<script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+	<script src="front/js/jquery-ui.min.js"></script>
+	<script src="front/js/lodash.min.js"></script>
+	<script src="front/dist/gridstack.js"></script>
+	<script src="front/js/echarts.js"></script>	
+	<!--    ajax全局配置-->
+	<script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+	<script type="text/javascript" src="./js/constant.js"></script>
+</head>
+
+<body style="overflow: hidden;">
+	<!--省卫健委-->
+	<div id="sjwjf" class="box_right2">
+		<div class="item_body">
+			<div class="grid-stack">
+				<div data-gs-no-move='true' data-gs-x="0" data-gs-y="0" data-gs-width="5" data-gs-height="2"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+						<div class="clo"><img src="front/img/clo_icon.png"></div>
+						<div class="ren_box js_person_status">
+							<dl>
+								<dt><img src="front/img/xueyuan_img.png"></dt>
+								<dd><p>人员总数</p><h1>0</h1></dd>
+								<dd><p>正常</p><h1>0</h1></dd>
+								<dd><p>不计达标</p><h1>0</h1></dd>
+								<dd><p>产假</p><h1>0</h1></dd>
+							</dl>
+						</div>
+					</div>
+				</div>
+				<div data-gs-no-move='true' data-gs-x="5" data-gs-y="0" data-gs-width="5" data-gs-height="2"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+						<div class="clo">
+							<img src="front/img/clo_icon.png">
+						</div>
+						<div class="ren_box js_person_title">
+							<dl>
+								<dt><img src="front/img/xueyuan_img.png"></dt>
+								<dd><p>初级</p><h1>0</h1></dd>
+								<dd><p>中级</p><h1>0</h1></dd>
+								<dd><p>副高</p><h1>0</h1></dd>
+								<dd><p>正高</p><h1>0</h1></dd>
+							</dl>
+						</div>
+					</div>
+				</div>
+				<div data-gs-no-move='true' data-gs-x="10" data-gs-y="0" data-gs-width="2" data-gs-height="2"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content icon_card">
+                        <div class="clo">
+                            <img src="front/img/clo_icon.png">
+                        </div>
+                        <div class="ren_box">
+                            <div class="xf_tit">省级项目</div>
+                            <dl>
+                                <dt><img src="front/img/shenhe_img.png"></dt>
+                                <dd>
+                                    <p>待审核</p><h1>0</h1>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+				</div>
+				
+				<div data-gs-no-move='true' data-gs-x="0" data-gs-y="2" data-gs-width="2" data-gs-height="3"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+                        <div class="card-header">
+                            <p>人员参与率</p>
+                            <div class="clo">
+                                <img src="front/img/clo_icon.png">
+                            </div>
+                        </div>
+						<div id="main" style="width: 100%;height:170px;"></div>
+					</div>
+				</div>
+
+				<div data-gs-no-move='true' data-gs-x="2" data-gs-y="2" data-gs-width="8" data-gs-height="3"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+                        <div class="card-header">
+                            <p>按职称统计达标率</p>
+                            <div class="clo">
+                                <img src="front/img/clo_icon.png">
+                            </div>
+                        </div>
+						<div style="display: flex;">
+							<div style="width: 25%;height:170px;">
+								<div id="main2" style="height:170px"></div>
+							</div>
+							<div style="width: 25%;height:170px;">
+								<div id="main3" style="height:170px"></div>
+							</div>
+							<div style="width: 25%;height:170px;">
+								<div id="main4" style="height:170px"></div>
+							</div>
+							<div style="width: 25%;height:170px;">
+								<div id="main5" style="height:170px"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div data-gs-no-move='true' data-gs-x="10" data-gs-y="2" data-gs-width="2" data-gs-height="3"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+                        <div class="card-header">
+                            <p>人员达标率</p>
+                            <div class="clo"><img src="front/img/clo_icon.png"></div>
+                        </div>
+						<div id="main7" style="width: 100%;height:170px;"></div>
+					</div>
+				</div>
+
+				<div data-gs-no-move='true' data-gs-x="0" data-gs-y="5" data-gs-width="10" data-gs-height="5"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+						<div class="card-header">
+                            <p> 参与及达标人数按职称统计</p>
+                            <div class="more"><img src="front/img/more_img.png"></div>
+                        </div>                                                 
+                        <div id="main6" style="width: 100%;height:335px;"></div>	
+					</div>
+				</div>
+
+				<div data-gs-no-move='true' data-gs-x="10" data-gs-y="5" data-gs-width="2" data-gs-height="3"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+                        <div class="card-header">
+                            <p id="content">人员职称分布统计</p>
+                            <div class="clo"><img src="front/img/clo_icon.png"></div>
+                        </div>
+						<div id="main1" style="width: 100%;height:170px"></div>
+					</div>
+				</div>
+
+				<div data-gs-no-move='true' data-gs-x="10" data-gs-y="8" data-gs-width="2" data-gs-height="2"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content icon_card">
+                        <div class="clo"><img src="front/img/clo_icon.png"></div>
+                        <div class="card_box">
+                            <div class="daib_box">
+                                <img src="front/img/daiban_img.png">
+                                <p>敬请期待</p>
+                            </div>
+                        </div>
+                    </div>
+				</div>
+
+				<div data-gs-no-move='true' data-gs-x="0" data-gs-y="10" data-gs-width="2" data-gs-height="2"
+				class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+                    <div class="grid-stack-item-content icon_card">
+                        <div class="clo"><img src="front/img/clo_icon.png"></div>
+                        <div class="ren_box">
+                            <div class="xf_tit">项目学分</div>
+                            <dl>
+                                <dt><img src="front/img/shenhe_img.png"></dt>
+                                <dd><p>待审核</p><h1 class="js-province-score">0</h1></dd>
+                            </dl>
+                        </div>
+                    </div>
+				</div>
+				<div data-gs-no-move='true' data-gs-x="2" data-gs-y="10" data-gs-width="2" data-gs-height="2"
+				class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+                    <div class="grid-stack-item-content icon_card">
+                        <div class="clo"><img src="front/img/clo_icon.png"></div>
+                        <div class="ren_box">
+                            <div class="xf_tit">项目执行反馈</div>
+                            <dl>
+                                <dt><img src="front/img/shenhe_img.png"></dt>
+                                <dd><p>待审核</p><h1 class="js-province-feedback">0</h1></dd>
+                            </dl>
+                        </div>
+                    </div>
+				</div>				
+
+			</div>
+		</div>
+	</div>
+
+	<!--市县级卫健委-->
+	<div id="sxjwjw" class="box_right2">
+		<div class="item_body">
+			<div class="grid-stack">
+				<div data-gs-no-move='true' data-gs-x="0" data-gs-y="0" data-gs-width="5" data-gs-height="2"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+						<div class="clo"><img src="front/img/clo_icon.png"></div>
+						<div class="ren_box js_person_status">
+							<dl>
+								<dt><img src="front/img/xueyuan_img.png"></dt>
+								<dd><p>人员总数</p><h1>0</h1></dd>
+								<dd><p>正常</p><h1>0</h1></dd>
+								<dd><p>不计达标</p><h1>0</h1></dd>
+								<dd><p>产假</p><h1>0</h1></dd>
+							</dl>
+						</div>
+					</div>
+				</div>
+				<div data-gs-no-move='true' data-gs-x="5" data-gs-y="0" data-gs-width="5" data-gs-height="2"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+						<div class="clo"><img src="front/img/clo_icon.png"></div>
+						<div class="ren_box js_person_title">
+							<dl>
+								<dt><img src="front/img/xueyuan_img.png"></dt>
+								<dd><p>初级</p><h1>0</h1></dd>
+								<dd><p>中级</p><h1>0</h1></dd>
+								<dd><p>副高</p><h1>0</h1></dd>
+								<dd><p>正高</p><h1>0</h1></dd>
+							</dl>
+						</div>
+					</div>
+				</div>
+				<div data-gs-no-move='true' data-gs-x="10" data-gs-y="0" data-gs-width="2" data-gs-height="2"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content icon_card">
+                        <div class="clo"><img src="front/img/clo_icon.png"></div>
+                        <div class="ren_box">
+                            <div class="xf_tit">院内活动学分</div>
+                            <dl>
+                                <dt><img src="front/img/shenhe_img.png"></dt>
+                                <dd><p>待审核</p><h1 class="js-city-group-score">0</h1></dd>
+                            </dl>
+                        </div>
+                    </div>
+				</div>
+				
+				<div data-gs-no-move='true' data-gs-x="0" data-gs-y="2" data-gs-width="2" data-gs-height="3"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+                        <div class="card-header">
+                            <p>人员参与率</p>
+                            <div class="clo"><img src="front/img/clo_icon.png"></div>
+                        </div>
+						<div id="main8" style="width:100%;height:170px;"></div>
+					</div>
+				</div>
+
+				<div data-gs-no-move='true' data-gs-x="2" data-gs-y="2" data-gs-width="8" data-gs-height="3"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+                        <div class="card-header">
+                            <p>按职称统计达标率</p>
+                            <div class="clo">
+                                <img src="front/img/clo_icon.png">
+                            </div>
+                        </div>
+						<div style="display: flex;">
+							<div style="width: 25%;height:170px;">
+								<div id="main9" style="height:170px"></div>
+							</div>
+							<div style="width: 25%;height:170px;">
+								<div id="main10" style="height:170px"></div>
+							</div>
+							<div style="width: 25%;height:170px;">
+								<div id="main11" style="height:170px"></div>
+							</div>
+							<div style="width: 25%;height:170px;">
+								<div id="main12" style="height:170px"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div data-gs-no-move='true' data-gs-x="10" data-gs-y="2" data-gs-width="2" data-gs-height="3"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+                        <div class="card-header">
+                            <p>人员达标率</p>
+                            <div class="clo"><img src="front/img/clo_icon.png"></div>
+                        </div>
+						<div id="main13" style="width: 100%;height:170px;"></div>
+					</div>
+				</div>
+
+				<div data-gs-no-move='true' data-gs-x="0" data-gs-y="5" data-gs-width="10" data-gs-height="5"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+						<div class="card-header">
+                            <p>参与及达标人数按职称统计</p>
+                            <div class="more"><img src="front/img/more_img.png"></div>
+                        </div>                                                 
+                        <div id="main14" style="width: 100%;height:335px;"></div>	
+					</div>
+				</div>
+
+				<div data-gs-no-move='true' data-gs-x="10" data-gs-y="5" data-gs-width="2" data-gs-height="3"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+                        <div class="card-header">
+                            <p id="content">人员职称分布统计</p>
+                            <div class="clo"><img src="front/img/clo_icon.png"></div>
+                        </div>
+						<div id="main15" style="width: 100%;height:170px"></div>
+					</div>
+				</div>
+
+                
+				<div data-gs-no-move='true' data-gs-x="10" data-gs-y="8" data-gs-width="2" data-gs-height="2"
+				class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+                    <div class="grid-stack-item-content icon_card">
+                        <div class="clo">
+                            <img src="front/img/clo_icon.png">
+                        </div>
+                        <div class="ren_box">
+                            <div class="xf_tit">个人活动学分</div>
+                            <dl>
+                                <dt><img src="front/img/shenhe_img.png"></dt>
+                                <dd><p>待审核</p><h1 class="js-single-score-num">0</h1></dd>
+                            </dl>
+                        </div>
+                    </div>
+				</div>				
+
+			</div>
+		</div>
+	</div>
+
+	<!--医疗机构-->
+	<div id="yljg" class="box_right2">
+		<div class="item_body">
+			<div class="grid-stack">
+				<div data-gs-no-move='true' data-gs-x="0" data-gs-y="0" data-gs-width="5" data-gs-height="2"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+						<div class="clo"><img src="front/img/clo_icon.png"></div>
+						<div class="ren_box js_person_status">
+							<dl>
+								<dt><img src="front/img/xueyuan_img.png"></dt>
+								<dd><p>人员总数</p><h1>0</h1></dd>
+								<dd><p>正常</p><h1>0</h1></dd>
+								<dd><p>不计达标</p><h1>0</h1></dd>
+								<dd><p>产假</p><h1>0</h1></dd>
+							</dl>
+						</div>
+					</div>
+				</div>
+				<div data-gs-no-move='true' data-gs-x="5" data-gs-y="0" data-gs-width="5" data-gs-height="2"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+						<div class="clo"><img src="front/img/clo_icon.png"></div>
+						<div class="ren_box js_person_title">
+							<dl>
+								<dt><img src="front/img/xueyuan_img.png"></dt>
+								<dd><p>初级</p><h1>0</h1></dd>
+								<dd><p>中级</p><h1>0</h1></dd>
+								<dd><p>副高</p><h1>0</h1></dd>
+								<dd><p>正高</p><h1>0</h1></dd>
+							</dl>
+						</div>
+					</div>
+				</div>
+				<div data-gs-no-move='true' data-gs-x="10" data-gs-y="0" data-gs-width="2" data-gs-height="2"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+						<div class="clo"><img src="front/img/clo_icon.png"></div>
+						<div class="ren_box">
+							<dl>
+								<dt><img src="front/img/shenhe_img.png"></dt>
+								<dd><p>待审核人员</p><h1 class="js-checking-people">0</h1></dd>
+							</dl>
+						</div>
+					</div>
+				</div>
+				
+
+				<div data-gs-no-move='true' data-gs-x="0" data-gs-y="2" data-gs-width="2" data-gs-height="3"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+                        <div class="card-header">
+                            <p>人员参与率</p>
+                            <div class="clo"><img src="front/img/clo_icon.png"></div>
+                        </div>
+						<div id="main16" style="width: 100%;height:170px;"></div>
+					</div>
+				</div>
+
+				
+				<div data-gs-no-move='true' data-gs-x="2" data-gs-y="2" data-gs-width="8" data-gs-height="3"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+                        <div class="card-header">
+                            <p>按职称统计达标率</p>
+                            <div class="clo"><img src="front/img/clo_icon.png"></div>
+                        </div>
+						<div style="display: flex;">
+							<div style="width: 25%;height:170px;">
+								<div id="main17" style="height:170px"></div>
+							</div>
+							<div style="width: 25%;height:170px;">
+								<div id="main18" style="height:170px"></div>
+							</div>
+							<div style="width: 25%;height:170px;">
+								<div id="main19" style="height:170px"></div>
+							</div>
+							<div style="width: 25%;height:170px;">
+								<div id="main20" style="height:170px"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div data-gs-no-move='true' data-gs-x="10" data-gs-y="2" data-gs-width="2" data-gs-height="3"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+                        <div class="card-header">
+                            <p>人员达标率</p>
+                            <div class="clo"><img src="front/img/clo_icon.png"></div>
+                        </div>
+						<div id="main21" style="width: 100%;height:170px;"></div>
+					</div>
+				</div>
+
+				<div data-gs-no-move='true' data-gs-x="0" data-gs-y="5" data-gs-width="10" data-gs-height="5"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+						<div class="card-header">
+                            <p>参与及达标人数按职称统计</p>
+                            <div class="more"><img src="front/img/more_img.png"></div>
+                        </div>                                                 
+                        <div id="main22" style="width: 100%;height:335px;"></div>	
+					</div>
+				</div>
+
+				<div data-gs-no-move='true' data-gs-x="10" data-gs-y="5" data-gs-width="2" data-gs-height="3"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+                        <div class="card-header">
+                            <p id="content">人员职称分布统计</p>
+                            <div class="clo"><img src="front/img/clo_icon.png"></div>
+                        </div>
+						<div id="main23" style="width: 100%;height:170px"></div>
+					</div>
+				</div>
+    
+				<div data-gs-no-move='true' data-gs-x="10" data-gs-y="8" data-gs-width="2" data-gs-height="2"
+				class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+                    <div class="grid-stack-item-content icon_card">
+                        <div class="clo"><img src="front/img/clo_icon.png"></div>
+                        <div class="ren_box">
+                            <div class="xf_tit">个人、科室录入学分</div>
+                            <dl>
+                                <dt><img src="front/img/shenhe_img.png"></dt>
+                                <dd><p>待审核</p><h1 class="js-deptsingle-score">381</h1></dd>
+                            </dl>
+                        </div>
+                    </div>
+				</div>				
+
+			</div>
+		</div>
+	</div>
+
+	<!--科室-->
+	<div id="ks" class="box_right2">
+		<div class="item_body">
+			<div class="grid-stack">
+				<div data-gs-no-move='true' data-gs-x="0" data-gs-y="0" data-gs-width="5" data-gs-height="2"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+						<div class="clo">
+							<img src="front/img/clo_icon.png">
+						</div>
+						<div class="ren_box">
+							<dl>
+								<dt>
+									<img src="front/img/xueyuan_img.png">
+								</dt>
+								<dd>
+									<p>人员总数</p>
+									<h1>152309</h1>
+								</dd>
+								<dd>
+									<p>正常</p>
+									<h1>152000</h1>
+								</dd>
+								<dd>
+									<p>不计达标</p>
+									<h1>500</h1>
+								</dd>
+								<dd>
+									<p>产假</p>
+									<h1>15</h1>
+								</dd>
+							</dl>
+						</div>
+					</div>
+				</div>
+				<div data-gs-no-move='true' data-gs-x="5" data-gs-y="0" data-gs-width="5" data-gs-height="2"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+						<div class="clo">
+							<img src="front/img/clo_icon.png">
+						</div>
+						<div class="ren_box js_person_title">
+							<dl>
+								<dt>
+									<img src="front/img/xueyuan_img.png">
+								</dt>
+								<dd>
+									<p>初级</p>
+									<h1>152309</h1>
+								</dd>
+								<dd>
+									<p>中级</p>
+									<h1>152309</h1>
+								</dd>
+								<dd>
+									<p>副高</p>
+									<h1>152309</h1>
+								</dd>
+								<dd>
+									<p>正高</p>
+									<h1>152309</h1>
+								</dd>
+							</dl>
+						</div>
+					</div>
+				</div>
+
+				
+
+				<div data-gs-no-move='true' data-gs-x="0" data-gs-y="2" data-gs-width="2" data-gs-height="3"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+                        <div class="card-header">
+                            <p>人员参与率</p>
+                            <div class="clo">
+                                <img src="front/img/clo_icon.png">
+                            </div>
+                        </div>
+						<div id="main24" style="width: 100%;height:170px;"></div>
+					</div>
+				</div>
+
+				
+				<div data-gs-no-move='true' data-gs-x="2" data-gs-y="2" data-gs-width="8" data-gs-height="3"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+                        <div class="card-header">
+                            <p>按职称统计达标率</p>
+                            <div class="clo">
+                                <img src="front/img/clo_icon.png">
+                            </div>
+                        </div>
+						<div style="display: flex;">
+							<div style="width: 25%;height:170px;">
+								<div id="main25" style="height:170px"></div>
+							</div>
+							<div style="width: 25%;height:170px;">
+								<div id="main26" style="height:170px"></div>
+							</div>
+							<div style="width: 25%;height:170px;">
+								<div id="main27" style="height:170px"></div>
+							</div>
+							<div style="width: 25%;height:170px;">
+								<div id="main28" style="height:170px"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div data-gs-no-move='true' data-gs-x="10" data-gs-y="0" data-gs-width="2" data-gs-height="3"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+                        <div class="card-header">
+                            <p>人员达标率</p>
+                            <div class="clo">
+                                <img src="front/img/clo_icon.png">
+                            </div>
+                        </div>
+						<div id="main29" style="width: 100%;height:170px;"></div>
+					</div>
+				</div>
+
+
+
+				<div data-gs-no-move='true' data-gs-x="0" data-gs-y="5" data-gs-width="10" data-gs-height="5"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+						<div class="card-header">
+                            <p>
+                                参与及达标人数按职称统计
+                            </p>
+                            <div class="more">
+                                <img src="front/img/more_img.png">
+                            </div>
+                        </div>                                                 
+                        <div id="main30" style="width: 100%;height:335px;"></div>	
+					</div>
+				</div>
+
+				<div data-gs-no-move='true' data-gs-x="10" data-gs-y="3" data-gs-width="2" data-gs-height="3"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content">
+                        <div class="card-header">
+                            <p id="content">人员职称分布统计</p>
+                            <div class="clo">
+                                <img src="front/img/clo_icon.png">
+                            </div>
+                        </div>
+						<div id="main31" style="width: 100%;height:170px"></div>
+					</div>
+				</div>
+
+                
+				<div data-gs-no-move='true' data-gs-x="10" data-gs-y="6" data-gs-width="2" data-gs-height="2"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content icon_card">
+                        <div class="clo">
+                            <img src="front/img/clo_icon.png">
+                        </div>
+                        <div class="card_box">
+                            <div class="daib_box">
+                                <img src="front/img/daiban_img.png">
+                                <p>敬请期待</p>
+                            </div>
+                        </div>
+                    </div>
+				</div>	
+				<div data-gs-no-move='true' data-gs-x="10" data-gs-y="8" data-gs-width="2" data-gs-height="2"
+					class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide">
+					<div class="grid-stack-item-content icon_card">
+                        <div class="clo">
+                            <img src="front/img/clo_icon.png">
+                        </div>
+                        <div class="card_box">
+                            <div class="daib_box">
+                                <img src="front/img/daiban_img.png">
+                                <p>敬请期待</p>
+                            </div>
+                        </div>
+                    </div>
+				</div>			
+
+			</div>
+		</div>
+	</div>
+	
+<script>
+	$(".box_right2").hide();
+	var userType  = parseInt(localStorage.getItem("user-type"));
+	var unitId = localStorage.getItem("unit-id");
+	var unitUserType = localStorage.getItem("unit-user-type");
+	if(userType==13){
+		$("#ks").show();
+	}
+	var showBoxByUnitType = function(){
+		switch(userType){
+			case 11://卫生行政部门账号(政府版)
+				characterMenuTemplate();
+				break;
+			case 12://机构用户
+				$("#yljg").show();
+				getProvinceStatistics("unit");
+				break;
+			case 13://科室用户
+				$("#ks").show();
+				break;
+			default:
+				break;	
+		}
+	}
+
+	//机构
+	var characterMenuTemplate = function(){
+		if(unitUserType == 5){//省卫健委
+			$("#sjwjf").show();
+			getProvinceStatistics("province");
+		}
+		if(unitUserType == 3 || unitUserType == 4){//市县级卫健委
+			$("#sxjwjw").show();
+			getProvinceStatistics("city");
+		}
+	}
+	
+	//省行政账号统计数字
+	var getProvinceStatistics = function(type="province"){
+		$.ajax({
+			type 		: "GET",
+			contentType : "application/json",
+			url 		: huayi_projectscore_url + "sumJjpersonStateTotal/getProvinceStatistics",
+			data		: {
+				unitId		:	unitId,
+				unitUserType:	unitUserType
+			},
+			success 	: function(res) {
+				if(res.status != 200) return;
+				if(type == "province") createProvinceStatistics(res.data);
+				if(type == "city") createCityStatistics(res.data);
+				if(type == "unit") createUnitStatistics(res.data);
+			},
+			error 		: function(XMLHttpRequest, textStatus, errorThrown) {	
+				alert("系统异常，请联系管理员");
+			}
+		});
+	}
+
+	//省级统计待审批
+	var createProvinceStatistics = function(data){
+		if(data == null) return;
+		if(data.hasOwnProperty("feedbackNum")) {
+			$(".js-province-feedback").html(data.feedbackNum);
+		}
+		if(data.hasOwnProperty("scoreNum")) {
+			$(".js-province-score").html(data.scoreNum);
+		}
+	}
+
+	//市级统计学分
+	var createCityStatistics = function(data){
+		if(data == null) return;
+		if(data.hasOwnProperty("groupScoreNum")) {
+			$(".js-city-group-score").html(data.groupScoreNum);
+		}
+		if(data.hasOwnProperty("singleScoreNum")) {
+			$(".js-single-score-num").html(data.singleScoreNum);
+		}
+	}
+
+	var createUnitStatistics = function(data){
+		if(data == null) return;
+		if(data.hasOwnProperty("singleScoreNum")) {
+			$(".js-deptsingle-score").html(data.singleScoreNum);
+		}
+		if(data.hasOwnProperty("checkingPeopleNum")) {
+			$(".js-checking-people").html(data.checkingPeopleNum);
+		}
+		
+	}
+	// 人员总数
+	var getPersonStatistics = function(){
+		$.ajax({
+			type 		: "GET",
+			contentType : "application/json",
+			url 		: huayi_projectscore_url + "sumJjpersonStateTotal/getPersonStatusStatistics",
+			data		: {
+				unitId:unitId,
+				userType:userType
+			},
+			// async:false,//ajax 配合echats使用 同步请求，即在服务器返回值之前不再加载下面的代码
+			success 	: function(res) {
+				if(res.status != 200) return
+				if(res.data == null) return;
+				res.data.hasOwnProperty("personStatus") && handlerPersonStatus(res.data["personStatus"]);
+				res.data.hasOwnProperty("personTitle") && handlerPersonTitle(res.data["personTitle"]);
+				res.data.hasOwnProperty("personJoin") && handlerPersonJoin(res.data["personJoin"]);
+				res.data.hasOwnProperty("personTitleJoin") && handlerTitleJoin(res.data["personTitleJoin"]);
+			},
+			error 		: function(XMLHttpRequest, textStatus, errorThrown) {	
+				alert("系统异常，请联系管理员");
+			}
+		});
+	}
+	//处理人员总数
+	var handlerPersonStatus = function(data){
+		let statusArr = ["正常","不计达标","产假"];
+		let numObj = {},count = 0;
+		for(let title of statusArr){
+			let partNum = 0;
+			for(let obj of data){
+				if(obj["person_state_name"] != title) continue;
+				partNum = obj["number"];
+				count += obj["number"];
+			}
+			numObj[title] = partNum;
+		}
+		let statusHtml = `<dl>
+			<dt><img src="front/img/xueyuan_img.png"></dt>
+			<dd><p>人员总数</p><h1>${count}</h1></dd>`;
+		for(let title of statusArr){
+			statusHtml += `<dd><p>${title}</p><h1>${numObj[title]}</h1></dd>`;
+		}
+		statusHtml += `</dl>`;
+		$(".js_person_status").html(statusHtml);
+	}
+	//处理人员级别
+	var handlerPersonTitle = function(data){
+		let titleArr = ["初级","中级","副高","正高"];
+		let titleObj={"初级":0,"中级":0,"副高":0,"正高":0};
+		let titleHtml = `<dl><dt><img src="front/img/xueyuan_img.png"></dt>`;
+		for(let title of titleArr){
+			let tempNum = 0;
+			for(let obj of data){
+				if(obj["title_level_name"].indexOf(title) <0) continue
+				tempNum = obj["number"];
+				titleObj[title] = tempNum;
+			}
+			titleHtml += `<dd><p>${title}</p><h1>${tempNum}</h1></dd>`;
+		}
+		titleHtml += `</dl>`;
+		$(".js_person_title").html(titleHtml);
+
+		//职称分布统计
+		let tempTitleOption = getEcharOption("人员职称分布统计",
+			[{orient: 'horizontal',bottom: '30px',data: ['初级', '中级']},
+			{data: ['副高', '正高'],bottom: '5px',orient: 'horizontal'}],
+			[{ value: titleObj["初级"], name: '初级' },
+			{ value: titleObj["中级"], name: '中级' },
+			{ value: titleObj["副高"], name: '副高' },
+			{ value: titleObj["正高"], name: '正高' }],
+			['#6f91ed', '#e0aa83', '#d06d7e', '#7db692']);
+		initEcharElem(tempTitleOption,document.getElementById('main1'));//省卫健委
+		initEcharElem(tempTitleOption,document.getElementById('main15'));//市县级卫健委
+		initEcharElem(tempTitleOption,document.getElementById('main23'));//医疗机构
+	}
+	//人员参加率和人员达标率
+	var handlerPersonJoin = function(data){
+		let totalNumber = 0,joinNumber=0,passNumber=0;
+		if(data!=null && data.hasOwnProperty("total_person_number")) {
+			totalNumber = data["total_person_number"];
+		}
+		if(data!=null && data.hasOwnProperty("proj_person_number")) {
+			joinNumber = data["proj_person_number"];
+		}
+		if(data!=null && data.hasOwnProperty("pass_person_number")) {
+			passNumber = data["pass_person_number"];
+		}
+		//参加率
+		let tempJoinOption = getEcharOption("人员参与率",
+			{orient: 'vertical',bottom: '5px',data: ['参与人数', '未参与人数']},
+			[{ value: joinNumber, name: '参与人数' },{ value: totalNumber-joinNumber, name: '未参与人数' }]);
+		initEcharElem(tempJoinOption,document.getElementById('main'));//省卫健委
+		initEcharElem(tempJoinOption,document.getElementById('main8'));//市县级卫健委
+		initEcharElem(tempJoinOption,document.getElementById('main16'));//医疗机构
+		// 达标率
+		let tempPassOption = getEcharOption("人员达标率",
+			{orient: 'vertical',bottom: '5px',data: ['达标人数', '未达标人数']},
+			[{ value: passNumber, name: '达标人数' },{ value: totalNumber-passNumber, name: '未达标人数' }]);
+		initEcharElem(tempPassOption,document.getElementById('main7'));//省卫健委
+		initEcharElem(tempPassOption,document.getElementById('main13'));//市县级卫健委
+		initEcharElem(tempPassOption,document.getElementById('main21'));//医疗机构
+	}
+	//人员职称达标率
+	var handlerTitleJoin = function(data){
+		if(data ==null || data.length == 0) {
+			data = [{
+					"proj_person_number": 0,
+					"title_level_name": "副高级职称",
+					"total_person_number": 0,
+					"pass_person_number": 0
+				},
+				{
+					"proj_person_number": 0,
+					"title_level_name": "中级职称",
+					"total_person_number": 0,
+					"pass_person_number": 0
+				},
+				{
+					"proj_person_number": 0,
+					"title_level_name": "正高级职称",
+					"total_person_number": 0,
+					"pass_person_number": 0
+				},
+				{
+					"proj_person_number": 0,
+					"title_level_name": "初级职称",
+					"total_person_number": 0,
+					"pass_person_number": 0
+				}]
+		}
+		let tempObj = {"初级职称":{name:"初级职称",elemIds:["main2","main9","main17"]},
+		"中级职称":{name:"中级职称",elemIds:["main3","main10","main18"]},
+		"副高级职称":{name:"副高职称",elemIds:["main4","main11","main19"]},
+		"正高级职称":{name:"正高职称",elemIds:["main5","main12","main20"]}};
+		let tempLegend = {orient: 'vertical',bottom: '5px',data: ['达标人数', '未达标人数']};
+		for(let obj of data){
+			let tempTitle = tempObj[obj["title_level_name"]];
+			let count = obj["total_person_number"];
+			let passNum = obj["pass_person_number"];
+			let joinNum = obj["proj_person_number"];
+			tempObj[obj["title_level_name"]].count = count;
+			tempObj[obj["title_level_name"]].pass = passNum;
+			tempObj[obj["title_level_name"]].join = joinNum;
+			let tempOption = getEcharOption(tempTitle.name,tempLegend,
+				[{value: passNum, name: '达标人数' },
+				{ value: joinNum-passNum, name: '未达标人数'}]);
+			for(let elem of tempTitle.elemIds){
+				initEcharElem(tempOption,document.getElementById(elem));//省卫健委
+			}
+		}
+		let tableOption = getEcharTable([['product', '继教对象人数', '参与人数', '达标人数'],
+					['初级', tempObj["初级职称"].count, tempObj["初级职称"].join, tempObj["初级职称"].pass],
+					['中级', tempObj["中级职称"].count, tempObj["中级职称"].join, tempObj["中级职称"].pass],
+					['副高', tempObj["副高级职称"].count, tempObj["副高级职称"].join, tempObj["副高级职称"].pass],
+					['正高', tempObj["正高级职称"].count, tempObj["正高级职称"].join, tempObj["正高级职称"].pass]]);
+		for(let elem of ["main6","main14","main22"]){
+			initEcharElem(tableOption,document.getElementById(elem));//省卫健委
+		}
+	}
+	//获取Echar需要的参数，扇形图
+	var getEcharOption = function(title,legend,dataObj,colorArr=['#6f91ed', '#e0aa83']){
+		return {
+			tooltip: {
+				trigger: 'item',
+				position: 'inside',
+				formatter: '{a} <br/>{b} : {c} ({d}%)',
+				textStyle: {fontSize: 8}
+			},
+			legend: legend,
+			series: [
+				{
+					name: title,
+					type: 'pie',
+					radius: ['40%', '55%'],
+					center: ['50%', '30%'],
+					color: colorArr,
+					label: {
+						formatter: '{d}%',
+						color: 'inherit'
+					},
+					labelLine: { //label线的长度
+						normal: {
+							length: 0, // 改变标示线的长度
+							length2: 0,
+							maxSurfaceAngle: 0
+						}
+					},
+					data: dataObj
+				}
+			]
+		};
+	}
+	//获取Echart参数，表格
+	var getEcharTable = function(dataArr){
+		return {
+			legend: {
+				orient: 'horizontal',
+				x:'right',      //可设定图例在左、右、居中
+				y:'top',     //可设定图例在上、下、居中
+				padding:[0,100,0,0]   //可设定图例[距上方距离，距右方距离，距下方距离，距左方距离]
+			},
+			tooltip: {},
+			dataset: {
+				source: dataArr
+			},
+			xAxis: { type: 'category' },
+			yAxis: {},
+			series: [
+				{ type: 'bar', color: '#6f91ed' ,barMaxWidth: '8%'},
+				{ type: 'bar', color: '#e0aa83',barMaxWidth: '8%'},
+				{ type: 'bar', color: '#d06d7e' ,barMaxWidth: '8%'}]
+		};
+	}
+	//装配进入Echar
+	var initEcharElem = function(option,elem){
+		let tempMyChart = echarts.init(elem);
+		tempMyChart.setOption(option);
+		window.addEventListener("resize", function(){
+			tempMyChart.resize();
+		});
+	}
+	//人员参与率
+	var option = {
+			tooltip: {
+				trigger: 'item',
+				position: 'inside',
+				formatter: '{a} <br/>{b} : {c} ({d}%)',
+				textStyle: {fontSize: 8}
+			},
+			legend: {
+				orient: 'vertical',
+				bottom: '5px',
+				data: ['参与人数', '未参与人数']
+			},
+			series: [
+				{
+					name: '人员参与率',
+					type: 'pie',
+					radius: ['40%', '55%'],
+					center: ['50%', '30%'],
+					color: ['#6f91ed', '#e0aa83'],
+					label: {
+						formatter: '{d}%',
+						color: 'inherit'
+					},
+					labelLine: { //label线的长度
+						normal: {
+							length: 0, // 改变标示线的长度
+							length2: 0,
+							maxSurfaceAngle: 0
+						}
+					},
+					data: [
+						{ value: 30, name: '参与人数' },
+						{ value: 70, name: '未参与人数' }
+					]
+				}
+			]
+		};
+	//人员职称分布统计
+	var option1 = {
+		tooltip: {
+			trigger: 'item',
+			position: 'inside',
+			formatter: '{a} <br/>{b} : {c} ({d}%)',
+			textStyle: {
+				fontSize: 8
+			}
+		},
+		legend: [{
+			orient: 'horizontal',
+			bottom: '30px',
+			data: ['初级', '中级']
+		}, {
+			data: ['副高', '正高'],
+			bottom: '5px',
+			orient: 'horizontal'
+		}],
+		series: [
+			{
+				name: '人员参与率',
+				type: 'pie',
+				radius: ['40%', '55%'],
+				center: ['50%', '30%'],
+				color: ['#6f91ed', '#e0aa83', '#d06d7e', '#7db692'],
+				label: {
+					formatter: '{d}%',
+					color: 'inherit'
+				},
+				labelLine: { //label线的长度
+					normal: {
+						length: 0, // 改变标示线的长度
+						length2: 0,
+						maxSurfaceAngle: 0
+					}
+				},
+				data: [
+					{ value: 38, name: '初级' },
+					{ value: 34, name: '中级' },
+					{ value: 14, name: '副高' },
+					{ value: 14, name: '正高' }
+				]
+			}
+		]
+	};
+	//按职称统计达标率 初级职称
+	var option2 = {
+		tooltip: {
+			trigger: 'item',
+			position: 'inside',
+			formatter: '{a} <br/>{b} : {c} ({d}%)',
+			textStyle: {
+				fontSize: 8
+			}
+		},
+		legend: {
+			orient: 'vertical',
+			bottom: '5px',
+			data: ['达标人数', '未达标人数']
+		},
+		series: [
+			{
+				name: '初级职称',
+				type: 'pie',
+				radius: ['40%', '55%'],
+				center: ['50%', '30%'],
+				color: ['#6f91ed', '#e0aa83'],
+				label: {
+					formatter: '{d}%',
+					color: 'inherit',
+					normal: {
+						show: true,
+						position: 'center',
+						formatter: function (data) { // 设置圆饼图中间文字排版
+							return "初级职称"
+						}
+					}
+				},
+				labelLine: { //label线的长度
+					normal: {
+						length: 0, // 改变标示线的长度
+						length2: 0,
+						maxSurfaceAngle: 0
+					}
+				},
+				data: [
+					{ value: 70, name: '达标人数' },
+					{ value: 30, name: '未达标人数' }
+				]
+			}
+		]
+	};
+
+	//按职称统计达标率 中级职称
+	var option3 = {
+		tooltip: {
+			trigger: 'item',
+			position: 'inside',
+			formatter: '{a} <br/>{b} : {c} ({d}%)',
+			textStyle: {
+				fontSize: 8
+			}
+		},
+		legend: {
+			orient: 'vertical',
+			bottom: '5px',
+			data: ['达标人数', '未达标人数']
+		},
+		series: [
+			{
+				name: '中级职称',
+				type: 'pie',
+				radius: ['40%', '55%'],
+				center: ['50%', '30%'],
+				color: ['#6f91ed', '#e0aa83'],
+				label: {
+					formatter: '{d}%',
+					color: 'inherit',
+					normal: {
+						show: true,
+						position: 'center',
+						formatter: function (data) { // 设置圆饼图中间文字排版
+							return "中级职称"
+						}
+					}
+				},
+				labelLine: { //label线的长度
+					normal: {
+						length: 0, // 改变标示线的长度
+						length2: 0,
+						maxSurfaceAngle: 0
+					}
+				},
+				data: [
+					{ value: 70, name: '达标人数' },
+					{ value: 30, name: '未达标人数' }
+				]
+			}
+		]
+	};
+
+	//按职称统计达标率 副高职称
+	var option4 = {
+		tooltip: {
+			trigger: 'item',
+			position: 'inside',
+			formatter: '{a} <br/>{b} : {c} ({d}%)',
+			textStyle: {
+				fontSize: 8
+			}
+		},
+		legend: {
+			orient: 'vertical',
+			bottom: '5px',
+			data: ['达标人数', '未达标人数']
+		},
+		series: [
+			{
+				name: '副高职称',
+				type: 'pie',
+				radius: ['40%', '55%'],
+				center: ['50%', '30%'],
+				color: ['#6f91ed', '#e0aa83'],
+				label: {
+					formatter: '{d}%',
+					color: 'inherit',
+					normal: {
+						show: true,
+						position: 'center',
+						formatter: function (data) { // 设置圆饼图中间文字排版
+							return "副高职称"
+						}
+					}
+				},
+				labelLine: { //label线的长度
+					normal: {
+						length: 0, // 改变标示线的长度
+						length2: 0,
+						maxSurfaceAngle: 0
+					}
+				},
+				data: [
+					{ value: 70, name: '达标人数' },
+					{ value: 30, name: '未达标人数' }
+				]
+			}
+		]
+	};
+	//按职称统计达标率 正高职称
+	var option5 = {
+		tooltip: {
+			trigger: 'item',
+			position: 'inside',
+			formatter: '{a} <br/>{b} : {c} ({d}%)',
+			textStyle: {
+				fontSize: 8
+			}
+		},
+		legend: {
+			orient: 'vertical',
+			bottom: '5px',
+			data: ['达标人数', '未达标人数']
+		},
+		series: [
+			{
+				name: '正高职称',
+				type: 'pie',
+				radius: ['40%', '55%'],
+				center: ['50%', '30%'],
+				color: ['#6f91ed', '#e0aa83'],
+				label: {
+					formatter: '{d}%',
+					color: 'inherit',
+					normal: {
+						show: true,
+						position: 'center',
+						formatter: function (data) { // 设置圆饼图中间文字排版
+							return "正高职称"
+						}
+					}
+				},
+				labelLine: { //label线的长度
+					normal: {
+						length: 0, // 改变标示线的长度
+						length2: 0,
+						maxSurfaceAngle: 0
+					}
+				},
+				data: [
+					{ value: 70, name: '达标人数' },
+					{ value: 30, name: '未达标人数' }
+				]
+			}
+		]
+	};
+	//参与及达标人数按职称统计
+	var option6 = {
+		legend: {
+			orient: 'horizontal',
+			x:'right',      //可设定图例在左、右、居中
+			y:'top',     //可设定图例在上、下、居中
+			padding:[0,100,0,0]   //可设定图例[距上方距离，距右方距离，距下方距离，距左方距离]
+		},
+		tooltip: {},
+		dataset: {
+			source: [
+				['product', '继教对象人数', '参与人数', '达标人数'],
+				['初级', 160000, 110000, 60000],
+				['中级', 150000, 100000, 50000],
+				['副高', 50000, 40000, 20000],
+				['正高', 20000, 10000, 5000]
+			]
+		},
+		xAxis: { type: 'category' },
+		yAxis: {},
+		series: [
+			{ type: 'bar', color: '#6f91ed' ,barMaxWidth: '8%'},
+			{ type: 'bar', color: '#e0aa83',barMaxWidth: '8%'},
+			{ type: 'bar', color: '#d06d7e' ,barMaxWidth: '8%'}]
+	};
+	//人员达标率
+	var option7 = {
+		tooltip: {
+			trigger: 'item',
+			position: 'inside',
+			formatter: '{a} <br/>{b} : {c} ({d}%)',
+			textStyle: {
+				fontSize: 8
+			}
+		},
+		legend: {
+			orient: 'vertical',
+			bottom: '5px',
+			data: ['达标人数', '未达标人数']
+		},
+		series: [
+			{
+				name: '人员达标率',
+				type: 'pie',
+				radius: ['40%', '55%'],
+				center: ['50%', '30%'],
+				color: ['#6f91ed', '#e0aa83'],
+				label: {
+					formatter: '{d}%',
+					color: 'inherit'
+				},
+				labelLine: { //label线的长度
+					normal: {
+						length: 0, // 改变标示线的长度
+						length2: 0,
+						maxSurfaceAngle: 0
+					}
+				},
+				data: [
+					{ value: 70, name: '达标人数' },
+					{ value: 30, name: '未达标人数' }
+				]
+			}
+		]
+	};
+
+
+	/*start 科室*/
+	var myChart24 = echarts.init(document.getElementById('main24'));
+	var myChart25 = echarts.init(document.getElementById('main25'));
+	var myChart26 = echarts.init(document.getElementById('main26'));
+	var myChart27 = echarts.init(document.getElementById('main27'));
+	var myChart28 = echarts.init(document.getElementById('main28'));
+	var myChart29 = echarts.init(document.getElementById('main29'));
+	var myChart30 = echarts.init(document.getElementById('main30'));
+	var myChart31 = echarts.init(document.getElementById('main31'));
+
+	myChart24.setOption(option);
+	myChart25.setOption(option2);
+	myChart26.setOption(option3);
+	myChart27.setOption(option4);
+	myChart28.setOption(option5);
+	myChart29.setOption(option7);
+	myChart30.setOption(option6);
+	myChart31.setOption(option1);
+
+
+	$('.box_right2').height($(window).height());
+	$('.huanzhe_nav').height($(window).height());
+	$(window).resize(function () {
+		$('.box_right2').height($(window).height());
+		$('.huanzhe_nav').height($(window).height());
+	})
+	$(function () {
+		var a = false;
+		$('.bj2').on('click', function () {
+			if (a == false) {
+				$(this).css({ 'right': '220px' })
+				$('.bianji').css({ 'right': '220px' })
+				$('.huanzhe_nav').css({ 'right': '0' });
+				a = true;
+			} else {
+				$(this).css({ 'right': '0' })
+				$('.bianji').css({ 'right': '0' })
+				$('.huanzhe_nav').css({ 'right': '-220px' })
+				a = false;
+				$('.bianji').removeClass('curen');
+			}
+		})
+
+		$('.bianji').click(function () {
+			$(this).css({ 'right': '220px' })
+			$('.bj2').css({ 'right': '220px' })
+			$('.huanzhe_nav').css({ 'right': '0' });
+			$(this).addClass('curen');
+		})
+
+
+		$('.clo').click(function () {
+			$(this).parent().parent().remove();
+		})
+
+
+		$(".grid-stack-item-content").each(function () {
+			$(this).hover(function () {
+				$(this).find('.clo').show()
+			}, function () {
+				$(this).find('.clo').hide()
+			})
+		})
+
+
+
+		$('.grid-stack').gridstack({float: true,animate: true,});
+		new function () {
+			this.items = [];
+
+			this.grid = $('.grid-stack').data('gridstack');
+
+			this.add_new_widget2 = function () {
+				var node1 = {
+					x: 0,
+					y: 0,
+					width: '4',
+					height: '4',
+					auto_position: true
+				};
+				this.grid.add_widget($(`<div><div class="grid-stack-item-content"><div class="card-header"><p>平均考勤</p><div class="more"><img src="img/more_img.png"></div></div><div class="card_box"><div class="echrat_box2"><img src="img/echart3.png"></div>
+						</div></div><div/>`),
+					node1.x, node1.y, node1.width, node1.height, node1.auto_position);
+
+			}.bind(this);
+			$('#add-new-widget2').click(this.add_new_widget2);
+
+			this.add_new_widget3 = function () {
+				var node1 = {
+					x: 0,
+					y: 0,
+					width: '2',
+					height: '2',
+					auto_position: true
+				};
+				this.grid.add_widget($(`<div>
+						<div class="grid-stack-item-content">
+						<p>学员数</p>
+						<h1>333</h1>
+						</div>
+					<div/>`),
+					node1.x, node1.y, node1.width, node1.height, node1.auto_position);
+
+			}.bind(this);
+			$('#add-new-widget3').click(this.add_new_widget3);
+
+		};
+
+	});
+	window.addEventListener("resize", function(){
+		myChart24.resize();
+		myChart25.resize();
+		myChart26.resize();
+		myChart27.resize();
+		myChart28.resize();
+		myChart29.resize();
+		myChart30.resize();
+		myChart31.resize();
+	});
+
+
+	let htmlInit = function(){
+		if(userType==13 || userType == 1){
+			return;
+		}
+		showBoxByUnitType();
+		getPersonStatistics();
+	}
+
+	htmlInit();
+</script>
+	
+</body>
+
+</html>

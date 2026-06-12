@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>人员查询</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+        media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <!-- <script type="text/javascript" src="/js/global_ajax_setting.js"></script> -->
+
+    <!-- 工具 -->
+    <script type="text/javascript" src="/js/base64.js"></script>
+
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+<script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script src="/js/tools/aes-tool.js"></script>
+    <script src="/js/crypto-js-v3.1.2/rollups/aes.js"></script>
+
+    
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script src="/pages/support/js/managerLogin.js"></script>
+    <style>
+        .layui-icon-ok {
+            color: green;
+            font-weight: bold;
+        }
+
+        .layui-icon-close.notok,
+        .require,
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+
+        .layui-btn+.layui-btn {
+            margin-left: 0;
+        }
+    </style>
+</head>
+
+<body class="body-area">
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <!-- 搜索框区域 -->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area">
+                <!-- <blockquote class="layui-form layui-form-item layui-elem-quote one-btn" lay-filter="query-form"> -->
+
+                <div class="layui_mess">
+                    <div class="layui_display">
+                        <!-- <div class="layui-inline layui-form tree-select" lay-filter="specSelectArea">
+                            <label class="layui-form-label">专业</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" disabled
+                                    lay-filter="specSelect" id="specSelect" name="specId" placeholder="请选择">
+                            </div>
+                            <input type="hidden" id="hidden_spec">
+                        </div>
+
+
+
+                        <div class="layui-inline layui-form  tree-select" lay-filter="deptSelectArea">
+                            <label class="layui-form-label">科室</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" disabled
+                                    lay-filter="deptSelect" id="deptSelect" name="deptId" placeholder="请选择单位">
+
+                            </div>
+                            <input type="hidden" id="hidden_dept_id" />
+                        </div>
+
+                        <div class="layui-inline">
+                            <label class="layui-form-label">在编状态</label>
+                            <div class="layui-input-block">
+                                <select class="con_sel" id="select_intheseries">
+                                    <option value="">全部</option>
+                                    <option value="0">在编</option>
+                                    <option value="1">不在编</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-form" lay-filter="select_person_state_id">
+                            <label class="layui-form-label">人员状态</label>
+                            <div class="layui-input-block">
+                                <select class="con_sel" id="select_person_state_id">
+                                    <option value="">请选择</option>
+                                </select>
+                            </div>
+                            <input type="hidden" id="hidden_person_state_id" />
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">照片状态</label>
+                            <div class="layui-input-block">
+                                <select class="con_sel" id="select_has_photo">
+                                    <option value="">全部</option>
+                                    <option value="1">有</option>
+                                    <option value="4">无</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">当前职称</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="text_title" id="text_title_names" placeholder="请输入关键字"
+                                    autocomplete="off" class="layui-inline layui-input">
+                                <input type="hidden" id="hidden_title_ids" value="" />
+                            </div>
+                        </div> -->
+                        <div class="layui-inline">
+                            <label class="layui-form-label">查询项</label>
+                            <div class="layui-input-block">
+                                <span style="width:105px;display:inline-block;">
+                                    <select id="select_column">
+                                        <option value="cert_id">证件号码</option>
+                                        <option value="person_name">姓名</option>
+                                        <option value="mobile">手机号</option>
+                                        <option value="person_no">人员编号</option>
+                                    </select>
+                                </span>
+                                <span style="width:200px;display:inline-block;">
+                                    <input type="text" name="description" id="text_value" placeholder="请输入"
+                                        autocomplete="off" class="layui-input">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" id="searchBtn" lay-filter="table-search"
+                                data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- </blockquote> -->
+            </div>
+
+            <!-- 表格区域 -->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="comPerson" lay-filter="comPerson" style="margin: 0px 0px;">
+                </table>
+            </div>
+
+            <div id="getMobileCode" style="display:none;">
+                <form class="layui-form" id="form-getMobileCode">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">手机号:</label>
+                        <div class="layui-input-inline">
+                          <input type="text" id="mobile" placeholder="请输入手机号" autocomplete="off" class="layui-input" >
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">验证码:</label>
+                        <div class="layui-input-inline">
+                          <input type="text" autocomplete="off" id="code" placeholder="请输入验证码" autocomplete="new-password" class="layui-input">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            <a class="layui-btn layui-btn-radius layui-btn-sm" id="getCode">获取验证码</a>
+                        </div>
+                    </div>
+                </form>
+                <div style="text-align:center">
+                    <a class="layui-btn layui-btn-radius layui-btn-sm" id="verifyCode">登录</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 照片查看 -->
+    <div id="photoArea" style="display: none;">
+        <img src="" style="height: 350px; width: 260px; margin: 21px 18px;">
+    </div>
+
+    <div id="neimengScore" style=" display:none;">
+        <form class="layui-form" style="padding: 30px;" id="form-neimengScore" lay-filter="neimengScore">
+            <div class="layui-form-item">
+                <div class="layui-inline" style="display: block;">
+                    <label class="layui-form-label">年度</label>
+                    <div class="layui-input-inline" style="text-align: left;">
+                        <select name="cmeYear" id="cmeYear" lay-filter="cmeYear" lay-verify="required"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" id="submitAndResetTeach">
+                <div style="text-align: center;">
+                    <button class="layui-btn" lay-submit lay-filter="submitNeimengScore">提交</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</body>
+
+</html>
+
+<!-- 达标情况明细查询 -->
+<script type="text/html" id="passDetailBar">
+    <a class="layui-btn layui-btn-xs btn-row" lay-event="passDetail" style="color: #1E9FFF;">达标情况明细查询</a>
+</script>
+<!--表格内数据编辑、删除按钮 -->
+<script type="text/html" id="rowBar">
+    <a class="layui-btn layui-btn-xs btn-row" lay-event="edit" style="color: #1E9FFF;">编辑</a>
+</script>
+<!-- 重置密码 -->
+<script type="text/html" id="resetPwdBar">
+    <a class="layui-btn layui-btn-xs btn-row" lay-event="resetPwd" style="color: #1E9FFF;">重置密码</a>
+</script>
+<!-- 进入个人版 -->
+<script type="text/html" id="personSysBar">
+    <a class="layui-btn layui-btn-xs btn-row" lay-event="personSys" style="color: #1E9FFF;">进入个人版</a>
+</script>
+<!-- 达标实时计算 -->
+<script type="text/html" id="passCalculateBar">
+    <a class="layui-btn layui-btn-xs btn-row" lay-event="passCalculate" style="color: #1E9FFF;">达标实时计算</a>
+</script>
+<!-- 状态/职称维护 -->
+<script type="text/html" id="stateTittleBar">
+    <a class="layui-btn layui-btn-xs btn-row" lay-event="stateTittle" style="color: #1E9FFF;">状态/职称维护</a>
+</script>
+<!-- 内蒙人社推送 -->
+<script type="text/html" id="neimengScoreBar">
+    {{# if(d.cmeStandardKindId == '08e44437-5789-44e0-8ff8-9ecb00a6348a'){ }}
+        <a class="layui-btn layui-btn-xs btn-row" lay-event="neimengScore" style="color: #1E9FFF;">内蒙人社推送</a>
+    {{# } }}
+</script>
+
+<script>
+
+    var comPersonId;
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        treeSelect: 'treeSelect'
+    });
+
+    /* 全局配置及引入相关的模块 */
+    layui.use(['table', 'form', 'jquery', 'layer', 'xmSelect', 'treeSelect'], function () {
+        var table = layui.table,
+            form = layui.form,
+            $ = layui.jquery,
+            layer = layui.layer,
+            xmSelect = layui.xmSelect,
+            treeSelect = layui.treeSelect;
+
+        var curDeptId;
+        var unitMainId, userMobile, unitUserId;
+
+        window.getUnitId = function () {
+            return localStorage.getItem("unit-id");
+        }
+        window.getCmeStandardKindId = function () {
+            return localStorage.getItem("standardkind-id");
+        }
+        window.getDeptId = function () {
+            if (localStorage.getItem("user-type") == 13) {
+                let userId = localStorage.getItem("user-id");
+                $.ajax({
+                    async: false,
+                    headers: {
+                        'Authorization': localStorage.getItem('token'),
+                        'KJPT-USER-ID': localStorage.getItem('user-id')
+                    },
+                    url: huayi_permission_url + "comuser/detail",
+                    type: "get",
+                    data: { userId: userId },
+                    success: function (res) {
+                        if (res.success == true) {
+                            if (res.data != null && res.data != undefined && res.data != "") {
+                                curDeptId = res.data.base.unitId;
+                            }
+                        }
+                    },
+                    error: function () {
+                        layer.msg("发送信息失败");
+                    }
+                });
+            }
+        }
+
+        let getSearchValue = function () {
+            var text = $("#text_value").val();
+            if (text) {
+                // 去除首尾空格
+                text = text.replace(/(^\s*)|(\s*$)/g, "");
+            }else{
+                text = ""
+            }
+            return text;
+        }
+
+        /* 表格初始化 */
+        window.initTable = function () {
+            table.render({
+                elem: '#comPerson',
+                url: huayi_personorg_url + 'comperson/list/support',
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                title: '用户表',
+                defaultToolbar: ['filter', 'print', 'exports'],
+                where: {
+                    deptId: curDeptId,
+                    cmeStandardKindId: window.getCmeStandardKindId(),
+                    keywordColumn: $("#select_column").val(),
+                    keyword: getSearchValue(),
+                },
+                cols: [
+                    [{
+                        align: 'center',
+                        title: '',
+                        toolbar: '#passDetailBar',
+                        minWidth: 140,
+                        fixed: 'left'
+                    }, {
+                        align: 'center',
+                        title: '操作',
+                        toolbar: '#rowBar',
+                        minWidth: 70,
+                        fixed: 'left'
+                    }, {
+                        align: 'center',
+                        title: '个人版进入',
+                        toolbar: '#personSysBar',
+                        // minWidth: 110,
+                        fixed: 'left'
+                    }, {
+                        align: 'center',
+                        title: '状态/职称维护',
+                        toolbar: '#stateTittleBar',
+                        minWidth: 120,
+                        fixed: 'left'
+                    }, {
+                        field: 'grantDate',
+                        title: '职称更新时间',
+                        align: 'center',
+                        minWidth: 120,
+                        // sort: true
+                    }, {
+                        field: 'personNo',
+                        title: '人员编号',
+                        align: 'center',
+                        minWidth: 110
+                    }, {
+                        field: 'certId',
+                        title: '证件号',
+                        align: 'center',
+                        minWidth: 160
+                    }, {
+                        field: 'personName',
+                        title: '姓名',
+                        align: 'center',
+                        // minWidth: 100,
+                        // templet: function (d) {
+                        //     return '<a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" ' +
+                        //         'lay-event="detail">' + d.personName + '</a>';
+                        // }
+                    }, {
+                        field: 'sex',
+                        title: '性别',
+                        align: 'center',
+                        minWidth: 70
+                    }, {
+                        field: 'birthday',
+                        title: '出生日期',
+                        align: 'center',
+                        minWidth: 110
+                    }, {
+                        field: 'mobile',
+                        title: '联系电话',
+                        align: 'center',
+                        // minWidth: 70
+                    }, {
+                        field: 'unitName',
+                        title: '单位',
+                        align: 'center',
+                        // minWidth: 70
+                    }, {
+                        field: 'description',
+                        title: '套',
+                        align: 'center',
+                        // minWidth: 70
+                    }, {
+                        field: 'deptName',
+                        title: '科室',
+                        align: 'center',
+                        // minWidth: 120
+                    }, {
+                        field: 'titleName',
+                        title: '当前职称',
+                        align: 'center',
+                        // minWidth: 110
+                    }, {
+                        field: 'personStateName',
+                        title: '人员状态',
+                        align: 'center',
+                        // minWidth: 120
+                    }, {
+                        field: 'checkState',
+                        title: '审核状态',
+                        align: 'center',
+                        templet: function (row) {
+                            if (row.checkState == 0) {
+                                return "未审核";
+                            } else if (row.checkState == 1) {
+                                return "审核通过";
+                            } else if (row.checkState == 4) {
+                                return "驳回";
+                            } else {
+                                return "未知";
+                            }
+                        }                    }, {
+                        field: 'transferState',
+                        title: '调动状态',
+                        align: 'center',
+                        // minWidth: 120,
+                        templet: function (row) {
+                            if (row.transferState == 1) {
+                                return "调出";
+                            } else if (row.transferState == 2) {
+                                return "调入";
+                            } else {
+                                return "";
+                            }
+                        }
+                    }, {
+                        field: 'tranInTime',
+                        title: '调入日期',
+                        align: 'center',
+                        minWidth: 110
+                    }, {
+                        field: 'addTime',
+                        title: '添加时间',
+                        align: 'center',
+                        minWidth: 160
+                    },{
+                        field: 'updateTime',
+                        title: '修改时间',
+                        align: 'center',
+                        minWidth: 160
+                    }, {
+                        field: 'hasPhotoName',
+                        title: '照片',
+                        align: 'center',
+                        // minWidth: 90,
+                        templet: function (row) {
+                            if (row.hasPhoto == "1") {
+                                return '<a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" ' +
+                                    'lay-event="photo">有</a>';
+                            } else {
+                                return '无';
+                            }
+                        }
+                    }, {
+                        align: 'center',
+                        title: '内蒙人社推送',
+                        toolbar: '#neimengScoreBar',
+                        minWidth: 120,
+                        // fixed: 'left'
+                    }, {
+                        align: 'center',
+                        title: '达标计算',
+                        toolbar: '#passCalculateBar',
+                        minWidth: 120,
+                        // fixed: 'left'
+                    }, {
+                        align: 'center',
+                        title: '密码重置',
+                        toolbar: '#resetPwdBar',
+                        // minWidth: 110,
+                        // fixed: 'left'
+                    }
+                ]
+                ],
+                cellMinWidth: 100,
+                id: 'comPerson',
+                height: 'full-175',
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    if(res.status != 200) {
+                        layer.msg("查询失败");
+                        return ;
+                    }
+                    return {
+                        'code': res.status === 200 ? 0 : res.status, // 解析接口状态
+                        'msg': res.message, // 解析提示文本
+                        'count': res.data.recordsTotal, // 解析数据长度
+                        'data': res.data.records, // 解析数据列表
+                        'page': res.data.pageNum, // 当前页
+                        'limit': res.data.pageSize, // 每页条数
+                    }
+                },
+                request: {
+                    pageName: 'pageNum', // 页码的参数名称，默认：page
+                    limitName: 'pageSize' // 每页数据量的参数名，默认：limit
+                },
+                done: function () {
+                }
+            });
+        };
+        // window.initTable();
+
+        $(function () {
+            getDeptId();
+            if (curDeptId != null && curDeptId != undefined && curDeptId != "") {
+                $("#hidden_dept_id").val(curDeptId);
+                $("#deptSelect").val(localStorage.getItem('realname')).addClass("layui-disabled");
+
+            } else {
+                //两个treeSelect几乎同时加载，可能会加载不出来
+                setTimeout(() => {
+                    // window.initDeptTree();
+                }, 200);
+
+            }
+            // window.initTable();
+        });
+
+        //#endregion
+
+        //---------------------------------事件--------------------------
+        window.reloadTable = function () {
+            // window.initTable();
+            table.reload("comPerson", {
+                // url: huayi_personorg_url + 'comperson/list',
+                url: huayi_personorg_url + 'comperson/list/support',
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                where: {
+                    cmeStandardKindId: window.getCmeStandardKindId(),
+                    // unitId: window.getUnitId(),
+                    keywordColumn: $("#select_column").val(),
+                    keyword: getSearchValue(),
+                    // spec: $("#hidden_spec").val(),
+                    // deptId: $("#hidden_dept_id").val(),
+                    // isIntheseries: $("#select_intheseries").val(),
+                    // personStateId: $("#select_person_state_id").val(),
+                    // hasPhoto: $("#select_has_photo").val(),
+                    // titleIds: $("#hidden_title_ids").val()
+                }, page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+        }
+
+        $("#searchBtn").click(function () {
+            var textValue = getSearchValue();
+            if (textValue == undefined || textValue == ''){
+                layer.msg('请输入查询条件')
+                return;
+            }
+            window.initTable();
+            // window.reloadTable();
+        })
+
+        // 监听行内按钮
+        table.on('tool(comPerson)', function (obj) {
+            var datas = obj.data;
+            if (obj.event === 'edit') {
+                form.val('add-filter', datas);
+                layer.open({
+                    type: 2,
+                    title: '编辑人员',
+                    content: "baseInfoAddOrEdit.html?operate=edit&comPersonId=" + datas.comPersonId 
+                            + "&taoId=" + datas.cmeStandardKindId + "&unitId=" + datas.unitId,
+                    skin: '',
+                    area: ['900px', '600px'],
+                    shadeClose: true
+                });
+            } else if (obj.event === 'del') {
+                var personName = datas.personName;
+                layer.confirm('确认删除' + personName + '?', {
+                    icon: 3,
+                    title: '提示'
+                }, function () {
+                    $.ajax({
+                        type: 'post',
+                        url: huayi_personorg_url + 'comperson/delete',
+                        headers: {
+                            'Authorization': localStorage.getItem('token'),
+                            'KJPT-USER-ID': localStorage.getItem('user-id')
+                        },
+                        data: {
+                            comPersonId: datas.comPersonId
+                        },
+                        success: function (res) {
+                            if (res.status === 200) {
+                                layer.msg("删除成功");
+                                table.reload('comPerson');
+                            }
+                        },
+                        error: function () {
+                            layer.msg("请求失败");
+                        }
+                    });
+
+                });
+            } else if (obj.event === 'detail') {
+                layer.open({
+                    type: 2,
+                    title: '人员信息',
+                    content: '../person/baseInfoDetails.html?comPersonId=' + datas.comPersonId,
+                    area: ['900px', '600px']
+                });
+            } else if (obj.event === 'photo') {
+                var url = datas.photo;
+                $('#photoArea img').attr('src', url);
+                layer.open({
+                    type: 1,
+                    title: false,
+                    content: $('#photoArea'),
+                    area: [, '400px'],
+                    shadeClose: true
+                });
+            } else if (obj.event === 'passDetail') {
+                // 达标明细查询
+                // layer.msg('达标明细查询');
+                var nowDate = new Date();
+                var year = nowDate.getFullYear();
+                // year = '2020';
+                var startDt = year + '-01-01';
+                var endDt = year + '-12-31';
+                var datas = obj.data;
+                var personInfo = '姓名: ' + datas.personName + ' &nbsp;&nbsp; 人员编号: ' + datas.personNo
+                                + ' &nbsp;&nbsp; 职称: ' + datas.titleName + ' &nbsp;&nbsp; 单位: ' + datas.unitName
+                layer.open({
+                    type: 2,
+                    title: '详细情况明细',
+                    content: 'personScoreStatistics.html?personId=' +
+                        datas.comPersonId + '&startDt=' + startDt + '&endDt=' + endDt 
+                        + '&checkState=' + '' + '&ifAvail=1&' + 'personInfo=' + personInfo
+                        + '&titleId=' + datas.titleId + '&unitId=' + datas.unitId + '&cmeYear=' + year
+                        + '&standardkindId=' + datas.cmeStandardKindId + '&certId=' + datas.certId
+                        ,
+                    // btn: ['关闭'],
+                    btnAlign: 'c',
+                    yes: function () {
+                        layer.closeAll();
+                    },
+                    area: ['100%', '100%'],
+                })
+            } else if (obj.event === 'resetPwd') {
+                // 重置密码
+                $.ajax({
+                    type: 'get',
+                    url: huayi_permission_url+"comuser/update/password/technicalSupport",
+                    data: {"comPersonId": datas.comPersonId},
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.status === 200){
+                            layer.confirm("密码重置已成功，默认密码为："+res.data, { title:'修改密码成功'}, function(index){
+                                layer.close(index);
+                            });
+                            // layer.msg("密码重置已成功，默认密码为："+res.data)
+                        }else {
+                            layer.msg(res.msg);
+                        }
+                    },
+                    error: function () {
+                        layer.msg("发送请求失败");
+                    }
+                })
+
+            } else if (obj.event === 'personSys') {
+                // 获取登录用户手机号
+                $.ajax({
+                    async: false,
+                    type: "get",
+                    url: huayi_permission_url + "comuser/detail",
+                    data: { userId: localStorage.getItem("user-id") },
+                    success: function (res) {
+                        debugger
+                        if (res.success == true) {
+                            userMobile = res.data.base.mobile;
+                        } else {
+                            layer.msg("获取配置出错");
+                        }
+                    },
+                    error: function () {
+                        layer.msg("获取配置出错");
+                    }
+                });
+            
+                var formGetMobileCode = $("#form-getMobileCode")[0];
+                formGetMobileCode.reset();
+                formGetMobileCode[0].value = userMobile;
+                form.render();
+                
+                // 进入个人版
+                comPersonId=datas.comPersonId;
+                layer.open({
+                    type: 1, 
+                    title: '手机验证码',
+                    content: $('#getMobileCode'),
+                    area: ['400px', '200px']
+                });
+
+                // layer.msg('进入个人版');
+
+            } else if (obj.event === 'passCalculate') {
+                // 达标实时计算
+                layer.msg('达标实时计算');
+
+            } else if (obj.event === 'stateTittle') {
+                // 状态职称维护
+                console.log('状态职称维护');
+
+                var url = 'cmeChange/cmeChangeDetail.html?comPersonId=' + datas.comPersonId 
+                            + '&personName=' + datas.personName 
+                            + '&personNo=' + datas.personNo
+                            + '&cmeStandardKindId=' + datas.cmeStandardKindId;
+                var index = layer.open({
+                    type: 2,
+                    title: '人员变动情况',
+                    area: ['100%', '100%'],
+                    content: url
+                });
+                // layer.full(index);
+            } else if (obj.event === 'neimengScore') {
+                comPersonId=datas.comPersonId;
+                // 内蒙人社推送
+                layer.open({
+                    type: 1,
+                    title: '选择推送年度',
+                    area: ['500px', '400px'],
+                    content: $('#neimengScore'),
+                });
+            } 
+        });
+           // 加载年度下拉框
+        let initCmeYear = function(){
+            var date = new Date();
+            var lastYear = date.getFullYear();
+            var options = '<option value="">请选择</option>';
+            for (var i = 0; i < 3; i++) {
+                options += '<option value="' + lastYear + '">' + lastYear + '年</option>';
+                lastYear = lastYear - 1;
+            }
+            $('#cmeYear').append(options);
+            form.render("select");
+        }
+        initCmeYear();
+
+        form.on('submit(submitNeimengScore)', function (data) {
+            debugger
+            layer.msg('正在提交中...');
+            $.ajax({
+                type: 'get',
+                url: huayi_personorg_url + 'comperson/support/neiMengScore',
+                data: {
+                    com_person_id: comPersonId,
+                    score_year: $('#cmeYear').val()
+                },
+                success: function (res) {
+                    if (res.status !== 200) {
+                        layer.msg(res.msg);
+                        return;
+                    }
+                    layer.msg("推送成功");
+                },
+                error: function () {
+                    layer.msg("发送请求失败");
+                }
+            })
+            return false;
+        });
+
+        // form表单相关操作
+        // 新增/修改表单提交
+        form.on('submit(submit)', function (data) {
+            debugger
+            // 用于判断是新增还是修改
+            var formTableId = $("#add-comPerson input[name='comPersonId']").val();
+            var datas = JSON.stringify(data.field);
+            var URL;
+            if (formTableId === '' || formTableId === null) {
+                // 走新增逻辑
+                URL = kjpt_url + 'comPerson/save';
+            } else {
+                // 走修改逻辑
+                URL = kjpt_url + 'comPerson/update';
+            }
+            $.ajax({
+                type: 'post',
+                url: URL,
+                data: datas,
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    layer.msg("修改成功");
+                },
+                error: function () {
+                    layer.msg("发送请求失败");
+                }
+            })
+        });
+
+        //鼠标悬停提示特效
+        $("#hint").hover(function () {
+            openMsg();
+        }, function () {
+            layer.close(subtips);
+        });
+
+        $("#text_title_names").click(function () {
+            layer.open({
+                type: 2,
+                content: "../controls/selectTitle/selectTitles.html",
+                area: ['610px', '450px'],
+                scrollbar: false
+            });
+        });
+
+    });
+
+    function getChildTitles(titleIds, titleNames) {
+        $("#text_title_names").val(titleNames);
+        $("#hidden_title_ids").val(titleIds);
+    }
+
+    function openMsg() {
+        subtips = layer.tips('提示信息', '#hint', {
+            tips: [1, '#ff6700'],
+            time: 30000
+        });
+    }
+
+
+    // Esc关闭弹窗
+    window.onkeyup = function (ev) {
+        var key = ev.keyCode || ev.which;
+        if (key == 27) {
+            layer.close(layer.index);
+            console.log('layer.index = ' + layer.index)
+        }
+    }
+
+
+    $("#getCode").click(function (){
+        var myreg=/^[1][3,4,5,7,8,9][0-9]{9}$/;
+        debugger
+        mobile=$("#mobile").val();
+        if(mobile === "" ){
+            layer.msg("请输入手机号")
+            return
+        }else if (!myreg.test(mobile)) {
+            layer.msg("请输入正确的手机号")
+            return
+        }
+        console.log(mobile);
+        // 发送短信验证码
+        $.ajax({
+            url         : huayi_mcenter_url + 'message/code/send',
+            type        : 'post',
+            contentType : 'application/json',
+            dataType    : 'json',
+            data        : JSON.stringify({
+                'msgCodeType' : 'LOGIN',
+                'phone'       : encodeAesString(mobile).toString(),
+            }),
+            success     : (res) => {
+                if (res.success == true) {
+                    layer.msg("获取验证码成功")
+                    // layer.msg('<sapn style="color: #666666;">验证码已发送，请注意查收</sapn>', 
+                    //         { icon : 1, time : 1500 });
+
+                    // // 重获验证码倒计时
+                    // curCount = count;
+                    // $('#login_' + cur_login + ' [name=code_btn]').html(curCount + '秒后重获');
+                    // InterValObj = window.setInterval(SetRemainTime, 1000);
+
+                } else {
+                    layer.msg("获取验证码失败")
+                    // layer.msg('<sapn style="color: #666666;">' + res.msg + '</sapn>', 
+                    //         { icon : 7, time : 1500 });
+                    // $('#login_' + cur_login + ' [name=code_btn]').css('pointer-events', '').removeClass('layui-disabled');
+                }
+            },
+            error       : (xhr, status, error) => {
+                layer.msg('<sapn style="color: #666666;">验证码发送失败</sapn>', 
+                        { icon : 2, time : 1500 });
+                $('#login_' + cur_login + ' [name=code_btn]').css('pointer-events', '').removeClass('layui-disabled');
+            }
+        });
+    })
+
+        // 验证验证码
+
+    $("#verifyCode").click(function () {
+
+        var mobile=$("#mobile").val();
+        var code=$("#code").val();
+
+        $.ajax({
+            url         : huayi_mcenter_url + 'message/code/check',
+            type        : 'post',
+            contentType : 'application/json',
+            dataType    : 'json',
+            data        : JSON.stringify({
+                'msgCodeType' : 'LOGIN',
+                'phone': encodeAesString(mobile).toString(),
+                'code': encodeAesString(code).toString()
+            }),
+            success     : (res) => {
+                if (res.success == true) {
+                     // 验证成功后发送登录请求，将localStorage替换成返回的信息,然后重定向到首页     
+                     debugger 
+                     loginPersonByPersonId()
+
+                } else {
+                    layer.msg("手机验证失败")
+                    // layer.msg('<sapn style="color: #666666;">' + res.msg + '</sapn>', 
+                    //         { icon : 7, time : 1500 });
+                }
+                // $('.verify-refresh').click();
+            },
+            error       : (xhr, status, error) => {
+                layer.msg("手机验证失败")
+                // layer.msg('<sapn style="color: #666666;">手机验证码验证失败</sapn>', 
+                //         { icon : 2, time : 1500 });
+                // $('.verify-refresh').click();
+            }
+        });
+    })
+
+    	    //获取配置的值
+		window.getConfig = function () {
+			var config_value = "";
+			var config_name = "value_system_logout_url";
+			$.ajax({
+				async: false,
+				type: "post",
+				url: huayi_sjwh_url + "cmeCommonConfig/getConfigByUnitFromRedis",
+				data: { unitId: localStorage.getItem("unit-id"), configNames: config_name },
+				success: function (res) {
+					debugger
+					if (res.success == true) {
+						if (config_name == "value_system_logout_url") {
+							config_value = res.data.value_system_logout_url;
+							localStorage.setItem('logout-url', config_value);
+						}
+					} else {
+						layer.msg("获取配置出错");
+					}
+				},
+				error: function () {
+					layer.msg("获取配置出错");
+				}
+			});
+			return config_value;
+		}
+
+    window.loginPersonByPersonId = function(){
+        debugger;
+        $.ajax({
+            url         : huayi_permission_url + 'loginByTechnicalSupport',
+            type        : 'post',
+            contentType : 'application/json',
+            dataType    : 'json',
+            data        : JSON.stringify({
+                'userId' : comPersonId,
+                'mobile'       : $("#mobile").val(),
+                'type'        : "1",
+                'technicalSupportId': localStorage.getItem("user-id")
+            }),
+            success     : (data, textStatus, xhr) => {
+                debugger
+                     let datas = data.data;
+                if (data.status == 200) {
+                    // 验证成功后发送登录请求，将localStorage替换成返回的信息,然后重定向到首页
+                    localStorage.clear();
+                    localStorage.setItem('login-url', window.location.href);
+                    localStorage.setItem('token', xhr.getResponseHeader('Authorization') || '');
+                    localStorage.setItem('token-exp-time', xhr.getResponseHeader('token-exp-time') || 0);
+                    localStorage.setItem('refresh-token', xhr.getResponseHeader('refresh-token') || '');
+                    localStorage.setItem('user-id', xhr.getResponseHeader('KJPT-USER-ID') || '');
+                    localStorage.setItem('unit-id', datas.unitId || '');
+                    localStorage.setItem('unit-name', datas.unitName || '');
+                    localStorage.setItem('standardkind-id', datas.standardKindId || '');
+                    localStorage.setItem('user-name', datas.userName || '');
+                    localStorage.setItem('user-type', datas.userType || '');
+                    localStorage.setItem('unit-user-type', datas.unitUserType || 0);
+                    if (datas.userType == "13") {
+                        localStorage.setItem('dept-id', datas.deptId || '');
+                        localStorage.setItem('dept-name', datas.deptName || ''); 
+                    }  
+                    // 添加文件验证cookie
+                    setFileVerifyCookie(xhr);
+                    localStorage.removeItem('menu-unit-id');
+                    // window.parent.window.open("http://127.0.0.1:5500/login.html");
+                    // window.parent.window.open("https://kjpt.wsglw.net");
+                    // 福建
+                    // window.parent.window.open('http://220.160.53.27:18021/');
+                    window.parent.window.location.href = "/index.html";
+                    // window.parent.window.open("http://192.168.1.166/index.html");
+                    window.top.close()
+                } else if(data.status == 500){
+                    layer.msg(data.msg)
+                }else {
+                    layer.msg("手机号无法登录该账号")
+                    return
+                }
+            },
+            error       : (xhr, status, error) => {
+                layer.msg("手机验证失败")
+            }
+        });
+
+    }
+
+</script>

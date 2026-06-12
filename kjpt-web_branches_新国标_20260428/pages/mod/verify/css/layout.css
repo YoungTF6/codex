@@ -1,0 +1,306 @@
+body, html {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    position: relative;
+    height: 100%;
+    font-family: "微软雅黑";
+
+}
+
+* {
+    font-family: "微软雅黑";
+}
+
+a, input, span, label, li, select {
+    -webkit-tap-highlight-color: transparent;
+}
+
+select {
+
+    outline: none;
+    font-size: 0.7rem;
+    border: none;
+    color: #666;
+    background: none;
+}
+
+
+.box {
+    width: 100%;
+    height: 100%;
+    float: left;
+    background: #f1f2f6;
+    overflow: auto;
+    position: relative;
+}
+
+.header {
+    width: 100%;
+    height: 2.13rem;
+    background: #3f7fff;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+.header a {
+    float: left;
+    width: 0.77rem;
+    height: 2.13rem;
+    background: url(/pages/mod/verify/img/icon_close.png) no-repeat center center;
+    background-size: 0.77rem 0.77rem;
+    margin-left: 0.73rem;
+}
+
+.header p {
+    float: left;
+    width: 13rem;
+    margin-right: 1.5rem;
+    text-align: center;
+    line-height: 2.13rem;
+    color: #fff;
+    font-size: 0.85rem;
+}
+
+.top {
+    width: 100%;
+    height: 2.13rem;
+    background: #3f7fff;
+    float: left;
+}
+
+.main {
+    float: left;
+    width: 100%;
+    height: auto;
+}
+
+.main_top {
+    width: 100%;
+    float: left;
+    background: url(/pages/mod/verify/img/bg_blank.png) no-repeat left top;
+    background-size: 100% 9.83rem;
+}
+
+.main_top_default {
+    width: 100%;
+    float: left;
+    background: url(/pages/mod/verify/img/bg_blank.png) no-repeat left top;
+    background-size: 100% 9.83rem;
+}
+
+.main_top_zj {
+    width: 100%;
+    float: left;
+    background: url(/pages/mod/verify/img/bg_blank.png) no-repeat left top;
+    background-size: 100% 9.83rem;
+}
+
+/* baseInfo-1 */
+.top_tab {
+    float: left;
+    width: 13.6rem;
+    float: left;
+    margin: 1rem 1.2rem 1rem 1.2rem;
+    color: #fff;
+    line-height: 1.4rem;
+}
+
+.top_tab tr td {
+    padding: 0.2rem 0;
+    font-size: 0.8rem;
+}
+
+.top_tab tr td:nth-of-type(2) {
+    text-align: right;
+}
+
+/* baseInfo-2 */
+.main_list {
+    float: left;
+    width: 100%;
+
+}
+
+.main_list ul {
+    width: 12.8rem;
+    float: left;
+    padding: 0 0.8rem;
+    margin: 0 0.8rem;
+    background: #fff;
+    border-radius: 0.3rem;
+    font-size: 0.73rem;
+}
+
+.main_list ul li {
+    float: left;
+    width: 100%;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f1f2f6;
+}
+
+.main_list ul li:nth-of-type(3) {
+    border: none;
+}
+
+.main_list ul li b {
+    float: left;
+    color: #3377ff;
+    padding: 0.2rem 0 0.2rem 1rem;
+}
+
+.dw {
+    background: url(/pages/mod/verify/img/icon_unit.png) no-repeat left center;
+    background-size: 0.85rem 0.85rem;
+}
+
+.sfz {
+    background: url(/pages/mod/verify/img/icon_cert.jpg) no-repeat left center;
+    background-size: 0.85rem 0.85rem;
+}
+
+.ks {
+    background: url(/pages/mod/verify/img/icon_dept.png) no-repeat left center;
+    background-size: 0.85rem 0.85rem;
+}
+
+.zc {
+    background: url(/pages/mod/verify/img/icon_title.png) no-repeat left center;
+    background-size: 0.85rem 0.85rem;
+}
+
+.cert_no {
+    background: url(/pages/mod/verify/img/icon_cert_no.png) no-repeat left center;
+    background-size: 0.85rem 0.85rem;
+}
+
+.main_list ul li p {
+    float: right;
+    color: #333;
+    line-height: 1.2rem;
+    width: 10rem;
+    text-align: right;
+
+}
+
+
+/* year */
+.main_list_item {
+    float: left;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.main_list_item ul {
+    width: 92%;
+    float: left;
+    margin: 0 4%;
+    font-size: 0.65rem;
+}
+
+.main_list_item ul li {
+    float: left;
+    width: 100%;
+    background: #fff;
+    border-radius: 0.3rem;
+    margin-bottom: 0.5rem;
+}
+
+.main_list_item ul li:nth-child(1) {
+    margin-top: 0.5rem;
+}
+
+.main_list_item ul li b {
+    float: left;
+    color: #3377ff;
+    line-height: 1rem;
+    padding: 0.8rem 0 0.8rem 1rem;
+    margin-left: 0.8rem;
+}
+
+.db {
+    background: url(/pages/mod/verify/img/icon_dabiao.png) no-repeat left center;
+    background-size: 0.85rem 0.85rem;
+}
+
+.nd {
+    background: url(/pages/mod/verify/img/icon_year.png) no-repeat left center;
+    background-size: 0.85rem 0.85rem;
+}
+
+.yi {
+    background: url(/pages/mod/verify/img/icon_i.png) no-repeat left center;
+    background-size: 0.85rem 0.85rem;
+}
+
+.er {
+    background: url(/pages/mod/verify/img/icon_ii.png) no-repeat left center;
+    background-size: 0.85rem 0.85rem;
+}
+
+.main_list_item ul li p {
+    float: right;
+    color: #333;
+    padding: 0.8rem 0;
+    width: 55%;
+    text-align: right;
+    line-height: 1rem;
+    margin-right: 0.6rem;
+}
+
+
+.main_list_item ul li p.bl {
+    color: #219D14;
+}
+
+
+/* multiYear */
+.main_tab {
+    float: left;
+    width: 14.4rem;
+    margin: 0.8rem 0.8rem 0 0.8rem;
+}
+
+.main_tab ul {
+    float: left;
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+.main_tab ul li {
+    float: left;
+    text-align: center;
+    font-size: 0.7rem;
+    width: 2.86rem;
+    color: #333333;
+}
+
+.main_tab_item {
+    float: left;
+    width: 100%;
+    text-align: center;
+    border-radius: 0.3rem;
+    background: #fff;
+}
+
+.main_tab_item tr td {
+    padding: 0.5rem 0;
+    width: 2.86rem;
+}
+
+.main_tab_item tr {
+    font-size: 0.6rem;
+}
+
+.no {
+    color: #ff3333;
+}
+
+.yes {
+    color: #219d14;
+}
+
+

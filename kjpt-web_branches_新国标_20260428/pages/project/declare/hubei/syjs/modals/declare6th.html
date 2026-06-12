@@ -1,0 +1,32 @@
+
+<div id="projectDetailPage6">
+    <form class="page-form layui-form" action="" id="page6-form" lay-filter="page6-form">
+        <input type="hidden" name="pageNum" value=6>
+        <input type="hidden" name="cstate" value="1">
+
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+            <legend>上传附件</legend>
+        </fieldset>
+        <button type="button" class="layui-btn layui-btn-sm hide" id="uploadBtn">
+            <i class="layui-icon">&#xe67c;</i>上传
+        </button>
+
+        <div class="layui-card-body">
+            <table class="layui-table" id="attachmentTable" lay-filter="attachmentTable" lay-size="sm"
+                   style="margin: 0;"></table>
+        </div>
+        <!-- row7 -->
+        <div class="layui-form-item">
+            <div class="layui-col-sm12">
+                <div style="text-align: center;">
+                    <button class="layui-btn" type="submit" lay-submit lay-filter="save">保存</button>
+                    <button class="layui-btn" type="submit" lay-submit lay-filter="saveToNext">保存并上报</button>
+                </div>
+            </div>
+        </div>
+
+
+    </form>
+
+</div>
+

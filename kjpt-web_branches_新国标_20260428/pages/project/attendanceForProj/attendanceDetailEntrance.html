@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>考勤明细详情入口</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+        media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <link rel="stylesheet" href="/css/project/cmeProjFeedback.css" media="all">
+
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+</head>
+
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <!--        表格区域-->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="implementation" lay-filter="implementation" style="margin: 0px 0px;"></table>
+            </div>
+        </div>
+    </div>
+<script>
+    // 全局配置及引入相关的模块
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        tool: 'tool',
+    });
+
+    layui.use(['table', 'form', 'element', 'upload', 'laydate', 'tool'], function () {
+        var table = layui.table, form = layui.form, $ = layui.jquery, tool = layui.tool;
+        var laydate = layui.laydate, element = layui.element, upload = layui.upload;
+        var layer = layui.layer;
+        
+        // 表格配置
+        let loaderTable = function (projectId, projectInfo) {
+            table.render({
+                elem: '#implementation',
+                url: huayi_projectscore_url + 'cmeProjPosDownload',
+                method: 'get',
+                where: { 
+                    projId: projectId
+                },
+                cols: [[
+                    { align: 'center', width: 170, title: '操作', fixed: 'left', templet: function(data){
+                        return `<a class="layui-btn layui-btn-xs" lay-event="viewAttendanceDetail" >查看</a>`;
+                    } },
+                    {
+                        field: 'index', title: "举办批次", sort: true, align: 'center', templet: function (data) {
+                            return "第" + data["batch"] + "批次";
+                        }
+                    },
+                    { field: 'projNo', title: '项目编号', sort: true, align: 'center',templet: function(){
+                        return projectInfo.projNo;
+                    } },
+                    { field: 'projName', title: '项目名称', sort: true, align: 'center' },
+                    { field: 'startDt', title: '开始日期', sort: true, align: 'center' },
+                    { field: 'endDt', title: '结束日期', sort: true, align: 'center' }
+                ]],
+                cellMinWidth: 100,
+                id: "implementation",
+                height: 'full-50',
+                page: false,
+                parseData: function (res) {
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "data": res.data, //解析数据列表
+                    }
+                },
+                done: function (res, curr, count) {
+                    
+                }
+            });
+        };
+
+        // 根据项目ID同步请求项目详情（projectscore/cmeCmeProj/getOne）
+        let requestProjOne = function (projId, onSuccess) {
+            $.ajax({
+                url: huayi_projectscore_url + 'cmeCmeProj/getOne',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json;charset=UTF-8',
+                data: JSON.stringify({
+                    projId: projId
+                }),
+                success: function (res) {
+                    if (!res || Number(res.status) !== 200) {
+                        layer.msg((res && (res.msg || res.message)) ? (res.msg || res.message) : '获取项目详情失败');
+                        return;
+                    }
+                    if (typeof onSuccess === 'function') {
+                        onSuccess(res.data || {});
+                    }
+                },
+                error: function () {
+                    layer.msg('请求项目详情失败，请稍后重试');
+                }
+            });
+        };
+
+
+
+        let openAttendanceDetail = function (data) {
+            layer.open({
+                title: '考勤明细',
+                content: '/pages/project/attendanceForProj/attendanceDetail.html?downId=' + data.downId + '&projId=' + data.projId,
+                type: 2,
+                area: ['100%', '100%'],
+                maxmin: true,
+            });
+        };
+
+        // 监听行内按钮
+        table.on('tool(implementation)', function (obj) {
+            obj.event == "viewAttendanceDetail" && openAttendanceDetail(obj.data);
+        });
+
+        table.on('tool(effective-people)', function (obj) {
+            var comPersonId = obj.data.comPersonId;
+            if (obj.event === 'attendance') {
+                
+            }
+        });
+
+
+       
+
+        //页面初始化
+        let htmlInit = function () {
+            let nowProjectId = tool.getParamFromUrl("projectId");
+            if (tool.isEmpty(nowProjectId)) {
+                layer.msg("缺少必要参数");
+                return;
+            }
+            // 先同步获取项目详情，再初始化表格
+            requestProjOne(nowProjectId, function (data) {
+                loaderTable(nowProjectId,data);
+            });
+        }
+        htmlInit();
+
+    });
+
+</script>
+</body>
+
+</html>

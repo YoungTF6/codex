@@ -1,0 +1,2199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>活动总结</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+        media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <link rel="stylesheet" href="../../css/project/cmeGroupProjFeedback.css" media="all">
+
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <script type="text/javascript" src="../../js/axios.min.js"></script>
+    <script type="text/javascript" src="../../js/auth.js"></script>
+    <style>
+        .layui-form-label-my {
+            text-align: center;
+            width: unset;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <!--        表格区域-->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="implementation" lay-filter="implementation" style="margin: 0px 0px;"></table>
+            </div>
+
+            <!--        添加弹窗-->
+            <div id="implementationFeedback" style=" display:none;text-align: center">
+                <div class="layui-card">
+                    <!-- sheet页部分 -->
+                    <div class="layui-tab" lay-filter="tabcheck">
+                        <ul class="layui-tab-title js-tabs"></ul>
+                    </div>
+                </div>
+                <div id="tabPage">
+                    <!-- 项目信息及反馈 -->
+                    <div class="js-project-tab js-tab-page">
+                        <form class="project-form" id="prjInfo"></form>
+                        <form class="project-form" id="formProject"></form>
+                        <input type="hidden" id="upScore">
+                        <div id="projCycleFile"></div>
+                        <div>
+                            <table class="layui-table" id="downCources" lay-filter="downCources">
+                            </table>
+                        </div>
+                    </div>
+                    <!-- 课程图片上传 -->
+                    <div class="js-project-image js-tab-page">
+                        <div class="upload-file-tip">仅支持小于<label id="uploadSize"></label>,格式为jpg,png,bmp,docx,xls,xlsx,doc,pdf的文件
+                            <div id="feedback_template" style="display: none;">
+                                <a href="/file/feedback_template/决算表模板.pdf" download="决算表模板.pdf" style="margin-left: 10px; color: #1E9FFF; text-decoration: underline;">决算表模板</a>
+                                <a href="/file/feedback_template/飞行检查模版.pdf" download="飞行检查模版.pdf" style="margin-left: 10px; color: #1E9FFF; text-decoration: underline;">飞行检查模版</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 授分人员 -->
+                    <div class="js-project-people js-tab-page">
+                        <div style="font-size:20px;" id="peopleScoreTitle">授分人员明细表</div>
+                        <table class="layui-table" id="effectivePeople" lay-filter="effective-people"
+                            style="margin: 0px 0px;">
+                        </table>
+                    </div>
+                    <!-- 教材明细 -->
+                    <div class="js-project-textbook js-tab-page">
+                        <div id="div-textbook" style="display: none;">
+                            <form class="layui-form project-form" style="padding: 30px 0px 0px;" id="formTextbook"
+                                lay-filter="add-textbook">
+                                <div class="layui-form-item">
+                                    <div class="layui-inline-flex">
+                                        <label class="layui-form-label">教材字数：</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="textbookWorks" autocomplete="off"
+                                                class="layui-input js-textbook-works" maxlength="40">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline-flex">
+                                        <label class="layui-form-label">教材形式：</label>
+                                        <div class="layui-input-block">
+                                            <select name="textbookType" id="textbookType" lay-filter="textbook-type">
+                                                <option value="">请选择</option>
+                                                <option value="0">文字教材</option>
+                                                <option value="1">音像教材</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline-flex">
+                                        <label class="layui-form-label">讲授课时：</label>
+                                        <div class="layui-input-block">
+                                            <input type="number" min="0" name="coursePeriod" autocomplete="off"
+                                                class="layui-input js-course-period"
+                                                oninput="value=value.replace(/[^\d]/g,'')">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline-flex">
+                                        <label class="layui-form-label">编写时间：</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="writeTime" id="writeTime" autocomplete="off"
+                                                class="layui-input js-write-time" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item1">
+                                    <div class="layui-inline-flex">
+                                        <label class="layui-form-label">教材名称：</label>
+                                        <div class="layui-input-block">
+                                            <textarea name="textbookName" class="layui-textarea js-teaxtbook-name"
+                                                autocomplete="off" maxlength="250"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item1">
+                                    <div class="layui-inline-flex">
+                                        <label class="layui-form-label">编写人员或编写单位：</label>
+                                        <div class="layui-input-block">
+                                            <textarea name="writeUnitPeople" class="layui-textarea js-textbook-unit"
+                                                autocomplete="off" maxlength="4000"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item1">
+                                    <div class="layui-inline-flex">
+                                        <label class="layui-form-label">教材目录或内容概述：</label>
+                                        <div class="layui-input-block">
+                                            <textarea name="textbookSummary"
+                                                class="layui-textarea js-textbook-summarize" autocomplete="off"
+                                                maxlength="4000"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="div-handout" style="display: none;">
+                            <form class="layui-form project-form" style="padding: 30px 0px 0px;" id="formTextbook"
+                                lay-filter="add-textbook">
+                                <div class="layui-form-item">
+                                    <div class="layui-inline-flex">
+                                        <label class="layui-form-label">讲义字数：</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="textbookWorks2" autocomplete="off"
+                                                class="layui-input js-textbook-works2" maxlength="40">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline-flex">
+                                        <label class="layui-form-label">讲义形式：</label>
+                                        <div class="layui-input-block">
+                                            <select name="textbookType2" id="textbookType2" lay-filter="textbook-type">
+                                                <option value="">请选择</option>
+                                                <option value="0">文字教材</option>
+                                                <option value="1">音像教材</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline-flex">
+                                        <label class="layui-form-label">编写时间：</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="writeTime2" id="writeTime2" autocomplete="off"
+                                                class="layui-input js-write-time2" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline-flex">
+                                        <label class="layui-form-label">讲授时间（学时）：</label>
+                                        <div class="layui-input-block">
+                                            <input type="number" min="0" name="coursePeriod2" autocomplete="off"
+                                                class="layui-input js-course-period2"
+                                                oninput="value=value.replace(/[^\d]/g,'')">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item1">
+                                    <div class="layui-inline-flex">
+                                        <label class="layui-form-label">讲义名称：</label>
+                                        <div class="layui-input-block">
+                                            <textarea name="textbookName2" class="layui-textarea js-teaxtbook-name2"
+                                                autocomplete="off" maxlength="250"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item1">
+                                    <div class="layui-inline-flex">
+                                        <label class="layui-form-label">编写人员或编写单位：</label>
+                                        <div class="layui-input-block">
+                                            <textarea name="writeUnitPeople2" class="layui-textarea js-textbook-unit2"
+                                                autocomplete="off" maxlength="4000"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item1">
+                                    <div class="layui-inline-flex">
+                                        <label class="layui-form-label">讲义目录或内容概述：</label>
+                                        <div class="layui-input-block">
+                                            <textarea name="textbookSummary2"
+                                                class="layui-textarea js-textbook-summarize2" autocomplete="off"
+                                                maxlength="4000"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="upload-file-tip" style="margin-left: 30px;">仅支持小于10M,格式为docx,xls,xlsx,doc,pdf,ppt,pptx的文件</div>
+                            <div id="coursewareFile" style="width: 95%;"></div>
+                        </div>
+                    </div>
+                    <!-- 督查表 -->
+                    <div class="js-inspect js-tab-page">
+                        <div id="duCha">
+                            <div class="inspect-subtitle"><span>反馈督查</span></div>
+                            <ul id="inspectFile"></ul>
+                            <div id="inspectBtn">
+                                <div class="js-upload-btn-box-dc">
+                                    <button class="layui-btn layui-btn-sm js-upload-btn" id="inspectTable" inspect-file-type="1">督查表</button>
+                                    <button class="layui-btn layui-btn-sm js-upload-btn" id="inspectImg" inspect-file-type="2">督查照片</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="inspect-subtitle" id="inspectFlowTitle"><span>反馈审核流程</span></div>
+                        <div id="inspectFlow"></div>
+                        <div id="inspectScorePeriod">
+                            <div>
+                                <label class="layui-form-label">学分修改为</label>
+                                <div class="layui-input-block">
+                                    <input type="number" min="0" name="score" autocomplete="off" class="layui-input check-score">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="layui-form-label">学时修改为</label>
+                                <div class="layui-input-block">
+                                    <input type="number" min="0" name="period" autocomplete="off" class="layui-input check-period">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 打包下载 -->
+                    <div class="js-download js-tab-page" id="download-file">
+
+                    </div>
+                    <!-- 审核表上传 -->
+                    <div class="js-project-process js-tab-page">
+                        <div class="upload-file-tip">仅支持小于<label id="uploadSize2"></label>,格式为jpg,png,bmp,docx,xls,xlsx,doc,pdf的文件</div>
+
+                    </div>
+
+                    <!-- 项目经费收支 -->
+                    <div class="js-funds js-tab-page">
+                        <div class="layui-form" lay-filter="feeForm">
+                            <input type="hidden" id="feedbackFundsId" name="feedbackFundsId" />
+                            <fieldset class="layui-elem-field" style="margin-top: 10px; padding: 30px;">
+                                <legend style="color:rgba(235, 39, 39, 0.514);text-align: left;font-weight: bold; font-size: 18px;;">
+                                    项目经费收入预算</legend>
+
+                                <div class="layui-form-item">
+
+                                    <label class="layui-form-label">培训费收费标准(元/人):</label>
+                                    <div class="layui-input-block">
+                                        <label class="layui-form-label layui-form-label-my">招收学员</label>
+                                        <input type="number" id="studyNum" name="studyNum" class="layui-input" style="width:10%;float:left;" lay-verify="required|number"
+                                        />
+                                        <label class="layui-form-label layui-form-label-my">人 * 收费</label>
+                                        <input type="text" id="incomeStandardPer" name="incomeStandardPer" class="layui-input" style="width:10%;float:left;" lay-verify="required|number"
+                                        />
+                                        <label class="layui-form-label layui-form-label-my">元/人=合计收培训费</label>
+                                        <input type="text" id="incomeStandardTotal" name="incomeStandardTotal" class="layui-input" style="width:15%;float:left;"
+                                            lay-verify="required|number|incomeStandardTotalCheck" />
+                                        <label class="layui-form-label layui-form-label-my">元</label>
+                                    </div>
+
+                                </div>
+
+                                <div class="layui-form-item">
+
+                                    <label class="layui-form-label" style="padding:9px 0px;width:100px;">单位配套经费:</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" id="incomeUnitSupport" name="incomeUnitSupport" class="layui-input" style="width:15%;float:left;" lay-verify="required|number"
+                                        />
+                                        <label class="layui-form-label layui-form-label-my">元</label>
+                                    </div>
+
+                                </div>
+
+                                <div class="layui-form-item">
+
+                                    <label class="layui-form-label">其他经费:</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" id="incomeOther" name="incomeOther" class="layui-input" style="width:15%;float:left;" lay-verify="required|number"
+                                        />
+                                        <label class="layui-form-label layui-form-label-my">元</label>
+                                        <label class="layui-form-label layui-form-label-my">经费来源:</label>
+                                        <input type="text" id="incomeOtherSource" name="incomeOtherSource" class="layui-input" style="width:25%;" lay-verify="required"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div class="layui-form-item">
+
+                                    <label class="layui-form-label">预计总收入:</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" id="incomeTotal" name="incomeTotal" class="layui-input" style="width:15%;float:left;" lay-verify="required|number|incomeTotalCheck"
+                                        />
+                                        <label class="layui-form-label layui-form-label-my">元</label>
+                                    </div>
+                                </div>
+
+                            </fieldset>
+
+                            <fieldset class="layui-elem-field" style="margin-top: 10px; padding: 30px;">
+                                <legend style="color:rgba(235, 39, 39, 0.514);text-align: left;font-weight: bold; font-size: 18px;;">
+                                    项目经费支出预算</legend>
+
+                                <div class="layui-form-item">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">专家讲课费:</label>
+                                        <div class="layui-input-block">
+
+                                            <label class="layui-form-label layui-form-label-my">1.中级技术职称人员&nbsp;&nbsp;&nbsp; </label>
+                                            <input type="number" id="expendZhongjiExpertCount" name="expendZhongjiExpertCount" class="layui-input" style="width:10%;float:left;height: 35px;"
+                                                lay-verify="required|number|intCheck" />
+                                            <label class="layui-form-label layui-form-label-my"> 人， 合计金额</label>
+                                            <input type="text" id="expendZhongjiExpertTotal" name="expendZhongjiExpertTotal" class="layui-input" style="width:18%;float:left;height: 35px;"
+                                                lay-verify="required|number" />
+                                            <label class="layui-form-label layui-form-label-my">元</label>
+
+                                            <label class="layui-form-label layui-form-label-my" style="clear:left;"> 2.副高级技术职称人员</label>
+                                            <input type="number" id="expendFugaoExpertCount" name="expendFugaoExpertCount" class="layui-input" style="width:10%;float:left;height: 35px;"
+                                                lay-verify="required|number|intCheck" />
+                                            <label class="layui-form-label layui-form-label-my"> 人， 合计金额</label>
+                                            <input type="text" id="expendFugaoExpertTotal" name="expendFugaoExpertTotal" class="layui-input" style="width:18%;float:left;height: 35px;"
+                                                lay-verify="required|number" />
+                                            <label class="layui-form-label layui-form-label-my">元</label>
+
+                                            <label class="layui-form-label layui-form-label-my" style="clear:left;"> 3.正高级技术职称人员</label>
+                                            <input type="number" id="expendZhenggaoExpertCount" name="expendZhenggaoExpertCount" class="layui-input" style="width:10%;float:left;height: 35px;"
+                                                lay-verify="required|number|intCheck" />
+                                            <label class="layui-form-label layui-form-label-my"> 人， 合计金额</label>
+                                            <input type="text" id="expendZhenggaoExpertTotal" name="expendZhenggaoExpertTotal" class="layui-input" style="width:18%;float:left;height: 35px;"
+                                                lay-verify="required|number" />
+                                            <label class="layui-form-label layui-form-label-my">元</label>
+
+                                            <label class="layui-form-label layui-form-label-my" style="clear:left;"> 4.院士、全国知名专家</label>
+                                            <input type="number" id="expendYuanshiExpertCount" name="expendYuanshiExpertCount" class="layui-input" style="width:10%;float:left;height: 35px;"
+                                                lay-verify="required|number|intCheck" />
+                                            <label class="layui-form-label layui-form-label-my"> 人， 合计金额</label>
+                                            <input type="text" id="expendYuanshiExpertTotal" name="expendYuanshiExpertTotal" class="layui-input" style="width:18%;float:left;height: 35px;"
+                                                lay-verify="required|number" />
+                                            <label class="layui-form-label layui-form-label-my">元</label>
+
+                                            <label class="layui-form-label layui-form-label-my" style="clear:left;">总额共计</label>
+                                            <input type="text" id="expendExpertTotal" name="expendExpertTotal" class="layui-input" style="width:18%;float:left;" lay-verify="required|number|expendExpertTotalCheck"/>
+                                            <label class="layui-form-label layui-form-label-my">元</label>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="layui-form-item">
+
+                                    <label class="layui-form-label">场地租赁费:</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" id="expendPlaceRent" name="expendPlaceRent" class="layui-input" style="width:18%;float:left;" lay-verify="required|number"
+                                        />
+                                        <label class="layui-form-label layui-form-label-my">元</label>
+                                    </div>
+
+                                </div>
+                                <div class="layui-form-item">
+
+                                    <label class="layui-form-label">设备租赁费:</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" id="expendEquipmentRent" name="expendEquipmentRent" class="layui-input" style="width:18%;float:left;"
+                                            lay-verify="required|number" />
+                                        <label class="layui-form-label layui-form-label-my">元</label>
+                                    </div>
+
+                                </div>
+                                <div class="layui-form-item">
+
+                                    <label class="layui-form-label">材料印刷费:</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" id="expendTxtPrint" name="expendTxtPrint" class="layui-input" style="width:18%;float:left;" lay-verify="required|number"
+                                        />
+                                        <label class="layui-form-label layui-form-label-my">元</label>
+                                    </div>
+
+                                </div>
+                                <div class="layui-form-item">
+
+                                    <label class="layui-form-label" style="width: 105px;padding: unset;">工作人员劳务费:</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" id="expendWorkerSalary" name="expendWorkerSalary" class="layui-input" style="width:18%;float:left;"
+                                            lay-verify="required|number" />
+                                        <label class="layui-form-label layui-form-label-my">元</label>
+                                    </div>
+
+                                </div>
+                                <div class="layui-form-item">
+
+                                    <label class="layui-form-label">其它费用:</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" id="expendOther" name="expendOther" class="layui-input" style="width:18%;float:left;" lay-verify="required|number"
+                                        />
+                                        <label class="layui-form-label layui-form-label-my">元</label>
+                                    </div>
+
+                                </div>
+                                <div class="layui-form-item">
+
+                                    <label class="layui-form-label">支出总额:</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" id="expendTotal" name="expendTotal" class="layui-input" style="width:18%;float:left;" lay-verify="required|number|expendTotalCheck"
+                                        />
+                                        <label class="layui-form-label layui-form-label-my">元</label>
+                                    </div>
+
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+
+                    <div id="noticeText" style="text-align: left;margin: 20px;display: none;">
+                        <span style="color: rgb(119,119,0);">
+                            <span style="font-size: 1.5em;font-weight: bold;font-style: italic;">重要：</span>“执行情况反馈”信息填写完整之后，请点“完成并上报”按钮,才能上报到上级单位.<br>
+                            <span style="font-weight: bold;color: black;">点“保存”按钮与点“完成并上报”按钮区别</span><br>
+                            1，点“保存”按钮表示先将所填反馈信息保存起来，仍可修改。<br>
+                            2，点“完成并上报”按钮，表示所填信息无误，要上报到上级单位査看,一经上报无法修改,是否已上报反馈信息是此项目可备案的条件之一。
+                        </span>
+                    </div>
+
+                </div>
+                <div id="tabBtn" style="margin-bottom: 30px;">
+                    <a class="layui-btn layui-btn-sm js-last js-hidden" lay-event="last">上一页</a>
+                    <a class="layui-btn layui-btn-sm js-next">下一页</a>
+                    <a class="layui-btn layui-btn-sm js-submit">保存</a>
+                    <a class="layui-btn layui-btn-sm js-apply">保存并上报</a>
+                    <a class="layui-btn layui-btn-sm js-pass js-hidden">审批通过</a>
+                    <a class="layui-btn layui-btn-sm js-no-pass js-hidden">审批不通过</a>
+                    <a class="layui-btn layui-btn-sm js-back js-hidden">退回</a>
+                </div>
+            </div>
+            <!-- 审批意见的弹窗 -->
+            <div id="approvalText" style="display: none;text-align: center;">
+                <div>
+                    <div style="width:76%">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>审批意见</label>
+                    <div class="layui-input-block">
+                        <textarea name="approvalContent" class="layui-textarea js-approval-content" autocomplete="off" maxlength="400"></textarea>
+                    </div>
+                    </div>
+                    <div style="width:23%">
+                        <a class="layui-btn layui-btn-sm js-choose-approval">选择</a>
+                    </div>
+                </div>
+                <a class="layui-btn layui-btn-sm layui-btn-radius js-submit-approval">提交</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 选择审核意见弹窗 -->
+    <div id="chooseApprovalWindow" style="display: none;">
+        <ul class="js-approval-ul"></ul>
+    </div>
+<script>
+    const userType = localStorage.getItem("user-type");
+    const userName = localStorage.getItem("user-name");
+    const myUnitId = localStorage.getItem("unit-id");
+    const myDeptId = localStorage.getItem("dept-id");
+    const taoId = localStorage.getItem("standardkind-id");
+    const zhe_jiang_tao_id = '190c480d-d43c-450b-8472-a6fd00a6729d'
+</script>
+<!--表格内数据编辑、删除按钮、holdQualification是举办权限，如果为true才能举办-->
+<script type="text/html" id="rowBar">
+    <!-- 不可反馈,单位科室都一样 -->
+    <!-- 授分人数为0,虽然是反馈按钮,但是不可以反馈 -->
+    {{# if(d.scorePeopleNum ==0 && d.feedbackInfoId == null && (taoId != zhe_jiang_tao_id || userType == 13)){ }}
+        <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row btn-apply oprateSpan" lay-event="noFeedback" id="{{d.downId}}" >反馈</a>
+    {{# } }}
+
+    <!-- 未填报,单位科室都一样 -->
+    {{# if(d.scorePeopleNum >0 && d.feedbackInfoId == null && (taoId != zhe_jiang_tao_id || userType == 13)){ }}
+        <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row btn-apply oprateSpan" id="{{d.downId}}" lay-event="feedback" data-name="firstback">反馈</a>
+    {{# } }}
+
+    <!-- 已保存,未上报,单位科室都一样 -->
+    {{# if(d.scorePeopleNum >0 && d.feedbackInfoId !=null && (d.checkState == null || d.checkState==0)){ }}
+        <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row btn-apply" lay-event="apply" data-name="firstback">上报</a>
+        <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="feedback" data-name="firstback">修改</a>
+    {{# } }}
+
+    <!-- 审批：浙江套走专有逻辑，非浙江套保持原逻辑 -->
+    {{# if(taoId == zhe_jiang_tao_id){ }}
+        {{# if(userType==12 && d.checkState==4 && d.applyUnitId != myUnitId){ }}
+            <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="approval">待审批</a>
+        {{# } }}
+    {{# } else { }}
+        {{# if(userType==12 && d.checkState==4 && d.unitApprovalState != 3 && d.applyUnitId != myUnitId){ }}
+            <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="approval">待审批</a>
+        {{# } }}
+    {{# } }}
+
+    <!-- 反馈之后，上级还没有审批，科室提交的,单位提交的 -->
+    {{# if(d.canBack == 0 && d.checkState==4 && (((d.applyDept==myDeptId || d.applyDept==userName) && userType==13) || (d.applyUnitId==myUnitId && userType==12) )){ }}
+        <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="view">查看</a>
+        <a class="layui-btn layui-btn-xs layui-btn-danger btn-danger-row" lay-event="back">撤回</a>
+    {{# } }}
+
+    <!-- 退回的 -->
+    {{# if(d.checkState == 1 && ( ((d.applyDept==myDeptId || d.applyDept==userName) && userType==13) || (d.applyUnitId==myUnitId && userType==12) )){ }}
+        <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row btn-apply" lay-event="apply">重新上报</a>
+        <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row btn-apply" lay-event="feedback">修改</a>
+    {{# } }}
+    <!-- 已上报，审批中或者审核通过和不通过，都是只能查看 -->
+    {{# if(taoId == zhe_jiang_tao_id){ }}
+        {{# if(!(userType==12 && d.checkState==4 && d.applyUnitId != myUnitId) && (d.checkState == 3 || d.checkState ==2 || (d.checkState==4 && d.canBack!=0) || (d.checkState == 1 && d.applyDept != myDeptId && d.applyUnitId != myUnitId) || (d.checkState > 0 && userType==13 && d.applyDept != userName) || d.unitApprovalState ==1 || d.unitApprovalState ==2 || d.unitApprovalState == 3)){ }}
+            <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="view">查看</a>
+        {{# } }}
+    {{# } else { }}
+        {{# if(d.checkState == 3 || d.checkState ==2 || (d.checkState==4 && d.canBack!=0) || (d.checkState == 1 && d.applyDept != myDeptId && d.applyUnitId != myUnitId) || (d.checkState > 0 && userType==13 && d.applyDept != userName) || d.unitApprovalState ==1 || d.unitApprovalState ==2 || d.unitApprovalState == 3){ }}
+            <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="view">查看</a>
+        {{# } }}
+    {{# } }}
+
+</script>
+<script type="text/html" id="viewBar">
+    {{# if(d.checkState !=null && d.checkState != 0) {  }}
+        <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="viewProgress">查看</a>
+        {{# if(localStorage.getItem("standardkind-id") == '73ba18db-33fd-4746-ab41-9beb009f69a1'){ }}
+            <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" style="color: red;" lay-event="viewApproveLog">日志</a>
+        {{# } }}
+    {{# } }}
+</script>
+<!-- 考勤明细 -->
+<script type="text/html" id="attendBar">
+    {{# if(d.comPersonId != null && d.comPersonId != '' &&(d.scoreMode == 4 || d.scoreMode == 6 || d.scoreMode == 9 || d.scoreMode == 11) ) { }}
+    <a class="layui-btn layui-btn-xs layui-btn-danger btn-danger-row" lay-event="attendance">查看</a>
+    {{# } }}
+</script>
+<script>
+    // 全局配置及引入相关的模块
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        tool: 'tool',
+    });
+
+    layui.use(['table', 'form', 'element', 'upload', 'laydate', 'tool'], function () {
+        var table = layui.table, form = layui.form, $ = layui.jquery, tool = layui.tool;
+        var laydate = layui.laydate, element = layui.element, upload = layui.upload;
+        window.layer = layui.layer;
+        window.loading;
+        window.ajaxNum = 0;
+        var approvalIndex;//审批意见弹窗
+        var isSubmit = 0;//是否可以提交
+        var nowFeedbackInfoId, year=new Date().getFullYear(), nowProjectId, nowDownId, cmeStandardKindId, nowBatch;
+        let userStandardkindId = localStorage.getItem("standardkind-id");
+        let userUnitId = localStorage.getItem("unit-id");
+        let userId = localStorage.getItem("user-id");
+        let unitUserType = localStorage.getItem("unit-user-type");
+        let tempDeptId = (userType == 13) ? myDeptId : "";
+        let tempUnitId = (userType == 12) ? myUnitId : "";
+        var windowIndex;//单前弹窗
+        let configName1 = "fun_group_feedback_file_upload",
+            configName2="fun_group_feedback_tab",
+            configName3="fun_feedback_proj_field",
+            configName4="fun_groupfeedback_is_analyse",
+            configName5="fun_feedback_show_notice",
+            configName6="fun_feedback_inspect",
+            configName7="fun_feedback_score_check_pass",
+            configName8="fun_feedback_ducha",
+            configName9 = "fun_feedback_process_upload",
+            configName10 = "fun_feedback_show_courseware";
+
+        if(userStandardkindId === "289bf0ca-52cb-4b19-b737-9bd200a69ce1"){
+            configName3 = "fun_feedback_group_proj_field";
+            configName5 = "fun_group_feedback_show_notice";
+        }
+
+        if(userStandardkindId === "4a6d91fb-8ba4-4560-a801-9c6f00e6d999"){
+            configName3 = "fun_feedback_group_proj_field";
+            configName5 = "fun_group_feedback_show_notice";
+        }
+
+        let configMap = {};
+        let fileUpObj = [{"fileName":"会议通知和议程","require":false,"fileType":1},
+            {"fileName":"会议现场照片","require":false,"fileType":2},
+            {"fileName":"学员签到表","require":false,"fileType":3},
+            {"fileName":"考试考题","require":false,"fileType":4},
+            {"fileName":"执行情况反馈表","require":false,"fileType":5}];
+        let showProjInfo = [{name:"groupProjName",value:"活动名称:"},
+            {name:"startDt",value:"开始时间:"},
+            {name:"endDt",value:"结束时间"}];
+
+        var approvalContentCol = {
+            field: 'approvalContent',
+            title: '审核意见',
+            sort: true,
+            align: 'center',
+            templet: function (d) {
+                if (d.checkState == 3 || tool.isEmpty(d.approvalContent)) return "";
+                return d.approvalContent;
+            }
+        };
+
+        var cols = [
+            { align: 'center', width: 170, toolbar: '#rowBar', title: '操作', fixed: 'left' },
+            { field: 'status', title: '审批步骤', sort: true, align: 'center', toolbar: '#viewBar' },
+            {
+                field: 'index', title: "举办批次", sort: true, align: 'center', templet: function (data) {
+                    return "第" + data["batch"] + "批次";
+                }
+            },
+            { field: 'groupProjName', title: '活动名称', sort: true, align: 'center' },
+            { field: 'startDt', title: '开始日期', sort: true, align: 'center' },
+            { field: 'endDt', title: '结束日期', sort: true, align: 'center' },
+            { field: 'status', title: '审核状态', sort: true, align: 'center',
+                templet: function (data) {
+                    if (!data.hasOwnProperty("checkState")) return "未申请";
+                    let state = data.checkState;
+                    if (tool.isEmpty(state)) return "未反馈";
+                    if (!tool.isEmpty(data.unitApprovalState )) {
+                        if (data.unitApprovalState == 1) return "已退回";
+                        if (data.unitApprovalState == 2) return "审批不通过";
+                        if (data.unitApprovalState == 3) return "审批通过";
+                        if (data.unitApprovalState == 4) return "审核中";
+                    }
+                    if (state == 0) return "未审核";
+                    if (state == 1) return "已退回";
+                    if (state == 2) return "审批不通过";
+                    if (state == 3) return "审批通过";
+                    if (state == 4) return "审核中";
+                    return "未反馈";
+                }
+            }
+        ];
+        // 判断插入位置
+        if (userStandardkindId === "190c480d-d43c-450b-8472-a6fd00a6729d") {
+            // 审批步骤后插入审核意见
+            cols.splice(2, 0, approvalContentCol); // 审批步骤是索引1，插入到索引2
+        } else {
+            // 默认最后
+            cols.push(approvalContentCol);
+        }
+        // let reqInfoObj = [{name:"trainAnalyse",value:userStandardkindId=='acd09b62-333b-4aee-934f-9ec500a9d46d'?"实际培训效果分析(举办时间、地点、内容、参会人员情况、收到的效果)200字以上:":"实际培训效果分析:"},{name:"questionSuggest",value:"存在的问题和建议:"}];
+        let reqInfoObj = [
+            {
+                name: "trainAnalyse",
+                value: (() => {
+                    if (userStandardkindId === 'acd09b62-333b-4aee-934f-9ec500a9d46d') { //吉林套
+                        return "实际培训效果分析(举办时间、地点、内容、参会人员情况、收到的效果)200字以上:";
+                    } else {
+                        return "实际培训效果分析:";
+                    }
+                })(),
+                require:(() => {
+                    if (userStandardkindId === '190c480d-d43c-450b-8472-a6fd00a6729d' || userStandardkindId==='a6280900-a9c2-11ec-84d6-fa163e9b64fb') { //浙江套
+                        return 0;
+                    }
+                    else {
+                        return 1;
+                    }
+                })()
+            },
+            {
+                name: "questionSuggest",
+                value: "存在的问题和建议:",
+                require: (() => {
+                    if (userStandardkindId === '190c480d-d43c-450b-8472-a6fd00a6729d'|| userStandardkindId==='a6280900-a9c2-11ec-84d6-fa163e9b64fb') { //浙江套
+                        return 0;
+                    } else {
+                        return 1;
+                    }
+                })()
+            }
+        ];
+        let flowArr = [],allFile,nowApprovalState;
+        let fileUpObj2 = [{"fileName":"审核表","require":false,"fileType":21}];
+
+        //关闭closeLoading的判断
+        let closeLoading = function () {
+            ajaxNum--;
+            if (ajaxNum <= 0 && loading) layer.close(loading);
+        }
+        //打开加载
+        let openLoading = function () {
+            if (ajaxNum == 0) loading = layer.msg('加载中', { icon: 16, shade: 0.3, time: 0 });
+            ajaxNum++;
+        }
+        //湖北设置上传附件20M，其他10M
+        if(userStandardkindId=='73ba18db-33fd-4746-ab41-9beb009f69a1') {
+            $("#uploadSize").text("20M");
+        }else {
+            $("#uploadSize").text("10M");
+            $("#uploadSize2").text("10M");
+        }
+        //设置显示底部提示信息
+        if(userStandardkindId=='acd09b62-333b-4aee-934f-9ec500a9d46d') { //吉林套
+            $("#noticeText").show();
+            //div-handout取消隐藏
+            $("#div-handout").show();
+        } else {
+            $("#div-textbook").show();
+        }
+
+        //
+        $(document).on('input', 'input[lay-verify*="number"]', function() {
+            let value = $(this).val();
+            value = value.replace(/[^\d.]/g, '');
+            const decimalIndex = value.indexOf('.');
+            if (decimalIndex !== -1) {
+                value = value.substring(0, decimalIndex + 1) + value.substring(decimalIndex + 1).replace(/\./g, '');
+            }
+
+            if (value.startsWith('0') && value.length > 1 && !value.startsWith('0.')) {
+                value = '0.' + value.slice(1);
+            }
+
+            if (value.startsWith('.')) {
+                value = '0' + value;
+            }
+            $(this).val(value);
+        });
+
+        //监听项目经费收入和支出计算
+        $(document).ready(function () {
+            // 监听收入
+            $('input[name^="income"]:not(#incomeOtherSource),#studyNum').on('input', function () {
+                // 计算合计收培训费
+                let studyNum = parseFloat($('#studyNum').val()) || 0;
+                let incomeStandardPer = parseFloat($('#incomeStandardPer').val()) || 0;
+                let incomeStandardTotal = studyNum * incomeStandardPer;
+                $('#incomeStandardTotal').val(incomeStandardTotal.toFixed(2));
+
+                // 计算预计总收入
+                let totalIncome = 0;
+                $('input[name^="income"]:not(#incomeTotal, #incomeOtherSource, #incomeStandardPer)').each(function () {
+                    let value = parseFloat($(this).val()) || 0;
+                    totalIncome += value;
+                });
+                $('#incomeTotal').val(totalIncome.toFixed(2));
+            });
+            // 监听支出
+            $('input[name^="expend"]:not([id*="Count"])').on('input', function () {
+                // 计算专家讲课费总额
+                let expertTotal = 0;
+                $('#expendZhongjiExpertTotal, #expendFugaoExpertTotal, #expendZhenggaoExpertTotal, #expendYuanshiExpertTotal').each(function () {
+                    let value = parseFloat($(this).val()) || 0;
+                    expertTotal += value;
+                });
+                $('#expendExpertTotal').val(expertTotal.toFixed(2));
+
+                // 计算支出总额
+                let totalExpense = 0;
+                $('input[name^="expend"]:not([id*="Count"], #expendExpertTotal, #expendTotal)').each(function () {
+                    let value = parseFloat($(this).val()) || 0;
+                    totalExpense += value;
+                });
+                $('#expendTotal').val(totalExpense.toFixed(2));
+            });
+        });
+
+        //公共ajax
+        let commonAjax = function (type = "get", url, data, failFun, successFun) {
+            openLoading();
+            $.ajax({
+                type: type,
+                url: url,
+                data: data,
+                success: function (res) {
+                    closeLoading();
+                    if(res.status != 200) {
+                        layer.msg(res.msg);
+                        return;
+                    }
+                    successFun(res);
+                },
+                error: function (res) {
+                    closeLoading();
+                    failFun();
+                }
+            });
+        }
+
+        // 表格配置
+        let loaderTable = function (projectId) {
+            table.render({
+                elem: '#implementation',
+                url: huayi_projectscore_url + 'cmeGroupProjFeedbackApproval/getGroupApplyFeedbacks',
+                method: 'post',
+                where: {
+                    projectId: projectId,
+                    unitId  :   tempUnitId,
+                    deptId  :   tempDeptId
+                },
+                cols: [cols],
+                cellMinWidth: 100,
+                id: "implementation",
+                height: 'full-50',
+                page: false,
+                parseData: function (res) {
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "data": res.data, //解析数据列表
+                    }
+                },
+                done: function (res, curr, count) {
+                    let holdTipIndex = null;
+                    $(".oprateSpan[data-holdqualification='false']").each(function (i, e) {
+                        let id = "#" + $(this).attr("id");
+                        $(e).parents("tr").mouseenter(function () {
+                            holdTipIndex = layer.tips('该周期因逾期未举办或其他原因，已被取消举办资格,详情请咨询上级主管部门', id, {
+                                tips: [2, '#78BA32']
+                            });
+                        })
+                    });
+                }
+            });
+        };
+
+        //ajax获取配置信息
+        let getTabConfig = function () {
+            let tempConfigUrl = huayi_sjwh_url + `cmeCommonConfig/getConfigByUnitFromRedis?unitId=${myUnitId}&configNames=${configName1}&configNames=${configName2}&configNames=${configName3}&configNames=${configName4}&configNames=${configName5}&configNames=${configName6}&configNames=${configName7}&configNames=${configName8}&configNames=${configName9}&configNames=${configName10}`;
+            commonAjax("post",tempConfigUrl,{},function(){},
+                function(res) {
+                    if(res.status == 200) {
+                        configMap = res.data;
+                        createFeedback(res.data);
+                    }else{
+                        layer.msg("加载配置信息失败");
+                    }
+                }
+            )
+        }
+
+        //处理tab页，该可能是配置获得的，需要动态构建
+        let createFeedback = function (datas) {
+            //构建tab页
+            let tabArr = tool.createFeedbackTab(datas,1,configName2,configName6);
+            //第一页分析必填项构建
+            tool.createFeedbackAnalyse(datas,reqInfoObj,configName4);
+            //构建图片上传页
+            if(tabArr.indexOf(2) > 0 || tabArr.indexOf("2") > 0) {
+                fileUpObj = tool.createFeedbackImgUp(datas,fileUpObj,configName1);
+                fileUpload();//文件上传按钮监听
+            }
+            //构建审核表上传页
+            if(tabArr.indexOf(7) > 0 || tabArr.indexOf("7") > 0) {
+                fileUpObj2 = tool.createFeedbackProcessUp(datas,fileUpObj2,configName9,0);
+                fileUpload2();//文件上传按钮监听
+            }
+        }
+
+        let createApplyFile = function() {
+            let tempUrl = huayi_projectscore_url + `/cmeGroupProjCycleApplication/getFilesByDownId`;
+            commonAjax("post", tempUrl, { downId: nowDownId }, function () { },
+            function (res) {
+                if(res.status != 200) return;
+                if(tool.isEmpty(res.data)) return;
+                let tempConfig = tool.isEmpty(configMap[configName5])? "0" : configMap[configName5];
+                if(tempConfig==0 || tempConfig=="0") return;
+                let tempHtml = `<div class="file-upload-box">
+                    <span class="file-title">会议通知及日程</span>
+                    <ul>`;
+                for(let tempObj of res.data){
+                    tempHtml += `<li><a class="layui-btn layui-btn-xs btn-normal-row js-file-name" msg="${tempObj.fileName}" filepath="${tempObj.filePath}" onmouseover="mouseoverImageName(this)" onmouseout="mouseoutImageName(this)" onclick="downloadFeedFile(this)">${tempObj.fileName}</a></li>`;
+                }
+                tempHtml += `</ul></div>`;
+                $("#projCycleFile").html(tempHtml);
+            });
+        }
+
+        //讲义课件文件
+        let createCoursewareFile = function() {
+            let tempUrl = huayi_projectscore_url + `/cmeGroupProjFeedbackFile/getFilesByDownId`;
+            commonAjax("post", tempUrl, { downId: nowDownId }, function () { },
+            function (res) {
+                if(res.status != 200) return;
+                if(tool.isEmpty(res.data)) return;
+                let tempConfig = tool.isEmpty(configMap[configName10])? "0" : configMap[configName10];
+                if(tempConfig==0 || tempConfig=="0") return;
+                let tempHtml = `<div class="file-upload-box">
+                    <div class="meeting-notice" style="width:96%;">
+                    <span class="file-title">讲义课件文件</span>
+                    <div class="js-upload-btn-box" style="width:100%;">
+                        <a class="layui-btn layui-btn-sm js-upload-kj-btn" data-type="31" f-type="">上传</a>
+                    </div>
+                    <ul class="js-feedback31"></ul></div></div>`;
+                $("#coursewareFile").html(tempHtml);
+                fileUpload3();
+            });
+
+        }
+
+        //给项目反馈信息赋值
+        let createProjectTab = function (datas) {
+            let propertyObj = { "trainAnalyse": ".js-trainAnalyse", "questionSuggest": ".js-questionSuggest", "textbookWorks": ".js-textbook-works", "textbookType": "#textbookType", "coursePeriod": ".js-course-period", "writeTime": ".js-write-time", "writeUnitPeople": ".js-textbook-unit", "textbookName": ".js-teaxtbook-name", "textbookSummary": ".js-textbook-summarize" };
+            for (const key in propertyObj) {
+                if (datas != null && datas.hasOwnProperty(key) != null && $(propertyObj[key]).length > 0) {
+                    $(propertyObj[key]).val(datas[key]);
+                }
+            }
+            //吉林套讲义
+            let propertyObj2 = { "textbookWorks": ".js-textbook-works2", "textbookType": "#textbookType2", "coursePeriod": ".js-course-period2", "writeTime": ".js-write-time2", "writeUnitPeople": ".js-textbook-unit2", "textbookName": ".js-teaxtbook-name2", "textbookSummary": ".js-textbook-summarize2" };
+            for (const key in propertyObj2) {
+                if (datas != null && datas.hasOwnProperty(key) != null && $(propertyObj2[key]).length > 0) {
+                    $(propertyObj2[key]).val(datas[key]);
+                }
+            }
+
+            form.render('select');
+            nowFeedbackInfoId = (tool.isEmpty(datas) || tool.isEmpty(datas['feedbackInfoId'])) ? "" : datas["feedbackInfoId"];
+        }
+        //创建项目上传图片的tab页
+        let createImageTab = function (datas,event) {
+            //ajax请求获取该页面的数据
+            let hiddenHtml = (isSubmit == 0) ? " js-hidden " : "";
+            if (isSubmit == 0 && event != "approval") {
+                $(".js-choose-file").addClass("js-hidden");
+                $(".js-upload-btn-box").addClass("js-hidden");
+            } else {
+                $(".js-choose-file").removeClass("js-hidden");
+                $(".js-upload-btn-box").removeClass("js-hidden");
+            }
+            if (datas == null) return;
+            //图片渲染
+            for (let i = 0; i < datas.length; i++) {
+                if($(`.js-feedback${datas[i].fileType}`).length==0) continue;
+                let htmlText = `<li file-id="${datas[i]["feedbackFileId"]}">` +
+                    `<a class="layui-btn layui-btn-xs btn-normal-row js-file-name" msg="${datas[i]["fileName"]}" filePath="${datas[i]["filePath"]}" onmouseover="mouseoverImageName(this)" onmouseout="mouseoutImageName(this)" onclick="downloadFeedFile(this)">${datas[i]["fileName"]}</a>` +
+                    `<a class="layui-btn layui-btn-xs btn-danger-row ${hiddenHtml}" onclick="deleteImage(this)">移除</a></li>`;
+                $(`.js-feedback${datas[i].fileType}`).append(htmlText);
+            }
+            //图片渲染
+
+        }
+
+        //按钮点击事件
+        let bindBtnClick = function () {
+            let approvalType = 0;
+            //上一页
+            $('.js-last').click(function () {
+                let liElems = $('.js-tabs').children();
+                for (let i = 0; i < liElems.length; i++) {
+                    if (liElems[i].classList.contains("layui-this")) {
+                        liElems[i - 1].click();
+                        break;
+                    }
+                }
+            })
+            //下一页
+            $('.js-next').click(function () {
+                let liElems = $('.js-tabs').children();
+                for (let i = 0; i < liElems.length; i++) {
+                    if (liElems[i].classList.contains("layui-this")) {
+                        liElems[i + 1].click();
+                        break;
+                    }
+                }
+            })
+            //点击保存
+            $('.js-submit').click(function () {
+                //先识别那个表单
+                let dataType = "";
+                let liElems = $('.js-tabs').children();
+                for (let i = 0; i < liElems.length; i++) {
+                    if (liElems[i].classList.contains("layui-this")) {
+                        dataType = liElems[i].getAttribute("data-type");
+                        break;
+                    }
+                }
+                submitForm();
+            })
+            //反馈数据
+            $('.js-apply').click(function () { submitForm(2); })
+            $('.js-pass').click(function(){
+                approvalType = unitUserType*10 +3;
+                nowApprovalState = 3;
+                let tempScore = $(".check-score").val();
+                let tempPeriod = $(".check-period").val();
+                if(tempScore) {
+                    if(isNaN(tempScore)||tempScore<=0) {
+                        layer.msg("请填入正确的学分");
+                        return;
+                    }
+                    var upScore = $('#upScore').val();
+                    if(parseFloat(tempScore) > parseFloat(upScore)) {
+                        layer.msg("分值上限不能超过项目公布时的分值");
+                        return;
+                    }
+                }
+                if(tempPeriod) {
+                    if(isNaN(tempPeriod)||tempPeriod<=0) {
+                        layer.msg("请填入正确的学时");
+                        return;
+                    }
+                }
+                //如果不是河南弹意见
+                if(userStandardkindId!='a6280900-a9c2-11ec-84d6-fa163e9b64fb') {
+                    openApprovalTextWindow("审批意见",$('#approvalText'),['500px', '280px']);
+                }else {
+                    approvalAjax(nowDownId,approvalType,"");
+                    return;
+                }
+            });
+            $('.js-no-pass').click(function(){
+                approvalType = unitUserType*10 +2;
+                nowApprovalState = 2;
+                openApprovalTextWindow("审批意见",$('#approvalText'),['500px', '280px']);
+            });
+            $('.js-back').click(function(){
+                approvalType = unitUserType*10 +1;
+                nowApprovalState = 1;
+                openApprovalTextWindow("审批意见",$('#approvalText'),['500px', '280px']);
+            });
+            $('.js-approval').click(function(){
+                openApprovalTextWindow("审批意见",$('#approvalText'),['500px', '280px']);
+            });
+
+            //点击获取审批意见
+            $('.js-choose-approval').click(function(){
+                let tempUrl = huayi_sjwh_url +"reason/page";
+                let tempData = {pageNum:1,pageSize:99,unitId:myUnitId,phase:2,state:nowApprovalState};
+                openLoading();
+                $.ajax({
+                    type: "post",
+                    url: tempUrl,
+                    contentType : 'application/json',
+                    data: JSON.stringify(tempData),
+                    success: function (res) {
+                        closeLoading();
+                        if(res.status !=200) {
+                            layer.msg("获取审核意见失败");return;
+                        }
+                        if(res.data.records.length==0) {
+                            layer.msg("审核意见为空");return;
+                        }
+                        createApprovalList(res.data.records);
+                    },
+                    error: function (res) {
+                        closeLoading();
+                        layer.msg("获取审批意见失败");
+                    }
+                });
+
+            })
+
+            $(".js-submit-approval").click(function(){
+                if(nowApprovalState!=3) {
+                    if(!$(".js-approval-content").val()) {
+                        layer.msg("请填写审批意见");
+                        return;
+                    }
+                }
+                approvalAjax(nowDownId,approvalType,$(".js-approval-content").val());
+            })
+        }
+
+        //审批通过，不通过，或者退回需要添加
+        let approvalAjax = function(downId,flowChainState,approvalContent=""){
+            let tempScore = $(".check-score").val();
+            let tempPeriod = $(".check-period").val();
+            let isCheckPassScore = false;
+
+            //TODO 时间紧暂时通过页面判断
+            //if(configMap[configName7]=="1") { isCheckPassScore = true;}
+            //如果是河南套 isCheckPassScore = true
+            // if(userStandardkindId=='a6280900-a9c2-11ec-84d6-fa163e9b64fb' || userStandardkindId=='190c480d-d43c-450b-8472-a6fd00a6729d') {
+            //     isCheckPassScore = true;
+            // }
+            isCheckPassScore =  configMap["fun_feedback_score_check_pass"] == "1";
+
+            let data = {downId:downId,flowChainState:flowChainState,
+                approvalContent:approvalContent,
+                unitId:localStorage.getItem("unit-id"),
+                score:tempScore,period:tempPeriod,
+                isCheckPassScore:isCheckPassScore};
+            commonAjax("post", huayi_projectscore_url + "cmeGroupProjFeedbackApproval/approval", data,
+                function () { layer.msg("审批失败"); },
+                function (res) {
+                    if (res.status === 200) {
+                        layer.close(windowIndex);
+                        layer.close(approvalIndex);
+                        loaderTable(nowProjectId);
+                        closeWindowInput();
+                    }
+                    else { layer.msg("审批失败"); }
+                });
+        }
+
+        let createApprovalList = function(data) {
+            let lastIndex = layer.open({
+                type: 1,
+                title: '填选择审核意见',
+                content: $('#chooseApprovalWindow'),
+                area: ['360px', '300px'],
+                success:function(){
+                    let liHtml = ``;
+                    for (let tempObj of data) {
+                        if(tempObj.reason != null && tempObj.reason!=''){
+                            liHtml += `<li class="js-approval-li">${tempObj.reason}</li>`;
+                        }
+                    }
+                    $(".js-approval-ul").html(liHtml);
+                    //监听审批意见的ul
+                    $(".js-approval-li").click(function(){
+                        $(".js-approval-content").val($(this).text())
+                        layer.close(lastIndex);
+                    });
+                }
+            })
+        }
+
+
+        //打开审批信息弹窗
+        let openApprovalTextWindow = function(title="审批意见",content=false,area,shadeClose=false,closeBtn=1){
+            approvalIndex = layer.open({
+                type: 1,
+                title: title,
+                content: content,
+                closeBtn:closeBtn,
+                area: area,
+                shadeClose: shadeClose
+            })
+        }
+        //保存反馈信息
+        let submitForm = function (type=1) {
+            let data = new Object();
+            data["downId"] = nowDownId;
+            data["groupProjId"] = nowProjectId;
+            data["trainAnalyse"] = $("#formProject textarea[name = 'trainAnalyse']").val();
+            data["questionSuggest"] = $("#formProject textarea[name = 'questionSuggest']").val();
+            if (cmeStandardKindId == 'acd09b62-333b-4aee-934f-9ec500a9d46d') { //吉林套讲义
+                data["textbookWorks"] = $("#formTextbook input[name = 'textbookWorks2']").val();
+                data["textbookType"] = $("#textbookType2").val();
+                data["coursePeriod"] = $("#formTextbook input[name = 'coursePeriod2']").val();
+                data["writeTime"] = $("#formTextbook input[name = 'writeTime2']").val();
+                data["textbookName"] = $("#formTextbook textarea[name = 'textbookName2']").val();
+                data["writeUnitPeople"] = $("#formTextbook textarea[name = 'writeUnitPeople2']").val();
+                data["textbookSummary"] = $("#formTextbook textarea[name = 'textbookSummary2']").val();
+            } else {
+                data["textbookWorks"] = $("#formTextbook input[name = 'textbookWorks']").val();
+                data["textbookType"] = $("#textbookType").val();
+                data["coursePeriod"] = $("#formTextbook input[name = 'coursePeriod']").val();
+                data["writeTime"] = $("#formTextbook input[name = 'writeTime']").val();
+                data["textbookName"] = $("#formTextbook textarea[name = 'textbookName']").val();
+                data["writeUnitPeople"] = $("#formTextbook textarea[name = 'writeUnitPeople']").val();
+                data["textbookSummary"] = $("#formTextbook textarea[name = 'textbookSummary']").val();
+            }
+
+            if (nowFeedbackInfoId) data["feedbackInfoId"] = nowFeedbackInfoId;
+            let tempReqConfig = configMap.hasOwnProperty(configName4) ? configMap[configName4]:"";
+            if(tool.isEmpty(tempReqConfig)) tempReqConfig = "1";
+            if(tempReqConfig!="0" || tempReqConfig!=0) {
+                for (let item of reqInfoObj) {
+                    if (item.require === 1) {
+                        let value = data[item.name].replace(/(^\s*)|(\s*$)/g, "");
+                        if (!value) {
+                            layer.msg(`${item.value}是必填项`, { icon: 5 });
+                            return;
+                        }
+                    }
+                }
+            }
+            //查看图片是否上传
+            if(type==2) {
+                for(let tempObj of fileUpObj) {
+                    if(tempObj.require!==true) continue;
+                    let tempCla = `js-feedback${tempObj.fileType}`;
+                    let upFileNum = $(`.${tempCla} li`).length;
+                    if(upFileNum<=0) {
+                        let tempMsg = `${tempObj.fileName}未上传文件`;
+                        layer.msg(tempMsg, { icon: 5 });
+                        return;
+                    }
+                }
+                //审核表
+                for(let tempObj of fileUpObj2) {
+                    if(tempObj.require!==true) continue;
+                    let tempCla = `js-feedback${tempObj.fileType}`;
+                    let upFileNum = $(`.${tempCla} li`).length;
+                    if(upFileNum<=0) {
+                        let tempMsg = `${tempObj.fileName}未上传文件`;
+                        layer.msg(tempMsg, { icon: 5 });
+                        return;
+                    }
+                }
+            }
+            //项目经费
+            let fundsData = tool.getFormData('.js-funds');
+            let feedbackFundsId = fundsData.feedbackFundsId;
+            if (tool.isEmpty(feedbackFundsId)) {
+                fundsData.userCreate = userId;
+            }
+            fundsData.userUpdate = userId;
+            data.cmeProjFeedbackFunds = fundsData;
+            let datas = JSON.stringify(data);
+            openLoading();
+            $.ajax({
+                url: huayi_projectscore_url + "cmeGroupProjFeedbackInfo/update",
+                type: 'post',
+                data: datas,
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    closeLoading();
+                    if (res.status == 200) {
+                        if(type==1) {
+                            if (tool.isEmpty(nowFeedbackInfoId) && res.data.hasOwnProperty("feedbackInfoId")) {
+                                nowFeedbackInfoId = res.data["feedbackInfoId"];
+                                loaderTable(nowProjectId);
+                                updateFeedbackFundsId(nowDownId);
+                            }
+                            layer.msg("保存成功");
+                        } else {
+                            applyAjax(1,nowDownId);
+                        }
+
+                    } else {
+                        layer.msg("保存失败");
+                    }
+                },
+                error: function () {
+                    closeLoading();
+                    layer.msg("保存失败");
+                }
+            });
+        }
+        //文件上传
+        let fileUpload = function () {
+            let url = huayi_upload_url + 'uploadApi/upload';
+            let uploadBtns = $(".js-upload-btn");
+            let fileName = "";
+            for (let i = 0; i < uploadBtns.length; i++) {
+                let upType = uploadBtns[i].getAttribute("data-type");
+                if(!upType) upType = -1;
+                let inspectFileType = uploadBtns[i].getAttribute("inspect-file-type");
+                let extsType = "jpg|png|bmp|gif|docx|xls|xlsx|doc|pdf";
+                if(upType==-1) extsType = "jpg|png|pdf";
+                let fType = uploadBtns[i].getAttribute("f-type");
+                if(!tool.isEmpty(fType)) extsType = fType;
+                //上传文件
+                upload.render({
+                    elem: uploadBtns[i],
+                    url: url,
+                    exts: extsType,
+                    size: userStandardkindId=='73ba18db-33fd-4746-ab41-9beb009f69a1' ? 20 * 1024 : 10 * 1024,//大小小于10M
+                    accept: 'file',
+                    multiple: false,
+                    before: function (obj) {
+                        var fileType = "IMAGE";
+                        let files = this.files = obj.pushFile();
+                        for (let key in files) {
+                            fileName = files[key].name;
+                            let fileNameArr = files[key].name.split(".");
+                            let tempFileType = fileNameArr[fileNameArr.length - 1];
+                            if (tempFileType.indexOf("docx") >= 0 ||
+                                tempFileType.indexOf("doc") >= 0 ||
+                                tempFileType.indexOf("xls") >= 0 ||
+                                tempFileType.indexOf("xlsx") >= 0 ||
+                                tempFileType.indexOf("excel") >= 0||
+                                tempFileType.indexOf("pdf")>=0) {
+                                fileType = "DOC";
+                            }
+                        }
+                        this.data = {
+                            fileType: fileType,
+                            path: `/groupfeedback/${userStandardkindId}/${userUnitId}/${year}/`,
+                            scale:0.6,outputQuality:0.6
+                        }
+                    },
+                    choose: function (obj) {
+                        openLoading();
+                    },
+                    done: function (res, index, upload) {
+                        delete this.files[index];
+                        closeLoading();
+                        if (res.code == 200) {
+                            saveFilePath(res.data.picUrl, upType, fileName,inspectFileType);
+                        } else {
+                            layer.msg("上传失败");
+                        }
+                    },
+                    error: function (index, upload) {
+                        openLoading();
+                    }
+                })
+            }
+        }
+
+        //审核文件上传
+        let fileUpload2 = function () {
+            let url = huayi_upload_url + 'uploadApi/upload';
+            let uploadBtns = $(".js-upload-sh-btn");
+            let fileName = "";
+            for (let i = 0; i < uploadBtns.length; i++) {
+                let upType = uploadBtns[i].getAttribute("data-type");
+                if(!upType) upType = -1;
+                let inspectFileType = uploadBtns[i].getAttribute("inspect-file-type");
+                let extsType = "jpg|png|bmp|gif|docx|xls|xlsx|doc|pdf|ppt|pptx";
+                if(upType==-1) extsType = "jpg|png|pdf|ppt|pptx";
+                let fType = uploadBtns[i].getAttribute("f-type");
+                if(!tool.isEmpty(fType)) extsType = fType;
+                //上传文件
+                upload.render({
+                    elem: uploadBtns[i],
+                    url: url,
+                    exts: extsType,
+                    size: userStandardkindId=='73ba18db-33fd-4746-ab41-9beb009f69a1' ? 20 * 1024 : 10 * 1024,//大小小于10M
+                    accept: 'file',
+                    multiple: false,
+                    before: function (obj) {
+                        var fileType = "IMAGE";
+                        let files = this.files = obj.pushFile();
+                        for (let key in files) {
+                            fileName = files[key].name;
+                            let fileNameArr = files[key].name.split(".");
+                            let tempFileType = fileNameArr[fileNameArr.length - 1];
+                            if (tempFileType.indexOf("docx") >= 0 ||
+                                tempFileType.indexOf("doc") >= 0 ||
+                                tempFileType.indexOf("xls") >= 0 ||
+                                tempFileType.indexOf("xlsx") >= 0 ||
+                                tempFileType.indexOf("excel") >= 0||
+                                tempFileType.indexOf("pdf")>=0) {
+                                fileType = "DOC";
+                            }
+                        }
+                        this.data = {
+                            fileType: fileType,
+                            path: `/feedback/${userStandardkindId}/${userUnitId}/${year}/`,
+                            scale:0.6,outputQuality:0.6
+                        }
+                    },
+                    choose: function (obj) {
+                        openLoading();
+                    },
+                    done: function (res, index, upload) {
+                        delete this.files[index];
+                        closeLoading();
+                        if (res.code == 200) {
+                            saveFilePath(res.data.picUrl, upType, fileName,inspectFileType);
+                        } else {
+                            layer.msg("上传失败");
+                        }
+                    },
+                    error: function (index, upload) {
+                        openLoading();
+                    }
+                })
+            }
+        }
+
+        //讲义课件上传
+        let fileUpload3 = function () {
+            let url = huayi_upload_url + 'uploadApi/upload';
+            let uploadBtns = $(".js-upload-kj-btn");
+            let fileName = "";
+            for (let i = 0; i < uploadBtns.length; i++) {
+                let upType = uploadBtns[i].getAttribute("data-type");
+                if(!upType) upType = -1;
+                let inspectFileType = uploadBtns[i].getAttribute("inspect-file-type");
+                let extsType = "docx|xls|xlsx|doc|pdf|ppt|pptx";
+                let fType = uploadBtns[i].getAttribute("f-type");
+                //上传文件
+                upload.render({
+                    elem: uploadBtns[i],
+                    url: url,
+                    exts: extsType,
+                    size: userStandardkindId=='73ba18db-33fd-4746-ab41-9beb009f69a1' ? 20 * 1024 : 10 * 1024,//大小小于10M
+                    accept: 'file',
+                    multiple: false,
+                    before: function (obj) {
+                        var fileType = "IMAGE";
+                        let files = this.files = obj.pushFile();
+                        for (let key in files) {
+                            fileName = files[key].name;
+                            let fileNameArr = files[key].name.split(".");
+                            let tempFileType = fileNameArr[fileNameArr.length - 1];
+                            if (tempFileType.indexOf("docx") >= 0 ||
+                                tempFileType.indexOf("doc") >= 0 ||
+                                tempFileType.indexOf("xls") >= 0 ||
+                                tempFileType.indexOf("xlsx") >= 0 ||
+                                tempFileType.indexOf("excel") >= 0||
+                                tempFileType.indexOf("pdf")>=0 ||
+                                tempFileType.indexOf("ppt")>=0 ||
+                                tempFileType.indexOf("pptx")>=0) {
+                                fileType = "DOC";
+                            }
+                        }
+                        this.data = {
+                            fileType: fileType,
+                            path: `/feedback/${userStandardkindId}/${userUnitId}/${year}/`,
+                            scale:0.6,outputQuality:0.6
+                        }
+                    },
+                    choose: function (obj) {
+                        openLoading();
+                    },
+                    done: function (res, index, upload) {
+                        delete this.files[index];
+                        closeLoading();
+                        if (res.code == 200) {
+                            saveFilePath(res.data.picUrl, upType, fileName,inspectFileType);
+                        } else {
+                            layer.msg("上传失败");
+                        }
+                    },
+                    error: function (index, upload) {
+                        openLoading();
+                    }
+                })
+            }
+        }
+
+        //文件保存到文件服务器后进行保存文件路径
+        let saveFilePath = function (filePath, fileType, fileName,inspectFileType=0) {
+            let inspectUnitId = (inspectFileType!=0) ? myUnitId : "";
+            if(myDeptId) inspectUnitId = myDeptId;
+            let data = { fileType: fileType, filePath: filePath, downId: nowDownId, fileName: fileName,inspectFileType:inspectFileType,inspectUnitId:inspectUnitId,groupProjId: nowProjectId };
+            commonAjax("post", huayi_projectscore_url + "cmeGroupProjFeedbackFile/saveFilePath", data,
+                function () { layer.msg("保存失败"); },
+                function (res) {
+                    if (res.status === 200) {
+                        let tempUnit = myDeptId ? myDeptId : myUnitId;
+                        tool.createFeedbackFileElem(fileType,res.data,tempUnit);
+                    }
+                    else { layer.msg(res.msg);}
+                });
+        }
+
+        //按钮的隐藏
+        let handlerPageBtns = function (index = 1, dataType) {
+            //获取tab的长度，为了处理上一页按钮和下一页按钮的隐藏问题
+            let tabNum = $(".js-tabs li").length;
+            if (index == 1 && tabNum == index) {
+                $(".js-last").addClass("js-hidden");
+                $(".js-next").addClass("js-hidden");
+            }
+            if (index == 1 && tabNum != index) {
+                $(".js-last").addClass("js-hidden");
+                $(".js-next").removeClass("js-hidden");
+            }
+            if (index != 1 && tabNum == index) {
+                $(".js-last").removeClass("js-hidden");
+                $(".js-next").addClass("js-hidden");
+            }
+            if (index != 1 && tabNum != index) {
+                $(".js-last").removeClass("js-hidden");
+                $(".js-next").removeClass("js-hidden");
+            }
+            if (isSubmit == 1) {
+                $(".js-apply").removeClass("js-hidden");
+            } else {
+                $(".js-apply").addClass("js-hidden");
+                setFeeFormInputsReadOnly();
+            }
+            //保存按钮的隐藏问题
+            if (isSubmit == 1 && (dataType == "js-project-tab" || dataType == "js-project-textbook")) {
+                $(".js-submit").removeClass("js-hidden");
+            } else {
+                $(".js-submit").addClass("js-hidden");
+            }
+        }
+
+        //获取该周期的课程信息
+        let getDownCources = function (studyAddress = "") {
+            //openLoading();
+            //渲染表格
+            table.render({
+                elem: '#downCources',
+                url: huayi_projectscore_url + 'cmeGroupprojTeach/getCourcesByDownId',
+                where: { downId: nowDownId },
+                cols: [[
+                    { field: 'teachSubject', title: '课程名称', sort: true, align: "center" },
+                    { field: 'teacherNames', title: '教师名称', sort: true, align: "center" },
+                    { field: 'period', title: '学时', sort: true, align: "center" },
+                    // { field: 'teachFile', title: '现场授课照片', sort: true, align: "center", hide: configMap[configName7]==1?false:true, templet: function (d) {
+                    //         if (nowEvent === 'feedback') {
+                    //             if (tool.isEmpty(d.teachFile)) {
+                    //                 return `<button class="layui-btn layui-btn-sm js-teachupload-btn" data-type="1" id="${d.teachId}" >上传</button>`;
+                    //             } else {
+                    //                 //删除照片
+                    //                 return `<div style="text-align: left;">
+                    //                         <a class="layui-btn layui-btn-xs btn-danger-row js-file-name" onclick="deleteTeachImage('${d.fileId}')">删除</a>
+                    //                         <a class="layui-btn layui-btn-xs btn-danger-row js-file-name" onclick="downloadTeachImage('${d.teachFilePath}')">预览</a>
+                    //                         <a class="layui-btn layui-btn-xs btn-normal-row js-file-name" msg="${d.teachFile}" filePath="${d.teachFilePath}" onmouseover="mouseoverImageName(this)" onmouseout="mouseoutImageName(this)" onclick="downloadFeedFile(this)">${d.teachFile}</a>
+                    //                         </div>`;
+                    //             }
+                    //         }
+                    //         if (!tool.isEmpty(d.teachFile)) {
+                    //             return `<a class="layui-btn layui-btn-xs btn-normal-row js-file-name" msg="${d.teachFile}" filePath="${d.teachFilePath}" onmouseover="mouseoverImageName(this)" onmouseout="mouseoutImageName(this)" onclick="downloadFeedFile(this)">${d.teachFile}</a>`;
+                    //         }
+                    //         return "";
+                    //     }
+                    // },
+                    { field: 'studyAddress', title: '授课地点', sort: true, align: "center", templet: function (d) {
+                        if (tool.isEmpty(d.studyAddress) || d.studyAddress === null) return '';
+                        return d.studyAddress;
+                        }
+                    }
+                ]],
+                cellMinWidth: 100,
+                id: "downCources",
+                page: false,
+                parseData: function (res) {
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "data": res.data, //解析数据列表
+                    }
+                },
+                done: function (res, curr, count) {
+                    closeLoading();
+                    teachFileUpload();//渲染课程明细授课现场照片上传
+                },
+                error: function () { closeLoading(); }
+            });
+        }
+
+        //判断并上报
+        let judgeAndApply = function(downId) {
+            if(limitfeedback =='firstback'){//反馈判断，时间限制(天)
+                $.ajax({
+                    type: 'POST',
+                    url: huayi_projectscore_url + "cmeProjFeedbackInfo/getFeedbackLimit",
+                    async:false,
+                    data: {
+                        endDt:endDtValue,
+                        unitId:localStorage.getItem("unit-id")
+                    },
+                    success: function (res) {
+                        if(res.status != 200) {
+                            layer.msg(res.msg);
+                            limitvalue = false;
+                            return;
+                        }
+                    },
+                    error: function (res) {
+                        layer.msg(res.msg);
+                        limitvalue = false;
+                        return;
+                    }
+                });
+            }
+            if(!limitvalue) return;
+            //判断文件
+            let tempUrl = huayi_projectscore_url + "cmeGroupProjFeedbackFile/getFilesByDownId";
+            commonAjax("post", tempUrl, { downId: downId }, function () { },
+                function (res) {
+                    if(res.status != 200){
+                        layer.msg("反馈失败");
+                        return;
+                    }
+                    let tempArr = [];
+                    for(let tempFile of res.data){
+                        tempArr.push(tempFile.fileType);
+                    }
+                    //查看图片是否上传
+                    for(let tempObj of fileUpObj) {
+                        if(tempObj.require!==true) continue;
+                        if(tempArr.indexOf(tempObj.fileType)<0) {
+                            let tempMsg = `${tempObj.fileName}未上传文件`;
+                            layer.msg(tempMsg, { icon: 5 });
+                            return;
+                        }
+                    }
+                    //查看审核表是否上传
+                    for(let tempObj of fileUpObj2) {
+                        if(tempObj.require!==true) continue;
+                        if(tempArr.indexOf(tempObj.fileType)<0) {
+                            let tempMsg = `${tempObj.fileName}未上传文件`;
+                            layer.msg(tempMsg, { icon: 5 });
+                            return;
+                        }
+                    }
+                    applyAjax(2,downId)
+                });
+        }
+        //上报
+        let applyAjax = function (type = 1,downId) {
+            nowDownId = downId;
+            let tempData = (userType==13) ? {downId: nowDownId,deptId:myDeptId,unitId:myUnitId} : {downId: nowDownId,unitId:myUnitId};
+            commonAjax("post", huayi_projectscore_url + "cmeGroupProjFeedbackApproval/apply",
+                tempData, function () { layer.msg("上报失败"); },
+                function (res) {
+                    if (res.status === 200) {
+                        layer.msg("上报成功");
+                        if (type == 1) layer.close(windowIndex);
+                        loaderTable(nowProjectId);
+                        if (type == 1) closeWindowInput();
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                });
+        }
+
+        //关闭窗口是清空表单
+        let closeWindowInput = function () {
+            $("#formProject")[0].reset();
+            $("#formTextbook")[0].reset();
+            for(let tempObj of fileUpObj) {
+                let tempCla = `js-feedback${tempObj.fileType}`;
+                $(`.${tempCla}`).html("");
+            }
+            //
+            for(let tempObj of fileUpObj2) {
+                let tempCla = `js-feedback${tempObj.fileType}`;
+                $(`.${tempCla}`).html("");
+            }
+        }
+
+        var limitfeedback;
+        var endDtValue;
+        var limitvalue = true;
+        var nowEvent;
+        var studyAddress;
+        // 监听行内按钮
+        table.on('tool(implementation)', function (obj) {
+            var datas = obj.data;
+            endDtValue = obj.data.endDt;
+            var layEvent = obj.event;
+            var trElem = obj.tr[0]; // 获取当前行 tr 元素
+            limitvalue = true;
+            nowBatch = obj.data.batch;
+            nowEvent = obj.event;
+            studyAddress = datas["studyAddress"]
+            if(layEvent == 'feedback'){
+                var btnElem = trElem.querySelector('.oprateSpan');
+                if(btnElem){
+                    limitfeedback = btnElem.getAttribute('data-name');
+                }else{
+                    btnElem = trElem.querySelector('.btn-normal-row');
+                    if(btnElem){
+                        limitfeedback = btnElem.getAttribute('data-name');
+                    }
+                }
+            }else if(layEvent == 'apply'){
+                var btnElem = trElem.querySelector('.btn-apply');
+                if(btnElem){
+                    limitfeedback = btnElem.getAttribute('data-name');
+                }
+            }
+
+            obj.event =='feedback' && viewFeedback(datas,obj.event);
+            obj.event =='view' && viewFeedback(datas,obj.event);
+            obj.event =="back" && backFeedback(datas["downId"]);
+            obj.event =="apply" && judgeAndApply(datas["downId"]);
+            obj.event == "noFeedback" && layer.msg("还未授分，无法反馈");
+            obj.event == "viewProgress" && tool.viewGroupFeedbackFlowHtml(datas.downId);
+            obj.event == "approval" && viewFeedback(datas,obj.event);
+            obj.event == "viewApproveLog" && tool.viewApprovalLogsHtml(datas.downId);
+        });
+
+        table.on('tool(effective-people)', function (obj) {
+            var comPersonId = obj.data.comPersonId;
+            if (obj.event === 'attendance') {
+                layer.open({
+                    title: '考勤详细信息',
+                    content: 'giving/attendanceGroupInfo.html?comPersonId=' + comPersonId + '&downId=' + nowDownId+'&type=2',
+                    type: 2,
+                    area: ['500px', '300px'],
+                })
+            }
+        });
+
+
+        let viewFeedback = function(datas,event){
+            if(limitfeedback =='firstback'){//反馈判断，时间限制(天)
+                $.ajax({
+                    type: 'POST',
+                    url: huayi_projectscore_url + "cmeProjFeedbackInfo/getFeedbackLimit",
+                    async:false,
+                    data: {
+                        endDt:datas.endDt,
+                        unitId:localStorage.getItem("unit-id")
+                    },
+                    success: function (res) {
+                        if(res.status != 200) {
+                            layer.msg(res.msg);
+                            limitvalue = false;
+                            return;
+                        }
+                    },
+                    error: function (res) {
+                        layer.msg(res.msg);
+                        limitvalue = false;
+                        return;
+                    }
+                });
+            }
+            if(!limitvalue) return;
+            setTempVar(datas,event);//赋值到缓存变量中
+            setFeedbackInfo(datas,event);//赋值执行情况反馈
+            setFeedbackFiles(datas,event);//将图片渲染上去
+            let liElems = $('.js-tabs').children();
+            if (liElems.length == 0) {
+                layer.msg("服务异常，无法加载");
+                return;
+            }
+            openWindow(event);//打开弹窗
+            if (userStandardkindId != '190c480d-d43c-450b-8472-a6fd00a6729d') { //浙江套不显示授课地点
+                getDownCources(datas["studyAddress"]);
+            }
+            liElems[0].click();//点击第一个tab页
+            approvalBtn(event);
+            if(event == "view") {
+                $('li[data-type="js-download"]').show();
+            } else {
+                $('li[data-type="js-download"]').hide();
+            }
+        }
+
+        //审批按钮
+        let approvalBtn = function(event){
+            $(".js-pass").addClass("js-hidden");
+            $(".js-no-pass").addClass("js-hidden");
+            $(".js-back").addClass("js-hidden");
+            $(".js-submit").addClass("js-hidden");
+            $(".js-apply").addClass("js-hidden");
+            if(event == "approval") {
+                $(".js-pass").removeClass("js-hidden");
+                $(".js-no-pass").removeClass("js-hidden");
+                $(".js-back").removeClass("js-hidden");
+            }
+            if(event == "feedback") {
+                $(".js-submit").removeClass("js-hidden");
+                $(".js-apply").removeClass("js-hidden");
+            }
+        }
+
+        let setFeedbackFiles = function(datas,event) {
+            let tempUrl = huayi_projectscore_url + "cmeGroupProjFeedbackFile/getFilesByDownId";
+            commonAjax("post", tempUrl, { downId: nowDownId }, function () { layer.msg("文件获取失败") },
+                function (res) {
+                    createImageTab(res.data,event);
+                    //督查tab构建
+                    allFile = res.data;
+                    createInspect(datas,event);
+                });
+        }
+
+        //赋值到缓存变量中
+        let setTempVar = function(datas,event){
+            nowFeedbackInfoId = null;
+            nowFeedbackInfoId = (tool.isEmpty(datas['feedbackInfoId'])) ? "" : datas["feedbackInfoId"];
+            nowDownId = datas["downId"];
+            //没有申请和需要退回的,为1就需要加按钮
+            isSubmit = (event == 'feedback') ? 1 : 0;
+            cmeStandardKindId = datas["cmeStandardKindId"];
+        }
+
+        let openWindow = function() {
+            windowIndex = layer.open({
+                type: 1,
+                title: '活动总结',
+                content: $('#implementationFeedback'),
+                area: ['100%', '100%'],
+                cancel: function (index, layero) { closeWindowInput(); }
+            })
+        }
+
+        //赋值反馈表
+        let setFeedbackInfo = function(datas,event){
+            if(configMap.hasOwnProperty(configName3)&&!tool.isEmpty(configMap[configName3])) {
+                showProjInfo = JSON.parse(configMap[configName3]);
+            }
+            //创建项目信息
+            tool.createFeedbackGroupProjInfo(datas,showProjInfo);
+            //控制input是否可以编辑
+            tool.controllInputEdit(event);
+            //构建举办前申请上传的文件
+            createApplyFile();
+            //
+            createCoursewareFile();
+            //获取反馈数据
+            let tempUrl = huayi_projectscore_url + "cmeGroupProjFeedbackInfo/getInfoByDownId";
+            commonAjax("post", tempUrl, { downId: nowDownId }, function () { },
+                function (res) { createProjectTab(res.data) });
+        }
+
+        //执行撤回
+        let backFeedback = function(downId){
+            openLoading();
+            $.ajax({
+                url: huayi_projectscore_url + "cmeGroupProjFeedbackApproval/back",
+                type: 'post',
+                data: { downId: downId },
+                success: function (res) {
+                    closeLoading();
+                    if (res.status === 200) {
+                        layer.msg("操作成功");
+                        loaderTable(nowProjectId);
+                    } else {
+                        layer.msg(res.msg || "撤回失败");
+                    }
+                },
+                error: function () {
+                    closeLoading();
+                    layer.msg("发送请求失败");
+                }
+            });
+        }
+
+        //获取数据并构建
+        let changeStatusBtn = function (dataType) {
+            if (dataType == "js-project-people") {
+                isSubmit == 0 ? $(".js-submit").addClass("js-hidden") : $(".js-submit").removeClass("js-hidden");
+                tool.createGroupFeedbackPeopleTable(nowDownId);
+            }
+        }
+
+        //鼠标移入弹出文件信息
+        window.mouseoverImageName = function (elem) {
+            let msg = `<span style="color:#000000;">${elem.getAttribute("msg")}</span>`;
+            subtips = layer.tips(msg, elem, { tips: [1, '#d3d3d3'], time: 0 });
+        }
+
+        //鼠标移出关闭文件信息
+        window.mouseoutImageName = function (elem) { layer.close(subtips); }
+
+        //文件下载或者文件另一个窗口打开
+        window.downloadFeedFile = function (elem) {
+            let filePath = elem.getAttribute("filePath");
+            let fileName = elem.innerText;
+            //下载模板
+            if (fileName.indexOf(".jpg") > 0 || fileName.indexOf(".png") > 0 || fileName.indexOf(".bmp") > 0 || fileName.indexOf(".JPG")>0 || fileName.indexOf(".PNG")>0 || fileName.indexOf(".BMP")>0 || fileName.indexOf(".pdf")>0) {
+                window.open(filePath);
+            } else {
+                tool.downloadUseIfram(filePath);
+            }
+        }
+
+        window.deleteImage = function (elem) {
+            openLoading();
+            let fileId = elem.parentElement.getAttribute("file-id");
+            $.ajax({
+                url: huayi_projectscore_url + "cmeGroupProjFeedbackFile/deleteFile",
+                type: 'post',
+                data: { feedbackFileId: fileId },
+                success: function (res) {
+                    closeLoading();
+                    if (res.status === 200) {
+                        elem.parentElement.remove();
+                        if(elem.parentElement.classList.contains("inspect-table")) {
+                            $("#inspectTable").removeClass("layui-btn-disabled");
+                            $("#inspectTable").attr("disabled", false);
+                        }
+                        if(elem.parentElement.classList.contains("inspect-img")) {
+                            $("#inspectImg").removeClass("layui-btn-disabled");
+                            $("#inspectImg").attr("disabled", false);
+                        }
+                        layer.msg(res.msg);
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                },
+                fail: function () {
+                    closeLoading();
+                    layer.msg("删除失败");
+                }
+            });
+        }
+
+        //tab页点击
+        element.on('tab(tabcheck)', function (data) {
+            let dataType = this.getAttribute("data-type");
+            //全部隐藏
+            $(".js-tab-page").addClass("js-hidden");
+            $("." + dataType).removeClass("js-hidden");
+            handlerPageBtns(data.index + 1, dataType);//触发隐藏下面的按钮
+            //存在就不创建，只需要解除hidden
+            if ($("." + dataType)[0].getAttribute("data-id") != nowDownId && !tool.isEmpty(nowDownId)) {
+                changeStatusBtn(dataType);//获取数据并构建，同时设置隐藏按钮
+            }
+        });
+
+
+        //督查tab构建
+        let createInspect = function(data,event) {
+            if(configMap[configName2].indexOf("5")<0) return;
+            //还没审批，他就是第一个提交的，不需要流程
+            let tempUnit = myDeptId ? myDeptId : myUnitId;
+            if(data.checkState==null || data.checkState == 0) {
+                let startFlowChain = {content:"",isPass:-1,unitname:localStorage.getItem("realname"),unitId:tempUnit};
+                flowArr = [];
+                flowArr.push(startFlowChain);
+                tool.createFeedbackInspectTab(flowArr,event,tempUnit,configMap[configName6],configMap[configName8]);
+                tool.addFeedbackInspectFile(event,tempUnit,allFile);
+            } else {
+                //需要流程
+                //先获取流程及审批信息
+                let isBack = data.checkState==1?true:false;
+                let tempConfigUrl = huayi_projectscore_url+"cmeGroupProjFeedbackApproval/getGroupApprovalStep";
+                commonAjax("post",tempConfigUrl,{downId:nowDownId},function(){},
+                    function(res) {
+                        if(res.status != 200) {
+                            layer.msg("获取流程失败");
+                            return;
+                        }
+                        flowArr = res.data;
+                        tool.createFeedbackInspectTab(flowArr,event,tempUnit,configMap[configName6],configMap[configName8],isBack);
+                        tool.addFeedbackInspectFile(event,tempUnit,allFile);
+                    }
+                )
+            }
+
+        }
+
+
+
+
+        //页面初始化
+        let htmlInit = function () {
+            nowProjectId = tool.getParamFromUrl("projectId");
+            if (tool.isEmpty(nowProjectId)) {
+                layer.msg("缺少必要参数");
+                return;
+            }
+            laydate.render({ elem: "#writeTime", type: 'datetime', });
+            laydate.render({ elem: "#writeTime2", type: 'datetime', });
+            getTabConfig();//请求config,并初始化tab页
+            loaderTable(nowProjectId);// 初始化表格
+            bindBtnClick();//按钮监听事件
+        }
+        htmlInit();
+
+        //点击预览
+        window.onclickView = function (tabType) {
+            if (tabType == 'js-project-tab') {
+                layer.open({
+                    title: '项目反馈表',
+                    type: 2,
+                    area: ['100%', '100%'],
+                    content: 'CmeProjFeedbackPdf.html?downId=' + nowDownId + '&projId=' + nowProjectId + '&batch=' + nowBatch,
+                });
+            } else if (tabType == 'js-project-people') {
+                layer.open({
+                    title: '授分人员明细表',
+                    type: 2,
+                    area: ['100%', '100%'],
+                    content: 'CmeProjFeedbackPeoplePdf.html?downId=' + nowDownId + '&projId=' + nowProjectId + '&batch=' + nowBatch,
+                });
+            } else if (tabType == 'js-project-textbook') {
+                layer.open({
+                    title: '教材明细',
+                    type: 2,
+                    area: ['100%', '100%'],
+                    content: 'CmeProjFeedbackTextbookPdf.html?downId=' + nowDownId + '&projId=' + nowProjectId + '&batch=' + nowBatch,
+                });
+            }  else if (tabType == 'js-inspect') {
+                layer.msg("待开发。。。");
+
+            }
+
+        }
+
+        //下载
+        window.onclickDownload = function (tabType) {
+            if (tabType == 'js-project-tab') {
+                downloadPDF(tabType, "项目反馈信息");
+            } else if (tabType == 'js-project-image') {
+                downloadZip(tabType, "执行情况反馈课程图片");
+            } else if (tabType == 'js-project-people') {
+                downloadPDF(tabType, "授分人员明细表");
+            } else if (tabType == 'js-project-textbook') {
+                downloadPDF(tabType, "教材明细");
+            } else if (tabType == 'js-inspect') {
+                layer.msg("待开发。。。");
+
+            } else {//全部下载
+                downloadZip(tabType, "执行情况反馈相关文件");
+            }
+
+        }
+
+        function downloadPDF(type, pdfName) {
+            let index = layer.open({
+                title    : '',
+                closeBtn : 0,
+                btn      : [],
+                shade    : 0.3,
+                content  :'<i class="layui-icon layui-icon-loading-1 layui-anim layui-anim-rotate' +
+                    ' layui-anim-loop" style="font-size: 36px; margin-right: 15px; position: relative;' +
+                    ' top: 7px;"></i><span id="packageMsg">正在导出，请稍候</span>',
+                time     : 0
+            });
+            axios({
+                    method: 'POST',
+                    url: huayi_projectscore_url + "cmeGroupProjFeedbackFile/downloadPdf",
+                    params       : {downId:nowDownId, type:type, batch:nowBatch, projectId:nowProjectId, unitId:myUnitId},
+                    responseType : 'blob'
+                }).then(res => {
+                    if (res.data.size < 100) {
+                        layer.msg('未查询到信息', { icon: 7, time: 2000 });
+                        return false;
+                    }
+                    const   blob = new Blob([res.data], { type: 'application/zip' }), // new一个二进制对象
+                            url  = window.URL.createObjectURL(blob), // 转化为url
+                            link = document.createElement('a'); // 创建个a标签
+                    link.href = url;
+                    link.download = pdfName + '.pdf'; // 重命名
+                    link.click();
+                    URL.revokeObjectURL(url); // 释放内存
+                    layer.close(index);
+                    layer.msg('导出完成', { icon: 1, time: 1500 });
+                }).catch(function (thrown) {
+                    layer.close(index);
+                    if (axios.isCancel(thrown)) {
+                        console.log('Request canceled', thrown.message);
+                    } else {
+                        console.error('Request failed', thrown);
+                        layer.msg('导出失败', { icon: 2, time: 1500 });
+                    }
+                });
+        }
+
+        function downloadZip(type, pdfName) {
+            let index = layer.open({
+                title    : '',
+                closeBtn : 0,
+                btn      : [],
+                shade    : 0.3,
+                content  :'<i class="layui-icon layui-icon-loading-1 layui-anim layui-anim-rotate' +
+                    ' layui-anim-loop" style="font-size: 36px; margin-right: 15px; position: relative;' +
+                    ' top: 7px;"></i><span id="packageMsg">正在导出，请稍候</span>',
+                time     : 0
+            });
+            axios({
+                method       : 'POST',
+                url          : huayi_projectscore_url + '/cmeGroupProjFeedbackFile/downloadZip',
+                params       : {downId:nowDownId, type:type, batch:nowBatch, projectId:nowProjectId, unitId:myUnitId},
+                responseType : 'blob'
+            }).then(res => {
+                if (res.data.size < 100) {
+                    layer.msg('未查询到信息', { icon: 7, time: 2000 });
+                    return false;
+                }
+                const   blob = new Blob([res.data], { type: 'application/zip' }), // new一个二进制对象
+                        url  = window.URL.createObjectURL(blob), // 转化为url
+                        link = document.createElement('a'); // 创建个a标签
+                link.href = url;
+                link.download = pdfName + '.zip'; // 重命名
+                link.click();
+                URL.revokeObjectURL(url); // 释放内存
+                layer.close(index);
+                layer.msg('导出完成', { icon: 1, time: 1500 });
+            }).catch(function (thrown) {
+                layer.closeAll();
+                if (axios.isCancel(thrown)) {
+                    console.log('Request canceled', thrown.message);
+                } else {
+                    console.error('Request failed', thrown);
+                    layer.msg('导出失败', { icon: 2, time: 1500 });
+                }
+            });
+        }
+
+        //课程明细文件上传
+        let teachFileUpload = function () {
+            let url = huayi_upload_url + 'uploadApi/upload';
+            let fileName = "";
+            let extsType = "jpg|png|bmp|gif";
+            let upType = 1;
+            let uploadBtns = $(".js-teachupload-btn");
+            //上传文件
+            for (let i = 0; i < uploadBtns.length; i++) {
+                upload.render({
+                    elem: uploadBtns[i],
+                    url: url,
+                    exts: extsType,
+                    size: 10 * 1024,//大小小于10M
+                    accept: 'file',
+                    multiple: false,
+                    before: function (obj) {
+                        var fileType = "IMAGE";
+                        let files = this.files = obj.pushFile();
+                        for (let key in files) {
+                            fileName = files[key].name;
+                            let fileNameArr = files[key].name.split(".");
+                            let tempFileType = fileNameArr[fileNameArr.length - 1];
+                            if (tempFileType.indexOf("docx") >= 0 ||
+                                tempFileType.indexOf("doc") >= 0 ||
+                                tempFileType.indexOf("xls") >= 0 ||
+                                tempFileType.indexOf("xlsx") >= 0 ||
+                                tempFileType.indexOf("excel") >= 0||
+                                tempFileType.indexOf("pdf")>=0) {
+                                fileType = "DOC";
+                            }
+                        }
+                        this.data = {
+                            fileType: fileType,
+                            path: `/groupfeedback/teach/${userStandardkindId}/${userUnitId}/${year}/`,
+                            scale:0.6,outputQuality:0.6
+                        }
+                    },
+                    choose: function (obj) {
+                        openLoading();
+                    },
+                    done: function (res, index, upload) {
+                        delete this.files[index];
+                        closeLoading();
+                        if (res.code == 200) {
+                            saveTeachFilePath(res.data.picUrl, upType, fileName, uploadBtns[i].id);
+                        } else {
+                            layer.msg("上传失败");
+                        }
+                    },
+                    error: function (index, upload) {
+                        openLoading();
+                    }
+                })
+            }
+
+        }
+
+        //文件保存到文件服务器后进行保存文件路径
+        let saveTeachFilePath = function (filePath, fileType, fileName, teachId) {
+            let data = { fileType: fileType, filePath: filePath, downId: nowDownId, fileName: fileName, teachId: teachId };
+            commonAjax("post", huayi_projectscore_url + "cmeGroupProjFeedbackTeachFile/saveFilePath", data,
+                function () { layer.msg("保存失败"); },
+                function (res) {
+                    if (res.status === 200) {
+                       //
+                       getDownCources(studyAddress);
+                    } else { layer.msg(res.msg);}
+            });
+        }
+
+        //删除现场照片
+        window.deleteTeachImage = function (fileId) {
+            openLoading();
+            $.ajax({
+                url: huayi_projectscore_url + "cmeGroupProjFeedbackTeachFile/deleteFile",
+                type: 'post',
+                data: { fileId: fileId },
+                success: function (res) {
+                    closeLoading();
+                    if (res.status === 200) {
+                        getDownCources(studyAddress);
+                        layer.msg(res.msg);
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                },
+                fail: function () {
+                    closeLoading();
+                    layer.msg("删除失败");
+                }
+            });
+        }
+
+        //授课现场照片查看
+        window.downloadTeachImage = function (filePath) {
+            //下载模板
+            if (filePath) {
+                window.open(filePath);
+            } else {
+                tool.downloadUseIfram(filePath);
+            }
+        }
+
+
+        let setFeeFormInputsReadOnly = function () {
+            let feeFormDiv = document.querySelector('.layui-form[lay-filter="feeForm"]');
+            if (feeFormDiv) {
+                let inputs = feeFormDiv.querySelectorAll('input');
+                inputs.forEach(input => {
+                    input.readOnly = true;
+                });
+            }
+        };
+
+    });
+
+</script>
+</body>
+
+</html>

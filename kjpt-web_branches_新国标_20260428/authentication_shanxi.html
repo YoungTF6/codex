@@ -1,0 +1,582 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="expires" content="0">
+	<title>继续医学教育管理系统 - 身份认证</title>
+	
+	<!-- <link rel="stylesheet" type="text/css" href="./login_files/default.css"> -->
+	<!-- 必要样式 -->
+	<link rel="stylesheet" type="text/css" href="./login_files/styles2.css">
+	<link href="login3/css/login.css" rel="stylesheet"/>
+	<link rel="stylesheet" type="text/css" href="./login_files/demo.css">
+	<link rel="stylesheet" type="text/css" href="./login_files/loaders.css">
+	<link rel="stylesheet" type="text/css" href="./login_files/css/verify.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+	<link rel="stylesheet" type="text/css" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+
+	<script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+	<style>
+			.login_item{
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			box-sizing: border-box;
+			-webkit-transition: all 1s ease-in-out;
+			transition: all 1s ease-in-out;
+			top: 0;
+		}
+		#tablet{
+			left: 0;
+		}
+		#wifi{
+			left: 100%;
+		}
+		#tablet.move{
+			left: -100%;
+		}
+		#wifi.move{
+			left: 0;
+		}
+		.box_item{
+			height: 100%;
+			width: 100%;
+			background: url(login3/images/bg.png) no-repeat center;
+			background-size: 100% 100%;
+		}
+
+		/* #tablet{
+			-webkit-transform:rotateY(0deg); 
+			transform:rotateY(0deg); 
+		}
+		#wifi{
+			-webkit-transform:rotateY(180deg);
+			transform:rotateY(180deg);
+		}
+		#tablet.move{
+			-webkit-transform:rotateY(-180deg); 
+			transform:rotateY(-180deg); 
+		}
+		#wifi.move{
+			-webkit-transform:rotateY(0deg);
+			transform:rotateY(0deg);
+		} */
+
+		.hide {
+			display: none;
+		}
+		#tablet .sf_item {
+			width: 130px; 
+			padding: 0;
+		}
+		#tablet .sf_item select {
+			color: #fff; 
+			opacity: 0.8; 
+			background: none; 
+			border: none; 		
+			text-align: center; 
+			font-size: 16px;
+			font-family: none;
+		}
+		#tablet .sf_item select option {
+			color: black;
+		}
+		#return_btn {
+			display: none;
+			margin-right: 10px;
+		}
+		.box {
+			background: url(./login3/images/box3_03_shanxi.png) no-repeat !important;
+		}
+	</style>
+</head>
+
+<body class="hide">
+
+	<!-- 新版动态背景身份认证 -->		
+	<div class="login_item " id="tablet">
+		<!-- <div class="qh_box" style="position: absolute;right: 20px;top:20px;font-size: 16px;">
+			<a id="#wifi" style="color: #fff;cursor: pointer;" class="atiem">切换旧版</a>
+		</div> -->
+		<div class="login_cont" id="auth_1">
+			<div class="tit_box">
+				<img src="login3/images/left_tit_bg.png">
+				<p>山西省继续医学教育管理系统</p>
+				<img src="login3/images/right_tit_bg.png">
+			</div>
+			<div class="login">
+				<div class="tit_lo">您还未进行身份认证，请输入证件号完成身份认证</div>
+				<div class="login_mess">
+					<div class="login_fields hid">
+						<div class="login_fields__user">
+							<div class="sf_item">
+								<select name="cert_type">
+									<option value="9fcb08ce-ee86-4e4c-9611-9d430101cea4">身份证</option>
+									<option value="3444541a-9703-44ed-aae6-9d8b01574916">港澳台居民居住证</option>
+									<option value="a85da857-fd72-4e9a-8657-afa900a0f569">台湾居民来往大陆通行证</option>
+									<option value="031d0bdc-8cd0-11ee-9c60-005056a64c01">港澳居民来往内地通行证</option>
+									<option value="d681a2b3-df10-421a-8279-afa900a0f569">其他法定有效证件</option>
+								</select>
+							</div>
+							<input name="cert_id" placeholder="请输入证件号" type="text" 
+									style="width: 180px;font-size: 16px;" maxlength="25" autocomplete="off">
+						</div>
+						<div class="login_fields__password">
+							<div class="sf_box" style="color: #fff;"><p style="text-align: center;">姓名</p></div>
+							<input name="person_name" placeholder="请输入姓名" type="text" 
+									style="width: 180px;font-size: 16px;" maxlength="25" autocomplete="off">
+						</div>
+						<div class="login_fields__submit">
+							<input type="button" value="确定" name="auth_btn">
+						</div>
+					</div>
+					
+				</div>
+			</div>
+			<div class="jszc_box">
+				<p>
+					管理平台服务电话：0351-4166861 0351-8219921 0351-3580889<br>
+                    推荐使用显示器分辨率：1366*768或更高分辨率，谷歌浏览器或360浏览器极速模式
+                </p>
+			</div>
+			<div class="success">
+			</div>
+		</div>
+	</div>
+
+
+	<!-- 旧版静态背景身份认证 -->
+	<div class="login_item" id="wifi">
+		<!-- <div class="qh_box" style="position: absolute;right: 20px;top:20px;font-size: 16px;">
+			<a href="#tablet" style="color: #fff;cursor: pointer;" class="atiem">切换新版</a>
+		</div> -->
+		<div class="box_item" id="auth_2">
+			<div class="box">
+				<!-- <div style="z-index:10;width:100%;height:100%;position: absolute;"></div> -->
+				<div class="login_box">
+					<div class="sfrz_tit">您还未进行身份认证，请输入证件号完成身份认证</div>
+					<div class="login_file hi">
+						<ul class="list_0220">
+							<li style="border:none;">
+								<div class="sf_item">
+									<select name="cert_type">
+										<option value="9fcb08ce-ee86-4e4c-9611-9d430101cea4">身份证</option>
+										<option value="3444541a-9703-44ed-aae6-9d8b01574916">港澳台居民居住证</option>
+										<option value="a85da857-fd72-4e9a-8657-afa900a0f569">台湾居民来往大陆通行证</option>
+										<option value="031d0bdc-8cd0-11ee-9c60-005056a64c01">港澳居民来往内地通行证</option>
+										<option value="d681a2b3-df10-421a-8279-afa900a0f569">其他法定有效证件</option>
+									</select>
+								</div>
+								<input type="text" name="cert_id" placeholder="请输入证件号" 
+										style="width:200px;border: 1px solid #ddd;" />
+							</li>
+							<li style="border:none;">
+								<div class="sf_item"><p>姓名</p></div>
+								<input type="text" name="person_name" placeholder="请输入姓名"  
+										style="width:200px;border: 1px solid #ddd;"/>
+							</li>
+						</ul>
+						<input type="button" value="确定" class="login_btn" name="auth_btn">
+					</div>
+				</div>
+				<div class="text_bottom">
+                    <p>管理平台服务电话：0351-4166861 0351-8219921 0351-3580889</p>
+                    <p>推荐使用显示器分辨率：1366*768或更高分辨率，谷歌浏览器或360浏览器极速模式</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- 弹窗 -->
+	<div class="popup_window2" style="display: none;" id="layer_div">
+		<div class="pour_box">
+			<div class="sf_tan">
+				<div class="tk_box">
+					<p id="layer_content">信息</p>
+					<div class="login_fields__submit">
+						<input type="button" id="return_btn" 
+								value="返回登录" onclick="window.location.href='./shanxilogin.html'">
+						<input type="button" value="" id="layer_btn">
+					</div>
+					<div class="login_fields__submit">
+					</div>
+				</div>
+				<div class="cha" id="layer_close">
+					<img src="login3/images/cha_icon.png">
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+	<script type="text/javascript" src="./login_files/js/verify.js" ></script><div class="OverWindows"></div>
+	<script type="text/javascript" src="./js/constant.js"></script>
+	<script type="text/javascript" src="./js/tools/urlTools.js"></script>
+	<script type="text/javascript" src="./js/tools/form_validation_tool.js"></script>
+	<style type="text/css">
+		input:-webkit-autofill , textarea:-webkit-autofill, select:-webkit-autofill {
+			/* -webkit-text-fill-color: #ededed !important;
+			transition: background-color 50000s ease-in-out 0s; */
+			-webkit-transition-delay: 99999s;
+			-webkit-transition: color 99999s ease-out, background-color 99999s ease-out;
+		}
+	</style>
+	<script type="text/javascript">
+		const login_url = localStorage.getItem('login-url'),
+			  flag   	= getQueryString('flag'),
+			  mobile 	= getQueryString('mobile');
+
+		// 跳转首页 CD
+		let InterValObj, // timer变量，控制时间
+			count = 3, // 间隔函数，1秒执行
+			curCount; // 当前剩余秒数
+
+
+		/* 根据登录方式切换样式 */
+		if (flag != '2') {
+
+		} else {
+			$('#tablet').addClass('move');
+			$('#wifi').addClass('move');
+		}
+		$('body').show();
+
+
+		/* 左右切换动画效果
+		$('.atiem').click(function (e) {
+			e.preventDefault();
+			$('#tablet').toggleClass('move');
+			$('#wifi').toggleClass('move');
+		}); */
+
+
+		/* tab切换
+		$('.login_ul li').on('click', function () {
+			var index = $(this).index();
+			$(this).addClass('cur').siblings().removeClass('cur');
+			$('.login_fields').eq(index).addClass('hid').siblings().removeClass('hid');
+		});
+		$('.login_tab2 li').on('click', function () {
+			var index = $(this).index();
+			$(this).addClass('cur2').siblings().removeClass('cur2');
+			$('.login_file').eq(index).addClass('hi').siblings().removeClass('hi');
+		}); */
+
+
+		/* 回车键事件 */			
+		$(document).keypress(e => {
+			if (e.which == 13) {
+				// $('input[type="button"]').click();
+				$('#auth_' + flag + ' [name=auth_btn]').click();
+			}
+		});
+
+
+		/* 全屏 */
+		var fullscreen = function () {
+			elem = document.body;
+			if (elem.webkitRequestFullScreen) {
+				elem.webkitRequestFullScreen();
+			} else if (elem.mozRequestFullScreen) {
+				elem.mozRequestFullScreen();
+			} else if (elem.requestFullScreen) {
+				elem.requestFullscreen();
+			} else {
+				// 浏览器不支持全屏API或已被禁用
+			}
+		}
+
+
+		/* 关闭弹窗 */
+		$('#layer_close').on('click', () => {
+			$('#layer_div').hide();
+		});
+
+
+		layui.use(['form', 'layer', 'jquery'], function () {
+			let layer = layui.layer;
+
+
+			/* 确定验证按钮 */
+			$('[name=auth_btn]').on('click', () => {
+				const certType   = $('#auth_' + flag + ' [name=cert_type]').val(),
+					  certId     = $('#auth_' + flag + ' [name=cert_id]').val(),
+					  personName = $('#auth_' + flag + ' [name=person_name]').val();
+
+				if (strTool.isBlank(certId) || strTool.isBlank(personName)) {
+					layer.msg('<sapn style="color: #666666;">请将证件号，姓名填写完整</sapn>', 
+							{ icon : 7, time : 1500 });
+					return false;
+				}
+				if ('9fcb08ce-ee86-4e4c-9611-9d430101cea4' == certType
+						&& !certIdTool.checkIdCardNo(certId)) {
+					layer.msg('<sapn style="color: #666666;">请输入正确的身份证号码</sapn>', 
+							{ icon : 7, time : 1500 });
+					return false;
+				}
+
+				$.ajax({
+					url      : huayi_permission_url + 'comuser/authentication',
+					type     : 'post',
+					dataType : 'json',
+					data     : {
+						certId      : certId,
+						personName  : personName,
+						mobile		: mobile
+					},
+					success  : (res) => {
+						if (res.status == '200') {
+							let data = res.data;
+							if (data.certIdExists) { // 证件号存在
+								if (data.personNameMatches) {
+									showMsg('身份验证成功',
+											'确定', 'javascript:window.login();', false);
+									// 倒计时跳转首页
+									curCount = count;
+									$('#layer_btn').val('确定 (' + curCount + ')');
+									InterValObj = window.setInterval(SetRemainTime, 1000);
+
+								} else {
+									showMsg('您输入的证件号在本省继续医学教育管理系统中对应的姓名与您填写的姓名不符，' +
+											'请确认或联系您所在单位继教管理员更新您的个人信息',
+											'已知晓', '', true);
+								}
+
+							} else {
+								showMsg('系统内未检索到您的信息，' +
+										'请注册您的个人信息至本省继续医学教育管理系统并等待注册单位审核，' + 
+										'或联系所在单位继教管理员录入您的信息',
+										'去注册', './pages/person/selectProvince.html', true);
+							}
+						}
+					},
+					error    : (xhr, status, error) => {
+						layer.msg('<sapn style="color: #666666;">身份认证失败</sapn>', 
+								{ icon : 2, time : 1500 });
+					}
+				});
+			});
+
+
+			/* 登录 */
+			window.login = () => {
+				let formData = {
+					loginMethod : 'CODE',
+					mobile 		: mobile
+				}
+
+				// 显示加载层
+				let bg_index = layer.msg('<span style="color: #666666;">&nbsp;正在跳转至系统首页&nbsp;···</span>',
+						{ icon: 16, shade: 0.3, time:0 });
+
+				$.ajax({
+					type 		: 'POST',
+					contentType : 'application/json',
+					url 		: huayi_permission_url + 'login',
+					data 		: JSON.stringify(formData),
+					success 	: (data, textStatus, xhr) => {
+						let datas = data.data;
+						if (data.status == 200) {
+							localStorage.clear();
+							localStorage.setItem('login-url', login_url);
+							localStorage.setItem('token', xhr.getResponseHeader("Authorization"));
+							localStorage.setItem('token-exp-time', xhr.getResponseHeader("token-exp-time"));
+							localStorage.setItem('refresh-token', xhr.getResponseHeader("refresh-token"));
+							localStorage.setItem('user-id', xhr.getResponseHeader("KJPT-USER-ID"));
+							localStorage.setItem('unit-id', datas.unitId);
+							localStorage.setItem('unit-name', datas.unitName);
+							localStorage.setItem('standardkind-id', datas.standardKindId);
+							localStorage.setItem('user-name', datas.userName);
+							localStorage.setItem('user-type', datas.userType);
+							localStorage.removeItem('menu-unit-id');
+							window.location.href = "index.html";
+
+						} else {
+							layer.msg('<sapn style="color: #666666;">' + data.msg + '</sapn>', 
+									{ icon : 7, time : 1500 });
+							$('.verify-refresh').click();
+						}
+
+						layer.close(bg_index);
+					},
+					error 		: (XMLHttpRequest, textStatus, errorThrown) => {
+						layer.msg('<sapn style="color: #666666;">登录失败</sapn>', 
+								{ icon : 2, time : 1500 });
+						$('.verify-refresh').click();
+						
+						layer.close(bg_index);
+					}
+				});
+			}
+			
+		});
+
+
+		/* 打开弹窗 */
+        window.showMsg = (msg, btn_title, href_url, return_flag) => {
+            $('#layer_content').html(msg);
+            $('#layer_btn').val(btn_title);
+            $('#layer_btn').off('click');
+            if (strTool.isNotBlank(href_url)) {
+                $('#layer_btn').on('click', () => {
+                    window.location.href = href_url;
+                });
+
+            } else {
+                $('#layer_btn').on('click', () => {
+                    $('#layer_div').hide();
+                });
+				
+            }
+			if (return_flag) {
+				$('#return_btn').show();
+
+			} else {
+				$('#return_btn').hide();
+			}
+            $('#layer_div').show();
+        }
+
+
+		/* 跳转首页 CD */
+		var SetRemainTime = () => {
+			if (curCount == 0) {
+				window.clearInterval(InterValObj); // 停止计时器
+				window.login();
+			
+			} else {
+				$('#layer_btn').val('确定 (' + (--curCount) + ')');
+			}
+		}
+	</script>
+	<script type="text/javascript" src="./login_files/ThreeWebGL.js"></script>
+	<script type="text/javascript" src="./login_files/ThreeExtras.js"></script>
+	<script type="text/javascript" src="./login_files/Detector.js"></script>
+	<script id="vs" type="x-shader/x-vertex">
+		varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 ); }
+	</script>
+	<script id="fs" type="x-shader/x-fragment">
+		uniform sampler2D map; uniform vec3 fogColor; uniform float fogNear; uniform float fogFar; varying vec2 vUv; void main() { float depth = gl_FragCoord.z / gl_FragCoord.w; float fogFactor = smoothstep( fogNear, fogFar, depth ); gl_FragColor = texture2D( map, vUv ); gl_FragColor.w *= pow( gl_FragCoord.z, 20.0 ); gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor ); }
+	</script>
+	<script type="text/javascript">
+		if(!Detector.webgl) Detector.addGetWebGLMessage();
+		var canvas = document.createElement('canvas');
+		canvas.width = 32;
+		canvas.height = window.innerHeight;
+		var context = canvas.getContext('2d');
+		var gradient = context.createLinearGradient(0, 0, 0, canvas.height);
+		gradient.addColorStop(0, "#1e4877");
+		gradient.addColorStop(0.5, "#4584b4");
+		context.fillStyle = gradient;
+		context.fillRect(0, 0, canvas.width, canvas.height);
+		document.body.style.background = 'url(' + canvas.toDataURL('image/png') + ')';
+		var container;
+		var camera, scene, renderer, sky, mesh, geometry, material, i, h, color, colors = [],
+			sprite, size, x, y, z;
+		var mouseX = 0,
+			mouseY = 0;
+		var start_time = new Date().getTime();
+		var windowHalfX = window.innerWidth / 2;
+		var windowHalfY = window.innerHeight / 2;
+		init();
+		animate();
+
+		function init() {
+			container = document.createElement('div');
+			document.body.appendChild(container);
+			camera = new THREE.Camera(30, window.innerWidth / window.innerHeight, 1, 3000);
+			camera.position.z = 6000;
+			scene = new THREE.Scene();
+			geometry = new THREE.Geometry();
+			var texture = THREE.ImageUtils.loadTexture("./login_files/yun.png");
+			texture.magFilter = THREE.LinearMipMapLinearFilter;
+			texture.minFilter = THREE.LinearMipMapLinearFilter;
+			var fog = new THREE.Fog(0x4584b4, -100, 3000);
+			material = new THREE.MeshShaderMaterial({
+				uniforms: {
+					"map": {
+						type: "t",
+						value: 2,
+						texture: texture
+					},
+					"fogColor": {
+						type: "c",
+						value: fog.color
+					},
+					"fogNear": {
+						type: "f",
+						value: fog.near
+					},
+					"fogFar": {
+						type: "f",
+						value: fog.far
+					},
+				},
+				vertexShader: document.getElementById('vs').textContent,
+				fragmentShader: document.getElementById('fs').textContent,
+				depthTest: false
+			});
+			var plane = new THREE.Mesh(new THREE.Plane(64, 64));
+			for(i = 0; i < 8000; i++) {
+				plane.position.x = Math.random() * 1000 - 500;
+				plane.position.y = -Math.random() * Math.random() * 200 - 15;
+				plane.position.z = i;
+				plane.rotation.z = Math.random() * Math.PI;
+				plane.scale.x = plane.scale.y = Math.random() * Math.random() * 1.5 + 0.5;
+				GeometryUtils.merge(geometry, plane)
+			}
+			mesh = new THREE.Mesh(geometry, material);
+			scene.addObject(mesh);
+			mesh = new THREE.Mesh(geometry, material);
+			mesh.position.z = -8000;
+			scene.addObject(mesh);
+			renderer = new THREE.WebGLRenderer({
+				antialias: false
+			});
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			container.appendChild(renderer.domElement);
+			document.addEventListener('mousemove', onDocumentMouseMove, false);
+			window.addEventListener('resize', onWindowResize, false)
+		}
+
+		function onDocumentMouseMove(event) {
+			mouseX = (event.clientX - windowHalfX) * 0.25;
+			mouseY = (event.clientY - windowHalfY) * 0.15
+		}
+
+		function onWindowResize(event) {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+			renderer.setSize(window.innerWidth, window.innerHeight)
+		}
+
+		function animate() {
+			requestAnimationFrame(animate);
+			render()
+		}
+
+		function render() {
+			position = ((new Date().getTime() - start_time) * 0.03) % 8000;
+			camera.position.x += (mouseX - camera.target.position.x) * 0.001;
+			camera.position.y += (-mouseY - camera.target.position.y) * 0.001;
+			camera.position.z = -position + 8000;
+			camera.target.position.x = camera.position.x;
+			camera.target.position.y = camera.position.y;
+			camera.target.position.z = camera.position.z - 1000;
+			renderer.render(scene, camera)
+		}
+	</script>
+
+	<div><canvas width="1920" height="881"></canvas></div>
+
+</body>
+</html>

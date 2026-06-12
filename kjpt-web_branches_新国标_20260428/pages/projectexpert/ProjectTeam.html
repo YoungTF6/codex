@@ -1,0 +1,1112 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>专家组</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <script type="text/javascript" src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="../../js/constantPage/projectConstant.js"></script>
+    <script type="text/javascript" src="../../js/tools/form_validation_tool.js"></script>
+    <script type="text/javascript" src="../../js/tools/dict_tool.js"></script>
+    <script type="text/javascript" src="../../js/tools/dateTools.js"></script>
+    <script type="text/javascript" src="../../js/tools/num_tool.js"></script>
+    <style>
+        body {
+            background: #fff;
+        }
+        .layui_body_box {
+            padding: 0;
+        }
+        .layui-card {
+            box-shadow: none;
+        }
+        .layui-form-select dl {
+            max-height: 220px;
+        }
+        #add-projectTeam .layui-form-select dl {
+            max-height: 85px;
+        }
+        .margin-bottom-5 {
+            margin-bottom: 5px !important;
+        }
+        .layui-icon-ok {
+            color: green; font-weight: bold;
+        }
+        .layui-icon-close.notok, .require, .error {
+            color: red; font-weight: bold;
+        }
+        .layui-table-header th .layui-table-cell {
+            text-align: center;
+        }
+        .layui-table-cell {
+            height: auto;
+        }
+        .laytable-cell-2-0-4 {
+            overflow: inherit;
+        }
+        .laytable-cell-2-0-5 {
+            overflow: inherit;
+        }
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+        .layui-layer-content {
+            overflow: visible !important;
+        }
+        .tab_others {
+            width: 150px !important;
+        }
+        .tab_this {
+            width: 150px !important;
+        }
+        .tab_others {
+            background-color: #009688;
+            color: #ffffff;
+            margin-left: 6px;
+        }
+        .tab_this {
+            background-color: #f5f5f5;
+            color: #404040;
+            margin-left: 6px;
+            border-bottom: 1px solid #F5F5F5;
+        }
+        .layui-card-body .layui-table {
+            margin: 0;
+        }
+        .layui-table-tool-temp {
+            padding-right: 10px;
+        }
+        [type="page"] {
+            overflow: auto;
+        }
+        .layui-progress-big .layui-progress-text {
+            color: #404040;
+        }
+        .layui-progress {
+            margin-top: 5px;
+        }
+        .condition-area .layui_display:nth-child(1)  {
+            margin-right: 15px;
+        }
+        .condition-area .layui-form-label {
+            width: 90px;
+            padding: 9px 10px;
+        }
+        .condition-area .layui-input-block {
+            margin-left: 110px;
+        }
+
+        .cell-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #add-team {
+            padding: 40px 40px 0 30px;
+        }
+        #add-team .layui-form-item {
+            text-align: left;
+        }
+        #add-team .layui-inline {
+            width: 500px;
+        }
+        #add-team .layui-form-label {
+            width: 90px;
+        }
+        #add-team .layui-input-block {
+            margin-left: 120px;
+        }
+        #add-team .footer {
+            text-align: center;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            margin-bottom: 0;
+            width: 100%;
+            background-color: #fff;
+            padding: 15px 0;
+        }
+
+        .layui-disabled, .layui-disabled:hover {
+            background-color: #fafafa !important;
+            color: #000000d9 !important;
+        }
+        .layui-select-disabled .layui-edge {
+            display: none;
+        }
+        .layui-select-disabled input {
+            padding-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-tab" lay-filter="tab-base">
+                <ul class="layui-tab-title">
+                    <li class="tab_others tab_this tabsRounded " lay-id="0">专家组</li>
+                    <li class="tab_others tabsRounded" lay-id="1">已分配项目<span id="assigned"></span></li>
+                    <li class="tab_others tabsRounded" lay-id="2">未分配项目<span id="undistributed"></span></li>
+                    <li class="tab_others tabsRounded" lay-id="3">专家评审工作量统计<span id="workcollection"></span></li>
+                </ul>
+            </div>
+
+            <!-- 1.1、专家组搜索框区域 -->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area" id="search4Team">
+                <div class="layui_mess">
+                    <div class="layui_display">
+                        <form id="form-query-1">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">专家组年度</label>
+                                <div class="layui-input-block">
+                                    <select class="year" name="year" id="year"></select>
+                                </div>
+                            </div>
+                            <div class="layui-inline div-medicalType hide">
+                                <label class="layui-form-label" name="lblMedicalSystem"></label>
+                                <div class="layui-input-block">
+                                    <select class="medical-type" name="medicalType" lay-filter="medicalType" id="medicalType" lay-search></select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">专家组名称</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="teamName" id="teamName" placeholder="请输入" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline div-batch hide"></div>
+                        </form>
+                    </div>
+
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="tableOp.init()" lay-filter="table-search" data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>&nbsp;查询</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1.2、项目搜索框区域 -->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area hide" id="search4Project">
+                <div class="layui_mess">
+                    <div class="layui_display">
+                        <form id="form-query-2">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">项目年度</label>
+                                <div class="layui-input-block">
+                                    <select class="year" name="holdYear" id="holdYear" lay-filter="holdYear"></select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">二级学科</label>
+                                <div class="layui-input-block">
+                                    <select name="knowledge" lay-filter="knowledge" id="knowledge" lay-search="true">
+                                        <option value="">请选择</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">三级学科</label>
+                                <div class="layui-input-block">
+                                    <select name="subjectCode" lay-filter="subjectCode" id="subjectCode" lay-search>
+                                        <option value="">请选择</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" name="lblMedicalSystem"></label>
+                                <div class="layui-input-block">
+                                    <select class="medical-type" name="projectType" lay-filter="projectType" id="projectType" lay-search></select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">申报代码</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="projectCode" id="projectCode" placeholder="请输入" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">项目名称</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="projectName" id="projectName" placeholder="请输入" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">项目负责人</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="personName" id="personName" placeholder="请输入" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">申报单位</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="unitMainId" id="unitMainId" placeholder="请输入" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline tree-select">
+                                <label class="layui-form-label">下级单位</label>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" name="subordinateUnit" lay-filter="subordinateUnit" id="subordinateUnit" lay-search>
+                                </div>
+                            </div>
+                            <!-- <div class="layui-inline">
+                                <label class="layui-form-label">项目类型</label>
+                                <div class="layui-input-block">
+                                    <select name="projectType" lay-filter="projectType_filter" id="projectType_search" lay-search>
+                                        <option>全部</option>
+                                        <option value="1">西医</option>
+                                        <option value="2">中医</option>
+                                    </select>
+                                </div>
+                            </div> -->
+                            <div class="layui-inline div-batch hide"></div>
+                        </form>
+                    </div>
+
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" id="searchBtnForProject" onclick="tableOp.init()" lay-filter="table-search" data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>&nbsp;查询</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1.3、工作量统计搜索框区域 -->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area hide" id="search4Work">
+                <div class="layui_mess">
+                    <div class="layui_display">
+                        <form id="form-query-3">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">年度</label>
+                                <div class="layui-input-block">
+                                    <select class="year" name="workYear" id="workYear" lay-filter="workYear"></select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" name="lblProjectLevel"></label>
+                                <div class="layui-input-block">
+                                    <select name="projectLevel" id="projectLevel">
+                                        <option value="">全部</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline div-medicalType hide">
+                                <label class="layui-form-label" name="lblMedicalSystem"></label>
+                                <div class="layui-input-block">
+                                    <select class="medical-type" name="medicalTypeProj" lay-filter="medicalTypeProj" id="medicalTypeProj" lay-search></select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">专家组</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="workTeam" id="workTeam" placeholder="请输入" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">姓名</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="workExpert" id="workExpert" placeholder="请输入" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline div-batch hide"></div>
+                        </form>
+                    </div>
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" id="searchBtnForWork" onclick="tableOp.init()" lay-filter="table-search" data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>&nbsp;查询</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2、表格区域 -->
+            <div class="layui-card-body layui_body_box" id="div-table">
+                <table class="layui-table" id="projectTeam" lay-filter="projectTeam"></table>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 表格内数据编辑、删除按钮 -->
+    <script type="text/html" id="rowBar">
+        <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-xs layui-btn-danger btn-danger-row" lay-event="del">删除</a>
+    </script>
+    <script type="text/html" id="bar">
+        <a class="layui-btn layui-btn-sm" lay-event="add" href="#"><i class="layui-icon layui-icon-add-1 layuiadmin-button-btn"></i>新增</a>
+        <a class="layui-btn layui-btn-sm btn-auto-assign hide a-disabled" lay-event="auto-assign-1" href="#">第一批次一键分配</a>
+        <a class="layui-btn layui-btn-sm btn-auto-assign hide a-disabled" lay-event="auto-assign-2" href="#">第二批次一键分配</a>
+    </script>
+    <script type="text/html" id="export">
+        <a class="layui-btn layui-btn-sm " lay-event="exportExecl">导出 Excel</a>
+    </script>
+    <!-- 导出excel（统计） -->
+    <script type="text/html" id="exportWork">
+        <a class="layui-btn layui-btn-sm " lay-event="exportWorkExecl">导出 Excel</a>
+    </script>
+    <!-- 已分配及未分配项目行内按钮 -->
+    <script type="text/html" id="barForProject">
+        {{# if (d.projectType == 2 && dictTool.getUnitId() == '210000') { }}
+        <a class="layui-btn layui-btn-xs layui-btn-disabled btn-disabled-row" lay-event="reassignmentForTeam">重新分配专家组</a>
+        {{# } else { }}
+        <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="reassignmentForTeam">重新分配专家组</a>
+        {{# } }}
+    </script>
+    <script type="text/html" id="barForProject1">
+        {{# if (d.projectType == 2 && dictTool.getUnitId() == '210000') { }}
+        <a class="layui-btn layui-btn-xs layui-btn-disabled btn-disabled-row" lay-event="reassignmentForTeam">分配专家组</a>
+        {{# } else { }}
+        <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="reassignmentForTeam">分配专家组</a>
+        {{# } }}
+    </script>
+    <script type="text/javascript">
+        let tableName           = '0',
+            toolBar             = '#bar',
+            formId              = '#form-query-1',
+            reviewStatus        = '0', // 查询条件（项目）
+            knowledgSubject     = dictTool.getUnitId() === '218000' ? 2 : -1,
+            medicalType         = dictTool.getManagerMedicalType(),
+            standardKindId      = dictTool.getStandardKindId(),
+            unitId              = dictTool.getUnitId(),
+            unitUserType        = dictTool.getUnitUserType(),
+            flag_guangxi        = StandardKind.GUANG_XI == standardKindId,
+            flag_guangDong      = StandardKind.GUANG_DONG == standardKindId,
+            flag_medicalType    = flag_guangDong && unitUserType == 5;
+
+        layui.config({
+            base        : '../../js/layui/ext/'
+        }).extend({
+            xmSelect    : 'xm-select',
+            treeSelect  : 'treeSelect',
+            tool        : 'tool',
+            excel       : 'excel'
+        }).use([ 'table', 'form', 'element', 'xmSelect', 'laytpl', 'laydate', 'treeSelect', 'tool', 'excel' ], () => {
+            let { table, form, layer, element, xmSelect, laytpl, laydate, treeSelect, tool, excel } = layui,
+                borderDefault = {
+                    top     : { style: 'thin' },
+                    bottom  : { style: 'thin' },
+                    left    : { style: 'thin' },
+                    right   : { style: 'thin' }
+                };
+
+            /** 初始化页面 */
+            $(() => {
+                $('.condition-area .layui-form-label').each((i, d) => {
+                    let name = $(d).attr('name');
+                    if (name) $(d).text(projectLabels[name] || '');
+                });
+
+                initYearSel();
+                initKnowledgeSelBatch();
+                initProjectTypeSel();
+                loadUnitTree(dictTool.getUnitId());
+                initScoreLevelSel();
+
+                if (flag_guangxi) {
+                    $('.div-batch').removeClass('hide')
+                        .load('../mod/comFormItem.html .form-batch', (response, status) => form.render('select'));
+                }
+
+                element.tabChange('tab-base', 0);
+
+                form.render();
+            });
+
+            window.initYearSel = () => {
+                $('.year').empty();
+                let data = dictTool.getYear('年度');
+                if (data && data.length > 0) {
+                    $.each(data, (i, item) => $('.year').append(new Option(item, item)));
+                    form.on('select(holdYear)', data => initKnowledgeSelBatch());
+                    form.on('select(workYear)', data => initScoreLevelSel());
+                }
+
+                form.render('select');
+            };
+
+            window.initKnowledgeSelBatch = () => {
+                dictTool.initKnowledgeSel('#knowledge', '二级学科', { ...getVerParams(), knowledgeType: 2, knowledgSubject: knowledgSubject });
+                $('#subjectCode').find('option:gt(0)').remove();
+                let pId = $('#knowledge').val();
+                if (pId) dictTool.initKnowledgeSel('#subjectCode', '三级学科', { ...getVerParams(), knowledgeType: 3, knowledgeTwoId: pId });
+
+                form.on('select(knowledge)', data => {
+                    $('#subjectCode').find('option:gt(0)').remove();
+                    let pId = data.value;
+                    if (pId) dictTool.initKnowledgeSel('#subjectCode', '三级学科', { ...getVerParams(), knowledgeType: 3, knowledgeTwoId: pId });
+                    form.render();
+                });
+
+                form.render('select');
+            };
+
+            window.initProjectTypeSel = () => {
+                let options = '<option value="2">中医</option>';
+                if (dictTool.getUnitId() !== '218000') options = '<option value="">全部</option><option value="1">西医</option>' + options;
+                $('.medical-type').empty().append(options);
+
+                if (medicalType) {
+                    $('#projectType').val(medicalType);
+                    if (flag_medicalType) {
+                        $('.medical-type').val(medicalType).attr('disabled', true);
+                        $('.div-medicalType').css('display', 'inline-block');
+                    }
+                }
+
+                form.render('select');
+            };
+
+            window.loadUnitTree = (unitId, data) => {
+                while ($('.layui-treeSelect').length > 0) treeSelect.destroy('subordinateUnit');
+                treeSelect.render({
+                    elem    : '#subordinateUnit',
+                    data    : huayi_personorg_url + 'comunit/childrenAllTreeRedis?unitId=' + dictTool.getUnitId(),
+                    type    : 'get',
+                    search  : true,
+                    success : d => data,
+                    fail    : d => layer.msg('单位树加载失败', { icon: 7, time: 1500 })
+                });
+            };
+
+            window.initScoreLevelSel = () => {
+                $.ajax({
+                    type        : 'post',
+                    url         : huayi_projectscore_url + 'projectDicRegionLevel/getLevelsByStandardIdAndTopUnit',
+                    data        : {
+                        getLevelsByStandardId   : dictTool.getStandardKindId(),
+                        holdYear                : $('#workYear').val(),
+                        unitId                  : dictTool.getUnitId()
+                    },
+                    async       : false,
+                    dataType    : 'json',
+                    success     : res => {
+                        $('#projectLevel').empty();
+                        if (res.status == 200 && res.success == true) {
+                            $('#projectLevel').append(new Option('请选择',''));
+                            $.each(res.data, (i, item) => $('#projectLevel').append(new Option(item.scoreLevelName, item.scoreLevelId)));
+                        } else layer.msg('获取年度信息失败', { icon: 7, time: 1500 });
+                    },
+                    error       : () => layer.msg('获取年度信息失败', { icon: 7, time: 1500 })
+                });
+
+                form.render('select');
+            };
+
+
+            /** 选项卡 */
+            $('.tab_others').on('click', function () {
+                let index = $(this).index();
+                $(this).addClass('tab_this').siblings().removeClass('tab_this');
+            });
+            element.on('tab(tab-base)', function () {
+                let type = this.getAttribute('lay-id'); // 获取当前 tab 的 id 属性
+                if (type === '0') {
+                    tableOp.url     = huayi_personorg_url + 'projectTeam/all';
+                    tableName       = '0';
+                    toolBar         = '#bar';
+                    formId          = '#form-query-1';
+                    $('#search4Project, #search4Work').hide();
+                    $('#search4Team').show();
+                }
+                else if (type === '1') {
+                    tableOp.url     = huayi_projectscore_url + 'project/selectAllProjectWhereGroupIsNullOrNotNull';
+                    tableName       = '1';
+                    toolBar         = '#export';
+                    formId          = '#form-query-2';
+                    reviewStatus    = '1';
+                    $('#search4Team, #search4Work').hide();
+                    $('#search4Project').show();
+                }
+                else if (type === '2') {
+                    tableOp.url     = huayi_projectscore_url + 'project/selectAllProjectWhereGroupIsNullOrNotNull';
+                    tableName       = '2';
+                    toolBar         = '';
+                    formId          = '#form-query-2';
+                    reviewStatus    = '0';
+                    $('#search4Team, #search4Work').hide();
+                    $('#search4Project').show();
+                }
+                else if (type === '3') {
+                    tableOp.url     = huayi_projectscore_url + 'project/selectExpertRevieWorks';
+                    tableName       = '3';
+                    toolBar         = '#exportWork';
+                    formId          = '#form-query-3';
+                    $('#search4Team, #search4Project').hide();
+                    $('#search4Work').show();
+                }
+                tableOp.init();
+            });
+
+
+            /** 表格相关 */
+            window.tableOp = {
+
+                url: huayi_personorg_url + 'projectTeam/all',
+
+                init: () => {
+                    table.render({
+                        elem            : '#projectTeam',
+                        url             : tableOp.url,
+                        defaultToolbar  : [],
+                        where           : tableOp.getQueryParams({
+                            unitUserType    : dictTool.getUnitUserType(),
+                        }, '#form-query-1', '#form-query-2', '#form-query-3'),
+                        cols            : [ [
+                            { fixed: 'left', align: 'center', width: 120, toolbar: '#rowBar', title: '操作', hide: !(tableName === '0') },
+                            { fixed: 'left', field: 'teamName', title: '组名称', sort: true, minWidth: 150, hide: tableName !== '0' },
+                            { field: 'teamKnowledge', title: '学科', sort: true, minWidth: 200, hide: tableName !== '0' },
+                            { field: 'expertName', hide: tableName !== '0', title: '组成员', minWidth: 400, sort: true, templet: d => {
+                                return '<div class="cell-flex"><div style="width: calc(100% - 75px);  text-wrap: initial;">' +
+                                    (d.expertName || '<span>&nbsp;</span>') + '</div>' +
+                                    '<a class="layui-btn layui-btn-xs" lay-event="allocationExpert">分配专家</a></div>';
+                            } },
+                            { field: 'projectCount', hide:tableName !== '0', align: 'center', minWidth: 210, title: '分配项目个数', sort: true,
+                                templet: d => {
+                                    return '<div class="cell-flex">已分配 ' + d.projectCount + ' 个项目' +
+                                        '<a class="layui-btn layui-btn-xs" lay-event="allocationProject">分配项目</a></div>';
+                                } },
+                            { field: 'maxProjNum', title: '最大项目数', width: 110, align: 'center', hide: !flag_guangxi || tableName !== '0' },
+                            { field: 'year', title: '聘任年度', sort: true, minWidth: 100, align: 'center', hide: tableName !== '0' },
+                            { fixed: 'left', align: 'center', width: 140, toolbar: '#barForProject', title: '操作', hide: tableName !== '1' },
+                            { fixed: 'left', align: 'center', width: 130, toolbar: '#barForProject1', title: '操作', hide: tableName !== '2' },
+                            { fixed: 'left', field: 'projectCode', title: '项目编号', width: 200, align: 'center', sort: true,
+                                hide: (tableName === '0' || tableName === '3') },
+                            { fixed: 'left', field: 'projectName', title: '项目名称', sort: true, hide: (tableName === '0' || tableName === '3') },
+                            { field: 'unitName', title: '申请单位名称', sort: true, hide: (tableName === '0' || tableName === '3') },
+                            { field: 'personName', title: '项目负责人', align: 'center', sort: true, hide: (tableName === '0' || tableName === '3') },
+                            { field: 'subjectTwo', title: '二级学科', align: 'center', sort: true, hide: (tableName === '0' || tableName === '3')},
+                            { field: 'knowledgeName', title: '三级学科', align: 'center', sort: true, hide: (tableName === '0' || tableName === '3') },
+                            { field: 'teamName', title: '专家组', align: 'center', sort: true, hide:tableName !== '1'} ,
+                            { field: 'batch', title: '申报批次', width: 90, align: 'center', hide: !flag_guangxi || (tableName === '0'),
+                                templet: d => d.batch ? '第' + numToChi(d.batch) + '批' : '' },
+                            { fixed: 'left', field: 'workYear', title: '年度', align: 'center', sort: true, hide: tableName !== '3' },
+                            { fixed: 'left', field: 'workExpert', title: '姓名', align: 'center', sort: true, hide: tableName !== '3' },
+                            { fixed: 'left', field: 'unitName', title: '单位', sort: true,hide:!(tableName==='3')},
+                            { fixed: 'left', field: 'workTeam', title: '专家组', align: 'center', sort: true, hide: tableName !== '3' },
+                            { field: 'workProjectNum', title: '分配项目总数', event: 'projectStatisAll',
+                                style: 'color: #27b1a2; cursor: pointer;', sort: true, align: 'center', hide: tableName !== '3' },
+                            { field: 'workReview', title: '已评审项目总数', event: 'projectStatisReview', sort: true, align: 'center', hide: tableName !== '3',
+                                templet: d => {
+                                    let clazz = d.workReview > 0 ? 'color: #27b1a2; cursor: pointer;' : '';
+                                    return '<span style="' + clazz + '">' + d.workReview + '</span>';
+                                } },
+                            { field: 'workNoReview', title: '未评审项目总数', event: 'projectStatisNoReview', sort: true, align: 'center', hide: tableName !== '3',
+                                templet: d => {
+                                    let clazz = d.workNoReview > 0 ? 'color: #27b1a2; cursor: pointer;' : '';
+                                    return '<span style="' + clazz + '">' + d.workNoReview + '</span>';
+                                } },
+                            { field: 'reviewProgress', title: '评审进度', event: 'psProgress', sort: false, align: 'center', width: 150, hide: tableName !== '3',
+                                templet: d => d.workReview
+                                    ? '<div class="layui-progress layui-progress-big pointer" lay-showPercent="true">' +
+                                        '<div class="layui-progress-bar" lay-percent="' + Math.round((d.workReview / d.workProjectNum).toFixed(2) * 100) + '%"></div>' +
+                                        '</div>'
+                                    : '' },
+                            { field: 'workRecommened', title: '推荐通过率', event: 'tjProgress', sort: false, align: 'center', width: 150, hide: tableName !== '3',
+                                templet: d => d.workRecommened
+                                    ? '<div class="layui-progress layui-progress-big" lay-showPercent="true" style="cursor: pointer;">' +
+                                        '<div class="layui-progress-bar" lay-percent="' + Math.round((d.workRecommened / d.workReview).toFixed(2)*100) + '%"></div>' +
+                                        '</div>'
+                                    : '' }
+                        ] ],
+                        toolbar         : toolBar,
+                        id              : 'projectTeam',
+                        height          : tableOp.computeHeight(),
+                        page            : tableName != '0',
+                        limit           : 10,
+                        limits          : [ 10, 50, 100, 150, 200 ],
+                        parseData       : res => {
+                            let result = {
+                                'code'  : res.status === 200 ? 0 : res.status, // 解析接口状态
+                                'msg'   : res.msg // 解析提示文本
+                            }
+                            return tableName === '0'
+                                ? { ...result,
+                                    'data'  : res.data, // 解析数据列表
+                                } : { ...result,
+                                    'count' : res.data.recordsTotal, // 解析数据总数
+                                    'data'  : res.data.records, // 解析数据列表
+                                    'page'  : res.data.pageNum, // 当前页
+                                    'limit' : res.data.pageSize, // 每页条数
+                                };
+                        },
+                        request         : {
+                            pageName: 'pageNum', // 页码参数名，默认 page
+                            limitName: 'pageSize' // 每页条数参数名，默认 limit
+                        },
+                        done            : (res, curr, count) => {
+                            // 初始同步行高
+                            syncTableRowHeight();
+                            var $tableMain = $('.layui-table-body');
+                            var $tableFixed = $('.layui-table-fixed .layui-table-body');
+                            // 监听主体滚动
+                            $tableMain.on('scroll', function() {
+                                var scrollTop = $(this).scrollTop();
+                                var scrollLeft = $(this).scrollLeft();
+                                // 1. 同步固定列的垂直滚动位置（关键！）
+                                $tableFixed.scrollTop(scrollTop);
+                                // 2. 判断是否滚动到底部（允许 1px 误差）
+                                var $this = $(this);
+                                var maxScrollTop = this.scrollHeight - this.clientHeight;
+                                if (scrollTop >= maxScrollTop - 1) {
+                                    // 到底部时，延迟微调行高，解决最后几行错位
+                                    setTimeout(function() {
+                                        syncTableRowHeight();
+                                    }, 20);
+                                }
+                            });
+                            // 监听固定列滚动（反向同步，防止用户直接滚动固定列）
+                            $tableFixed.on('scroll', function() {
+                                $tableMain.scrollTop($(this).scrollTop());
+                            });
+
+                            if (flag_guangxi) $('.btn-auto-assign').removeClass('hide a-disabled');
+                            tableOp.count4Proj();
+                            element.render('progress'); // 加载进度条样式
+                        }
+                    });
+
+                    tableOp.initListener();
+                },
+
+                initListener: () => {
+                    table.on('toolbar(projectTeam)', obj => {
+                        let { event } = obj;
+
+                        if (event === 'add') {
+                            layui.sessionData('ProjectTeamInfo', null);
+                            layer.open({
+                                type    : 2,
+                                title   : '<i class="layui-icon layui-icon-add-1"></i>&nbsp;新增专家组',
+                                content : 'projectTeamDetail.html',
+                                area    : [ '600px', flag_guangxi ? '535px' : '425px' ]
+                            });
+                        }
+                        else if ([ 'auto-assign-1', 'auto-assign-2' ].includes(event)) {
+                            let year    = $('[name=year]').val(),
+                                config  = {
+                                    'auto-assign-1': { title: '第一批次',  batch: 1, },
+                                    'auto-assign-2': { title: '第二批次',  batch: 2, },
+                                }[event];
+                            layer.alert(`您即将对<b class="text-kw color-danger">${year}</b>年度<b class="text-kw color-danger">${config.title}</b>进行批量分配，
+                                点击“确认”后，本批次<b class="text-kw color-danger">已分配专家</b>和<b class="text-kw color-danger">项目</b>将
+                                <b class="text-kw color-danger">重新分配</b>。`, 
+                                {   title: '提示', icon: 7, btnAlign: 'c', btn: [ '确认（<span class="count-num">5</span>）', '取消' ], area: [ '460px', 'auto' ],
+                                    success : function (layero, index) {
+                                        let countNum = 5;
+                                        const   btn         = $(layero).find('.layui-layer-btn0');
+                                        btn .attr('style', 'cursor: not-allowed; background-color: #fbfbfb; color: #d2d2d2; border-color: #eee; pointer-events: none;')
+                                            .attr('disabled', true);
+                                        const   divCountNum = btn.find('.count-num'),
+                                                timer       = setInterval(() => {
+                                                    divCountNum.text(--countNum);
+                                                    if (countNum <= 0) {
+                                                        clearInterval(timer);
+                                                        btn.html('确认').attr('style', '').attr('disabled', false);
+                                                    }
+                                                }, 1000);
+                                    },
+                                }, 
+                                function (index) {
+                                    let loadIdex = layer.msg(`正在对${year}年度${config.title}进行批量分配，请稍候`, 
+                                        { icon: 16, time: 0, zIndex: 99999999, shade: 0.3, area: [ '380px', 'auto' ] });
+                                    $.ajax({
+                                        type        : 'post',
+                                        url         : huayi_personorg_url + 'projectTeam/autoAssign',
+                                        contentType : 'application/json;charset=UTF-8',
+                                        data        : JSON.stringify({
+                                            reserved2       : standardKindId,
+                                            reserved3       : unitId,
+                                            year            : year,
+                                            batch           : config.batch,
+                                            unitUserType    : unitUserType,
+                                        }),
+                                        dataType    : 'json',
+                                        success     : function (res) {
+                                            if (res.status === 200) {
+                                                layer.close(loadIdex);
+                                                layer.msg(`${year}年度${config.title}批量分配成功`, { icon: 1, time: 2000 });
+                                                $('[name=year]').val(year);
+                                                $('[name=batch]').val(config.batch);
+                                                form.render('select');
+                                                loaderTable();
+                                            }
+                                            else {
+                                                layer.close(loadIdex);
+                                                layer.msg(`${year}年度${config.title}批量分配失败`, { icon: 2, time: 2000 });
+                                            }
+                                        }
+                                    });
+                                });
+                        }
+                        else if (event === 'exportExecl') {
+                            $.ajax({
+                                type        : 'get',
+                                url         : huayi_projectscore_url + 'project/selectAllProjectWhereGroupIsNullOrNotNull',
+                                contentType : 'application/json;charset=UTF-8',
+                                data        : tableOp.getQueryParams({
+                                    unitUserType: dictTool.getUnitUserType(),
+                                    pageNum     : 1,
+                                    pageSize    : 5000000
+                                }, '#form-query-2'),
+                                dataType    : 'json',
+                                success     : res => {
+                                    let data        = res.data.records,
+                                        excelConfig = excel.makeColConfig({ 'A': 150, 'B': 250, 'C': 200, 'D': 100 ,'E': 100, 'F': 100, 'G': 100 }, 100);
+                                    data = excel.filterExportData(data,
+                                        [ 'projectCode', 'projectName', 'unitName', 'personName', 'subjectTwo', 'knowledgeName', 'teamName', 'batch' ]);
+                                    data.unshift({
+                                        projectCode     : '项目编号',
+                                        projectName     : '项目名称',
+                                        unitName        : '申请单位名称',
+                                        personName      : '项目负责人',
+                                        subjectTwo      : '二级学科',
+                                        knowledgeName   : '三级学科',
+                                        teamName        :'专家组',
+                                        batch           : '申报批次'
+                                    });
+                                    excel.setExportCellStyle(data, 'A2:G' + data.length, {
+                                        s: {
+                                            font    : { sz: 11, name: '微软雅黑' },
+                                            border  : borderDefault
+                                        },
+                                        function (cell, newCell, row, config, currentRow, currentCol, fieldKey) {
+                                            return newCell;
+                                        }
+                                    });
+                                    excel.setExportCellStyle(data, 'A1:G1', {
+                                        s: {
+                                            fill        : { bgColor: { indexed: 64 }, fgColor: { rgb: 'A9A9A9' } },
+                                            font        : { sz: 11, bold: true, name: '微软雅黑' },
+                                            alignment   : { // 璁剧疆灞呬腑
+                                                horizontal  : 'center',
+                                                vertical    : 'center'
+                                            },
+                                            border: borderDefault
+                                        },
+                                        function (cell, newCell, row, config, currentRow, currentCol, fieldKey) {
+                                            return newCell;
+                                        }
+                                    });
+                                    excel.exportExcel(data, '项目列表.xlsx', 'xlsx', { extend: { '!cols': excelConfig } });
+                                },
+                                error       : () => layer.msg('导出失败', { icon: 7, time: 1500 })
+                            });
+                        }
+                        else if (event === 'exportWorkExecl') {
+                            $.ajax({
+                                type        : 'get',
+                                url         : huayi_projectscore_url + 'project/selectExpertRevieWorks',
+                                contentType : 'application/json;charset=UTF-8',
+                                data        : tableOp.getQueryParams({
+                                    pageNum         : 1,
+                                    pageSize        : 5000000
+                                }, '#form-query-1', '#form-query-2', '#form-query-3'),
+                                dataType: 'json',
+                                success     : res => {
+                                    let data = res.data.records;
+                                    data = excel.filterExportData(data,
+                                        [ 'workYear', 'workExpert', 'workTeam', 'workProjectNum', 'workReview', 'workNoReview' ]);
+                                    data.unshift({
+                                        workYear        : '年度',
+                                        workExpert      : '姓名',
+                                        workTeam        : '专家组',
+                                        workProjectNum  : '分配项目总数',
+                                        workReview      : '已评审项目总数',
+                                        workNoReview    : '未评审项目总数'
+                                    });
+                                    let excelConfig = excel.makeColConfig({ 'A': 150, 'B': 250, 'C': 200, 'D': 100 ,'E': 100, 'F': 100 }, 100)
+                                    excel.setExportCellStyle(data, 'A2:F' + data.length, {
+                                        s:{
+                                            font    : { sz: 11, name: '微软雅黑' },
+                                            border  : borderDefault
+                                        },
+                                        function (cell, newCell, row, config, currentRow, currentCol, fieldKey) {
+                                            return  newCell;
+                                        }
+                                    });
+                                    excel.setExportCellStyle(data, 'A1:F1', {
+                                        s: {
+                                            fill        : { bgColor: { indexed: 64 }, fgColor: { rgb: 'A9A9A9' } },
+                                            font        : { sz: 11, bold: true, name: '微软雅黑' },
+                                            alignment   : { // 璁剧疆灞呬腑
+                                                horizontal  : 'center',
+                                                vertical    : 'center'
+                                            },
+                                            border: borderDefault
+                                        },
+                                        function(cell, newCell, row, config, currentRow, currentCol, fieldKey) {
+                                            return  newCell;
+                                        }
+                                    });
+                                    excel.exportExcel(data, '专家评审工作量统计.xlsx', 'xlsx', { extend: { '!cols': excelConfig, } });
+                                    layer.closeAll('loading');
+                                },
+                                error       : () => (layer.closeAll('loading'), layer.msg('导出失败', { icon: 7, time: 1500 }))
+                            });
+                        }
+
+                    });
+
+                    table.on('tool(projectTeam)', obj => {
+                        let { data, event } = obj,
+                            { projectTeamId: teamId, teamName, year } = data,
+                            standardkindId  = dictTool.getStandardKindId(),
+                            unitId          = dictTool.getUnitId();
+
+                        cacheTeamInfo(teamId);
+
+                        if (event === 'edit') {
+                            layer.open({
+                                type    : 2,
+                                title   : '<i class="layui-icon layui-icon-edit"></i>&nbsp;编辑专家组',
+                                content : 'projectTeamDetail.html',
+                                area    : [ '600px', flag_guangxi ? '535px' : '425px' ]
+                            });
+                        }
+                        else if (event === 'del') {
+                            layer.confirm('确认删除', { icon: 3, title: '提示', btnAlign: 'c' }, () => {
+                                $.ajax({
+                                    type        : 'get',
+                                    url         : huayi_personorg_url + 'projectTeam/deleted',
+                                    data        : { projectTeamId: teamId },
+                                    contentType : 'application/json;charset=UTF-8',
+                                    dataType    : 'json',
+                                    success     : res => (layer.msg(res.msg, { icon: 7, time: 1500 }), table.reload('projectTeam'))
+                                });
+                            });
+                        }
+                        else if (event === 'allocationExpert') {
+                            layer.open({
+                                type    : 2,
+                                title   : '分配专家',
+                                area    : [ '100%', '100%' ],
+                                content : 'projectTeamExpert.html'
+                            });
+                        }
+                        else if (event === 'allocationProject') {
+                            layer.open({
+                                type    : 2,
+                                title   : '分配项目',
+                                area    : [ '100%', '100%' ],
+                                content : 'projectTeamProject.html'
+                            });
+                        }
+                        else if (event === 'reassignmentForTeam') {
+                            if (data.projectType == 2 && unitId === '210000') return false; // 已评审项目不可重新分配专家组
+                            layer.open({
+                                type    : 2,
+                                title   : tableName === '2' ? '分配专家组' : '重新分配专家组',
+                                area    : [ '100%', '100%' ],
+                                content : 'projectForTeam.html?projectId=' + obj.data.projectId
+                            });
+                        }
+                        else if (event === 'projectStatisAll' && data.workProjectNum > 0) {
+                            let url = '../projectexpert/ProjectStatis.html?workYear=' + data.workYear + '&' +
+                                'expertId=' + data.expertId + '&teamId=' + data.teamId + '&reserved2=' + standardkindId + '&' +
+                                'reserved3=' + unitId + (flag_medicalType ? '&medicalType=' + medicalType : '');
+                            if (flag_guangxi) url += '&batch=' + data.batch + '&flagBatch=true';
+                            layer.open({
+                                type    : 2,
+                                title   : '项目信息',
+                                area    : [ '90%', '90%' ],
+                                content : url
+                            });
+                        }
+                        else if (event === 'projectStatisReview' && data.workReview > 0) {
+                            let url = '../projectexpert/ProjectStatis.html?type=YSP&workYear=' + data.workYear + '&' +
+                                'expertId=' + data.expertId + '&teamId=' + data.teamId + '&reserved2=' + standardkindId + '&' +
+                                'reserved3=' + unitId + (flag_medicalType ? '&medicalType=' + medicalType : '');
+                            if (flag_guangxi) url += '&batch=' + data.batch + '&flagBatch=true';
+                            layer.open({
+                                type    : 2,
+                                title   : '项目信息',
+                                area    : [ '90%', '90%' ],
+                                content : url
+                            });
+                        }
+                        else if (event === 'projectStatisNoReview' && data.workNoReview > 0) {
+                            let url = '../projectexpert/ProjectStatis.html?type=WSP&workYear=' + data.workYear + '&' +
+                                'expertId=' + data.expertId + '&teamId=' + data.teamId + '&reserved2=' + standardkindId + '&' +
+                                'reserved3=' + unitId + (flag_medicalType ? '&medicalType=' + medicalType : '');
+                            if (flag_guangxi) url += '&batch=' + data.batch + '&flagBatch=true';
+                            layer.open({
+                                type    : 2,
+                                title   : '项目信息',
+                                area    : [ '90%', '90%' ],
+                                content : url
+                            });
+                        }
+                        else if (event === 'psProgress' && data.workReview > 0) {
+                            let url = '../projectexpert/ProjectStatis.html?type=PS&workYear=' + data.workYear + '&' +
+                                'expertId=' + data.expertId + '&teamId=' + data.teamId + '&reserved2=' + standardkindId + '&' +
+                                'reserved3=' + unitId + (flag_medicalType ? '&medicalType=' + medicalType : '');
+                            if (flag_guangxi) url += '&batch=' + data.batch + '&flagBatch=true';
+                            layer.open({
+                                type    : 2,
+                                title   : '评审进度',
+                                area    : ['90%', '90%'],
+                                content : url
+                            });
+                        }
+                        else if (event === 'tjProgress' && data.workRecommened > 0) {
+                            let url = '../projectexpert/ProjectStatis.html?type=TJ&workYear=' + data.workYear + '&' +
+                                'expertId=' + data.expertId + '&teamId=' + data.teamId + '&reserved2=' + standardkindId + '&' +
+                                'reserved3=' + unitId + (flag_medicalType ? '&medicalType=' + medicalType : '');
+                            if (flag_guangxi) url += '&batch=' + data.batch + '&flagBatch=true';
+                            layer.open({
+                                type    : 2,
+                                title   : '推荐通过率',
+                                area    : ['90%', '90%'],
+                                content : url
+                            });
+                        }
+
+                    });
+
+                    table.on('sort(projectTeam)', obj => {
+                        setTimeout(() => element.render('progress'), 100);
+                    });
+                },
+
+                getQueryParams: (data, ...formSel) => {
+                    let result = {
+                        reserved2       : dictTool.getStandardKindId(),
+                        reserved3       : dictTool.getUnitId(),
+                        reviewStatus    : reviewStatus,
+                        batch           : $(formId).find('[name=batch]').val(),
+                        flagBatch       : flag_guangxi
+                    };
+                    $.each(formSel, (i, sel) => {
+                        result = { ...result, ...$(sel).serializeObject({ includeDisabled: true }) }
+                    });
+                    return { ...result, ...data };
+                },
+
+                computeHeight: () => {
+                    let windowHeight    = $(window).height(),
+                        divTop          = $('#projectTeam').offset().top,
+                        divHeight       = windowHeight - divTop;
+                    return  'full-' + Math.floor(divTop + 16);
+                },
+
+                count4Proj: () => {
+                    $.ajax({
+                        type        : 'get',
+                        url         : huayi_projectscore_url+ 'project/select/distribution',
+                        contentType : 'application/json;charset=UTF-8',
+                        data        : tableOp.getQueryParams({
+                            unitUserType    : dictTool.getUnitUserType(),
+                        }, '#form-query-2'),
+                        dataType    : 'json',
+                        success     : res => {
+                            if (res.data) {
+                                document.getElementById('assigned').innerText='（' + res.data.assigned + '）';
+                                document.getElementById('undistributed').innerText='（' + res.data.undistributed + '）';
+                            } else layer.msg('获取项目统计信息失败', { icon: 7, time: 1500 });
+                        },
+                        error       : () => layer.msg('获取项目统计信息失败', { icon: 7, time: 1500 })
+                    });
+                }
+
+            };
+
+
+            window.cacheTeamInfo = teamId => {
+                $.ajax({
+                    type        : 'get',
+                    async       : false,
+                    url         : huayi_personorg_url + 'projectTeam/getTeamInfoById',
+                    data        : { projectTeamId: teamId },
+                    contentType : 'application/json;charset=UTF-8',
+                    dataType    : 'json',
+                    success     : res => {
+                        if (res.status == 200 && res.success == true) {
+                            let data = res.data;
+                            if (!data) return;
+                            layui.sessionData('ProjectTeamInfo', { key: 'teamId', value: data.teamId });
+                            layui.sessionData('ProjectTeamInfo', { key: 'teamName', value: data.teamName });
+                            layui.sessionData('ProjectTeamInfo', { key: 'year', value: data.year });
+                            layui.sessionData('ProjectTeamInfo', { key: 'proTeName', value: data.knowledgeName });
+                            layui.sessionData('ProjectTeamInfo', { key: 'proTeTwoName', value: data.knowledgeTwoName });
+                            layui.sessionData('ProjectTeamInfo', { key: 'knowledgeTwoId', value: data.subTwo });
+                            layui.sessionData('ProjectTeamInfo', { key: 'knowledgeId', value: data.subThree });
+                            layui.sessionData('ProjectTeamInfo', { key: 'medicalType', value: data.medicalType });
+                            layui.sessionData('ProjectTeamInfo', { key: 'batch', value: data.batch });
+                            layui.sessionData('ProjectTeamInfo', { key: 'maxProjNum', value: data.maxProjNum });
+                            layui.sessionData('ProjectTeamInfo', { key: 'projectCount', value: data.projectCount });
+                        } else layer.msg('获取专家组信息失败', { icon: 7, time: 1500 });
+                    },
+                    error       : () => layer.msg('获取专家组信息失败', { icon: 7, time: 1500 })
+                });
+                layui.sessionData('ProjectTeamInfo', { key :'proTeaId', value: teamId });
+            };
+
+            window.getVerParams = () => {
+                return {
+                    cmeStandardKindId   : dictTool.getStandardKindId(),
+                    versionYear         : $('#holdYear').val()
+                };
+            };
+
+
+            window.pageNum = 1;
+            $(window).resize(() => {
+                let pageNumCur = $('.layui-laypage-curr > em:nth-child(2)').text();
+                pageNum = pageNumCur || pageNum;
+                tableOp.init({ page: { curr: pageNum } });
+            });
+
+            // 行高同步函数（支持递归同步多次）
+            function syncTableRowHeight() {
+                var $mainRows = $('.layui-table-main tr');
+                var $fixedRows = $('.layui-table-fixed .layui-table-body tr');
+                // 遍历所有行，强制统一高度
+                $mainRows.each(function(index) {
+                    var $mainRow = $(this);
+                    var $fixedRow = $fixedRows.eq(index);
+                    if ($fixedRow.length) {
+                        var mainHeight = Math.ceil($mainRow.height());
+                        var fixedHeight = Math.ceil($fixedRow.height());
+                        var targetHeight = Math.max(mainHeight, fixedHeight, 22); // 最小高度保护
+                        
+                        if (Math.abs(mainHeight - fixedHeight) > 1) {
+                            $mainRow.height(targetHeight);
+                            $fixedRow.height(targetHeight);
+                        }
+                    }
+                });
+                // 二次确保：某些情况下固定列和主行的最后一行可能漏掉，再扫描一次
+                setTimeout(function() {
+                    $mainRows.each(function(index) {
+                        var $mainRow = $(this);
+                        var $fixedRow = $fixedRows.eq(index);
+                        if ($fixedRow.length && $mainRow.height() !== $fixedRow.height()) {
+                            var h = Math.max(Math.ceil($mainRow.height()), Math.ceil($fixedRow.height()));
+                            $mainRow.height(h);
+                            $fixedRow.height(h);
+                        }
+                    });
+                }, 50);
+            }
+
+        });
+    </script>
+</body>
+</html>

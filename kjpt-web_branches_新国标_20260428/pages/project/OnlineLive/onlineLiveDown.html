@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>线上直播</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+        media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="../../../js/qrcode.js"></script>
+    <script type="text/javascript" src="../../../js/qrcode/jquery.qrcode.js"></script>
+    <script type="text/javascript" src="../../../js/qrcode/jquery.qrcode.min.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <script src="../../../js/common.js"></script>
+    <!--    ajax全局配置-->
+    <!-- <script type="text/javascript" src="../../../js/jquery-3.5.1.min.js"></script> -->
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+    <style>
+        .layui-form-item1{
+            margin: 15px auto;
+            display: flex;
+            justify-content: space-around;
+        }
+        .layui-form-label2{
+            width: 30%;
+            text-align: right;
+            font-weight: bolder;
+        }
+        .layui-text-block2{
+            width: 60%;
+            word-break: break-all;
+        }
+        #qrCodeForTeach{
+            width: 75%;
+        }
+        #qrCodeForTeach>canvas{
+            width: 100%;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <!--        表格区域-->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="cmeProjPosDownload" lay-filter="cmeProjPosDownload"
+                    style="margin: 0px 0px;">
+                </table>
+            </div>
+
+        </div>
+        <!-- 浏览直播信息 -->
+        <div style="display: none;" id="onlineLiveInfo">
+            <!-- <div class="layui-form-item1">
+                <div class="layui-form-label2" >外部人员观看地址:</div>
+                <div class="layui-text-block2" id="onlineURL"></div>
+            </div> -->
+            <div class="layui-form-item1">
+                <div class="layui-form-label2">频道密码:</div>
+                <div class="layui-text-block2" id="channelPwd"></div>
+            </div>
+            <!-- <div class="layui-form-item1">
+                <div class="layui-form-label2">外部人员观看二维码:</div>
+                <div class="layui-text-block2">
+                    <div id="qrCodeForTeach"></div>
+                </div>
+            </div> -->
+        </div>
+
+        <div style="display: none;" id="checkDate">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                  <label class="layui-form-label">开始时间：</label>
+                  <div class="layui-input-block">
+                    <input type="datetime" name="startDate" id = "startDate" required  lay-verify="required" placeholder="请选择同步数据的开始时间" autocomplete="off" class="layui-input">
+                  </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">结束时间：</label>
+                    <div class="layui-input-block">
+                      <input type="datetime" name="endDate" id="endDate" required  lay-verify="required" placeholder="请选择同步数据的结束时间" autocomplete="off" class="layui-input">
+                    </div>
+                  </div>
+                <div class="layui-form-item">
+                  <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="synchronousLiveDataForm">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                  </div>
+                </div>
+              </form>
+        </div>
+    </div>
+
+    <!--表格内数据编辑、删除按钮-->
+    <script type="text/html" id="rowBar">
+        {{# if(d.channelId !== null || d.channelId === null ){ }}
+            <!-- 为方便调试,开发环境都返回带按钮. -->
+            <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row " lay-event="BeginToLive">开始直播</a>
+            <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row " lay-event="previewLiveInfo">直播信息浏览</a>  
+        {{#  if (d.countForChannel !== 0 ){  }}
+            <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row layui-disabled" lay-event="synchronousLiveData">直播数据同步</a>
+        {{# } else{  }}
+            <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row " lay-event="synchronousLiveData">直播数据同步</a>
+        {{#   }   }}
+
+        {{# } }}
+    </script>
+    <script type="text/html" id="rowBarForDownId">
+        <span>第{{d.batch}}批次</span>
+    </script>
+    <script>
+
+        var pro_id = getUrlParam("pro_id");
+        let scoreLevel = getUrlParam('scoreLevel');
+        var contentOfQrCode='https://live.polyv.cn/watch/'
+
+        var channelIdForData;
+        var downForData;
+        
+        /* 获取单位 */
+        window.getUnitId = function () {
+            return localStorage.getItem('unit-id');
+        }
+
+        // 全局配置及引入相关的模块
+        layui.use(['table', 'form', 'laydate'], function () {
+            var table = layui.table;
+            var form = layui.form;
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var laydate= layui.laydate;
+
+
+            /* 获取配置 */
+            window.getConfig = function (config_name, scoreLevel) {
+                $.ajax({
+                    async   : false,
+                    type    : 'post',
+                    url     : huayi_sjwh_url + 'cmeCommonConfig/getConfigByUnitFromRedis',
+                    data    : { 
+                        unitId       : window.getUnitId(), 
+                        configNames  : config_name,
+                        scoreLevelId : scoreLevel
+                    },
+                    success : function (res) {
+                        if (res.success == true) {
+                            window[config_name] = res.data[config_name];
+                        } else {
+                            layer.msg('获取配置失败');
+                        }
+                    },
+                    error   : function () {
+                        layer.msg('获取配置失败');
+                    }
+                });
+            }
+            window.getConfig('fun_must_apply_before_hold', scoreLevel);
+
+
+            // 表格相关操作
+            // 表格配置
+            window.loaderTable = function () {table.render({
+                elem: '#cmeProjPosDownload',
+                url: huayi_projectscore_url + 'cmeProjPosDownload/getDownListForOnline',
+                title: '周期表',
+                defaultToolbar: [],
+                where: {
+                    groupProjId: pro_id
+                },
+                cols: [[
+                    { align: 'center', width: 300,  toolbar: '#rowBar', title: '操作' },
+                    { field: 'downId', title: '周期主键', hide: true },
+                    { field: 'projNo', title: '项目编号',  hide: true },
+                    { field: 'projName', title: '项目名称 ', hide : true },
+                    { field: 'batch', title: '批次 ', toolbar: '#rowBarForDownId', },
+                    { field: 'startDt', title: '开始时间', },
+                    { field: 'endDt', title: '截止时间', },
+                    {
+                        field: 'count', title: '是否已授分', templet: function (d) {
+                            if (d.count > 0) {
+                                return '是'
+                            } else {
+                                return '否'
+                            }
+                        }
+                    }
+                ]],
+                cellMinWidth: 100,
+                id: "cmeProjPosDownload",
+                height: 'full-155',
+                page: false,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.msg, //解析提示文本
+                        "data": res.data, //解析数据列表
+                    }
+
+                },
+                request: {
+                    pageName: 'pageNum', //页码的参数名称，默认：page
+                    limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                },
+                done: function () {
+                    let holdTipIndex = null;
+                    $(".oprateSpan[data-holdqualification='false']").each(function (i, e) {
+                        let id = "#" + $(this).attr("id");
+                        $(e).parents("tr").mouseenter(function () {
+                            holdTipIndex = layer.tips('该周期因逾期未举办或其他原因，已被取消举办资格,详情请咨询上级主管部门', id, {
+                                tips: [2, '#78BA32']
+                            });
+                        })
+                    });
+                }
+            });
+        }
+        loaderTable();
+
+        window.synchronousLiveDataByDownId= function(downId) {
+            layer.open({
+                type: 1,
+                title: '数据同步',
+                content: $('#checkDate'),
+                area: ['50%', '50%'],
+            })
+
+        }
+
+            //监听提交
+        form.on('submit(synchronousLiveDataForm)', function(data){
+            var dataForFrom= data.field;
+            dataForFrom.channelId= channelIdForData;
+            dataForFrom.downId= downForData; 
+            $.ajax({
+                    type 		: 'GET',
+                    contentType : 'application/json',
+                    url 		: huayi_projectscore_url + 'projPolyv/getLog',
+                    data 		: data.field,
+                    success 	: (data, textStatus, xhr) => {
+                        layer.closeAll();
+                        loaderTable();
+                        layer.msg(data.data);
+                    },
+                    error       :  (XMLHttpRequest, textStatus, errorThrown) => {
+                        layer.msg("数据同步失败")
+                    }
+                })
+            return false;
+        });
+        laydate.render({
+            elem: '#startDate', //指定元素
+            type: 'datetime'
+        });
+        laydate.render({
+            elem: '#endDate', //指定元素
+            type: 'datetime'
+        });
+        // 监听行内按钮
+        table.on('tool(cmeProjPosDownload)', function (obj) {
+            var datas = obj.data;
+            if (obj.event === 'BeginToLive') {
+                // window.parent.layer.closeAll();
+                // 开始直播
+                // 获取相关信息并跳转到直播页
+                debugger;
+                $.ajax({
+                    type 		: 'POST',
+                    contentType : 'application/json',
+                    url 		: huayi_projectscore_url + 'projPolyv/getTeacherAuthLoginUrl?downId='+datas.downId,
+                    // data 		: {"downId": datas.downId},
+                    success 	: (data, textStatus, xhr) => {
+                        debugger;
+                        if (data.status == 200) {
+                            window.open(data.data,"_blank");
+                        }else {
+                            layer.msg(data.msg)
+                        }
+                    },
+                    error       :  (XMLHttpRequest, textStatus, errorThrown) => {
+                        layer.msg("获取直播地址失败")
+                    }
+                })
+            } else if (obj.event === 'previewLiveInfo') {
+                $("#channelPwd").html(datas.channelPasswd);
+                var index = layer.open({
+                    type: 1,
+                    title: '直播信息预览',
+                    content: $('#onlineLiveInfo'),
+                    area: ['500px', '150px'],
+                    btnAlign : 'c',
+                    btn: ['关闭'] //可以无限个按钮
+                    ,btn1: function(index, layero){
+                        layer.close(index)
+                    },
+                    success: function(layero, index){
+                        // generateQrCode(datas.channelId);
+                    }
+                })
+            } else if (obj.event === 'synchronousLiveData'){
+                var downId= datas.downId;
+                if (datas.countForChannel> 0) {
+                    layer.msg("数据已经同步过一次，不能多次同步");
+                    return;
+                }
+                downForData= datas.downId;
+                channelIdForData = datas.channelId;
+                layer.confirm('数据只能同步一次，是否同步数据', {icon: 3, title:'提示'}, function(index){
+                    layer.close(index);
+                    synchronousLiveDataByDownId(downId);
+                });
+            }
+        });
+
+        let generateQrCode = function(channelId) {
+            $("#onlineURL").html(contentOfQrCode+channelId);
+            $("#qrCodeForTeach").empty();
+            $('#qrCodeForTeach').qrcode({
+                text: contentOfQrCode+'3514105',//根据此串生成一个二维码
+                correctLevel: 0, //纠错等级
+            });
+        }
+
+    });
+
+    </script>
+</body>
+
+</html>

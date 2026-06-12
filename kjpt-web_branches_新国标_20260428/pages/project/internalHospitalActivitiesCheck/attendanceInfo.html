@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>考勤有效人员列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../../js/jquery-3.5.1.min.js"></script>
+    <script src="../../../js/common.js"></script>
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+</head>
+<body>
+
+<div class="layui-card" style="text-align: center">
+    <!--        表格区域-->
+    <div class="layui-card-body layui_body_box">
+        <table class="layui-table" id="personList" lay-filter="personList_filter" style="margin: 0px 0px;">
+        </table>
+    </div>
+</div>
+
+<script type="text/html" id="rowBar">
+    <a class="layui-btn layui-btn-xs layui-btn-danger btn-danger-row" lay-event="attendanceInfo">考勤详情</a>
+</script>
+
+<script>
+    var downId=getUrlParam("downId");
+    layui.use(['table', 'form','laydate','laytpl'],function () {
+        var table = layui.table;
+        var form = layui.form;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var laydate = layui.laydate;
+        var laytpl = layui.laytpl;
+
+        table.render({
+            elem: '#personList',
+            url: huayi_projectscore_url + 'cmeGroupprojAttendanceResult/list',
+            title: '有效人员列表',
+            defaultToolbar: [],
+            where: {
+                downId: downId,
+            },
+            cols: [[
+                {field: 'comPersonId',align: 'center', width: 250, title: '主键',hide: true},
+                {field: 'personNo',align: 'center', width: 250, title: '卡号',hide: true},
+                {field: 'personName',align: 'center', width: 250, title: '姓名',},
+                {field: 'unitName', align: 'center', title: '所在单位'},
+                {field: 'deptName', align: 'center', title: '科室'},
+                {field: 'titleName', align: 'center', title: '职称'},
+                {align: 'center', title: '考勤信息', templet: '#rowBar'},
+            ]],
+            id: "personListTable",
+            page: false,
+            limit: 10,
+            limits: [10, 50, 100, 150, 200],
+            parseData: function (res) {
+                return {
+                    "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "data": res.data, //解析数据列表
+                }
+
+            },
+            request: {
+                pageName: 'pageNum', //页码的参数名称，默认：page
+                limitName: 'pageSize' //每页数据量的参数名，默认：limit
+            }
+        })
+
+
+        table.on('tool(personList_filter)',function (obj) {
+            var comPersonId=obj.data.comPersonId;
+            if (obj.event === 'attendanceInfo'){
+                layer.open({
+                    title: '考勤详细信息',
+                    content: 'personAttendanceInfo.html?comPersonId='+comPersonId+'&downId='+downId,
+                    type: 2,
+                    area: ['500px', '300px'],
+                })
+            }
+        })
+    })
+</script>
+</body>
+</html>

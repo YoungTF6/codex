@@ -1,0 +1,380 @@
+
+.btn-apply,.btn-approval{
+    color: #70B603;
+}
+#implementationFeedback .layui-card{
+    margin-bottom: 0px;
+    width: 96%;
+    margin: auto;
+}
+#implementationFeedback .tab-default{
+    width: 55px;
+}
+#tabPage{
+    width: 96%;
+    margin: 0px auto 20px;
+    min-height: 380px;
+    border: 1px solid #e6e6e6;
+    border-top: 0px;
+    padding-top: 25px;
+}
+#implementationFeedback .project-form{
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 950px;
+    margin: 0px auto;
+}
+.js-project-people{
+    width: 96%;
+    margin: 0px auto 10px;
+}
+#implementationFeedback .project-form .layui-form-item{
+    min-width: 320px;
+    width: 45%;
+}
+#implementationFeedback #prjInfo .layui-form-item{
+    margin-bottom: 0px;
+}
+#implementationFeedback .project-form .layui-form-item1{
+    width: 88%;
+    margin-bottom: 15px;
+}
+#implementationFeedback .project-form .layui-input-block1{
+    display: flex;
+    align-items: center;
+    text-align: left;
+}
+.layui-input-block1>div{
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.js-project-image>div,.js-project-textbook>div,.js-project-process>div,.file-upload-box{
+    width: 90%;
+    margin: 0px auto 15px;
+    padding: 8px 0px;
+    border: 2px solid #CCCCCC;
+    min-height: 70px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.js-project-textbook>div{
+    min-height: 350px;
+}
+.js-project-textbook > div.meeting-notice {
+    min-height: 70px;
+}
+.js-project-image span,.file-upload-box span,.js-project-process span,.js-project-textbook span{
+    display: inline-block;
+    margin-right: 7px;
+}
+.meeting-notice>div,.meeting-overrall-view>div,.student-signin-table>div,.exem-questions>div,.feedback-table>div{
+    width: 100%;
+    margin-bottom: 5px;
+}
+.js-project-textbook>div::after{
+    content: "\6559\6750\660e\7ec6";/* 教材明细 */
+}
+.js-project-image>div::after,.js-project-textbook>div::after,.js-project-process>div::after{
+    position: absolute;
+    padding: 0px 2px 0px 4px;
+    left: 30px;
+    top: -11px;
+    background: #FFF;
+}
+.meeting-notice>ul,.meeting-overrall-view>ul,.student-signin-table>ul,.exem-questions>ul,.feedback-table>ul,.file-upload-box>ul{
+    margin: 0px auto;
+    width: 96%;
+    display: flex;
+    flex-wrap: wrap;
+}
+.meeting-notice>ul>li,.meeting-overrall-view>ul>li,.student-signin-table>ul>li,.exem-questions>ul>li,.feedback-table>ul>li,.file-upload-box>ul>li{
+    width: 20%;
+    float: left;
+}
+.meeting-notice>ul>li>a:nth-child(1),.meeting-overrall-view>ul>li>a:nth-child(1),
+.student-signin-table>ul>li>a:nth-child(1),.exem-questions>ul>li>a:nth-child(1),.feedback-table>ul>li>a:nth-child(1){
+    width: 85px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.meeting-notice>ul>li>a:nth-child(2),.meeting-overrall-view>ul>li>a:nth-child(2),
+.student-signin-table>ul>li>a:nth-child(2),.exem-questions>ul>li>a:nth-child(2),.feedback-table>ul>li>a:nth-child(2){
+    margin-left: 0px;
+}
+.js-project-tab>div{
+    width: 90%;
+    margin: 30px auto;
+}
+.js-hidden,.js-project-image>.js-hidden,.js-project-process>.js-hidden{
+    display: none;
+}
+.flow-detail-window{
+    padding: 20px;
+}
+.flow-detail-window>div{
+    font-weight: 900;
+    font-size: 20px;
+    text-align: center;
+    margin: 15px auto 35px;
+}
+.flow-detail-window>ul>li{
+    min-height: 60px;
+    position: relative;
+}
+.flow-detail-window>ul>li:not(:last-child)::before{
+    content: "";
+    border-left: 1px solid #3c3c3c;
+    position: absolute;
+    left: 100px;
+    height: 100%;
+}
+.flow-detail-window>ul>li::after{
+    content: "";
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid #3c3c3c;
+    background: #FFF;
+    position: absolute;
+    left: 90px;
+}
+.flow-detail-window>ul>.approval-pass>div{
+    color: #70B603;
+}
+.flow-detail-window>ul>.approval-pass::after{
+    content: "";
+    border-radius: 50%;
+    border: 1px solid #70B603;
+    background: #70B603;
+    position: absolute;
+}
+.flow-detail-window>ul>.approval-pass:nth-child(n-1):before{
+    border-color: #70B603;
+}
+.flow-detail-window>ul>li>div{
+    display: block;
+    min-width: 65px;
+    max-width: 200px;
+    margin: 0px 20px;
+    float: left;
+    min-height: 10px
+}
+.upload-file-tip{
+    border: 0px !important;
+    min-height: 30px !important;
+    color: #FF5722;
+}
+.file-title{
+    display: inline-block;
+    position: absolute;
+    padding: 0px 2px 0px 4px;
+    left: 30px;
+    top: -11px;
+    background: #FFF;
+}
+#projCycleFile{
+    width: 100%;
+}
+#inspectBtn{
+    margin: 0px 0px 10px 0px;
+}
+/* 标签抖动 */
+.adddd{
+    text-align: center; 
+    animation: shakeH .6s ease-in-out infinite alternate;
+}
+.js-inspect{
+    width: 90%;
+    margin: 0px auto;
+    text-align:-webkit-auto;
+}
+#inspectFile{
+    width: 80%;
+    max-width: 500px;
+    margin: 5px 0px 10px 0px;
+}
+#inspectFile>ul>li{
+    margin: 10px 15px;
+}
+#inspectFile>li>div{
+    margin: 5px 0px 0px 0px;
+}
+#inspectFlow{
+    position: relative;
+    line-height: 24px;
+    margin: 0px auto;
+}
+#inspectFlow>ul{
+    margin: 20px auto 0;
+    position: relative;
+}
+.conawait{ 
+    background: linear-gradient(to left, var(--default,#CCD5CC),var(--default,#CCD5CC)) 7.5px top no-repeat;
+    background-size: 1px 100%;
+    position: relative;
+    padding: 0 0px 0 30px;
+}
+.conawait::after{
+    content: "";
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 1px solid var(--default,#CCD5CC);
+    background: radial-gradient(var(--default,#CCD5CC) 25%, transparent 30%) 50% 50% no-repeat, linear-gradient(to left, #fff,#fff) left top no-repeat;
+    background-size: 100% 100%, 100% 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.single-hidden{
+    width: 100%;
+    white-space: nowrap; /* 防止文字换行 */
+    overflow: hidden; /* 文字溢出隐藏 */
+    text-overflow: ellipsis;
+}
+.timeLineAuditP {
+    display: flex;
+    min-width: 200px;
+    height: 30px;
+    font-size: 16px;
+    color: #3c3c3c;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #bfc5c4;
+    position: relative;
+    top: -5px;
+}
+#inspectFlow>ul>li:last-child .conawait {
+    background: none !important;
+}
+.approval-chain::after{
+    border: 1px solid var(--default,#27b1a2);
+    background: radial-gradient(var(--default,#27b1a2) 25%, transparent 30%) 50% 50% no-repeat, linear-gradient(to left, #fff,#fff) left top no-repeat;
+    background-size: 100% 100%, 100% 100%;
+}
+
+#inspectFlow>ul>li{
+    display: flex;
+    height: 60px;
+}
+.conauditfont{
+    margin-left: 10px;
+    text-align: left;
+    flex-grow: 1;
+    overflow: hidden;
+}
+.inspect-subtitle{
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    left: 9px;
+}
+.inspect-subtitle>span{
+    display: inline-block;
+    z-index: 9;
+    background: #FFF;
+    position: relative;
+    padding-right: 5px;
+    font-weight: 900;
+}
+.inspect-title{
+    font-weight: 600;
+}
+.inspect-subtitle::before{
+    content: "";
+    position: absolute;
+    left: -8px;
+    width: 4px;
+    height: 20px;
+    border-left: 1px solid #bfc5c4;
+    border-right: 1px solid #bfc5c4;
+}
+.inspect-subtitle::after{
+    content: "";
+    width: 100%;
+    border-top: 1px solid #bfc5c4;
+    display: block;
+    position: absolute;
+    top: 10px;
+}
+.conauditfont>span{
+    margin-right: 15px;
+}
+.approvaled-state{
+    color: #27b1a2;
+}
+
+.inspect-file{
+    position: relative;
+    min-height: 20px;
+}
+.inspect-file>div>span{
+    font-size: 13px;
+    margin-left: 10px;
+}
+#approvalText>div{
+    display: flex;
+    margin: 10px 0px;
+}
+#approvalText>div>div:first-child{
+    width: 73%;
+}
+#approvalText>div>div:last-child{
+    width: 25%;
+}
+#chooseApprovalWindow>ul {
+    width: 90%;
+    margin: 10px auto;
+    cursor: pointer;
+}
+#chooseApprovalWindow>ul>li{
+    text-align: center;
+    border: 1px solid #1E9FFF;
+    border-top: 0px;
+    padding: 2px 0px;
+}
+#chooseApprovalWindow>ul>li:nth-child(1){
+    border-top: 1px solid #1E9FFF;
+}
+#inspectScorePeriod{
+    width: 80%;
+    max-width: 600px;
+    margin: 0px auto 10px;
+    display: flex;
+}
+#inspectScorePeriod>div{
+    width: 50%;
+}
+@keyframes shakeH{
+    0%{
+        transform: rotate(-5deg);
+    }
+    25%{
+        transform: rotate(5deg);
+    }
+    50%{
+        transform: rotate(-5deg);
+    }
+    100%{
+        transform: rotate(0deg);
+    }
+}
+@media only screen and (max-width: 1200px) and (min-width:1000px){
+    .meeting-notice>ul>li,.meeting-overrall-view>ul>li,.student-signin-table>ul>li,.exem-questions>ul>li,.feedback-table>ul>li,.file-upload-box>ul>li{
+        width: 25%;
+    }
+}
+@media only screen and (max-width: 999px) and (min-width:650px){
+    .meeting-notice>ul>li,.meeting-overrall-view>ul>li,.student-signin-table>ul>li,.exem-questions>ul>li,.feedback-table>ul>li,.file-upload-box>ul>li{
+        width: 33%;
+    }
+}
+@media only screen and (max-width: 649px){
+    .meeting-notice>ul>li,.meeting-overrall-view>ul>li,.student-signin-table>ul>li,.exem-questions>ul>li,.feedback-table>ul>li,.file-upload-box>ul>li{
+        width: 50%;
+    }
+}

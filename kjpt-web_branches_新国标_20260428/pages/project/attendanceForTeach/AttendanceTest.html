@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title> 项目举办周期表--新系统课程建立在举办周期上</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+        media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <!--    <script src="../../js/layui-v2.6.8/layui/layui.js"></script>-->
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <script src="../../../js/common.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../../js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+
+    <style>
+        .layui-input-block {
+            margin-left: 150px;
+        }
+
+        .layui-form-label {
+            width: 100px;
+        }
+
+        .layui-layer {
+            box-shadow: none !important;
+            border: #a5a5a5 solid 1px;
+        }
+
+        .color-select {
+            color: #1E9FFF;
+        }
+
+
+        /*头部*/
+        .layui-card-header>span {
+            font-weight: bold;
+            font-size: 18px;
+            color: #0C0C0C;
+        }
+
+        .div-img-logo {
+            height: 100px;
+            position: fixed;
+            left: 0;
+            right: 0;
+            padding-left: 30px;
+            padding-right: 30px;
+            top: 0;
+            z-index: 999;
+            background: #fff;
+            border-bottom: #dedede double 1px;
+            margin-bottom: 10px;
+        }
+
+        .div-img-logo>img {
+            margin-top: 30px;
+        }
+
+        .div-img-logo>span {
+            position: absolute;
+            display: inline-block;
+            margin-left: 20px;
+            padding: 4px;
+            margin-top: 58px;
+        }
+
+        .version-show {
+            margin-left: 6px;
+            color: #fff;
+        }
+
+        .version-show:hover {
+            color: #fff;
+            border-bottom: #dedede solid 1px;
+        }
+
+        /*码云 数据*/
+        .gitee-info a {
+            margin-right: 10px;
+
+        }
+
+        .gitee-info a:last-child {
+            color: #1E9FFF;
+        }
+
+        .gitee-info a:last-child:hover {
+            color: #333;
+
+        }
+
+        /*简介*/
+        .item-min-about {
+            border-left: #1E9FFF solid 6px;
+            margin-bottom: 20px;
+            background: #f7f7f7;
+            min-height: 70px;
+            height: auto;
+            padding: 5px 5px 5px 20px;
+        }
+
+        .item-min-about:last-child {
+            border-left: none;
+            border-radius: 0;
+        }
+
+        .item-min-about div {
+            width: 80%;
+            display: inline-block;
+            height: 25px;
+            line-height: 25px;
+        }
+
+        /*小标题*/
+        .item-min-title {
+            width: 100%;
+            display: inline-block;
+            height: 25px;
+            line-height: 25px;
+            color: #0C0C0C;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .item-min-value {
+            width: 100%;
+            display: inline-block;
+            height: 30px;
+            margin-left: 20px;
+            line-height: 30px;
+        }
+
+        .b-ic-group .item {
+            width: 60px;
+            display: inline-block;
+            text-align: center;
+            margin-right: 10px;
+            vertical-align: top;
+        }
+
+        .b-ic-group .item img {
+            width: 30px;
+            height: 30px;
+        }
+
+        .b-ic-group .item span {
+            display: inline-block;
+            margin-top: 4px;
+            width: 60px;
+            font-size: 12px;
+        }
+
+        /*内容主体*/
+        .value-group {
+            margin-top: 120px;
+            width: 100%;
+        }
+
+        /*定位导航 弹出层*/
+        #ul-location {
+            height: 260px;
+            overflow-y: scroll;
+            margin-top: 10px;
+            display: list-item;
+        }
+
+        #ul-location li {
+            margin-left: 5px;
+            margin-right: 5px;
+            height: 30px;
+            line-height: 30px;
+            list-style-type: disc !important;
+
+        }
+
+        #ul-location li a {
+            padding-left: 10px;
+            cursor: pointer;
+        }
+
+        .div-value-item:first-child {
+            margin-top: 0;
+        }
+
+        /*栗子 item*/
+        .div-value-item {
+            margin-top: 40px;
+        }
+
+        .span-hint {
+            height: 50px;
+            line-height: 50px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .div-value-item .item-child {
+            padding: 10px;
+            border: #dedede solid 1px;
+        }
+
+        .item-open-code .code-open {
+            width: 100%;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            color: #a5a5a5;
+            cursor: pointer;
+            background: #dedede;
+        }
+
+        .item-open-code .code-open:hover,
+        .code-group span:hover {
+            color: #1E9FFF;
+        }
+
+        .item-open-code .code-group {
+            display: none;
+        }
+
+        .code-group span {
+            display: block;
+            width: 100%;
+            text-align: center;
+            color: #a5a5a5;
+            cursor: pointer;
+        }
+
+        .code {
+            background-color: #f9fafc;
+            padding: 0 4px;
+            border: 1px solid #eaeefb;
+            border-radius: 4px
+        }
+
+        /*分辨率低的 重新调整页面搜索部分宽度空间*/
+        @media screen and (max-width: 768px) {
+            .div-img-logo {
+                height: 60px;
+            }
+
+            .div-img-logo img {
+                width: 130px;
+                margin-top: 18px;
+            }
+
+            .div-img-logo span {
+                margin-top: 22px;
+                height: 15px;
+                line-height: 15px;
+                font-size: 10px;
+            }
+
+            #layui-layer1 {
+                display: none !important;
+            }
+        }
+
+        .span-href {
+            color: #1E9FFF;
+        }
+        .layui-form-item{
+            margin-bottom: 5px;
+        }
+        .layui-form-item .layui-input-inline{
+            width: calc(100% - 170px);
+            width: -moz-calc(100% - 170px);
+            width: -webkit-calc(100% - 170px);
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <!--        表格区域-->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="cmeProjPosDownload" lay-filter="cmeProjPosDownload"
+                    style="margin: 0px 0px;">
+                </table>
+                <div align="center" style="margin-top: 15px;">
+                    <button class="layui-btn" onclick="closeParentAll()">返回</button>
+                    <!--                <button class="layui-btn" onclick="openIndexOne()">展开</button>-->
+                </div>
+            </div>
+            <!--        添加弹窗-->
+            <div id="attendanceConfig" style="display:none;padding: 10px;">
+                <form class="layui-form" id="form-attendanceConfig" lay-filter="attendanceConfig-filter">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">课程名称:</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="teachName" id="teachName_id" autocomplete="off" class="layui-input"
+                                disabled="disabled">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">考勤模式选择</label>
+                        <div class="layui-input-inline">
+                            <input type="radio" lay-filter="attendanceType_filter" name="attendanceType" value="0"
+                                title="二维码考勤" checked>
+                            <input type="radio" lay-filter="attendanceType_filter" name="attendanceType" value="1"
+                                title="学员刷脸考勤">
+                            <input type="radio" lay-filter="attendanceType_filter" name="attendanceType" value="2"
+                                title="单位刷脸考勤" >
+                        </div>
+                    </div>
+                    <div class="layui-form-item" id="settingOnline">
+                        <label class="layui-form-label">设置考勤上限</label>
+                        <div class="layui-input-inline">
+                            <input type="radio" lay-filter="attendanceOnline_filter" name="attendanceOnline" value="1"
+                                title="是">
+                            <input type="radio" lay-filter="attendanceOnline_filter" name="attendanceOnline" value="0"
+                                title="否" checked>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" style="display: none" id="online_id">
+                        <label class="layui-form-label"><span style="color: red">*</span>上限</label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="online" id="online" oninput="if(value<=0)value=1" autocomplete="off" class="layui-input"
+                                lay-verify="required|number">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux" id="tianChong"></div>
+                    </div>
+                    <div class="layui-form-item"  id="attendanceScope">
+                        <label class="layui-form-label">设置考勤范围</label>
+                        <div class="layui-input-inline">
+                            <input type="radio" lay-filter="attendanceScope_filter" name="attendanceScope" value="1"
+                                title="是">
+                            <input type="radio" lay-filter="attendanceScope_filter" name="attendanceScope" value="0"
+                                title="否" checked>
+                        </div>
+                    </div>
+                    <div style="display: none" id="address_id">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label"><span style="color: red">*</span>考勤地址</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="address" id="address" autocomplete="off" class="layui-input"
+                                    onclick="openElectricFence()" lay-verify="required">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">考勤范围(米)</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="Scope" id="Scope" autocomplete="off" class="layui-input"
+                                    onclick="openElectricFence()" disabled="disabled">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!--表格内数据编辑、删除按钮-->
+    <script type="text/html" id="rowBar">
+    {{# if(d.holdQualification && window.projCycleApplicationCheckState){  }}
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="edit">开始考勤</a>
+    {{# }else{  }}
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row  layui-disabled" >开始考勤</a>
+    {{# } }}
+</script>
+    <script type="text/html" id="rowBarForDownId">
+    <span id="{{d.downId}}" class="oprateSpan" data-holdQualification="{{d.holdQualification}}">第{{d.batch}}批次</span>
+</script>
+<script>
+    var pro_id = getUrlParam("pro_id");
+    let scoreLevel = getUrlParam('scoreLevel');
+    //获取单位
+    window.getUnitId = function () {
+        var unitId = localStorage.getItem("unit-id");
+        return unitId;
+    }
+    var projectType = '1';
+    // 全局配置及引入相关的模块
+    layui.config({
+        base: '../../../js'
+    }).extend({
+        opTable: '/opTable/opTable'
+    }).use(['table', 'form', 'opTable'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+
+        /* 获取配置 */
+        window.getConfig = function (config_name, scoreLevel) {
+            $.ajax({
+                async   : false,
+                type    : 'post',
+                url     : huayi_sjwh_url + 'cmeCommonConfig/getConfigByUnitFromRedis',
+                data    : { 
+                    unitId       : window.getUnitId(), 
+                    configNames  : config_name,
+                    scoreLevelId : scoreLevel
+                },
+                success : function (res) {
+                    if (res.success == true) {
+                        window[config_name] = res.data[config_name];
+                    } else {
+                        layer.msg('获取配置失败');
+                    }
+                },
+                error   : function () {
+                    layer.msg('获取配置失败');
+                }
+            });
+        }
+
+        window.getConfig('fun_must_apply_before_hold', scoreLevel);
+
+
+        var myOptable = layui.opTable.render({
+            elem: '#cmeProjPosDownload',
+            url: huayi_projectscore_url + 'cmeProjPosDownload',
+            title: '周期表',
+            where: {
+                projId: pro_id,
+                projectType: projectType,
+            },
+            cols: [[
+                { align: 'center', field: 'batch', toolbar: '#rowBarForDownId', title: '批次' },
+                { field: 'downId', title: '下载ID 主键，也用于关联项目课程表', sort: true, hide: true },
+                { field: 'startDt', title: '开始时间', sort: true },
+                { field: 'endDt', title: '截止时间', sort: true },
+            ]],
+            openType: 0,
+            openIcon: { '1': '展开' },
+            cellMinWidth: 100,
+            id: "cmeProjPosDownload",
+            height: 'full-155',
+            page: false,
+            limit: 10,
+            limits: [10, 50, 100, 150, 200],
+            parseData: function (res) {
+                return {
+                    "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "data": res.data, //解析数据列表
+                }
+            },
+            request: {
+                pageName: 'pageNum', //页码的参数名称，默认：page
+                limitName: 'pageSize' //每页数据量的参数名，默认：limit
+            },
+            openTable: function (itemData) {
+                window.projCycleApplicationCheckState = true;
+                if ('t' == window['fun_must_apply_before_hold']) {
+                    $.ajax({
+                        async   : false,
+                        type    : 'get',
+                        url     : huayi_projectscore_url + 'cmeProjCycleApplication/down/' + itemData.downId,
+                        success : function (res) {
+                            if (res && '200' == res.status) {
+                                if (res.data && '3' == res.data.checkState) {
+                                    window.projCycleApplicationCheckState = true;
+                                } else {
+                                    window.projCycleApplicationCheckState = false;
+                                }
+                            } else {
+                                layer.msg('获取周期举办前申请状态失败');
+                            }
+                        },
+                        error   : function () {
+                            layer.msg('获取周期举办前申请状态失败');
+                        }
+                    });
+                }
+                return {
+                    elem: '#child' + itemData.LAY_INDEX,
+                    id: 'child' + itemData.LAY_INDEX,
+                    url: huayi_projectscore_url + 'cmeCmeProjTeach/checkOnWorkAttendance',
+                    title: '课题表',
+                    openVisible: false,
+                    openType: 0,
+                    where: {
+                        downId: itemData.downId,
+                    },
+                    cols: [[
+                        { field: 'projTeachId', title: '主键:课题主键', sort: true, hide: true },
+                        { field: 'limitPerson', title: '考勤上限', sort: true, hide: true },
+                        { title: "考勤", toolbar: '#rowBar', },
+                        { field: 'projNo', title: '项目编号', sort: true },
+                        { field: 'projName', title: '项目名称', sort: true },
+                        { field: 'teachSubject', title: '讲授题目', sort: true, width: 220, align: 'center' },
+                        { field: 'startDate', title: '开始时间', sort: true, width: 160, align: 'center' },
+                        { field: 'endDate', title: '结束时间', sort: true, width: 160, align: 'center' },
+                        { field: 'period', title: '学时', sort: true, width: 80, align: 'center' },
+                    ]],
+                    cellMinWidth: 80,
+                    page: false,
+                    limit: 10,
+                    limits: [10, 50, 100, 150, 200],
+                    parseData: function (res) {
+                        return {
+                            "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                            "msg": res.msg, //解析提示文本
+                            "data": res.data, //解析数据列表
+                        }
+                    },
+                    request: {
+                        pageName: 'pageNum', //页码的参数名称，默认：page
+                        limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                    },
+                    done: function () {
+                        layui.table.on('tool(' + 'child' + itemData.LAY_INDEX + ')', function (obj) {
+                            if (obj.data.startDate == null || obj.data.endDate == null) {
+                                layer.alert("该课程未设置时间段，请先完善课程信息");
+                                return;
+                            }
+                            var startDates = new Date(Date.parse(obj.data.startDate.replace(/-/g, "/")));
+                            var endDates = new Date(Date.parse(obj.data.endDate.replace(/-/g, "/")));
+                            var curDate = new Date();
+                            var unitId = window.getUnitId();
+                            if (unitId !='163589' && (startDates > curDate || endDates < curDate)) {
+                                layer.alert("不在考勤时间范围内");
+                                return;
+                            }
+                            //首先清空attendanceInfo的数据，防止有脏数据影响后续配置
+                            // layui.data('attendanceInfo', null);
+                            // 向localStorage中填充数据，并向表单中填充相应数据
+                            document.getElementById('teachName_id').value = obj.data.teachSubject
+                            layui.data('attendanceInfo', {
+                                key: 'teachId',
+                                value: obj.data.projTeachId
+                            })
+                            layui.data('attendanceInfo', {
+                                key: 'teachName',
+                                value: obj.data.teachSubject
+                            })
+                            // 判断是否需要电子围栏
+                            // $.ajax({})
+                            if (true) {
+                                document.getElementById('tianChong').innerText = '该项目拟授分' + obj.data.limitPerson + '人';
+                                layer.open({
+                                    type: 1,
+                                    title: '考勤配置',
+                                    content: $('#attendanceConfig'),
+                                    skin: '',
+                                    area: ['500px', '500px'],
+                                    btn: ['确定', '取消'],
+                                    btnAlign: 'c',
+                                    yes: function (index, layero) {
+                                        // 将表单内容发送至后台，根据需要是否保存到浏览器
+                                        setMsgForAttendance();
+                                        layer.close(index);
+                                    },
+                                    btn2: function (index, layero) {
+                                        layer.close(index);
+                                    },
+                                    success: function (layero, index) {
+                                        document.getElementById('tianChong').value = '填充改课程已考勤数据'
+                                    }
+                                })
+                            } else {
+                                setMsgForAttendance();
+                            }
+                        })
+                    }
+                }
+            },
+            done: function (res, curr, count) {
+                myOptable.openIndex(0);
+
+                let holdTipIndex = null;
+                $(".oprateSpan[data-holdqualification='false']").each(function (i, e) {
+                    let id = "#" + $(this).attr("id");
+                    $(e).parents("tr").mouseenter(function () {
+                        holdTipIndex = layer.tips('该周期因逾期未举办或其他原因，已被取消举办资格,详情请咨询上级主管部门', id, {
+                            tips: [2, '#78BA32']
+                        });
+                    })
+                });
+
+
+            }
+        })
+
+        // 打开电子围栏
+        window.openElectricFence = function openElectricFence() {
+            layer.open({
+                type: 2,
+                title: '电子围栏',
+                content: "MapTest.html?scoreLevel="+scoreLevel,
+                skin: '',
+                area: ['800px', '600px'],
+            })
+        }
+        
+        // 填充电子围栏信息
+        window.getBaiduMapAddress = function getBaiduMapAddress(obj) {
+            console.log(obj);
+            // 纬度
+            layui.data('attendanceInfo', {
+                key: 'lat',
+                value: obj.lat
+            })
+            // 经度
+            layui.data('attendanceInfo', {
+                key: 'lng',
+                value: obj.lng
+            })
+            document.getElementById('address').value = obj.address
+            // if(obj.fanwei=="0"){
+            //     obj.fanwei="无限制";
+            // }
+            document.getElementById('Scope').value = obj.fanwei
+            layer.closeAll('iframe')
+        }
+
+        // 封装请求体，并跳转到考勤页面
+        window.setMsgForAttendance = function () {
+            // 获取表单的数据2.5.5以后可用
+            // var data1 = form.val("attendanceConfig-filter");
+            // 获取单选的数据
+            // 是否开启人脸识别
+            let attendanceType = $('input[name="attendanceType"]:checked').val();
+            let attendanceScope = $('input[name="attendanceScope"]:checked').val();
+            handerReqData(attendanceType);
+
+            if(attendanceScope != '0'&& attendanceType !=2) {
+                if ($('input[name="Scope"]').val()=== "" || $('input[name="Scope"]').val() ==="") {
+                    layer.msg("请选择考勤地址");
+                    return;
+                }
+            }
+
+            (attendanceType != 2) && openAttendanceCode();
+
+            if(attendanceType == 2){
+                let testUrl = `../../../pages/test/test3.html?teachId=${layui.data('attendanceInfo').teachId}`;
+                window.parent.layer.open({
+                    type: 2,
+                    title: false,
+                    content: testUrl,
+                    skin: '',
+                    area: ['100%', '100%'],
+                })
+            }
+        }
+
+        let openAttendanceCode = function() {
+            // 填充课程相关信息，经纬度，是否开启人脸识别，以及考勤人数限制
+            $.ajax({
+                type: 'post',
+                url: huayi_projectscore_url+'attendance/setAttendanceInfoForTeach',
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                data: JSON.stringify({
+                    projectType: 1, // 项目类型
+                    teachId: layui.data('attendanceInfo').teachId, // 课程id
+                    scope: layui.data('attendanceInfo').scope, // 考勤范围
+                    isFaceOpen: layui.data('attendanceInfo').faceRecognition == '1' ? true : false,  // 是否开启人脸识别
+                    longitude: layui.data('attendanceInfo').lng,  // 经度
+                    latitude: layui.data('attendanceInfo').lat,    // 纬度
+                    studyAddress: layui.data('attendanceInfo').address, // 授课地点
+                    attendanceLimit: layui.data('attendanceInfo').online // 考勤上线
+                }),
+                success: function (res) {
+                    console.log(res)
+                    window.parent.layer.open({
+                        type: 2,
+                        title: false,
+                        content: '../../../pages/project/attendanceForTeach/attendanceForTeach.html',
+                        skin: '',
+                        area: ['100%', '100%'],
+                    })
+                },
+                error: function (res) {
+                    layer.msg("发送请求失败")
+                }
+            })
+        }
+
+        let handerReqData = function(attendanceType) {
+            let faceRecognition = (attendanceType == "1") ? "1" : "0";
+            layui.data('attendanceInfo', {
+                key: 'faceRecognition',
+                value: faceRecognition
+            })
+            // 是否开启考勤上限
+            layui.data('attendanceInfo', {
+                key: 'attendanceOnline',
+                value: $('input[name="attendanceOnline"]:checked').val()
+            })
+            // 如果关闭上线，则需要清空上线数据
+            // 考勤上限
+            let tempOnline = $('input[name="attendanceOnline"]:checked').val();
+            let tempOnlineValue = (tempOnline == '0') ? "":$("#online").val();
+            layui.data('attendanceInfo', {
+                key: 'online',
+                value: tempOnlineValue
+            })
+            // 是否设置考勤范围
+            layui.data('attendanceInfo', {
+                key: 'attendanceScope',
+                value: $('input[name="attendanceScope"]:checked').val()
+            })
+
+            if ($('input[name="attendanceScope"]:checked').val() === '0'){
+
+                // 考勤范围
+                layui.data('attendanceInfo', {
+                    key: 'scope',
+                    value: '0'
+                })
+                // 考勤地址
+                layui.data('attendanceInfo', {
+                    key: 'address',
+                    value: ''
+                })
+                                // 纬度
+                layui.data('attendanceInfo', {
+                    key: 'lat',
+                    value: null
+                })
+                // 经度
+                layui.data('attendanceInfo', {
+                    key: 'lng',
+                    value: null
+                })
+                document.getElementById('address').value = null
+                document.getElementById('Scope').value = null
+            } else {
+                // 考勤范围
+                layui.data('attendanceInfo', {
+                    key: 'scope',
+                    value: $('input[name="Scope"]').val()
+                })
+                // 考勤地址
+                layui.data('attendanceInfo', {
+                    key: 'address',
+                    value: $('input[name="address"]').val()
+                })
+            }
+            // 课程名称
+            layui.data('attendanceInfo', {
+                key: 'teachName',
+                value: $('input[name="teachName"]').val()
+            })
+        }
+
+        form.on('radio(attendanceOnline_filter)', function (data) {
+            if (data.value === '1') {
+                $('#online_id').show();
+            } else {
+                $('#online_id').hide();
+            }
+        });
+
+        //选择考勤方式
+        form.on('radio(attendanceType_filter)', function (data) {
+            if (data.value === '2') {
+                $('#attendanceScope').hide();
+                $("#address_id").hide();
+                $('#settingOnline').hide();
+                $('#online_id').hide();
+            } else {
+                //考勤方式是扫脸考勤
+                $('#attendanceScope').show();
+                //考勤范围，选择该方式时不设置考勤范围
+                $('[name=attendanceScope]').each(function (i, item) {
+                    if ($(item).val() == '0') {
+                        //更改选中值
+                        $(item).prop('checked', true);
+                        //重新渲染
+                        layui.use('form', function () {
+                            var form = layui.form;
+                            form.render();
+                        });
+                    }
+                });
+                //考勤上限，选择该方式时不设置考勤上限，在app端设置
+                $('#settingOnline').show();
+                $('[name=attendanceOnline]').each(function (i, item) {
+                    if ($(item).val() == '0') {
+                        //更改选中值
+                        $(item).prop('checked', true);
+                        //重新渲染
+                        layui.use('form', function () {
+                            var form = layui.form;
+                            form.render();
+                        });
+                    }
+                });
+            }
+        });
+
+        form.on('radio(attendanceScope_filter)', function (data) {
+            if (data.value === '1') {
+                $('#address_id').show();
+            } else {
+                $('#address_id').hide();
+            }
+        });
+
+        window.closeParentAll = function () {
+            window.parent.layer.closeAll();
+        }
+    });
+
+</script>
+</body>
+
+</html>

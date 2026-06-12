@@ -1,0 +1,290 @@
+html {
+  width: 100%;
+}
+
+body {
+  width: 100%;
+  position: relative;
+}
+
+* {
+  font-family: "微软雅黑" !important;
+}
+
+img {
+  border: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+.check_container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+.bigbox{
+ flex: 1;
+  margin:0 10px;
+  position: relative;
+}
+/* .left_box {
+  width: 30%;
+  float: left;
+  height: 100%;
+  position: relative;
+} */
+
+/* .left_cent {
+  width: 88%;
+  margin: 0 6%;
+  height: calc(100vh - 120px);
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+  overflow: auto;
+} */
+
+/* .right_cent {
+  width: 88%;
+  margin: 0 6%;
+  height: calc(100vh - 120px);
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+} */
+
+.left_detail {
+  width: 100%;
+  height: 55px;
+  float: left;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  background-color: #FFF2DF;
+}
+
+.detail_tit {
+  float: left;
+  font-size: 18px;
+  color: #ad7526;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  line-height: 55px;
+  background: url("../images/course_icon.png") no-repeat left center;
+  background-size: 25px;
+  padding-left: 35px;
+}
+
+.left_ul {
+  width: 100%;
+  float: left;
+}
+
+.left_lis {
+  width: 100%;
+  float: left;
+/*  margin-top: 8%;*/
+  margin-top: 28px;
+}
+
+.left_top {
+  width: 100%;
+  float: left;
+  font-size: 16px;
+  color: #999999;
+}
+
+.left_news {
+  width: 100%;
+  float: left;
+  font-size: 16px;
+  color: #333333;
+  margin-top: 5px;
+  /* overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis; */
+}
+
+.place_icon {
+  width: calc(100% - 30px);
+  float: left;
+  font-size: 16px;
+  margin-top: 10px;
+  color: #333333;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  background: url("../images/place_icon.png") no-repeat left center;
+  background-size: 18px;
+  padding-left: 30px;
+}
+
+.cent_box {
+  height: 100%;
+  background: url("../images/bg_img.png") no-repeat;
+  background-size: 100% 100%;
+  position: relative;
+}
+
+.cent_tit {
+  width: 100%;
+  float: left;
+  font-size: 22px;
+  color: white;
+  text-align: center;
+ padding:16px 0;
+ margin-bottom: 10px;
+}
+
+.cent_tit span {
+  font-size: 22px;
+  color: #ffbc5d;
+}
+
+.cont_box {
+  width:100%;
+  justify-content: center;
+  display: flex;
+  margin-top:10px;
+  float:left;
+}
+.cont_box img{
+  margin: 0 auto;
+}
+
+.cent_img {
+  width: calc(100% - 50px);
+  display: block;
+  float: left;
+  border-radius: 20px;
+  background-color: white;
+  padding: 25px;
+}
+
+.cent_foot {
+  width: 80%;
+  height: 40px;
+  margin: 3% 10% 0 10%;
+  float: left;
+}
+
+.cent_lines {
+  width: 20%;
+  height: 1px;
+  float: left;
+  margin-top: 19.5px;
+  background-color: white;
+}
+
+.cent_text {
+  width: 60%;
+  float: left;
+  font-size: 18px;
+  color: white;
+  text-align: center;
+  text-align-last: center;
+  line-height: 40px;
+  background: none;
+  border: none;
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  background-color: #34394B;
+  cursor: pointer;
+}
+
+/* .right_box {
+  width: 30%;
+  float: left;
+  height: 100%;
+  position: relative;
+  background-color: white;
+} */
+
+.right_top {
+  width: 100%;
+  height: 55px;
+  float: left;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  background-color: #FFF2DF;
+}
+
+.right_tit {
+  float: left;
+  font-size: 18px;
+  color: #ad7526;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  line-height: 55px;
+  background: url("../images/sta_icon.png") no-repeat left center;
+  background-size: 25px;
+  padding-left: 35px;
+}
+
+.right_container {
+  width: 100%;
+  overflow: hidden;
+}
+
+.right_ul {
+  width: 100%;
+  float: left;
+}
+
+.right_lis {
+  width: 100%;
+  float: left;
+  margin-top: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px dashed #808080;
+}
+
+.right_img {
+  width: 60px;
+  height: 60px;
+  float: left;
+  display: block;
+}
+
+.right_cont {
+  width: calc(100% - 105px);
+  float: left;
+  margin-left: 20px;
+  position: relative;
+}
+
+.right_news {
+  width: 100%;
+  float: left;
+  font-size: 16px;
+  color: #333333;
+  margin-top: 3px;
+}
+
+.right_text {
+  width: 100%;
+  float: left;
+  font-size: 14px;
+  color: #808080;
+  margin-top: 6px;
+}
+
+.right_prove {
+  width: 60px;
+  height:60px;
+  float: left;
+  display: block;
+  position: absolute;
+  right: 10%;
+}
+
+#slide {
+  position: absolute;
+  width: 100%;
+  height: calc(100% - 100px);
+  overflow: hidden;
+  top: 55px;
+  right: 0;
+}

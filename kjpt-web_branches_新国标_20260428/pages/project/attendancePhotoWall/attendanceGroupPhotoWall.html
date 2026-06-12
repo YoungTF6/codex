@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>考勤登记</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=0.3, minimum-scale=0.3, maximum-scale=1.0, user-scalable=yes">
+    <link rel="stylesheet" href="/css/project/attendancePhotoWall/reset.css">
+    <link rel="stylesheet" href="/css/project/attendancePhotoWall/style.css">
+
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="/js/jqueryFly/jquery.fly.min.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script src="/js/common.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+</head>
+<body>
+
+<div class="check_container">
+<!--    课程信息-->
+    <div class="left_box bigbox">
+        <div class="left_cent">
+            <div class="left_detail">
+                <span class="detail_tit">课程详情</span>
+            </div>
+            <div class="left_course_box">
+                <ul class="left_ul">
+                    <li class="left_lis">
+                        <div class="lis_sub">
+                            <img src="/img/project/attendancePhotoWall/0-2_cur.png" class="sub_img">
+                            <p class="lit_tit">课程名称</p>
+                        </div>
+                        <p class="lit_text" id="teachSubject"></p>
+                    </li>
+                    <li class="left_lis">
+                        <div class="lis_sub">
+                            <img src="/img/project/attendancePhotoWall/0-2_tea.png" class="sub_img">
+                            <p class="lit_tit">授课老师</p>
+                        </div>
+                        <p class="lit_text" id="teacherName"></p>
+                    </li>
+                    <li class="left_lis">
+                        <div class="lis_sub">
+                            <img src="/img/project/attendancePhotoWall/0-2_start.png" class="sub_img">
+                            <p class="lit_tit">开始时间</p>
+                        </div>
+                        <p class="lit_text" id="startDate"></p>
+                    </li>
+                    <li class="left_lis">
+                        <div class="lis_sub">
+                            <img src="/img/project/attendancePhotoWall/0-2_end.png" class="sub_img">
+                            <p class="lit_tit">结束时间</p>
+                        </div>
+                        <p class="lit_text" id="endDate"></p>
+                    </li>
+                    <li class="left_lis">
+                        <div class="lis_sub">
+                            <img src="/img/project/attendancePhotoWall/0-2_many.png" class="sub_img">
+                            <p class="lit_tit">考勤人数上限</p>
+                        </div>
+                        <p class="lit_text" id="limitPerson">无限制</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+<!--    中间二维码-->
+    <div id="centerBox" class="cent_box bigbox">
+        <div class="cent_tit">实时考勤人数 <span id="total">0</span> 人</div>
+        <div class="right_hidden_img" id="hiddenFix"></div>
+        <div class="cont_box">
+            <div class="pic_box">
+                <div id="personName"></div>
+            </div>
+            <div class="m-sidebar">
+                <span id="end"></span>
+            </div>
+        </div>
+        <div class="cent_foot">
+            <div class="cent_lines">当前考勤人员</div>
+        </div>
+    </div>
+
+<!--    右侧实时考勤信息-->
+    <div class="right_box bigbox">
+        <div class="right_cent">
+            <div class="right_top">
+                <span class="right_tit">考勤人员</span>
+            </div>
+
+            <div id="slide">
+                <div class="right_container" id="slide1">
+                    <ul class="right_ul" id="listForAttendance">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="slid_box"></div>
+</body>
+<script>
+
+    // 全局配置及引入相关的模块
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        tool: 'tool',
+        photoWall: 'photoWall'
+    });
+
+    layui.use(['table', 'form','tool','photoWall'], function () {
+        var layer=layui.layer,$=layui.jquery,tool=layui.tool,photoWall=layui.photoWall;
+        var showTimer=2000,attendanceTimer=3000,onloadImgTimer=20000;
+        let maxAttendanceTimer=10000,onloadCapacity=0;
+        var isItTheFirstTime=true;
+        var teachId,downId,batchId,attendMode,upperLimit="";
+        let personAttendanArrObj = {};
+        let personsArr = [];
+        let refreshTime = new Date().getTime();
+        let wallEl = null;
+        let isMoveRightList = true;
+
+        attendMode = tool.getParamFromUrl("attendMode");
+        var localTest = layui.data('attendanceInfo');
+
+        // 获取实时签到信息表及已签到人数。
+        let getAttendanceList = function(){
+            let num = personsArr.length;
+            let teachIdOrBatchId = teachId;
+            if(attendMode == 2) {
+                teachIdOrBatchId = batchId;
+            }
+            let tempUrl = huayi_projectscore_url + `attendance/getAttendancePersons?teachId=${teachIdOrBatchId}&projectType=2&startIndex=${num}`;
+            $.ajax({
+                type: 'post',
+                url: tempUrl,
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    if(res.status !=200){
+                        return;
+                    }
+                    insertAttendancePersons(res.data.list);
+                },
+                error: function () {
+                    layer.msg("失败");
+                }
+            })
+        }
+
+        let insertAttendancePersons = function(data){
+            for(let personObj of data){
+                let tempTime = new Date(personObj.attendanceDate).getTime();
+                if(refreshTime > tempTime) continue;
+                if(personObj.imagesURL==null || personObj.imagesURL=="") {
+                    personObj.imagesURL= "/img/person/touxiang.jpg";
+                }
+                let tempObj = {};
+                if(personAttendanArrObj.hasOwnProperty(personObj.personId)){
+                    tempObj = personAttendanArrObj[personObj.personId];
+                    if(tempTime <= personAttendanArrObj[personObj.personId].tempTime){
+                        continue;
+                    }
+                    personAttendanArrObj[personObj.personId].tempTime = tempTime;
+                    personAttendanArrObj[personObj.personId].isShow = true;
+                    personAttendanArrObj[personObj.personId].attendanceDate = personObj.attendanceDate;
+                } else{
+                    tempObj = personObj;
+                    tempObj.tempTime = tempTime;
+                    tempObj.isShow = true;
+                    tempObj.isLoadImg = false;
+                    personAttendanArrObj[personObj.personId] = tempObj;
+                }
+            }
+            
+        }
+
+        let getTeachInfo = function(){
+            $.ajax({
+                type: 'get',
+                url: huayi_projectscore_url + 'attendance/getTeachInfo?teachId='+teachId+'&projectType='+layui.data('attendanceInfo').projectType,
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    var obj=res.data[0];
+                    document.getElementById("teachSubject").innerHTML=res.data.teachName;          // 课题名称
+                    document.getElementById("teacherName").innerHTML=res.data.teacherName;        // 教师名称
+                    document.getElementById("startDate").innerHTML=res.data.startDate;          //开始时间
+                    document.getElementById("endDate").innerHTML=res.data.endDate;            //结束时间
+                },
+                error: function () {
+                    layer.msg("失败");
+                }
+            })
+        }
+
+         let getDownInfo = function() {
+             
+             $(".detail_tit").text("项目详情");
+             $("#teachSubject").prev().find(".lit_tit").text("项目名称");
+             $("#teacherName").parent().remove();
+             $("#startDate").prev().find(".lit_tit").text("考勤开始时间");
+             $("#endDate").prev().find(".lit_tit").text("考勤结束时间");
+             
+            $.ajax({
+                 type: 'get',
+                 url: huayi_projectscore_url + 'cmeGroupprojPosDownload/selectDownInfo/'+downId,
+                 contentType: 'application/json;charset=UTF-8',
+                 dataType: 'json',
+                 success: function (res) {
+ 
+                     var obj=res.data;
+                     $("#teachSubject").html(obj.groupProjName);          
+                     $("#startDate").html(obj.startDt);         
+                     $("#endDate").html(obj.endDt);      
+                 },
+                 error: function () {
+                     layer.msg("失败");
+                 }
+             })
+         }
+ 
+
+        let flyImg = function(personObj){
+            let startElem = $("#hiddenFix").offset();
+            var endElem = wallEl.getLastElem().offset();
+            var flyer = $(`<img class="u-flyer" src="${personObj.imagesURL}">`);
+            flyer.fly({
+                start: {
+                    left: endElem.left,
+                    top: endElem.top
+                },
+                end: {
+                    left: startElem.left,
+                    top: startElem.top,
+                    width: 0,
+                    height: 0,
+                },
+                speed: 1.5, //越大越快，默认1.2
+                onEnd: function(){
+                    $(".slid_box").empty();
+                    //增加右侧头像列表
+                    addPersonList(personObj);
+                }
+            });
+        }
+
+        //显示考勤人员头像
+        let getNoShowPerson = function(){
+            aa:
+            for(let personId in personAttendanArrObj){
+                let tempObj = personAttendanArrObj[personId];
+                if(!tempObj.isShow || !tempObj.isLoadImg) continue;
+                tempObj.isShow = false;
+                showPersonImg(personAttendanArrObj[personId]);
+                return;
+            }
+        }
+
+        //显示考勤人员
+        let showPersonImg = function(personObj){
+            //更新人数
+            updatePersonNum(personObj);
+            //最新头像照片变为最后一个
+            addImgToLast(personObj);
+            //图片飞走
+            flyImg(personObj);
+        }
+
+        let updatePersonNum = function(personObj){
+            for(let i=0;i<personsArr.length;i++){
+                if(personsArr[i].personId == personObj.personId) {
+                    return;
+                }
+            }
+            personsArr.push(personObj);
+            document.getElementById("total").innerHTML = personsArr.length;
+        }
+
+        let addImgToLast = function(personObj){
+            wallEl.addImg(personObj.loadImg);
+            let personName = handlerName(personObj.personName);
+            $("#personName").html(`${personName}`);
+        }
+
+        //增加右侧头像列表
+        let addPersonList = function(personObj){
+            let beforeScrollTop = document.getElementById('slide1').scrollTop;
+            let personName = handlerName(personObj.personName);
+            let strDate = tool.exchangeDate(new Date(personObj.attendanceDate).getTime());
+            let a = `<li class="right_lis">
+                        <div class="right_img_box">
+                            <img src="${personObj.imagesURL}" alt="" class="right_img">
+                        </div>
+                        <div class="right_cont">
+                            <p class="right_news">姓名： <span>${personName}</span></p>
+                            <p class="right_text">考勤时间： <span>${strDate}</span></p>
+                            <img src="/img/project/attendancePhotoWall/prove_img.png" alt="" class="right_prove">
+                        </div>
+                    </li>`;
+            $("#listForAttendance").append(a);
+            // rightListChange(beforeScrollTop);
+        }
+
+        let handlerName = function(name){
+            let personName = "";
+            if(name.length <= 2){
+                personName = name[0] + "*";
+            } else {
+                personName = name[0];
+                for(let i=1;i<name.length-1;i++){
+                    personName += "*";
+                }
+                personName += name[name.length-1];
+            }
+            return personName;
+        }
+
+        let setImgWallWidth  = function(){
+            let ifrWidth = $(this).width();
+            let ifrParentWidth = $(this.parent.parent.parent.parent).width();
+            let tempWidth = $("#centerBox").width();
+            if(ifrParentWidth-ifrWidth < 200){
+                tempWidth -= 200;
+            } else {
+                tempWidth -= 40;
+            }
+            let tempHeight = parseInt(tempWidth*80/100);
+            let cssObj = {"width":`${tempWidth}px`,"padding-bottom":`${tempHeight}px`};
+            $(".pic_box").css(cssObj);
+        }
+
+        let onloadImg = function(){
+            for(let personId in personAttendanArrObj){
+                let tempObj = personAttendanArrObj[personId];
+                if(tempObj.onloadImg) continue;
+                var img = new Image();
+                img.src = tempObj.imagesURL;
+                img.setAttribute("person-id",personId);
+                img.onload = function(){
+                    personAttendanArrObj[this.getAttribute("person-id")].isLoadImg = true;
+                    personAttendanArrObj[this.getAttribute("person-id")].loadImg = this;
+                }
+            }
+            onloadCapacity++
+            if(onloadCapacity>4) {
+                onloadCapacity = 0;
+                setTimeout(onloadImg,onloadImgTimer);
+            } else {
+                setTimeout(onloadImg,1000);
+            }
+        }
+
+        //考勤列表下滑移动效果
+        let rightListChange = function(beforeScrollTop){
+            let elem = $("#listForAttendance");
+            let boxElem = $("#slide1");
+            let boxHeight = boxElem.height();
+            let ulHeight = elem.height();
+            let lastElem = $("#listForAttendance li:last");
+            let liHeight = lastElem.outerHeight();
+            //如果鼠标移动上去
+            if(!isMoveRightList && ulHeight  > boxHeight) {
+                elem.removeAttr("style");
+                beforeScrollTop += liHeight;
+                document.getElementById('slide1').scrollTop  =  beforeScrollTop;
+                return;
+            }
+            setBottomByScroll(elem,boxHeight,ulHeight,0);
+        }
+
+        //监控鼠标移入移出
+        let bindMouseOn = function(){
+            $("#listForAttendance").on("mouseenter",function(e){
+                let elem = $("#listForAttendance");
+                let boxHeight = $("#slide1").height();
+                let ulHeight = elem.height();
+                isMoveRightList = false;
+                if(ulHeight > boxHeight){
+                    var wait=setInterval(function(){
+                        if(!elem.is(":animated")){
+                            let bottom = elem.css("bottom");
+                            elem.removeAttr("style");
+                            setScrollByBottom(bottom,"slide1",boxHeight,ulHeight);
+                            clearInterval(wait);
+                        }
+                    },500);
+                }
+                
+            }).on("mouseleave",function(e){
+                //鼠标移除的时候给它自动添加上css属性
+                let tempScrollTop = document.getElementById('slide1').scrollTop;
+                let elem = $("#listForAttendance");
+                let boxHeight = $("#slide1").height();
+                let ulHeight = elem.height();
+                if(ulHeight > boxHeight){
+                    setBottomByScroll(elem,boxHeight,ulHeight,tempScrollTop);
+                }
+                isMoveRightList = true;
+            })
+        }
+
+        //赋值给bottom
+        let setBottomByScroll = function(elem,boxHeight,ulHeight,num){
+            let bottom =  boxHeight - ulHeight + num;
+            let cssObj = {"bottom":`${bottom}px`,"position":"absolute"};
+            elem.css(cssObj);
+        }
+
+        //赋值滚动条
+        let setScrollByBottom = function(cssBottom,scorllId,boxHeight,ulHeight) {
+            if(!cssBottom) return;
+            let bottom = parseInt(cssBottom.substr(0,cssBottom.length-2));
+            let tempScrollTop = ulHeight+bottom-boxHeight;
+            document.getElementById(scorllId).scrollTop  =  tempScrollTop;
+        }
+
+        let initPhotoWall = function() {
+            wallEl = photoWall.render({
+                minWidth:60,
+                maxWidth:150,
+                //中心图片宽度
+                centerImgWidth:250,
+                minHiddenNum:25,
+                //照片墙元素
+                elem:".pic_box",
+                //默认中心图片
+                defaultImg: "/img/person/touxiang.jpg",
+                //最少减小的宽度大小
+                minReductWidth:8,
+            });
+        }
+
+        let openTeach = function() {
+            $.ajax({
+                type: 'post',
+                url: huayi_projectscore_url + `app/startAttendance?teachId=${teachId}&projectType=4&upperLimit=${upperLimit}`,
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {},
+                error: function () {}
+            })
+        }
+
+        //获取考勤上限
+        let getAttendanceMax = function() {
+            $.ajax({
+                type: 'post',
+                url: huayi_projectscore_url + `app/getAttendanceUpperLimit?teachId=${teachId}&batchId=${batchId}`,
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    if(res.status == 200){
+                        if(res.data.hasOwnProperty("attendanceLimit")) {
+                            let pl = res.data.attendanceLimit == null ? "未设置" : res.data.attendanceLimit;
+                            $("#limitPerson").html(pl);
+                        } 
+                        
+                    }
+                },
+                error: function () {}
+            })
+        }
+
+        let htmlInit = function(){
+            if(localTest.online == '' || localTest.online ==null){
+                upperLimit = localTest.online;
+            }
+
+            teachId = tool.getParamFromUrl("teachId");
+            downId = tool.getParamFromUrl("downId");
+            batchId = tool.getParamFromUrl("batchId");
+
+            if(attendMode == 2) {
+                getDownInfo();
+            } else {
+                getTeachInfo();
+            }
+
+            // openTeach();
+            setImgWallWidth();//设置照片墙大小
+            // bindMouseOn();//监听鼠标进入右侧考勤列表
+            initPhotoWall();
+            //获取考勤人员数据
+            getAttendanceList();
+            setInterval(getAttendanceList,attendanceTimer);
+            //展示考勤上墙
+            setInterval(getNoShowPerson,showTimer);
+            //获取考勤最大人数
+            getAttendanceMax();
+            setInterval(getAttendanceMax,maxAttendanceTimer);
+            onloadImg();
+        }
+
+        htmlInit();
+    })
+</script>
+</html>

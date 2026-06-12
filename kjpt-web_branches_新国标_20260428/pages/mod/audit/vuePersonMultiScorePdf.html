@@ -1,0 +1,43 @@
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <link rel="stylesheet" href="/js/element-plus/css/index.css">
+    <!-- 引入 Vue 3 -->
+    <script src="/js/vue/vue-3.5.27/vue.global.prod.js"></script>
+    <!-- 引入 layui css为了获取layui的样式 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <title>个人版-多年度审验</title>
+    <style>
+        .el-checkbox {
+            margin-right: 15px;
+        }
+        .year-header {
+            font-weight: bold;
+            padding-right: 16px;
+            display: flex;
+            align-items: center;
+        }
+        .year-checkboxes {
+            display: flex;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <component v-if="activeModuleComponent" 
+        :is="activeModuleComponent" v-bind="moduleProps"></component>
+    </div>
+
+    <!-- 引入 Element Plus -->
+    <script src="/js/element-plus/index.full.js"></script>
+    
+    <!-- 使用 ES6 模块 -->
+    <script type="module" src="/js/vue/components/scorePdf/personMulti/personMultiApp.js"></script>
+</body>
+</html>

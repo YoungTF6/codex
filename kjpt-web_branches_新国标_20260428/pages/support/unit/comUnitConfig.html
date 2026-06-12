@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>编辑单位</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+        media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script type="text/javascript" src="https://v8.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+</head>
+
+<body>
+
+    <div class="layui-fluid">
+
+        <form class="layui-form layui-card  layui-col-space15" id="form-comunit-config"
+            lay-filter="form-comunit-config">
+            <div class="layui-card-body layui-col-md5">
+                <!--            "unitId": "160002",
+            "": 0,
+            "": 1,
+            "": 0,
+            "": 0,
+            "controlType": "0",
+            "isOpenCmeEvaluation": 1,
+            "isOpenCmeForceEvaluation": 0,
+            "": null,
+            "": null,
+            "": null,
+            "": null,
+            "isOpenExam": 1,
+            "isOpenLive": null,
+            "": 0,
+            "isOpenWeixinAttendanceToplimit": null,
+            "isOpenWeixinAttendanceToplimitForce": null,
+            "weixinAttendanceToplimit": 0,
+            "isOpenExamForce": null,
+            "isOpenScoreEdit": null-->
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="width: 300px;text-align: left">项目参加人数最多可超百分比</label>
+                        <div class="layui-input-inline">
+                            <input disabled="" type="text" name="maxExceedPercentageOfParticipants" required
+                                lay-verify="required" placeholder="%" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="width: 300px;text-align: left">由单位或科室审核</label>
+                        <div class="layui-input-inline">
+                            <input disabled="" type="radio" name="singleScoreCheckFlow" value="1" title="单位">
+                            <input disabled="" type="radio" name="singleScoreCheckFlow" value="2" title="科室">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="width: 300px;text-align: left">是否自动授分</label>
+                        <div class="layui-input-inline">
+                            <input disabled="" type="checkbox" name="autoGiveScore" value="1" lay-skin="switch">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="width: 300px;text-align: left">是否允许自己修改姓名证件号的状态</label>
+                        <div class="layui-input-inline">
+                            <input disabled="" type="checkbox" name="allowSelfEditState" value="1" lay-skin="switch">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="width: 300px;text-align: left">是否开通二维码考勤</label>
+                        <div class="layui-input-inline">
+                            <input disabled="" type="checkbox" name="isOpenWeixinAttendance" value="1"
+                                lay-skin="switch">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="width: 300px;text-align: left">扫码考勤时是否启用人脸识别</label>
+                        <div class="layui-input-inline">
+                            <input disabled="" type="checkbox" name="isOpenFace" value="1" lay-skin="switch">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="width: 300px;text-align: left">是否允许往年职称状态修改</label>
+                        <div class="layui-input-inline">
+                            <input disabled="" type="checkbox" name="shenzhenIsOpenOtherYearTitle" value="1"
+                                lay-skin="switch">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="width: 300px;text-align: left">是否允许职称降级</label>
+                        <div class="layui-input-inline">
+                            <input disabled="" type="checkbox" name="shenzhenIsOpenDescTitle" value="1"
+                                lay-skin="switch">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="width: 300px;text-align: left">登录时是否验证管理员手机号</label>
+                        <div class="layui-input-inline">
+                            <input disabled="" type="checkbox" name="isValidatePhone" value="1" lay-skin="switch">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="text-align: center">
+                    <div class="layui-input-block">
+                        <!-- <button class="layui-btn" lay-submit lay-filter="submit" >提交</button> -->
+                        <button onclick="return goToBack()" class="layui-btn layui-btn-primary">返回</button>
+                    </div>
+                </div>
+                <div class="layui-form-item" style=" display:none">
+                    <div class="layui-inline">
+                        <div class="layui-input-block">
+                            <input type="text" name="unitId" placeholder="单位编号" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</body>
+
+<script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+<script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+<script src="../../../js/common.js"></script>
+<script src="../../../js/constant.js"></script>
+<script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+<script>
+
+    var format_url = /\\|\/$/gi;
+    var sjwhUrl = huayi_sjwh_url.replace(format_url, "");
+    var personorgUrl = huayi_personorg_url.replace(format_url, "");
+    var unitConfigUrl = personorgUrl + '/comunit/config/get';
+    var unitConfigEditUrl = personorgUrl + '/comunit/config/update';
+
+    window.goToBack = function () {
+        window.history.back();
+        return false;
+    };
+
+    var formSnapShot = null;
+
+    //防止表单重复提交
+    var noRepeatLock = true;
+    var noRepeat = function (fun) {
+        if (noRepeatLock) {
+            noRepeatLock = false;
+            try {
+                fun();
+            } catch (e) {
+                console.log(e);
+            }
+            setTimeout(function () {
+                noRepeatLock = true;
+            }, 3000);
+        }
+    };
+
+
+    layui.config({
+        base: '../../../js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select'
+    }).use(['xmSelect', 'form', 'authtree', 'layer'], function () {
+
+        var form = layui.form;
+        // ===============  获取单位详情，回显数据 ==================
+        var unitId = getUrlParam('unitId');
+        $.ajax({
+            url: unitConfigUrl + '?unitId=' + unitId,
+            type: 'get',
+            dataType: 'json',
+            contentType: 'application/json;charset=UTF-8',
+            success: function (res) {
+                if (res.status == 200) {
+
+                    $("input[name=singleScoreCheckFlow][value='1']").attr("checked", res.data.singleScoreCheckFlow == 1);
+                    $("input[name=singleScoreCheckFlow][value='2']").attr("checked", res.data.singleScoreCheckFlow == 2);
+
+                    form.val('form-comunit-config', res.data);
+                } else {
+                    layui.layer.msg(res.msg || '系统繁忙，请稍后重试', {
+                        time: 1000, //1s后自动关闭
+                        end: function (o) {
+                            layui.layer.closeAll();
+                        }
+                    });
+                }
+            },
+            error: function (req, msg) {
+                layui.layer.msg('系统繁忙，请稍后重试', {
+                    time: 1000, //1s后自动关闭
+                    end: function (o) {
+                        layui.layer.closeAll();
+                    }
+                });
+            }
+        });
+
+        //监听form修改
+        form.on('submit(submit)', function (data) {
+
+            noRepeat(function () {
+                var formParam = data.field;
+                // console.log(formParam)
+
+                if (formSnapShot == JSON.stringify(formParam)) {
+                    layui.layer.msg('没有需要更新的内容！', {
+                        time: 1000, //1s后自动关闭
+                        end: function (o) {
+                            layui.layer.closeAll();
+                        }
+                    });
+                } else {
+                    $.ajax({
+                        url: unitConfigEditUrl,
+                        type: 'post',
+                        dataType: 'json',
+                        contentType: 'application/json;charset=UTF-8',
+                        data: JSON.stringify(formParam),
+                        success: function (res) {
+                            if (res.status == 200) {
+                                layui.layer.msg('操作成功！', {
+                                    time: 1000, //1s后自动关闭
+                                    end: function (o) {
+                                        goToBack();
+                                    }
+                                });
+                            } else {
+                                layui.layer.msg(res.msg || '系统繁忙，请稍后重试', {
+                                    time: 1000, //1s后自动关闭
+                                    end: function (o) {
+                                        layui.layer.closeAll();
+                                    }
+                                });
+                            }
+                        },
+                        error: function (req, msg) {
+                            layui.layer.msg('系统繁忙，请稍后重试', {
+                                time: 1000, //1s后自动关闭
+                                end: function (o) {
+                                    layui.layer.closeAll();
+                                }
+                            });
+                        }
+                    });
+                }
+                formSnapShot = null;
+            });
+            return false;
+        });
+    });
+
+</script>
+
+</html>

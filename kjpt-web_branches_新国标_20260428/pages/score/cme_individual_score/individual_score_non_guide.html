@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>非向导录入个人学分</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="../../../js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+    <script type="text/javascript" src="../../../js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="../../../js/layui-v2.6.8/layui/layui.js"></script>
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <!-- pdf查看 -->
+    <script type="text/javascript" src="/js/pdfjs/build/pdf.js"></script>
+    <!-- 二维码生成 -->
+    <script type="text/javascript" src="/js/jquery.qrcode.min.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/api/number.js"></script>
+    <!-- 个人学分录入样式  -->
+    <link rel="stylesheet" href="/css/score/score.css" media="all">
+</head>
+
+<body>
+    <!--活动信息-->
+    <form class="layui-form" style="padding: 30px 0px 0px;" id="form-applyBeforeHold" lay-filter="add-filter">
+        <div class="score-model">
+            <span class="title">基本信息</span>
+            <div>
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>活动名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="singleProjName" placeholder="请输入活动名称" autocomplete="off" class="layui-input sql_keyword" lay-verify="singleProjNameVerify" require>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">活动编号</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="singleProjNo" placeholder="请输入活动编号" autocomplete="off" class="layui-input sql_keyword" lay-verify="singleProjNoVerify" require>
+                        </div>
+                        <div id="projNoRemark" style="margin-left: 110px; color: red; display: none;">
+                            <p>国家级项目请填写编号，例：2024-01-01-001（国）</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>年度</label>
+                        <div class="layui-input-block">
+                            <select name="cmeYear" id="cmeYear" lay-verify="required" lay-filter="cmeYear">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" name="lblScoreLevel"><font color="red">*&nbsp;</font></label>
+                        <div class="layui-input-block">
+                            <input type="text" name="scoreLevel" autocomplete="off" class="layui-input" lay-filter="scoreLevel" id="scoreLevel" placeholder="请选择">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" name="lblActivityForm"><font color="red">*&nbsp;</font></label>
+                        <div class="layui-input-block">
+                            <select name="holdType" id="holdType" lay-verify="required">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>二级学科</label>
+                        <div class="layui-input-block">
+                            <select name="knowledgeTwo" id="knowledgeTwo" lay-filter="knowledgeTwo" lay-verify="required" required lay-search>
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>三级学科</label>
+                        <div class="layui-input-block">
+                            <select name="knowledgeId" id="knowledgeThree" lay-verify="required" required lay-search>
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <!-- 活动内容 -->
+                        <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span><label name="lblActivityContent"></label></label>
+                        <div class="layui-input-block">
+                            <select name="scoreType" id="scoreLevelContent" lay-filter="scoreLevelContent" lay-verify="required"></select>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name="projTypeKind" id="projTypeKind" autocomplete="off" class="layui-input">
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"><span id="projTypeSpan" style="color: red; ">*&nbsp;</span><label name="lblActivityType"></label></label>
+                        <div class="layui-input-block">
+                            <select name="projType" id="projType" lay-verify="required">
+                                <!-- <option value="">全部</option> -->
+                                <!-- <option value="1">推荐项目</option> -->
+                                <!-- <option value="2">推广项目</option> -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <!-- 所属医学体系 -->
+                        <label class="layui-form-label"><span style="color: red;">*&nbsp;</span><label name="lblMedicalSystem" style="padding-right:1px;"></label></label>
+                        <div class="layui-input-block">
+                            <select name="medicalType" id="medicalTypeSelector" lay-verify="required">
+                                <option value=""></option>
+                                <option value="1">西医</option>
+                                <option value="2">中医</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>学分</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="score" id="score" autocomplete="off"
+                                class="layui-input" lay-verify="scoreVerify" placeholder="请输入学分" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"><font id="periodFont" color="red">*&nbsp;</font>小时</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="period" id="period" autocomplete="off"
+                                class="layui-input" lay-verify="periodVerify" placeholder="请输入" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>活动日期</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="studyDate" id="activityDate" placeholder="请输入活动日期"
+                                autocomplete="off" class="layui-input" readonly lay-verify="required" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>发证机构</label>
+                        <div class="layui-input-block" style="position: relative;">
+                            <input type="text" id="text_unit_name" name="teachUnitName" placeholder="请选择单位"
+                                autocomplete="off" class="layui-input" style="display: inline;"
+                                 lay-verify="unitNameVerify" required>
+                            <button class="layui-btn  select-unit-btn" id="selectUnitBtn">选择单位</button>
+                            <input type="hidden" id="hidden_unit_id" name="teachUnit">
+                        </div>
+                        <div style="margin-left: 110px; color: red;">
+                            <p>外省机构请录入单位名称，本省机构点击选择</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item-box" >
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">备注</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="remark" id="remark" autocomplete="off" placeholder="备注"
+                                class="layui-input sql_keyword" lay-verify="remarkVerify">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item-box">
+                </div>
+                <div class="layui-form-item-box js-photo-box" style="width: 98%;">
+                    <div class="layui-upload" >
+                        <font color="red" >*&nbsp;</font>
+                        <button type="button" class="layui-btn layui-btn-sm" id="chooseFileBtn">选择学分证明材料</button>
+                        <button type="button" class="layui-btn layui-btn-sm" id="mobileChooseFileBtn">手机端上传</button>
+                        <button type="button" class="layui-btn layui-btn-sm layui-btn-disabled" id="submitFileBtn" disabled="true">开始上传</button>
+                        <p style="margin-left: 10px; color: red;display: inline-block;" id="uploadTips"></p>
+                        <div class="layui-upload-list" style="max-width: 1000px;">
+                            <table class="layui-table">
+                                <colgroup>
+                                    <col><col width="100"><col width="100"><col width="100"><col width="120">
+                                </colgroup>
+                                <thead>
+                                    <tr><th>文件名</th><th>大小</th><th>缩略图</th><th>状态</th><th>操作</th></tr>
+                                </thead>
+                                <tbody id="fileList"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <button class="layui-btn" btn-type="save" lay-submit lay-filter="submit">保存</button>
+                    <button class="layui-btn" btn-type="saveAndApply" lay-submit lay-filter="submit">保存并上报</button>
+                    <button class="layui-btn js-close">关闭</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- 预览 -->
+    <div id="viewFile" style="display: none;"></div>
+    <!-- 二维码 -->
+    <div id="qrCode" style="display: none;"></div>
+    
+<script type="text/javascript" src="/pages/score/cme_singleproj_score/js/singleproj.js"></script>
+<script type="text/javascript" src="/pages/score/cme_singleproj_score/js/evidenceOcrVerify.js"></script>
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        tool:'tool',
+        ysUpload:'ysUpload'
+    });
+    // 全局配置及引入相关的模块
+    layui.use(['table', 'form', 'laydate','tool','ysUpload'], function () {
+        let $ = layui.jquery,table = layui.table,form = layui.form,layer = layui.layer;
+        let laydate = layui.laydate,tool = layui.tool,ysUpload=layui.ysUpload;
+        let ajaxNum=0,loading,personId,fileUrls = [];
+        let holdTypeUrl = huayi_sjwh_url + "cmeHoldType/getHoldType",//举办方式
+        twoKnowledgeUrl = huayi_sjwh_url + 'comKnowledge';//学科
+        let standardkindId = localStorage.getItem("standardkind-id");
+        let unitId = localStorage.getItem("unit-id");
+        let nowUnitName = localStorage.getItem("unit-name");
+        let userId = localStorage.getItem("user-id");
+        let timestamp = new Date().getTime();
+        let isUploadPhoto = true,isIndividualAdd = true,configFileNum= 10;
+        let scale = 3,viewFile = "viewFile";
+        let sendClickNum=0;//是否发送请求获取图片
+        let getPhotoUrl = huayi_projectscore_url + `cmeSingleprojScoreMobilePhoto/list`;
+        let delayTime = 5000;//延时执行的时间
+        
+        // 上传文件大小限制 河南限制3M
+        let fileSize = standardkindId == 'a6280900-a9c2-11ec-84d6-fa163e9b64fb' ? 3*1024 : 10*1024;
+        // 限制文件类型
+        let fileExts = standardkindId == 'a6280900-a9c2-11ec-84d6-fa163e9b64fb' ? 'jpg|png|bmp|jpeg' : 'jpg|png|bmp|jpeg|pdf';
+        
+
+        //关闭closeLoading的判断
+        let closeLoading = function(){
+            ajaxNum--;
+            if(ajaxNum<=0 && loading) layer.close(loading);
+        }
+        //打开加载
+        let openLoading = function(){
+            if(ajaxNum == 0) loading = layer.msg('加载中', {icon: 16, shade: 0.3, time:0});
+            ajaxNum ++;
+        }
+        //公共ajax
+        let commonAjax = function(type="get",url,data,failFun,successFun){
+            openLoading();
+            $.ajax({
+                type    :   type,
+                url     :   url,
+                data    :   data,
+                success :   function (res) {
+                    closeLoading();
+                    successFun(res);
+                },
+                error    :   function(res){
+                    closeLoading();
+                    failFun();
+                }
+            });
+        }
+        //表单一些元素加载
+        let formInit = function(){
+            $("#hidden_unit_id").val(unitId);
+            $("#text_unit_name").val(nowUnitName);
+            laydate.render({elem: '#activityDate',type: 'date',max: maxDate()});
+        }
+
+        //获取举办方式
+        // let getHoldType = function(){
+        //     commonAjax('get',holdTypeUrl,{"standardKindId":standardkindId,projectType:3,userType:3},
+        //         function(){layer.msg("获取举办方式失败");},
+        //         function(res){
+        //             $.each(res.data, function (index, item) {
+        //                 $('#holdType').append(new Option(item.holdTypeName, item.holdTypeId));
+        //             })
+        //             form.render('select');
+        //         });
+        // }
+        // //获取二级学科
+        // let getTwoKnowledge = function(){
+        //     commonAjax('get',twoKnowledgeUrl,{"knowledgeType":2},
+        //         function(){layer.msg("二级学科加载失败");},
+        //         function(res){
+        //             if (res.status == 200) {
+        //                 var data = res.data;
+        //                 for (var i = 0; i < data.length; i++) {
+        //                     var option = $('<option value="' + data[i].knowledgeId + '">' + data[i].knowledgeName + '</option>');
+        //                     $('#knowledgeTwo').append(option);
+        //                 }
+        //                 form.render('select');
+        //                 getThreeKnowledge();
+        //             } else { layer.msg('二级学科加载失败'); }
+        //         });
+        // }
+
+        // // 三级学科 todo
+        // let getThreeKnowledge = function(){
+        //     form.on('select(knowledgeTwo)', function (data) {
+        //         var knowledgeTwoId = data.value;
+        //         commonAjax('get',twoKnowledgeUrl,
+        //             {"knowledgeType":3,knowledgeTwoId:knowledgeTwoId},
+        //             function(){layer.msg("三级学科加载失败");},
+        //             function(res){
+        //                 if (res.success == true) {
+        //                     $('#knowledgeThree').find('option:gt(0)').remove();
+        //                     for (var i = 0; i < res.data.length; i++) {
+        //                         var option = $('<option value="' + res.data[i].knowledgeId + '">' + res.data[i].knowledgeName + '</option>');
+        //                         $('#knowledgeThree').append(option);
+        //                     }
+        //                     form.render('select');
+        //                 } else { layer.msg('三级学科加载失败'); }
+        //             });
+        //     });
+        // }
+
+        // //获取学分级别
+        // let getScoreLevel = function(){
+        //     commonAjax('get',huayi_sjwh_url + "cmecomscorelevel/forSingleproj",
+        //         {unitId: unitId, userType: 14, projType: 3},
+        //         function(){layer.msg("学分级别加载失败");},
+        //         function(res){
+        //             $.each(res.data, function (index, item) {
+        //                 $('#scoreLevel').append(new Option(item.scoreLevelName, item.scoreLevelId));
+        //             })
+        //             form.render();
+        //         });
+        // }
+        
+        form.on("select(scorelevel)", function (data) {
+            if (data.value != 'dadfc350-24e4-46ee-81b4-9beb00a2fccb') {
+                $('#periodFont').css("display", "");
+            } else {
+                $('#periodFont').css("display", "none");
+            }
+        });
+
+        //获取科室信息
+        let getPersonInfo = function() {
+            openLoading();
+            $.ajax({
+                type: "get",
+                url: huayi_personorg_url + "comperson/getPersonByUserId",
+                data:{userId:userId},
+                success: function (res) {
+                    closeLoading();
+                    if(res.status == 200){
+                        if(res.data.hasOwnProperty("comPersonId")){
+                            personId = res.data["comPersonId"];
+                        }else{
+                            layer.msg("该人员无法录入个人学分");
+                        }
+                    }else if(res.status == 500){
+                        layer.msg(data.msg);
+                    }else{
+                        layer.msg("加载失败");
+                    }
+                },
+                error: function (data) {
+                    closeLoading();
+                    layer.msg("响应失败");
+                }
+            });
+        }
+
+        //监听按钮
+        let bindAllBtn = function(){
+            //机构名输入的时候，清空机构id
+            $("#text_unit_name").keyup(function(){  $("#hidden_unit_id").val(""); });
+            //选择单位按钮点击
+            $("#selectUnitBtn").click(function () {
+                layer.open({
+                    area: ['700px', '600px'],
+                    type: 2,
+                    title: '选择单位',
+                    content: '../../controls/unit/unitsMessage.html'
+                });
+                return false;
+            });
+            $(".js-close").click(function(){ window.close(); });
+            $("#mobileChooseFileBtn").click(function(){
+                $(`#qrCode`).empty();
+                let uploadFileNum = $("#fileList").children().length;
+                let mobileUrl = window.location.origin + `/pages/mobile/scoreImgUpload.html?userId=${userId}&unitId=${unitId}&standardkindId=${standardkindId}&timestamp=${timestamp}&configFileNum=${configFileNum}&uploadFileNum=${uploadFileNum}`;
+                $('#qrCode').qrcode({
+                    text    :   mobileUrl,
+                    width   :   '280',
+                    height  :   '280'
+                }); 
+                layer.open({
+                    type: 1
+                    ,title: false //不显示标题栏
+                    ,closeBtn: false
+                    ,area: ['300px','300px']
+                    ,shade: 0.8
+                    ,shadeClose :true
+                    ,scrollbar :true
+                    ,id: 'LAY_layuipro' //设定一个id，防止重复弹出
+                    ,moveType: 1 //拖拽模式，0或者1
+                    ,content: $(`#qrCode`)
+                });
+                sendClickNum++;
+                if(sendClickNum==1){
+                    delayTime = 5000;
+                    getTempMobileFile();
+                }
+            });
+        }
+
+        //轮训向服务器获取手机上传的图片,只执行一次
+        let getTempMobileFile = function(){
+            if(sendClickNum==0 || $("#fileList").children().length >= configFileNum) return;
+            setTimeout(getMobileRequrest, delayTime);
+        }
+
+        //向后台发送请求
+        let getMobileRequrest = function(){
+            let getPhotoData = {userId:userId,timestamp:timestamp};
+            $.ajax({
+                type    :   "post",
+                url     :   getPhotoUrl,
+                data    :   JSON.stringify(getPhotoData),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success :   function (res) {
+                    if(res.status==200 && !tool.isEmpty(res.data)&& res.data.length >0){
+                        createPhoto(res.data);
+                    }
+                    getTempMobileFile();
+                },
+                error    :   function(res){ getTempMobileFile(); }
+            });
+        }
+
+        let createPhoto = function(datas){
+            let tempPhotos = [];
+            aa:
+            for (let i = 0; i < datas.length; i++) {
+                for (let j = 0; j < fileUrls.length; j++) {
+                    if(datas[i].scorePhotoUrl == fileUrls[j].scorePhotoUrl) continue aa;
+                }
+                tempPhotos.push(datas[i]);
+            }
+            for (let i = 0; i < tempPhotos.length; i++) {
+                if(fileUrls.length >= configFileNum){
+                    break;
+                }
+                let tempPhoto = tempPhotos[i];
+                fileUrls.push({
+                    fileName:tempPhoto.fileName,
+                    scorePhotoUrl:tempPhoto.scorePhotoUrl,
+                    photoSize:tempPhoto.photoSize,
+                    tempId:tempPhoto.keyId
+                })
+                let fileHtml = `<tr id="upload-${tempPhoto.keyId}">
+                    <td>${tempPhoto.fileName}</td><td>${tempPhoto.photoSize}kb</td>
+                    <td><img class="image-table-tr" onclick="viewPhoto('${tempPhoto.scorePhotoUrl}')" src="${tempPhoto.scorePhotoUrl}" alt="${tempPhoto.fileName}" file-size="${tempPhoto.photoSize}" file-id="${tempPhoto.keyId}"></td>
+                    <td>已上传</td>
+                    <td>
+                        <a class="layui-btn layui-btn-xs layui-btn-danger" file-id="${tempPhoto.keyId}" onclick="deletePhoto(this)">删除</a>
+                    </td>
+                    </tr>`;
+                $("#fileList").append(fileHtml);
+                delayTime = delayTime + 1000;
+            }
+            if($("#fileList").children().length >= configFileNum) {
+                isCanChooseBtn(false);
+                isCanOpenQcode(false);
+                sendClickNum = 0;
+                delayTime = 5000;
+                timestamp = new Date().getTime();
+            }
+        }
+
+        //获取配置信息
+        let getConfig = function(){
+            let configName1 = "fun_singleproj_photo_upload",
+            configName2="fun_person_input_score",
+            configName3="value_single_proj_score_photo_count";
+            let configUrl = huayi_sjwh_url + `cmeCommonConfig/getConfigByUnitFromRedis?unitId=${unitId}&configNames=${configName1}&configNames=${configName2}&configNames=${configName3}`;
+            commonAjax('post',configUrl,{},
+                function(){layer.msg("配置信息加载失败");},
+                function(res){
+                    if(res.status == 200){
+                        if(!tool.isEmpty(res.data)){
+                            if(res.data.hasOwnProperty(configName1) && res.data[configName1] == 0){
+                                isUploadPhoto = false;
+                                // 隐藏类layui-upload下的font
+                                $(".layui-upload").find("font").addClass("hide");
+                                // $(".js-photo-box").addClass("hidden-el");
+                            }
+                            if(res.data.hasOwnProperty(configName2) && res.data[configName2] == 0){
+                                isIndividualAdd = false;
+                                layer.msg("未开启个人录入功能");
+                            }
+                            if(res.data.hasOwnProperty(configName3) && res.data[configName3] != ""){
+                                configFileNum = res.data[configName3];
+                            }
+                            updateFile();
+                        }else{ layer.msg("配置加载失败"); }
+                        
+                    }else{ layer.msg("配置信息加载失败"); }
+                });
+        }
+
+        //上传文件
+        let updateFile = function(){
+            let uploadListIns = ysUpload.render({
+                elem: "#chooseFileBtn",
+                elemList: $("#fileList"),
+                url: huayi_upload_url + 'uploadApi/upload',
+                exts     : fileExts,
+                size: fileSize ,//大小小于10M
+                accept: 'file',
+                number: configFileNum,
+                auto: (standardkindId === '289bf0ca-52cb-4b19-b737-9bd200a69ce1'),
+                bindAction: '#submitFileBtn',
+                before: function(obj){
+                    this.data = getFileType(this.files);
+                },
+                choose: function(obj){
+                    isCanSubmitBtn(true);
+                    var that = this;
+                    var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                    // 文件上传数量限制
+                    if(Object.keys(files).length + fileUrls.length >= configFileNum){
+                        isCanChooseBtn(false);
+                        isCanOpenQcode(false);
+                    }
+                    //读取本地文件
+                    obj.preview(function (index, file, result) {
+                        let imgSrc = file.type.indexOf("pdf") >=0? '/img/pdf.png' : result;
+                        var tr = $([`<tr id="upload-${index}">
+                            <td><a>${file.name}</a></td><td>${(file.size / 1014).toFixed(1)}kb</td>
+                            <td><img id="showSmallPic${index}" src="${imgSrc}" alt="${file.name}" class="image-table-tr js-photo"></td>
+                            <td>${standardkindId === '289bf0ca-52cb-4b19-b737-9bd200a69ce1' ? '上传' : '未上传'}</td>
+                            <td>
+                                <a class="layui-btn layui-btn-xs layui-btn-danger demo-delete">删除</a>
+                                <a class="layui-btn layui-btn-xs demo-reload layui-hide">重传</a>
+                            </td></tr>`].join(''));
+                        //单个重传
+                        tr.find('.demo-reload').on('click', function () { obj.upload(index, file); });
+                        //删除
+                        tr.find('.demo-delete').on('click', function () {
+                            layer.confirm('确认删除', {icon: 3, title: '提示'}, function (windowIndex) {
+                                for(let i=0 ; i<fileUrls.length ; i++){
+                                    if(fileUrls[i].tempId==index){
+                                        fileUrls.splice(i,1);
+                                        break;
+                                    }
+                                }
+                                delete files[index]; //删除对应的文件
+                                tr.remove();
+                                uploadListIns.config.elem.next()[0].value = ''; //清空input file值,以免删除后出现同名文件不可选
+                                isCanChooseBtn(true);
+                                isCanOpenQcode(true);
+                                Object.keys(files).length == 0 && isCanSubmitBtn(false);
+                                layer.close(windowIndex);
+                            })
+                        });
+                        that.elemList.append(tr);
+                        //某图片放大预览
+                        $("#showSmallPic"+index).bind('click',function () { 
+                            viewPhoto(result,file); 
+                        });
+                    })
+                },
+                done: function(res,index,upload){
+                    let that = this;
+                    let tr = that.elemList.find('tr#upload-' + index);
+                    let tds = tr.children();
+                    if(res.code == 200){
+                        let fileSize = (this.files[index].size/1014).toFixed(1);
+                        let fileName = this.files[index].name;
+                        fileUrls.push({
+                            fileName:this.files[index].name,
+                            scorePhotoUrl:res.data.picUrl,
+                            photoSize:fileSize,
+                            tempId:index
+                        })
+                        tds.eq(3).html('已上传');
+                        tds.eq(4).find('.demo-reload').addClass('layui-hide'); //显示重传
+                        delete this.files[index]; //删除文件队列已经上传成功的文件
+                        Object.keys(this.files).length == 0 && isCanSubmitBtn(false);
+                        return;
+                    }
+                    this.error(index, upload);
+                },
+                error: function(index,upload){
+                    var that = this;
+                    var tr = that.elemList.find('tr#upload-' + index);
+                    var tds = tr.children();
+                    tds.eq(3).html('上传失败');
+                    tds.eq(4).find('.demo-reload').removeClass('layui-hide'); //显示重传
+                }
+            });
+            if (standardkindId === '289bf0ca-52cb-4b19-b737-9bd200a69ce1') {
+                $('#submitFileBtn').hide();
+            }
+        }
+
+        //获取文件类型
+        let getFileType = function(filesObj) {
+            let tempDatas = {};
+            let year = new Date().getFullYear();
+            let path = `/individualScoreManage/${standardkindId}/${year}/${unitId}`;
+            for(let key in filesObj){
+                let fileData = {path:path,scale:0.6,outputQuality:0.6};
+                // 判断文件大小, 超过3M压缩比例改为0.3
+                debugger
+                if(filesObj[key].size > 3000000 ){
+                    fileData = {path:path,scale:0.3,outputQuality:0.3};
+                }
+                const tempType = filesObj[key].type;
+                if(tempType.indexOf("image") >= 0){
+                    fileData.fileType = "IMAGE";
+                } else if(tempType.indexOf("application/pdf") >= 0){
+                    fileData.fileType = "DOC";
+                } else {
+                    fileData.fileType = "OTHER";
+                }
+                tempDatas[key] = fileData;
+            }
+            return tempDatas;
+        }
+
+        // 图片预览
+        window.viewPhoto = function(srcUrl,file){
+            $(`#${viewFile}`).empty();
+            if(file!=null && file.type.indexOf("pdf")>=0) {
+                let test = createPdf(file,viewFile);
+            } else {
+                $(`#${viewFile}`).append(`<img src='${srcUrl}'/>`);
+            }
+            layer.open({
+                type: 1,
+                shade: 0.8,
+                offset: 'auto',
+                area: ['90%','90%'],
+                shadeClose:true,//点击外围关闭弹窗
+                scrollbar: false,//不现实滚动条
+                title: "预览", //不显示标题
+                content: $(`#${viewFile}`)
+            });
+        }
+
+        //pdf预览解析
+        let createPdf = function(pdfElem,id){
+            let currentPages=1;
+            let totalPages=0;
+            var reader = new FileReader();
+            reader.readAsDataURL(pdfElem);
+            reader.onload = function(e) {
+                let loadingTask = pdfjsLib.getDocument({
+                    url: this.result,
+                    cMapUrl: "/js/pdfjs/web/cmaps/",
+                    cMapPacked: true
+                });
+                loadingTask.promise.then(function(pdf){
+                    if(pdf){
+                        totalPages =  pdf.numPages;
+                        for (let i = 1; i <= totalPages; i++) {
+                            var canvas = document.createElement('canvas');
+                            canvas.id = "pageNum" + i;
+                            $(`#${id}`).append(canvas);
+                            var context = canvas.getContext('2d');
+                            renderImg(pdf,i,context);
+                        }
+                    }
+                })
+            }
+        }
+
+        //解析pdf一页
+        let renderImg = function(pdfFile,pageNum,canvasContext){
+            let pageElem =  pdfFile.getPage(pageNum);
+            pageElem.then(function(page){
+                var viewport = page.getViewport({scale:scale});
+                var newcanvas = canvasContext.canvas;
+                newcanvas.width = viewport.width;
+                newcanvas.height = viewport.height;
+                newcanvas.style.width = "100%";
+                var renderContext = {
+                    canvasContext :  canvasContext,
+                    viewport:viewport
+                };
+                page.render(renderContext);
+            })
+            return;
+        }
+
+        //删除图片
+        window.deletePhoto = function(elem){
+            layer.confirm('确认删除', {icon: 3, title: '提示'}, function (windowIndex) {
+                let index = elem.getAttribute("file-id");
+                let deleteUrl = huayi_projectscore_url + "cmeSingleprojScoreMobilePhoto/deleteById";
+                commonAjax('post',deleteUrl,{keyId:index},
+                    function(){layer.msg("删除失败");},
+                    function(res){
+                        if(res.status == 200){
+                            for(let i=0 ; i<fileUrls.length ; i++){
+                                if(fileUrls[i].tempId==index){
+                                    fileUrls.splice(i,1);
+                                    break;
+                                }
+                            }
+                            elem.parentElement.parentElement.remove();
+                            isCanOpenQcode(true);
+                            isCanChooseBtn(true);
+                        }else{ 
+                            layer.msg("删除失败");
+                        }
+                    });
+                layer.close(windowIndex);
+            })
+        }
+
+        window.getChildUnitMsg = function (unitId, unitName, hospitalLevelId, unitLevelName) {
+            $("#hidden_unit_id").val(unitId);
+            $("#text_unit_name").val(unitName);
+            $("#select_cme_unit_level").val(hospitalLevelId);
+            form.val("cmeDetail", {
+                "select_cme_unit_level": hospitalLevelId
+            });
+            form.render('select');
+        }
+
+        //清空form
+        let handerForm = function(){
+            fileUrls = [];
+            isCanChooseBtn(true);
+            isCanSubmitBtn(false);
+            isCanOpenQcode(true);
+            sendClickNum = 0;
+            timestamp = new Date().getTime();
+            $("#fileList").html("");
+            $("#activityDate").val("");
+            form.render();
+        }
+
+        //是否可以选择按钮
+        let isCanChooseBtn = function(flag=true){
+            if(flag) {
+                $("#chooseFileBtn").removeClass("layui-btn-disabled");
+                $("#chooseFileBtn").attr("disabled", false);
+            }else{
+                $("#chooseFileBtn").addClass("layui-btn-disabled");
+                $("#chooseFileBtn").attr("disabled", true);
+            }
+        }
+        //是否可以提交按钮
+        let isCanSubmitBtn = function(flag=true){
+            if(flag) {
+                $("#submitFileBtn").removeClass("layui-btn-disabled");
+                $("#submitFileBtn").attr("disabled", false);
+            }else{
+                $("#submitFileBtn").addClass("layui-btn-disabled");
+                $("#submitFileBtn").attr("disabled", true);
+            }
+        }
+
+        //是否可以弹出二维码
+        let isCanOpenQcode = function(flag = true){
+            if(flag){
+                $("#mobileChooseFileBtn").removeClass("layui-btn-disabled");
+                $("#mobileChooseFileBtn").attr("disabled", false);
+            }else{
+                $("#mobileChooseFileBtn").addClass("layui-btn-disabled");
+                $("#mobileChooseFileBtn").attr("disabled", true);
+            }
+        }
+
+        //是否确定提交
+        let backSubmit = function(){
+            layer.open({
+                type:1,
+                title:false,
+                area:['260px','130px'],
+                btn:['继续授分','取消'],
+                closeBtn :0,
+                btnAlign: 'c',
+                content:'<div class="is-yes-context">该活动已存在学分，请谨慎授分</div>',
+                yes:function(){
+                    openLoading();
+                    submitData.isYes = 1;
+                    $.ajax({
+                        type: 'post',
+                        url: huayi_projectscore_url + 'cmeDeptSingleprojScore/save',
+                        data: JSON.stringify(submitData),
+                        contentType: 'application/json;charset=UTF-8',
+                        dataType: 'json',
+                        success: function (res) {
+                            closeLoading();
+                            if (res.status === 200) {
+                                window.EvidenceOcrVerify.notifySaveSuccess(submitData, function () {
+                                    handerForm();
+                                    layer.closeAll();
+                                });
+                            } else if (res.status === 500) {
+                                layer.msg(res.msg);
+                            }
+                        },
+                        error: function () {
+                            closeLoading();
+                            layer.msg("保存失败");
+                        }
+                    })
+                },
+                btn2:function(index,layero){
+                    closeLoading();
+                }
+            })
+        }
+
+        form.on('submit(submit)', function (data) {
+            if(!isIndividualAdd){
+                layer.msg("未开启个人录入功能");
+                return false;
+            }
+            submitData = null;
+            const btnType = data.elem.getAttribute("btn-type");
+            data.field.comPersonId = personId;
+            data.field.addUser = userId;
+            data.field.addUnit = unitId;
+            data.field.standardkindId = standardkindId;
+            data.field.checkState =(btnType && btnType == "saveAndApply")? 0 : -1;
+            //开启图片上传
+            if(isUploadPhoto && fileUrls.length <= 0){
+                layer.msg("请上传证明材料",{icon:5});
+                return false;
+            }
+            submitData = data.field;
+            submitData.cmeDeptSingleprojPhotos = fileUrls;
+            /**
+             * 个人非向导录入使用当前登录人员姓名进行佐证 OCR 核验。
+             */
+            const verifyPersonName = localStorage.getItem("user-name") || '';
+            window.EvidenceOcrVerify.run({
+                unitId: unitId,
+                scoreLevel: data.field.scoreLevel,
+                fileUrls: fileUrls,
+                personNames: [verifyPersonName],
+                resetUpload: function () {
+                    fileUrls = [];
+                    $("#fileList").empty();
+                    $("#fileListTips").empty();
+                }
+            }, function (verifyRes) {
+                if (!verifyRes.pass) {
+                    return;
+                }
+                Object.assign(submitData, verifyRes.patchFields || {});
+                openLoading();
+                $.ajax({
+                    type: 'post',
+                    url: huayi_projectscore_url + 'cmeDeptSingleprojScore/save',
+                    data: JSON.stringify(submitData),
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        closeLoading();
+                        if (res.status === 200) {
+                            if(res.data == null || isNaN(res.data)){
+                                window.EvidenceOcrVerify.notifySaveSuccess(verifyRes, function () {
+                                    handerForm();
+                                });
+                            }else{
+                                backSubmit();
+                            }
+                        } else if (res.status === 500) {
+                            layer.msg(res.msg);
+                        }
+                    },
+                    error: function () {
+                        closeLoading();
+                        layer.msg("保存失败");
+                    }
+                });
+            });
+            return false;
+        });
+
+
+        //表单校验 移入公共js: singleproj.js
+        form.verify({
+            // singleProjNameVerify: function(value,item){
+            //     if(null==value || value=="") return "必填字段不能为空";
+            //     if(value.length > 300) return "输入最大限定字数";
+            // },
+            // singleProjNoVerify : function(value,item){
+            //     if(value.length > 30) return "输入最大限定字数";
+            // },
+            // periodVerify:function(value,item){
+            //     // if(null==value || value=="") return "必填字段不能为空";
+            //     if(value <= 0 &&  $('#scorelevel').val() != 'dadfc350-24e4-46ee-81b4-9beb00a2fccb') return "小于最小限定学时";
+            //     // if(value < 0) return "小于最小限定学时";
+            //     if(value > 150) return "超出最大限定学时";
+            // },
+            // scoreVerify:function(value,item){
+            //     if(null==value || value=="") return "必填字段不能为空";
+            //     if(value < 0) return "小于最小限定学分";
+            //     if(value > 99) return "超出最大限定学分";
+            // },
+            // remarkVerify:function(value,item){
+            //     if(value.length > 100) return "超出最大限定字数";
+            // },
+            // unitNameVerify:function(value,item){
+            //     if(null==value || value=="") return "必填字段不能为空";
+            //     if(value > 100) return "发证机构名超过最大限定长度100";
+            // }
+        });
+
+        //页面初始化
+        let htmlInit = function () {
+            // getScoreLevel();
+            // getHoldType();
+            // getTwoKnowledge();
+            getPersonInfo();
+            formInit();
+            bindAllBtn();
+            getConfig();
+        }
+
+        htmlInit();
+
+    });
+
+</script>
+</body>
+
+</html>

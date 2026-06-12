@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>院内活动学分审核-单位</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+        media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../../../js/jquery-3.5.1.min.js"></script>
+    <script src="../../../../js/common.js"></script>
+    <script type="text/javascript" src="../../../../js/global_ajax_setting.js"></script>
+
+    <style>
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+        .condition-area .layui_display:nth-child(1) {
+            margin-right: 15px;
+        }
+
+        .condition-area .layui_display:nth-child(1) .layui-inline {
+            margin-top: 5px;
+        }
+
+        .condition-area .layui_display:nth-child(2) .layui-btn {
+            width: 75px;
+        }
+
+        .layui-form-label {
+            padding:9px 5px;
+            width: 90px;
+        }
+    </style>
+</head>
+
+<body style="background: #fff;">
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+
+            <!-- 搜索框区域 -->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area"
+                lay-filter="searchForQualifiedPersonnel" style="background: #f5f5f5;">
+                <div class="layui_mess">
+                    <div class="layui_display">
+                        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md3">
+                            <label class="layui-form-label">姓名</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="title" id="person_name" placeholder="输入姓名" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md3">
+                            <label class="layui-form-label">学员编号</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="title" id="person_no" placeholder="输入学员编号" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md3">
+                            <label class="layui-form-label">职称</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="title" id="title_id" placeholder="输入职称" autocomplete="off"
+                                    class="layui-input">
+                                <!--                    <select name="title" id="title"></select>-->
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md3">
+                            <label class="layui-form-label">专业</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="specName" id="specName_id" placeholder="输入专业"
+                                    autocomplete="off" class="layui-input">
+                                <!--                    <select name="scoreLevel" id="scoreLevel">-->
+                                <!--                        <option value="">全部</option>-->
+                                <!--                    </select>-->
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md3">
+                            <label class="layui-form-label">所在单位</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="unitId" id="unitId_id" placeholder="所在单位" autocomplete="off"
+                                    class="layui-input">
+                                <!--                    <select name="unitId" id="medicalType">-->
+                                <!--                        <option value="">全部</option>-->
+                                <!--                        <option value="1" selected>西医</option>-->
+                                <!--                        <option value="2">中医</option>-->
+                                <!--                    </select>-->
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md3">
+                            <label class="layui-form-label">科室</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="dept" id="dept_id" placeholder="所在科室" autocomplete="off"
+                                    class="layui-input">
+                                <!--                    <select name="dept" id="dept">-->
+                                <!--                        <option value="">全部</option>-->
+                                <!--                    </select>-->
+                            </div>
+                        </div>
+                        <!-- <div class="layui-inline">
+                            <label class="layui-form-label">人脸识别是否通过</label>
+                            <div class="layui-input-block" style="margin-top: 8px;">
+                                <select name="faceRecognition" id="faceRecognition_id">
+                                    <option value="">全部</option>
+                                    <option value=true>是</option>
+                                    <option value=false>否</option>
+                                </select>
+                            </div>
+                        </div> -->
+                        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md3">
+                            <label class="layui-form-label">是否评价项目</label>
+                            <div class="layui-input-block" >
+                                <select name="projectEvaluation" id="projectEvaluation_id">
+                                    <option value="">全部</option>
+                                    <option value=true>是</option>
+                                    <option value=false>否</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md3">
+                            <label class="layui-form-label">是否考试通过</label>
+                            <div class="layui-input-block" >
+                                <select name="passTheExam" id="passTheExam_id">
+                                    <option value="">全部</option>
+                                    <option value=true>是</option>
+                                    <option value=false>否</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md3">
+                            <label class="layui-form-label">流程状态</label>
+                            <div class="layui-input-block" >
+                                <select name="flowChainState" id="flowChainState">
+                                    <option value="">全部</option>
+                                    <option value=-1>未提交</option>
+                                    <optgroup label="单位节点">
+                                        <option value=20 >待单位审核</option>
+                                        <option value=23 >单位审核通过</option>
+                                        <option value=21 >单位退回</option>
+                                        <option value=22 >单位审核不通过</option>
+                                    </optgroup>
+                                    <optgroup label="区县节点">
+                                        <option value=30 >待区县审核</option>
+                                        <option value=33 >区县审核通过</option>
+                                        <option value=31 >区县退回</option>
+                                        <option value=32 >区县审核不通过</option>
+                                    </optgroup>
+                                    <optgroup label="地市节点">
+                                        <option value=40 >待地市审核</option>
+                                        <option value=43 >地市审核通过</option>
+                                        <option value=41 >地市退回</option>
+                                        <option value=42 >地市审核不通过</option>
+                                    </optgroup>
+                                    <optgroup label="省厅节点">
+                                        <option value=50>待省厅审核</option>
+                                        <option value=53>省厅审核通过</option>
+                                        <option value=51>省厅退回</option>
+                                        <option value=52 >省厅审核不通过</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md3">
+                            <label class="layui-form-label">学分审核状态</label>
+                            <div class="layui-input-block" >
+                                <select name="checkState" id="checkState">
+                                    <option value="" selected>全部</option>
+                                    <option value=0>未审核</option>
+                                    <option value=4>审核中</option>
+                                    <option value=3>审核通过</option>
+                                    <option value=1>审核被退回</option>
+                                    <option value=2>审核不通过</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="layui-inline layui-col-xs6 layui-col-sm6 layui-col-md3">
+                            <label class="layui-form-label">授分模式</label>
+                            <div class="layui-input-block" >
+                                <select name="scoreMode" id="scoreMode" lay-filter="scoreMode">
+                                    <option value="0">全部</option>
+                                    <option value="1">考勤得分</option>
+                                    <option value="2">手工录入</option>
+                                    <option value="7">主讲人授分</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="loaderTable()"
+                                lay-filter="table-search" data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--        表格区域-->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="cmeGroupprojScore" lay-filter="cmeGroupprojScore"
+                    style="margin: 0px 0px;">
+                </table>
+            </div>
+            <!--审核弹出框-->
+            <div id="remark" style=" display:none;text-align: center">
+
+                <form class="layui-form" style="padding: 15px;" id="form-ComDept" lay-filter="add-filter">
+                    <div class="layui-form-item layui-form-text">
+                        <div class="layui-inline">
+                            <textarea type="text" style="width:300px;height:140px;" name="remark" id="remark_id" autocomplete="off"
+                            class="layui-textarea"></textarea>
+                        </div>
+                    </div>
+                    <button type="button" class="layui-btn layui-btn-radius layui-btn-primary" onclick="choose()"
+                        style="display: none">选择</button>
+                </form>
+            </div>
+
+
+            <!--        表格区域-->
+            <!-- <div class="layui-card-body layui_body_box" style="display: none" id="checkReason">
+                <table class="layui-table" id="cmeCheckReason" lay-filter="cmeCheckReason" style="margin: 0px 0px;">
+                </table>
+            </div> -->
+
+        </div>
+
+    </div>
+    <!-- <script type="text/html" id="bar">
+        <a class="layui-btn layui-btn-sm" lay-event="checkPass">审核通过</a>
+        <a class="layui-btn layui-btn-sm" lay-event="checkNoPass">审核不通过</a>
+    </script> -->
+    <script type="text/html" id="bar">
+        <input type="checkbox" id="pageCheckbox" lay-filter="pageCheckbox" title="本页全选"> 
+        <button class="layui-btn layui-btn-sm" lay-event="checkPass">审核通过</button>
+        <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="checkNoPass">审核不通过</button>
+        <a class="layui-btn layui-btn-sm layui-btn-warm" lay-event="returnToModify">退回修改</a>
+    </script>
+        
+    <script type="text/html" id="rowBar">
+        {{# if(d.scoreMode == '考勤得分'){ }}
+        <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="attendanceInfo">考勤详情</a>
+        {{# } }}
+    </script>
+    <script>
+        let downId = getUrlParam("downId");
+        var projectStatus = getUrlParam("status");
+        let data = {}, scoreIds = [];
+        let index;
+        let standardkindId = localStorage.getItem("standardkind-id");
+        const JILIN = "acd09b62-333b-4aee-934f-9ec500a9d46d";
+        const _isJiLin = JILIN == standardkindId;
+       
+        // 全局配置及引入相关的模块
+        layui.config({
+            base: '../../../../js/layui/ext/'
+        }).extend({
+            myTable: 'table'
+        }).use(['table', 'form', 'myTable'], function () {
+            var table = layui.myTable;
+            var form = layui.form;
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var CheckStatusDTOs = [];
+            
+            window.setDefault = function () {
+                switch(projectStatus) {
+                    case -1: 
+                    $("#flowChainState").val("");
+                    $("#checkState").val("");      
+                    break;
+                    case 0: 
+                    $("#flowChainState").val(20);
+                    $("#checkState").val("");      
+                    break;
+                    case 1: 
+                    $("#flowChainState").val("");
+                    $("#checkState").val(1);      
+                    break;
+                    case 2: 
+                    $("#flowChainState").val("");
+                    $("#checkState").val(2);      
+                    break;
+                    case 3: 
+                    $("#flowChainState").val("");
+                    $("#checkState").val(3);      
+                    break;
+
+                }
+
+            }
+            // 表格相关操作
+            // 表格配置
+            window.loaderTable = function () {
+                table.render({
+                    elem: '#cmeGroupprojScore',
+                    url: huayi_projectscore_url + 'cmeGroupProjScore/getList',
+                    title: '学分表',
+                    defaultToolbar: [],
+                    where: {
+                        downId: downId,
+                        personName: $("#person_name").val(),
+                        personNo: $("#person_no").val(),
+                        checkState: $("#checkState").val() === undefined ? null : $("#checkState").val(),
+                        flowChainState: $("#flowChainState").val() === undefined ? null : $("#flowChainState").val(),
+                        title: $("#title_id").val(),
+                        specName: $("#specName_id").val(),
+                        unitName: $("#unitId_id").val(),
+                        deptName: $("#dept_id").val(),
+                        faceRecognition: $("#faceRecognition_id").val(),
+                        projectEvaluation: $("#projectEvaluation_id").val(),
+                        passTheExam: $("#passTheExam_id").val(),
+                        userId: localStorage.getItem("user-id"),
+                        unitId: localStorage.getItem("unit-id"),
+                        scoreMode:  $("#scoreMode").val()
+                    },
+                    cols: [[
+                        {align: 'center',  title: '选择', fixed: 'left',templet: function(d){
+                            let flowUnitUserType = parseInt(d.flowChainState/10);
+                            let flowState = d.flowChainState % 10;
+                            if(d.flowChainId == null) {
+                                return  '<img src="/img/score/disableIcon.png" style="width:20px;" alt="等待学分后台提交" onmouseenter="showTips(this)" onmouseleave="closeTips()">';
+                            } 
+                            if( flowUnitUserType > parseInt(localStorage.getItem('unit-user-type')) && flowState > 0  ) {
+                                return '<img src="/img/score/disableIcon.png" style="width:20px;" alt="上级审核完结" onmouseenter="showTips(this)" onmouseleave="closeTips()">';
+                            }
+                            if( flowUnitUserType > parseInt(localStorage.getItem('unit-user-type')) && (flowState == 0 || flowState == 4 )  ) {
+                                return '<img src="/img/score/disableIcon.png" style="width:20px;" alt="待上级审核" onmouseenter="showTips(this)" onmouseleave="closeTips()">';
+                            }
+                            return `<input type="checkbox" name="layTableCheckbox" lay-skin="primary" value="${d.scoreId}" flowChainId="${d.flowChainId}" flowChainState="${d.flowChainState}" teacherScore="${d.teacherScore}" ><i class="layui-icon"></i>`;
+                        }},
+                        // { align: 'center',  type: 'checkbox', title: '选择' },
+                        { field: 'scoreId', title: '主键:学分编号', sort: true, hide: true },
+                        { field: 'projectId', title: '项目id', sort: true, hide: true },
+                        {
+                            field: 'faceRecognition', title: '人脸识别', sort: true, align: "center", width: 110, fixed: 'left'
+                            , templet: function (d) {
+                                if (d.faceRecognition) {
+                                    return '<i class="layui-icon" style="color: #00B83F">&#xe605;</i>'
+                                } else {
+                                    return '<i class="layui-icon" style="color: red">&#x1006;</i>'
+                                }
+                            }
+                        },
+                        {
+                            field: 'projectEvaluation', title: '评价', width: 80, align: "center", sort: true,hide: _isJiLin, fixed: 'left'
+                            , templet: function (d) {
+                                if (d.projectEvaluation) {
+                                    return '<i class="layui-icon" style="color: #00B83F">&#xe605;</i>'
+                                } else {
+                                    return '<i class="layui-icon" style="color: red">&#x1006;</i>'
+                                }
+                            }
+                        },
+                        {
+                            field: 'passTheExam', title: '考试', width: 80, align: "center", sort: true,hide: _isJiLin, fixed: 'left'
+                            , templet: function (d) {
+                                if (d.passTheExam) {
+                                    return '<i class="layui-icon" style="color: #00B83F">&#xe605;</i>'
+                                } else {
+                                    return '<i class="layui-icon" style="color: red">&#x1006;</i>'
+                                }
+                            }
+                        },
+                        { field: 'personName', title: '学员姓名', align: "center", width: 120, sort: true, fixed: 'left'},
+                        { field: 'unitName', title: '所属单位', align: "center", width: 160, sort: true, fixed: 'left' },
+                        { align: 'center', title: '考勤信息', templet: '#rowBar'},
+                        { field: 'personNo', title: '学员编号', align: "center", width: 160 },
+                        // { field: 'certId', title: '学员身份证号', align: "center", width: 160, sort: true },
+                        { field: 'score', title: '学分', align: "center",  },
+                        { field: 'period', title: '学时', align: "center",  },
+                        { field: 'specName', title: '学员专业', align: "center", sort: true },
+                        { field: 'deptName', title: '所属科室', align: "center", width: 160, sort: true },
+                        { field: 'teachUnitName', title: '授分单位', align: "center", width: 160 },
+                        { field: 'checkUnitName', title: '审核单位', align: "center", width: 160 },
+                        { field: 'checkTime', title: '审核时间', align: "center", width: 190 },
+                        { field: 'scoreMode', title: '授分模式', align: "center", sort: true },
+                        { field: 'attendanceTime', title: '考勤时间', align: "center", width: 190 },
+                        { field: 'attendanceAddress', title: '考勤地址', align: "center", width: 190, sort: true },
+                        { field: 'checkUser', title: '审核账号', align: "center", sort: true },
+                        { field: 'remark', title: '审核说明', align: "center", sort: true },                       
+                        { title: '流程状态', align: "center", sort: true,width:150, templet:function(d){
+                            if(d.flowChainId == null) {
+                                return "未提交";
+                            }
+                            let text = "";
+                            switch(d.flowChainState) {
+                                case 20: text="待单位审核";break;
+                                case 21: text="单位退回";break;
+                                case 22: text="单位审核不通过";break;
+                                case 23: text="单位审核通过";break;
+                                case 30: text="待区县审核";break;
+                                case 31: text="区县退回";break;
+                                case 32: text="区县审核不通过";break;
+                                case 33: text="区县审核通过";break;
+                                case 40: text="待地市审核";break;
+                                case 41: text="地市退回";break;
+                                case 42: text="地市审核不通过";break;
+                                case 43: text="地市审核通过";break;
+                                case 50: text="待省厅审核";break;
+                                case 51: text="省厅退回";break;
+                                case 52: text="省厅审核不通过";break;
+                                case 53: text="省厅审核通过";break;
+                            }
+                            return text;
+                        } },
+                        { field: 'checkStatus', title: '学分审核状态',width:150, align: "center", sort: true }
+                    ]],
+                    toolbar: '#bar',
+                    cellMinWidth: 100,
+                    id: "cmeGroupprojScore",
+                    height: 'full-30',
+                    page: true,
+                    limit: 10,
+                    limits: [10, 50, 100, 150, 200],
+                    parseData: function (res) {
+                        if (res.status != 200) {
+                            layer.msg(res.msg);
+                            return false;
+                        }
+                        return {
+                            "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                            "msg": res.msg, //解析提示文本
+                            "count": res.data.recordsTotal, //解析数据长度
+                            "data": res.data.records, //解析数据列表
+                            "page": res.data.pageNum, //当前页
+                            "limit": res.data.pageSize, //每页条数
+                        }
+
+                    },
+                    done: function (res, curr, count) {
+ 
+                    },
+                    request: {
+                        pageName: 'pageNum', //页码的参数名称，默认：page
+                        limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                    }
+                });
+            };
+
+            // 表格配置
+            window.loaderTableForReason = function () {
+                table.render({
+                    elem: '#cmeCheckReason',
+                    url: huayi_sjwh_url + 'cmeCheckReason',
+                    title: '审核意见列表',
+                    defaultToolbar: [],
+                    where: {
+                        unitId: localStorage.getItem("unit-id") == '{}' ? '' : localStorage.getItem("unit-id")
+                        // unitId: '111111'
+                    },
+                    cols: [[
+                        // {field: 'reasonId', title: '主键', sort: true,hide: true},
+                        // {field: 'unitId', title: '单位', sort: true},
+                        { field: 'reason', title: '说明', sort: true },
+                        // {field: 'addTime', title: '添加时间', sort: true},
+                        // {align: 'center', width: 250, toolbar: '#rowBar', title: '操作', fixed: 'right'}
+                    ]],
+                    // toolbar: '#bar',
+                    cellMinWidth: 100,
+                    id: "cmeCheckReason",
+                    height: 'full-155',
+                    page: false,
+                    limit: 10,
+                    limits: [10, 50, 100, 150, 200],
+                    parseData: function (res) {
+                        return {
+                            "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                            "msg": res.message, //解析提示文本
+                            "data": res.data, //解析数据长度
+                        }
+
+                    },
+                    request: {
+                        pageName: 'pageNum', //页码的参数名称，默认：page
+                        limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                    }
+                });
+            };
+            
+            
+            
+            // 初始化表格
+            loaderTable();
+            loaderTableForReason();
+            // 监听头部新增按钮
+            table.on('toolbar(cmeGroupprojScore)', function (obj) {
+                
+                var $child = $('.layui-table-fixed input[name="layTableCheckbox"]:checked');
+              
+                if ($child.length < 1) {
+                    layer.msg('请选择要操作的人员', { icon: 7, time: 1500 });
+                    return false;
+                }
+                $child.each(function (index, item) {
+                    var checkStatusDTO = {};
+                    checkStatusDTO.businessId = $(item).val();
+                    checkStatusDTO.flowChainId = $(item).attr("flowChainId");
+                    checkStatusDTO.flowChainState = $(item).attr("flowChainState");
+                    checkStatusDTO.beTeacherScore = $(item).attr("teacherScore");
+                    CheckStatusDTOs.push(checkStatusDTO)
+                });
+                data.dataList = CheckStatusDTOs;
+                data.unitId = localStorage.getItem("unit-id") == '{}' ? null : localStorage.getItem("unit-id");
+                data.userName = localStorage.getItem("user-name") == '{}' ? null : localStorage.getItem("user-name");
+                if (obj.event === 'checkPass') {
+                    data.checkStatus = 3;
+                    check();
+                } else if (obj.event === 'checkNoPass') {
+                    data.checkStatus = 2;
+                    layer.open({
+                        type: 1,
+                        title: '审核说明',
+                        content: $('#remark'),
+                        skin: '',
+                        area: ['460px', '300px'],
+                        btn: ['确定', '取消'],
+                        yes: function (index, layero) {
+                            data.checkMemo = $("#remark_id").val();
+                            check();
+                        },
+                        btn2: function (index, layero) {
+                            data = {};
+                            CheckStatusDTOs = [];
+                            layer.closeAll()
+                        }
+                    })
+                } else if (obj.event === 'returnToModify') {
+                    data.checkStatus = 1;
+                    layer.open({
+                        type: 1,
+                        title: '审核说明',
+                        content: $('#remark'),
+                        skin: '',
+                        area: ['460px', '300px'],
+                        btn: ['确定', '取消'],
+                        yes: function (index, layero) {
+                            data.checkMemo = $("#remark_id").val();
+                            check();
+                        },
+                        btn2: function (index, layero) {
+                            data = {};
+                            CheckStatusDTOs = [];
+                            layer.closeAll()
+                        }
+                    })
+                }
+            });
+
+            // 监听行内按钮
+            table.on('tool(cmeGroupprojScore)', function (obj) {
+                var datas = obj.data;
+                if (obj.event === 'edit') {
+                    form.val('add-filter', datas);
+                    layer.open({
+                        type: 1,
+                        title: '修改',
+                        content: $('#add-cmeGroupprojScore'),
+                        skin: '',
+                        area: ['400px', '400px'],
+                    })
+                }
+            });
+            table.on('tool(cmeGroupprojScore)',function (obj) {
+                var comPersonId=obj.data.comPersonId;
+                if (obj.event === 'attendanceInfo'){
+                    layer.open({
+                        title: '考勤详细信息',
+                        content: 'personAttendanceInfo.html?comPersonId='+comPersonId+'&downId='+downId,
+                        type: 2,
+                        area: ['500px', '300px'],
+                    })
+                }
+            })
+
+            form.on('checkbox(pageCheckbox)', function(data){
+                let check = data.elem.checked;
+                if(check) {
+                    $('.layui-table-fixed input[name="layTableCheckbox"]').prop("checked",true);
+                } else {
+                    $('.layui-table-fixed input[name="layTableCheckbox"]').prop("checked",false);
+                }
+                form.render();                
+                
+            });
+
+            // 审核提交数据
+            window.check = function () {
+                CheckStatusDTOs = [];
+                $.ajax({
+                    type: 'post',
+                    url: huayi_projectscore_url + 'cmeGroupProjScore/check',
+                    contentType: 'application/json;charset=UTF-8',
+                    data: JSON.stringify(data),
+                    dataType: 'json',
+                    success: function (res) {
+                        layer.closeAll();
+                        loaderTable();
+                        layer.msg(res.data)
+                        data = {};
+                    },
+                    error: function (res) {
+                        layer.msg("发送请求失败")
+                    }
+                })
+            }
+
+            window.choose = function () {
+                // 获取点击选择的数据并填充到输入框
+                index = layer.open({
+                    type: 2,
+                    title: '选择原因',
+                    content: '../maintenanceOfAuditOpinions/CmeCheckReasonForLayer.html',
+                    skin: '',
+                    area: ['80%', '80%'],
+                })
+            }
+
+            let gLayerIndex;
+            window.showTips = function (curDom){
+                let that = curDom;
+                let msg = $(that).attr('alt');
+                gLayerIndex = layer.tips(msg, that, {
+                    tips: [2, '#808080'],
+                });
+            };
+            window.closeTips = function (){
+                layer.close(gLayerIndex);
+            };
+
+            table.on('row(cmeCheckReason)', function (obj) {
+                console.log(obj.tr) //得到当前行元素对象
+                console.log(obj.data) //得到当前行数据
+                $("#remark_id").val(obj.data.reason);
+                layer.close(index)
+            });
+        });
+
+    </script>
+</body>
+
+</html>

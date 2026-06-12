@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>verify</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="/pages/mod/verify/css/reset.css" media="all">
+    <link rel="stylesheet" href="/pages/mod/verify/css/layout.css" media="all">
+    <!-- 请求路径配置-->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+    <script type="text/javascript" src="/pages/mod/verify/js/rem.js"></script>
+    <script type="text/javascript" src="/pages/mod/verify/js/mock.js"></script>
+</head>
+<div class="box">
+    <div class="main">
+        <div class="main_top_default">
+            <table class="top_tab">
+                <tr>
+                    <td>人员编号</td>
+                    <td id="person_no">-</td>
+                </tr>
+                <tr>
+                    <td>姓&emsp;&emsp;名</td>
+                    <td id="person_name">-</td>
+                </tr>
+                <tr class="only_zhoukou hide">
+                    <td>证&ensp;件&ensp;号</td>
+                    <td id="cert_id">-</td>
+                </tr>
+            </table>
+            <div class="main_list">
+                <ul>
+                    <li>
+                        <b class="dw">单位</b>
+                        <p id="unit_name">-</p>
+                    </li>
+                    <li>
+                        <b class="nd">年度</b>
+                        <p id="year">-</p>
+                    </li>
+                    <li>
+                        <b class="zc">职称</b>
+                        <p id="tittle">-</p>
+                    </li>
+                    <li class="only_zhoukou hide">
+                        <b class="cert_no">证书编号</b>
+                        <p id="cert_no" style="width: 8.6rem;">-</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="main_list_item">
+                <ul>
+                    <li>
+                        <b class="db">达标情况</b>
+                        <p class="bl" id="passResult">-</p>
+                    </li>
+                    <li>
+                        <b class="nd">年度学分合计</b>
+                        <p id="score_total">25.00</p>
+                    </li>
+                    <li class="only_zhoukou hide">
+                        <b class="nd">年度学时合计</b>
+                        <p id="period_total">25.00</p>
+                    </li>
+                    <li class="only2024">
+                        <b class="yi">Ⅰ类学分</b>
+                        <p id="score_i">10.00</p>
+                    </li>
+                    <li class="only2024">
+                        <b class="er">Ⅱ类学分</b>
+                        <p id="score_ii">10.00</p>
+                    </li>
+                    <li class="only2024">
+                        <b class="er">其他学分</b>
+                        <p id="score_other">0.0</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<body>
+</body>
+<script>
+    const _ciphertext = getUrlParamByName('verify');
+    const _pdfType = getUrlParamByName('pdfType');
+    let gAuditPdfVo = auditPdfVoResponseData.data;
+    $(function () {
+        console.info('ciphertext: %s, pdfType: %s', _ciphertext, _pdfType);
+        loadAuditPdfVo();
+    });
+    function loadAuditPdfVo() {
+        let visit = huayi_sjwh_url + 'audit/verify/qrcode/' + _ciphertext + '/' + _pdfType;
+        getAction(visit).then(response => {
+            let jsonRes = response.data;
+            if (jsonRes.success) {
+                gAuditPdfVo = jsonRes.data;
+            }
+        }).catch(error => {
+            console.info('error:加载AuditPdfVo');
+        }).finally(() => {
+            renderAuditPdfVo();
+        });
+    }
+    function renderAuditPdfVo() {
+        let pr;
+        if (0 === gAuditPdfVo.passResult) {
+            pr = "不达标";
+            $("#passResult").removeClass("bl");
+        } else if (1 === gAuditPdfVo.passResult) {
+            pr = "达标";
+        } else {
+            pr = "无达标要求";
+        }
+        if (gAuditPdfVo) {
+            if ('2025'.includes(gAuditPdfVo.cmeYear)) {
+                $('.only2024').hide();
+            }
+            $("#person_no").text(gAuditPdfVo.personNo);
+            $("#person_name").text(gAuditPdfVo.personName);
+            $("#unit_name").text(gAuditPdfVo.unitName);
+            $("#year").text(gAuditPdfVo.cmeYear);
+            $("#tittle").text(gAuditPdfVo.titleName);
+            $("#passResult").text(pr);
+            $("#score_total").text(gAuditPdfVo.totalScore);
+            $("#period_total").text(gAuditPdfVo.totalPeriod);
+            $("#score_i").text(gAuditPdfVo.score1);
+            $("#score_ii").text(gAuditPdfVo.score2);
+            $("#score_other").text(gAuditPdfVo.scoreOth);
+            //
+            let isHenan = 'a6280900-a9c2-11ec-84d6-fa163e9b64fb' === gAuditPdfVo.standardKindId;
+            let isZhoukou = '162500' === gAuditPdfVo.cityUnitId;
+            if (isHenan && isZhoukou) {
+                $('.only_zhoukou').show();
+                $("#cert_id").text(gAuditPdfVo.certId);
+                $("#cert_no").text(gAuditPdfVo.certNo);
+            }
+        }
+    }
+</script>
+<style>
+    .hide {
+        display: none;
+    }
+</style>
+</html>

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+    <meta charset="UTF-8">
+    <title>系统角色</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <link rel="stylesheet" href="../../css/ztree/metroStyle.css" type="text/css">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+<script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="../../js/jquery.ztree.core.js"></script>
+    <script type="text/javascript" src="../../js/jquery.ztree.excheck.js"></script>
+    <script type="text/javascript" src="../../js/jquery.ztree.exedit.js"></script>
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+
+    <style>
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f6f6f6;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #aaa;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #747474;
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: #f6f6f6;
+        }
+
+        .layui-table-cell { /*最后的pic为字段的field*/
+            height: 100%;
+            max-width: 100%;
+        }
+
+        /*IE*/
+        * {
+            scrollbar-arrow-color: #ccc;
+            /*三角箭头的颜色*/
+            scrollbar-face-color: #ddd;
+            /*立体滚动条的颜色*/
+            scrollbar-3dlight-color: #fff;
+            /*立体滚动条亮边的颜色*/
+            scrollbar-highlight-color: #fff;
+            /*滚动条空白部分的颜色*/
+            scrollbar-shadow-color: #fff;
+            /*立体滚动条阴影的颜色*/
+            scrollbar-darkshadow-color: #fff;
+            /*立体滚动条强阴影的颜色*/
+            scrollbar-track-color: #fff;
+            /*立体滚动条背景颜色*/
+            scrollbar-base-color: #fff;
+            /*滚动条的基本颜色*/
+        }
+    </style>
+</head>
+
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!--搜索框区域-->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <blockquote class="layui-form layui-form-item layui-elem-quote one-btn">
+                <div class="layui-inline">
+                    <label class="layui-form-label" >角色名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="roleName" name="roleName" required  lay-verify="required" placeholder="请输入角色名称" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="renderTable()"
+                       lay-filter="LAY-app-order-search" data-type="reload">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn" ></i>查询
+                    </a>
+                </div>
+            </blockquote>
+        </div>
+
+        <!-- 表格区域-->
+        <div class="layui-card-body layui_body_box">
+            <table class="layui-table" id="typeTable" lay-filter="demo" style="margin: 0px 0px;">
+            </table>
+        </div>
+    </div>
+
+    <!-- 弹框内容 -->
+    <div id="score-kind-alert" style=" display:none;text-align: center">
+        <form class="layui-form" style = "padding: 30px;"  id="form1" lay-filter="roleAdd">
+            <div class="layui-form-item" style="display: none">
+                <div class="layui-inline">
+                    <label class="layui-form-label">主键id:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="roleId"  autocomplete="off" class="layui-input" >
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">角色名称:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="roleName" required  lay-verify="required" placeholder="请输入角色名称" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">描述:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="remark" required  lay-verify="required" placeholder="请输入角色描述" autocomplete="off" class="layui-input" defaultVal="50">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="formDemo">提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- 角色菜单绑定-->
+    <div id="role-meun" style=" display:none">
+        <form class="layui-form">
+            <div class="layui-form-item" style="display: none">
+                <label class="layui-form-label">角色id</label>
+                <div class="layui-input-block">
+                    <input class="layui-input" type="text" name="roleId" id="to-role-menu" />
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">选择权限</label>
+                <div class="layui-input-block">
+                    <div id="menu-tree"></div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" type="submit" lay-submit lay-filter="role-menu">提交</button>
+                    <button class="layui-btn layui-btn-primary" type="reset">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div id="unitIds-open" style="display: none">
+        <div>
+            <ul id="test2" class="ztree"></ul>
+        </div>
+    </div>
+
+
+</div>
+
+<script src='../../js/common.js'></script>
+<!--列表工具栏-->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-sm " lay-event="shouquan" onmouseenter="Msg.tip(this,'点击按钮，分配公共菜单权限')">授权</a>
+    <a class="layui-btn layui-btn-sm " lay-event="permission-by-group" onmouseenter="Msg.tip(this,'点击按钮，编辑套级别菜单黑名单、白名单')">套权限</a>
+    <a class="layui-btn layui-btn-sm  layui-btn-normal" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>
+</script>
+<script type="text/html" id="barDemo1">
+    <a class="layui-btn layui-btn-sm" lay-event="add"> <i class="layui-icon">&#xe608;</i> 新增</a>
+</script>
+<!--增加序号列-->
+<script type="text/html" id="rank">
+    {{d.LAY_TABLE_INDEX+1}}
+</script>
+
+<script>
+    layui.config({
+        base: '../../js/layui/ext/'
+    }).extend({
+        authtree: 'authtree'
+    }).use(['table', 'layer', 'form','laypage','authtree'], function () {
+        var table = layui.table;
+        var form=layui.form;
+        var $=layui.jquery;
+        var laypage=layui.laypage;
+        var authtree=layui.authtree;
+
+        window.renderTable = function () {
+            // 表格数据渲染
+            var tableIns=table.render({
+                elem: '#typeTable',
+                url: huayi_permission_url+'comrole',
+                title: '角色表',
+                defaultToolbar: [],
+                where: {roleName: $('#roleName').val()},
+                cols: [[
+                    {field: 'xuhao', title: '序号',  templet: '#rank'},
+                    {field: 'roleId', title: '角色id',hide: true},
+                    {field: 'roleName',   title: '角色名称'},
+                    {field: 'remark',  align: 'center', title: '描述', hide: false},
+                    {field: 'operateUser',  align: 'center',  title: '操作用户', hide: false},
+                    {field: 'addTime',  align: 'center',  title: '添加时间',templet:'<div>{{ layui.util.toDateString(d.addTime, "yyyy-MM-dd HH:mm:ss") }}</div>'},
+                    {field: 'updateTime',  title: '修改时间',templet:'<div>{{ layui.util.toDateString(d.updateTime, "yyyy-MM-dd HH:mm:ss") }}</div>'},
+                    {field: 'cstate', align: 'center',width: 80, title: '状态', templet:
+                            function (d) {
+                                if (d.cstate == 1) {
+                                    return "<div style='background-color: #00B83F;color: black'>正常</div>";
+                                } else {
+                                    return "<div style='background-color: red;color: black'>已删除</div>";
+                                }
+                            }
+                    },
+                    {align: 'center', width: 300, toolbar: '#barDemo', title: '操作'}
+                ]],
+                toolbar: '#barDemo1',
+                cellMinWidth: 100,
+                id: "typeTable",
+                height: 'full-155',
+                page: true,
+                limit: 20,
+                limits: [10, 20, 30, 40, 50],
+                request: {
+                    pageName: 'current',  // 页码的参数名称，默认：page
+                    limitName: 'size'  // 每页数据量的参数名，默认：limit
+                },
+                parseData: function (res) {
+                    return {
+                        "code": res.code, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "count": res.data.total, //解析数据长度
+                        "data": res.data.records //解析数据列表
+                    }
+
+                }
+            });
+        }
+        // 查询按钮执行方法
+        renderTable();
+        //监听头部工具条
+        table.on('toolbar(demo)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+                alert("触发编辑按钮");
+            }else if (obj.event === 'add') {
+                // 清空表单
+                $("#form1")[0].reset();
+                form.render();
+
+                form.val('roleAdd', '');
+                layer.open({
+                    anim: 5,
+                    type:1,
+                    title: '添加角色',
+                    content: $('#score-kind-alert'),
+                    shade: 0,
+                });
+            }
+        });
+
+        //监听行内工具条
+        table.on('tool(demo)', function (obj) {
+            var data = obj.data;
+            // 编辑
+            if (obj.event === 'edit') {
+                layer.open({
+                    skin: 'layui-layer-molv',
+                    type:1,
+                    title: '修改角色信息',
+                    content: $('#score-kind-alert'),
+                    shade: 0,
+                    success: function (layero, index) {
+                        form.val('roleAdd',data);
+                    }
+
+                });
+            }else if(obj.event=== 'del'){
+                // 删除
+                layer.confirm('确定删除数据',{icon: 3, title:'删除提示'}, function(index) {
+                    //do something
+                    $.ajax({
+                        type: 'get',
+                        url: huayi_permission_url+'comrole/deleted',
+                        data: {id: data.roleId},
+                        contentType:'application/json;charset=UTF-8',
+                        dataType: 'json',
+                        success: function (res) {
+                            if(res.code===0){
+                                layer.msg("删除成功");
+                                table.reload('typeTable');
+                            }
+                        }
+                    });
+                    layer.close(index);
+                })
+            }else if(obj.event == 'permission-by-group'){
+                window.location.href = "./roleStandardMenu.html?roleId="+data.roleId+"&roleName="+data.roleName;
+            }else if(obj.event ==='shouquan'){
+                // 授权
+                $("#to-role-menu").val(data.roleId);
+                 // 获取当前已拥有的菜单id
+                var menuAll=[];
+                $.ajax({
+                    type: 'get',
+                    async:false,
+                    url: huayi_permission_url+'comRoleMenu/getGrantMenus',
+                    contentType:'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    data: {roleId:data.roleId},
+                    async: false,
+                    success: function (res) {
+                        for(var j=0;j<res.data.length;j++){
+                            menuAll.push(res.data[j].menuId);
+                        }
+                    }
+                });
+                // 获取所有菜单并渲染
+                $.ajax({
+                    type: 'get',
+                    url: huayi_permission_url+'commenu/list',
+                    contentType:'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    async: false,
+                    success: function (res) {
+                        var trees    = [];
+                        var menuTree = res.data;
+                        for (var i = 0;i < menuTree.length; i++) {
+                            // let menuOne = menuTree[i];
+                            if (menuAll.indexOf(menuTree[i].menuId) !== -1 ) {
+                                menuTree[i]['checked'] = 'checked';
+                            }
+                            // alert(menuTree[i].checked);
+                            menuTree[i]['menuName'] = menuTree[i]['menuName'] + 
+                                    ' （' + menuTree[i]['remark'] + '）';
+                        }
+                        trees = authtree.listConvert(menuTree, {
+                            primaryKey: 'menuId'
+                            ,parentKey: 'parentMenuId'
+                            ,nameKey: 'menuName'
+                            ,valueKey: 'menuId'
+                            ,startPid: '-'
+                        });
+
+                        authtree.render('#menu-tree', trees, {
+                            inputname: 'menuId[]',
+                            layfilter: 'lay-check-auth',
+                            autowidth: true,
+                            openall: false
+                        });
+                    }
+                });
+                layer.open({
+                    skin: 'layui-layer-molv',
+                    type:1,
+                    area: [ '650px', '80%' ],
+                    title: '角色授权',
+                    content: $('#role-meun'),
+                    // shade: 0,
+                    // success: function (layero, index) {
+                    // }
+                });
+            }
+        });
+
+        var menuTree=[];
+        // 添加也填充父级菜单下拉框
+        $().ready(function () {
+            $.ajax({
+                url: huayi_permission_url+'commenu/list',
+                success: function (res) {
+                    if (res.data.length>0) {
+                        menuTree=res.data;
+
+                        var trees=authtree.listConvert('#LAY-auth-tree-index',menuTree,{
+                            primaryKey: 'menuId',
+                            parentKey: 'parentMenuId',
+                            nameKey: 'menuName',
+                            valueKey: 'menuId',
+                            startPid: ''
+                        });
+
+                        authtree.render('#LAY-auth-tree-index', trees, {
+                            inputname: 'authids[]',
+                            layfilter: 'lay-check-auth',
+                            autowidth: true,
+                        });
+                    }
+                }
+            });
+        });
+
+
+        form.on('submit(formDemo)',function (data) {
+            var URL;
+            var aa=$("input[name='roleId']").val();
+            if(aa==null || aa==''){
+                URL=huayi_permission_url+'comrole'
+            }else{
+                URL=huayi_permission_url+'comrole/update'
+            }
+            var datas=JSON.stringify(data.field);
+            $.ajax({
+                type: 'post',
+                url: URL,
+                data: datas,
+                contentType:'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    $("input[name='roleId']").setvalue("");
+                },
+                error: function () {
+                    alert('发送请求失败');
+                }
+            })
+        });
+
+
+        // 角色授权请求
+        form.on('submit(role-menu)',function (data) {
+            $.ajax({
+                async:false,
+                type: 'post',
+                url: huayi_permission_url+'comRoleMenu/add',
+                contentType:'application/json;charset=UTF-8',
+                dataType: 'json',
+                data: JSON.stringify(data.field),
+                success: function (res) {
+                    //console.log(res);
+                    layer.msg("授权成功");
+                }
+            });
+        })
+    });
+
+
+</script>
+
+</body>
+
+</html>

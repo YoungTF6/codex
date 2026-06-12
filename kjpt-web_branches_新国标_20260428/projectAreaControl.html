@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.0</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="shortcut icon" th:href="@{/static/images/huayi1.jpg}" type="image/x-icon"/>
+    <link rel="stylesheet" th:href="@{/static/css/font.css}">
+    <script type="text/javascript" th:src="@{/static/js/jquery.js}"></script>
+    <script th:src="@{/static/layui/layui.js}" charset="utf-8"></script>
+    <script type="text/javascript" th:src="@{/static/js/xadmin.js}"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f6f6f6;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #aaa;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #747474;
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: #f6f6f6;
+        }
+
+        .layui-table-cell { /*最后的pic为字段的field*/
+            height: 100%;
+            max-width: 100%;
+        }
+
+        /*IE*/
+        * {
+            scrollbar-arrow-color: #ccc;
+            /*三角箭头的颜色*/
+            scrollbar-face-color: #ddd;
+            /*立体滚动条的颜色*/
+            scrollbar-3dlight-color: #fff;
+            /*立体滚动条亮边的颜色*/
+            scrollbar-highlight-color: #fff;
+            /*滚动条空白部分的颜色*/
+            scrollbar-shadow-color: #fff;
+            /*立体滚动条阴影的颜色*/
+            scrollbar-darkshadow-color: #fff;
+            /*立体滚动条强阴影的颜色*/
+            scrollbar-track-color: #fff;
+            /*立体滚动条背景颜色*/
+            scrollbar-base-color: #fff;
+            /*滚动条的基本颜色*/
+        }
+    </style>
+</head>
+
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <blockquote class="layui-form layui-form-item layui-elem-quote one-btn">
+                <div class="layui-inline">
+                    <label class="layui-form-label">人员状态</label>
+                    <div class="layui-input-block">
+                        <select name="applyyearid" id="applyyearid">
+                            <option value="">全部</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">查询项</label>
+                    <div class="layui-input-block">
+                        <select name="applyyearid" id="applyyearid">
+                            <option value="">全部</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">包含</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="projectname" name="projectname" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">科室</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="projectname" name="projectname" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="renderTable()"
+                       lay-filter="LAY-app-order-search"
+                       data-type="reload">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                    </a>
+                </div>
+                <!-- <div class="layui-inline">
+                    <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加项目','./toProjectAreaAdd')">添加</button>
+                </div> -->
+            </blockquote>
+        </div>
+        <div class="layui-card-body layui_body_box">
+            <table class="layui-table" id="typeTable" lay-filter="demo" style="margin: 0px 0px;">
+            </table>
+        </div>
+    </div>
+
+
+</div>
+
+
+
+<script src="js/axios.min.js"></script>
+<script src="js/auth.js"></script>
+
+
+<!--判断自定义列模板-->
+<script type="text/html" id="stateTpl">
+    {{#  if(d.cstate == 1){ }}
+    可用
+    {{#  } else { }}
+    不可用
+    {{#  } }}
+</script>
+
+
+<!--列表工具栏-->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+</script>
+
+
+<script>
+    layui.use(['table', 'layer', 'form'], function () {
+        var table = layui.table;
+
+
+        window.renderTable = function () {
+            var tableIns = table.render({
+                elem: '#typeTable',
+                // url: '/projectarea/getProjectArea',
+                toolbar: true,
+                defaultToolbar: ["filter","exports","print"],
+                title: '课程类型列表',
+                cols: [[
+                    {field: 'row', width: 100, align: 'center', fixed: 'left', title: '姓名'},
+                    {field: 'area_name', width: 150, align: 'center',fixed: 'left', title: '性别'},
+                    {field: 'jsqx_project_area_id', width: 180, align: 'center', title: '科室'},
+                    {field: 'project_name', width: 170, align: 'center', title: '当前职称'},
+                    {field: 'cstate', width: 200, align: 'center', title: '专业'},
+                    {field: 'insert_time', width: 200, align: 'center', title: '人员状态'},
+                    {field: 'username', width: 200, align: 'center', title: '用户名'},
+                    {field: 'password', width: 200, align: 'center', title: '密码'},
+                    {align: 'center', width: 150, fixed: 'right', toolbar: '#barDemo', title: '操作'}
+                ]],
+                data: [{
+      "row": "张三"
+      ,"area_name": "男"
+      ,"jsqx_project_area_id": "外科"
+      ,"project_name": "主任"
+      ,"cstate": "专业A"
+      ,"insert_time": "状态A"
+      ,"username": "zhangsan"
+      ,"password": "qwe123"
+    },{
+      "row": "李四"
+      ,"area_name": "女"
+      ,"jsqx_project_area_id": "内科"
+      ,"project_name": "副主任"
+      ,"cstate": "专业B"
+      ,"insert_time": "状态B"
+      ,"username": "lisi"
+      ,"password": "qwe123"
+    },{
+      "row": "张三"
+      ,"area_name": "男"
+      ,"jsqx_project_area_id": "外科"
+      ,"project_name": "主任"
+      ,"cstate": "专业A"
+      ,"insert_time": "状态A"
+      ,"username": "zhangsan"
+      ,"password": "qwe123"
+    },{
+      "row": "李四"
+      ,"area_name": "女"
+      ,"jsqx_project_area_id": "内科"
+      ,"project_name": "副主任"
+      ,"cstate": "专业B"
+      ,"insert_time": "状态B"
+      ,"username": "lisi"
+      ,"password": "qwe123"
+    },{
+      "row": "张三"
+      ,"area_name": "男"
+      ,"jsqx_project_area_id": "外科"
+      ,"project_name": "主任"
+      ,"cstate": "专业A"
+      ,"insert_time": "状态A"
+      ,"username": "zhangsan"
+      ,"password": "qwe123"
+    },{
+      "row": "李四"
+      ,"area_name": "女"
+      ,"jsqx_project_area_id": "内科"
+      ,"project_name": "副主任"
+      ,"cstate": "专业B"
+      ,"insert_time": "状态B"
+      ,"username": "lisi"
+      ,"password": "qwe123"
+    },{
+      "row": "张三"
+      ,"area_name": "男"
+      ,"jsqx_project_area_id": "外科"
+      ,"project_name": "主任"
+      ,"cstate": "专业A"
+      ,"insert_time": "状态A"
+      ,"username": "zhangsan"
+      ,"password": "qwe123"
+    },{
+      "row": "李四"
+      ,"area_name": "女"
+      ,"jsqx_project_area_id": "内科"
+      ,"project_name": "副主任"
+      ,"cstate": "专业B"
+      ,"insert_time": "状态B"
+      ,"username": "lisi"
+      ,"password": "qwe123"
+    },{
+      "row": "张三"
+      ,"area_name": "男"
+      ,"jsqx_project_area_id": "外科"
+      ,"project_name": "主任"
+      ,"cstate": "专业A"
+      ,"insert_time": "状态A"
+      ,"username": "zhangsan"
+      ,"password": "qwe123"
+    },{
+      "row": "李四"
+      ,"area_name": "女"
+      ,"jsqx_project_area_id": "内科"
+      ,"project_name": "副主任"
+      ,"cstate": "专业B"
+      ,"insert_time": "状态B"
+      ,"username": "lisi"
+      ,"password": "qwe123"
+    },{
+      "row": "张三"
+      ,"area_name": "男"
+      ,"jsqx_project_area_id": "外科"
+      ,"project_name": "主任"
+      ,"cstate": "专业A"
+      ,"insert_time": "状态A"
+      ,"username": "zhangsan"
+      ,"password": "qwe123"
+    },{
+      "row": "李四"
+      ,"area_name": "女"
+      ,"jsqx_project_area_id": "内科"
+      ,"project_name": "副主任"
+      ,"cstate": "专业B"
+      ,"insert_time": "状态B"
+      ,"username": "lisi"
+      ,"password": "qwe123"
+    },{
+      "row": "张三"
+      ,"area_name": "男"
+      ,"jsqx_project_area_id": "外科"
+      ,"project_name": "主任"
+      ,"cstate": "专业A"
+      ,"insert_time": "状态A"
+      ,"username": "zhangsan"
+      ,"password": "qwe123"
+    },{
+      "row": "李四"
+      ,"area_name": "女"
+      ,"jsqx_project_area_id": "内科"
+      ,"project_name": "副主任"
+      ,"cstate": "专业B"
+      ,"insert_time": "状态B"
+      ,"username": "lisi"
+      ,"password": "qwe123"
+    },{
+      "row": "张三"
+      ,"area_name": "男"
+      ,"jsqx_project_area_id": "外科"
+      ,"project_name": "主任"
+      ,"cstate": "专业A"
+      ,"insert_time": "状态A"
+      ,"username": "zhangsan"
+      ,"password": "qwe123"
+    },{
+      "row": "李四"
+      ,"area_name": "女"
+      ,"jsqx_project_area_id": "内科"
+      ,"project_name": "副主任"
+      ,"cstate": "专业B"
+      ,"insert_time": "状态B"
+      ,"username": "lisi"
+      ,"password": "qwe123"
+    },{
+      "row": "张三"
+      ,"area_name": "男"
+      ,"jsqx_project_area_id": "外科"
+      ,"project_name": "主任"
+      ,"cstate": "专业A"
+      ,"insert_time": "状态A"
+      ,"username": "zhangsan"
+      ,"password": "qwe123"
+    },{
+      "row": "李四"
+      ,"area_name": "女"
+      ,"jsqx_project_area_id": "内科"
+      ,"project_name": "副主任"
+      ,"cstate": "专业B"
+      ,"insert_time": "状态B"
+      ,"username": "lisi"
+      ,"password": "qwe123"
+    }]
+    //,skin: 'line' //表格风格
+    //,even: true,
+    //,page: true //是否显示分页
+    // ,limits: [5, 7, 10]
+    // ,limit: 5, //每页默认显示的数量
+
+                ,page: true,
+                id: "typeTable",
+                // where: {
+                //     search_project_name: $("#search_project_name").val()
+                // },
+                height: 'full-155',
+                // done: function () {
+                //     $("[data-field='jsqx_project_area_id']").css('display', 'none');
+                // }
+            });
+        };
+        renderTable();
+
+
+        //监听工具条
+        table.on('tool(demo)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'detail') {
+                layer.msg('ID：' + data.id + ' 的查看操作');
+            } else if (obj.event === 'del') {
+                layer.confirm('确定删除该轮播图吗', function (index) {
+                    obj.del();
+                    layer.close(index);
+                    $.ajax({
+                        type: "post",
+                        url: "/type/deleteType",
+                        data: {
+                            type_id: data.id
+                        },
+                        success: function (data) {
+                            if (data == 1) {
+                                layer.alert("删除成功");
+                                $(obj).parents("tr").remove();
+                            } else {
+                                layer.alert("删除失败,请联系管理员");
+                            }
+                        }
+                    })
+
+                });
+            } else if (obj.event === 'edit') {
+                x_admin_show('编辑', '/projectarea/toProjectAreaEdit?jsqx_project_area_id=' + data.jsqx_project_area_id)
+            }
+        });
+
+    });
+
+
+</script>
+
+
+</body>
+
+</html>

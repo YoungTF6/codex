@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+
+    <link rel="stylesheet" href="../../../css/person/reset.css" />
+    <link rel="stylesheet" href="../../../css/person/style.css" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <!-- <script type="text/javascript" src="../../js/global_ajax_setting.js"></script> -->
+
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+    <style>
+        .ztree li span.button {
+            vertical-align: inherit !important;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body" style="margin:0 auto;">
+                <div class="layui-form" lay-filter="qualityForm">
+
+                    <input type="hidden" id="projContractQualityId" name="projContractQualityId" />
+                    <input type="hidden" id="projContractId" name="projContractId" />
+
+                    <fieldset class="layui-elem-field" style="margin-top: 10px; padding: 30px;">
+                        <legend style="color:rgba(235, 39, 39, 0.514);text-align: left;font-weight: bold; font-size: 18px;;">
+                            培训过程管理</legend>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="padding:9px 0px; width:100px;">学员考勤方式:</label>
+                                <div class="layui-input-block">
+                                    <input type="checkbox" name="attendanceType" value="纸质签到" title="纸质签到" lay-verify="checkboxChecked">
+                                    <input type="checkbox" name="attendanceType" value="网络签到" title="网络签到" lay-verify="checkboxChecked">
+                                    <input type="checkbox" name="attendanceType" value="其他" title="其他" lay-verify="checkboxChecked">
+                                </div>
+
+                            </div>
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <input type="text" name="attendanceTypeOther" class="layui-input">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="padding:9px 0px;width:100px;">考勤抽查次数:</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="spotCheckTime" name="spotCheckTime" autocomplete="off" class="layui-input"  lay-verify="required|number"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline" style="width:50%">
+                                <label class="layui-form-label" style="padding:9px 9px;width:120px;">其中随机抽查次数:</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="spotCheckTimeRandom" name="spotCheckTimeRandom" autocomplete="off" class="layui-input" lay-verify="required|number"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline" style="margin-top: 6px; width: 100%;">
+                                <label class="layui-form-label" style="width:100px;"></label>
+                                <div class="layui-input-block" style="color: #FF5722;">
+                                    考勤抽查次数填写规则说明：注 1-3学分项目，考勤2-4次；4-6学分项目，考勤4-8次；7-10学分项目，考勤8-10次（建议每半天为一个单元进行签到和签退）
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="padding:9px 0px; width:100px;">学员考核方式:</label>
+                                <div class="layui-input-block">
+                                    <input type="radio" name="checkType" value="纸质试卷考核" title="纸质试卷考核"  lay-verify="radioChecked">
+                                    <input type="radio" name="checkType" value="网络试卷考试" title="网络试卷考试" lay-verify="radioChecked">
+                                    <input type="radio" name="checkType" value="操作考核" title="操作考核" lay-verify="radioChecked">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+
+                            <label class="layui-form-label">考核内容:</label>
+                            <div class="layui-input-block">
+                                <textarea class="layui-textarea" rows="4" name="checkContent" id="checkContent" style="width:50%" lay-verify="required"></textarea>
+                            </div>
+
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="layui-elem-field" style="margin-top: 10px; padding: 30px;">
+                        <legend style="color:rgba(235, 39, 39, 0.514);text-align: left;font-weight: bold; font-size: 18px;;">
+                            授课老师评价</legend>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="padding:9px 0px; width:100px;">授课老师评价:</label>
+                                <div class="layui-input-block">
+                                    <input type="checkbox" name="teacherEvaluationContent" value="学员反馈" title="学员反馈" lay-verify="checkboxChecked">
+                                    <input type="checkbox" name="teacherEvaluationContent" value="课件质量" title="课件质量 "  lay-verify="checkboxChecked">
+                                    <input type="checkbox" name="teacherEvaluationContent" value="授课方式" title="授课方式"  lay-verify="checkboxChecked">
+                                    <input type="checkbox" name="teacherEvaluationContent" value="其他" title="其他"  lay-verify="checkboxChecked"> 
+                                </div>
+
+                            </div>
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <input type="text"  class="layui-input" id="teacherEvaluationContentOther" name="teacherEvaluationContentOther" >
+                                </div>
+                            </div>
+                        </div>
+
+                    </fieldset>
+
+                    <fieldset class="layui-elem-field" style="margin-top: 10px; padding: 30px;">
+                        <legend style="color:rgba(235, 39, 39, 0.514);text-align: left;font-weight: bold; font-size: 18px;;">
+                            学员对项目的评价</legend>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline" style="width:90%">
+                                <label class="layui-form-label" style="padding:9px 4px;width:120px;">学员对项目的评价:</label>
+                                <div class="layui-input-block">
+                                    <input type="checkbox" name="studentEvaluationContent" value="对项目学习的收获" title="对项目学习的收获"  lay-verify="checkboxChecked">
+                                    <input type="checkbox" name="studentEvaluationContent" value="对授课教师讲授内容满意度" title="对授课教师讲授内容满意度"  lay-verify="checkboxChecked">
+                                    <input type="checkbox" name="studentEvaluationContent" value="对项目的教学计划安排满意度" title="对项目的教学计划安排满意度"  lay-verify="checkboxChecked">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <div class="layui-input-block">
+                                    <input type="checkbox" name="studentEvaluationContent" value="对教学教材的满意度" title="对教学教材的满意度"  lay-verify="checkboxChecked">
+                                    <input type="checkbox" name="studentEvaluationContent" value="学习收获" title="学习收获"  lay-verify="checkboxChecked">
+                                    <input type="checkbox" name="studentEvaluationContent" value="其他" title="其他"  lay-verify="checkboxChecked">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <input type="text" name="studentEvaluationContentOther" class="layui-input">
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </fieldset>
+
+                    <fieldset class="layui-elem-field" style="margin-top: 10px; padding: 30px;">
+                        <legend style="color:rgba(235, 39, 39, 0.514);text-align: left;font-weight: bold; font-size: 18px;;">
+                            学员反馈方式</legend>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="padding:9px 0px;width:100px;">学员反馈方式:</label>
+                                <div class="layui-input-block">
+                                    <input type="radio" name="studentEvaluationType" value="纸质问卷调查" title="纸质问卷调查" lay-verify="radioChecked"> 
+                                    <input type="radio" name="studentEvaluationType" value="网络问卷调查" title="网络问卷调查" lay-verify="radioChecked">
+                                    <input type="radio" name="studentEvaluationType" value="现场口头反馈" title="现场口头反馈" lay-verify="radioChecked">
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </fieldset>
+
+                    <fieldset class="layui-elem-field" style="margin-top: 10px; padding: 30px;">
+                        <legend style="color:rgba(235, 39, 39, 0.514);text-align: left;font-weight: bold; font-size: 18px;;">
+                            培训预期效果</legend>
+
+                        <div class="layui-form-item">
+
+                            <label class="layui-form-label" style="padding:9px 0px;width:100px;">培训预期效果:</label>
+                            <div class="layui-input-block">
+                                <textarea class="layui-textarea" rows="4" style="width:50%" name="trainExpectEffect" id="trainExpectEffect" lay-verify="required"></textarea>
+                            </div>
+
+
+                        </div>
+                    </fieldset>
+
+                    <div class="layui-btn-container" style="text-align: center">
+                        <button class="layui-btn layui-btn-primary" id="btnCancel">返回列表</button>
+                        <button type="submit" class="layui-btn" lay-submit="" lay-filter="btnSave" id="btnSave">保存本页</button>
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
+
+
+<script>
+
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+
+    });
+
+    layui.use(['form', 'jquery', 'layer', "laydate"], function () {
+        var $ = layui.jquery;
+        var form = layui.form;
+        var layer = layui.layer;
+        var laydate = layui.laydate;
+
+        var projId = parent.window["projId"];
+        var downId = parent.window["downId"];
+        window.getProjContractId = function() {
+            return parent.window["projContractId"];
+        }
+        var projContractId = getProjContractId();
+        var oper = parent.window["oper"];
+        var main = layui.sessionData("projContract")["main"];
+
+        var commonObj = {
+            get projContractId() { return getProjContractId(); },
+            projId: projId,
+            downId: downId,
+            userCreate: localStorage.getItem("user-name"),
+            userUpdate: localStorage.getItem("user-name")
+        }
+        // 缓存项目简介中的“实际授予学分数”，用于提交前校验考勤抽查次数
+        var currentScoreFact = null;
+
+        // 读取项目简介页保存的实际授予学分数（scoreFact）
+        function getScoreFactValue(callback) {
+            if (!projContractId) {
+                callback(null);
+                return;
+            }
+            var url = huayi_projectscore_url + `cmeProjContract/projContractPartInfo/${projContractId}/CmeProjContractProjInfo`;
+            $.ajax({
+                url: url,
+                type: "get",
+                success: function (res) {
+                    if (res.success && res.data && res.data.cmeProjContractProjInfo) {
+                        callback(res.data.cmeProjContractProjInfo.scoreFact);
+                        return;
+                    }
+                    callback(null);
+                },
+                error: function () {
+                    callback(null);
+                }
+            });
+        }
+
+        // 根据学分区间返回考勤抽查次数最低要求
+        function getMinSpotCheckTimeByScore(scoreFact) {
+            var score = parseFloat(scoreFact);
+            if (isNaN(score)) return null;
+            if (score < 4) return 2;
+            if (score >= 4 && score < 7) return 4;
+            if (score >= 7 ) return 8;
+            return null;
+        }
+
+        // 校验考勤抽查次数是否满足学分对应的最低次数要求
+        function validateSpotCheckTimeByScore(spotCheckTime, scoreFact) {
+            var minSpotCheck = getMinSpotCheckTimeByScore(scoreFact);
+            if (minSpotCheck == null) {
+                return true;
+            }
+            var spotCheck = parseFloat(spotCheckTime);
+            if (isNaN(spotCheck)) {
+                return false;
+            }
+            return spotCheck >= minSpotCheck;
+        }
+
+        window.getUnitId = function () {
+            return localStorage.getItem("unit-id");
+        }
+        window.getCmeStandardKindId = function () {
+            return localStorage.getItem("standardkind-id");
+        }
+
+        window.initAll = function () {
+            if (oper == "details") {
+                $(".layui-form").find("input").prop("disabled", "disabled").addClass("layui-disabled");
+                $(".layui-form").find("checkbox").prop("disabled", "disabled").addClass("layui-disabled");
+                $(".layui-form").find("select").prop("disabled", "disabled").addClass("layui-disabled");
+                $(".layui-form").find("textArea").prop("disabled", "disabled").addClass("layui-disabled");
+                $("#btnSave").hide();
+            }
+        }
+
+        window.getQualityData = function () {
+            if (projContractId != null && projContractId != "") {
+                let url = huayi_projectscore_url + `cmeProjContract/projContractPartInfo/${projContractId}/CmeProjContractQuality`;
+                $.ajax({
+                    url: url,
+                    type: "get",
+                    success: function (res) {
+                        if (res.success) {
+                            let cmeProjContractQuality = res.data.cmeProjContractQuality;
+                            if (cmeProjContractQuality != null) {
+
+
+                                // 勿将多选字段交给 form.val：Layui 对 checkbox 组用字符串赋值会误匹配多项（如「网络签到」会同时勾选含「签到」的项）
+                                var qualityFormVals = $.extend({}, cmeProjContractQuality);
+                                delete qualityFormVals.attendanceType;
+                                delete qualityFormVals.teacherEvaluationContent;
+                                delete qualityFormVals.studentEvaluationContent;
+                                form.val("qualityForm", qualityFormVals);
+
+                                function applyPipeSeparatedChecks(name, raw) {
+                                    var $boxes = $('input[name="' + name + '"]');
+                                    $boxes.prop("checked", false);
+                                    if (!raw || typeof raw !== "string") {
+                                        return;
+                                    }
+                                    var parts = raw.split("|").map(function (s) { return $.trim(s); }).filter(function (s) { return s.length > 0; });
+                                    $boxes.each(function () {
+                                        var $input = $(this);
+                                        if (parts.indexOf($input.val()) !== -1) {
+                                            $input.prop("checked", true);
+                                        }
+                                    });
+                                }
+                                applyPipeSeparatedChecks("attendanceType", cmeProjContractQuality.attendanceType);
+                                applyPipeSeparatedChecks("teacherEvaluationContent", cmeProjContractQuality.teacherEvaluationContent);
+                                applyPipeSeparatedChecks("studentEvaluationContent", cmeProjContractQuality.studentEvaluationContent);
+                                form.render();
+                            }
+                            getScoreFactValue(function (scoreFact) {
+                                debugger
+                                currentScoreFact = scoreFact;
+                                var minSpotCheck = getMinSpotCheckTimeByScore(scoreFact);
+                                if (oper != "details" && !$("#spotCheckTime").val() && minSpotCheck != null) {
+                                    $("#spotCheckTime").val(minSpotCheck);
+                                    form.render('input');
+                                }
+                            });
+
+                        } else {
+                            layer.msg(res.msg, { icon: 2 });
+                        }
+                    },
+                    error: function (res) {
+                        layer.msg("发送数据失败", { icon: 2 });
+                    }
+                });
+            }
+        }
+
+        form.on('submit(btnSave)', function (data) {
+            debugger
+            if (!validateSpotCheckTimeByScore(data.field.spotCheckTime, currentScoreFact)) {
+                layer.msg("考勤抽查次数不满足要求，请重新设置。", { icon: 2 });
+                return false;
+            }
+
+            //attendanceType teacherEvaluationContent studentEvaluationContent
+            let attendanceTypes = "";
+            let teacherEvaluationContents = "";
+            let studentEvaluationContents = "";
+
+            $('input[name="attendanceType"]:checked').each(function () {
+                attendanceTypes += $(this).val() + "|";
+            });
+            $('input[name="teacherEvaluationContent"]:checked').each(function () {
+                teacherEvaluationContents += $(this).val() + "|";
+            });
+            $('input[name="studentEvaluationContent"]:checked').each(function () {
+                studentEvaluationContents += $(this).val() + "|";
+            });
+            data.field.attendanceType = attendanceTypes.substring(0, (attendanceTypes.length - 1));
+            data.field.teacherEvaluationContent = teacherEvaluationContents.substring(0, (teacherEvaluationContents.length - 1));
+            data.field.studentEvaluationContent = studentEvaluationContents.substring(0, (studentEvaluationContents.length - 1));
+
+            let url = huayi_projectscore_url + `cmeProjContract/projContractPartInfo/${projContractId}/CmeProjContractQuality`;
+            let qualityData = { ...data.field, ...commonObj };
+            let submitData = { "cmeProjContractQuality": qualityData };
+
+            $.ajax({
+                url: url,
+                data: JSON.stringify(submitData),
+                type: "post",
+                contentType: "application/json",
+                dataType: "json",
+                success: function (res) {
+                    if (res.success) {
+
+                        layer.msg("保存成功", { icon: 1 });
+                        parent.getFullFlag('CmeProjContractQuality');
+
+                    } else {
+                        layer.msg(res.msg, { icon: 2 });
+                    }
+                },
+                error: function () {
+                    layer.msg("发送数据失败", { icon: 2 });
+                }
+            });
+            return false;
+        });
+
+        form.verify({
+
+            checkboxChecked: function (value, item) {
+                var $ = layui.$;
+                var verifyName = $(item).attr('name')
+                    , verifyType = $(item).attr('type')
+                    , formElem = $(item).parents('.layui-form')//获取当前所在的form元素，如果存在的话
+                    //,verifyElem=formElem.find('input[name='+verifyName+']')//获取需要校验的元素
+                    , verifyElem = formElem.find("input[name='" + verifyName + "']")//获取需要校验的元素
+                    , isTrue = verifyElem.is(':checked')//是否命中校验
+                    , focusElem = verifyElem.next().find('i.layui-icon');//焦点元素
+                if (!isTrue || !value) {
+                    //定位焦点
+                    focusElem.css(verifyType == 'checkbox' ? { "color": "#FF5722" } : { "border-color": "#FF5722" });
+                    //对非输入框设置焦点
+                    focusElem.first().attr("tabIndex", "1").css("outline", "0").blur(function () {
+                        focusElem.css(verifyType == 'checkbox' ? { "color": "" } : { "border-color": "" });
+                    }).focus();
+                    return '必填项不能为空';
+                }
+            },
+
+            radioChecked: function (value, item) {
+                var $ = layui.$;
+                var verifyName = $(item).attr('name')
+                    , verifyType = $(item).attr('type')
+                    , formElem = $(item).parents('.layui-form')//获取当前所在的form元素，如果存在的话
+                    //,verifyElem=formElem.find('input[name='+verifyName+']')//获取需要校验的元素
+                    , verifyElem = formElem.find("input[name='" + verifyName + "']")//获取需要校验的元素
+                    , isTrue = verifyElem.is(':checked')//是否命中校验
+                    , focusElem = verifyElem.next().find('i.layui-icon');//焦点元素
+                if (!isTrue || !value) {
+                    //定位焦点
+                    focusElem.css(verifyType == 'radio' ? { "color": "#FF5722" } : { "border-color": "#FF5722" });
+                    //对非输入框设置焦点
+                    focusElem.first().attr("tabIndex", "1").css("outline", "0").blur(function () {
+                        focusElem.css(verifyType == 'radio' ? { "color": "" } : { "border-color": "" });
+                    }).focus();
+                    return '必填项不能为空';
+                }
+            }
+
+        });
+
+
+
+
+
+        $("#btnCancel").click(function () {
+            parent.closeLayer();
+        });
+
+        $(function () {
+            window.initAll();
+            getQualityData();
+            form.render();
+        });
+    });
+
+</script>

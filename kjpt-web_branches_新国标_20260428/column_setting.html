@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<!-- best width:535px;
+best height:460px; -->
+
+<head>
+    <meta charset="UTF-8">
+    <title>ColumnSetting</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <script src="js/constant.js?v=1"></script>
+    <script type="text/javascript">
+        (function (doc) {
+            var doc_head = doc.getElementsByTagName('HEAD').item(0);
+
+            let layui_script = doc.createElement("script");
+            layui_script.type = "text/javascript";
+            layui_script.src = LAYUI_V268 + "layui/layui.js";
+            layui_script.onload = function () {
+                layui.config({
+                    base: 'js/'
+                }).use(['jquery', 'layer', 'transfer', 'dragSort','cookie'], function () {
+                    let $ = layui.jquery;
+                    let layer = layui.layer;
+                    let transfer = layui.transfer;
+                    let dragSort = layui.dragSort;
+                    //$.cookie=layui.cookie;
+
+                    let module_name = getQueryString("module_name");
+                    let callBack = getQueryString("callBack");
+                    if (!module_name) {
+                        return;
+                    }
+                    // CreateAJAXRequest(huayi_permission_url + 'comcolumn/getDisplayList', 'POST', {"module_name":module_name}, 'application/json',function(res){
+                    //     console.log(res);
+                    // });
+
+                    CreateAJAXRequest(huayi_permission_url + 'comcolumn/list', 'POST', {"module_name":module_name}, 'application/json',function(res){
+                        let transferOption={
+                                elem: '#containner'  //绑定元素
+                                , onchange: function (data, index) {
+                                    // console.log(data); //得到当前被穿梭的数据
+                                    // console.log(index); //如果数据来自左边，index 为 0，否则为 1
+                                    let _ul = $(".layui-transfer-data").eq(1);
+                                    _ul.children().each(function (i, o) {
+                                        $(o).attr("draggable", "true");
+                                    });
+                                }
+                                , data: []
+                                , id: 'cols' //定义索引
+                                , showSearch: true
+                                , height: 400
+                                , width: 200
+                                , title: ['隐藏列', '显示列']
+                                , value: []
+                            };
+                        
+                        if(res.status===RESPONSE_CODE.SUCCESS.CODE){
+                            transferOption.data=res.data.data;
+                            transferOption.value=res.data.value;
+                        }
+                        transfer.render(transferOption);
+
+                        var _ul = $(".layui-transfer-data").eq(1);
+                        _ul.attr('id', "drag-div");
+                        _ul.children().each(function (i, o) {
+                            $(o).attr("draggable", "true");
+                        });
+                        var dragSortOption = new dragSort({
+                            id: 'drag-div', // 拖动父级div框的ID    
+                            drag: '', //拖动元素   
+                            times: '300', // 动画时长（默认一秒钟）
+                        });
+                    });
+
+                    $("#btn_confirm").click(function () {
+                        var rightData = transfer.getData('cols');
+                        var req = {
+                            rightData: rightData,
+                            module_name: module_name
+                        }
+                        //url, method, data, dataType, successCallbackFunction
+                        CreateAJAXRequest(huayi_permission_url + 'comcolumn/setUserConfig', 'POST', req, 'application/json', function (res) {
+                            //{"status":200,"msg":"成功","data":null,"success":true}
+                            if(res.status===RESPONSE_CODE.SUCCESS.CODE){
+                                
+                                if (callBack && eval("parent."+callBack)){
+                                    eval("parent."+callBack+"(res)");
+                                }
+                                else{
+                                    layer.alert(RESPONSE_CODE.SUCCESS.MSG);
+                                }
+                            }
+                            else{
+                                for (let key in RESPONSE_CODE) {
+                                    let keyType=typeof key;
+                                    if (typeof key == "string") {
+                                        let element = RESPONSE_CODE[key];
+                                        if(element.CODE===res.status){
+                                            layer.alert(element.MSG);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        })
+                    })
+
+                    function CreateAJAXRequest(url, method, data, contentType, successCallbackFunction) {
+                        $.ajax({
+                            url: url,
+                            type: method,
+                            data: JSON.stringify(data),
+                            headers: {
+                                "Accept":'application/json',
+                                "Authorization": localStorage.getItem("token"),
+                                "KJPT-USER-ID":localStorage.getItem("user-id"),
+                                "cmestandard-id":localStorage.getItem("standardkind-id")
+                            },
+                            processData:false,
+                            contentType: contentType,
+                            success: successCallbackFunction,
+                            error: function (xhr, textStatus, errorThrown) {
+                                //debugger
+                                var status = xhr.status; // http status
+                                var data = xhr.responseText;
+                                var message = "";
+                                var flag = typeof (layer) == "undefined";
+                                if (data != undefined && data != "") {
+                                    var json = JSON.parse(data);
+                                    var exception = json.exception;
+                                    if (exception) {
+                                        message = exception;
+                                    } else {
+                                        message = json.message;
+                                    }
+                                    message = message == undefined ? json.message : message;
+                                    if (json.code == 40015) {
+                                        localStorage.removeItem("token");
+                                        // cookie.delete("token");
+                                        if (flag) {
+                                            alert(message);
+                                            window.location.href = loginPage;
+                                            return false;
+                                        } else {
+                                            myLayer.Alert(message, 0, "", function () {
+                                                window.location.href = loginPage;
+                                                return false;
+                                            })
+                                        }
+                                    }
+                                }
+
+                                if (status == 400) {
+                                    if (flag) {
+                                        alert(message);
+                                    } else {
+                                        layer.msg(message);
+
+                                    }
+                                } else if (status == 403) {
+                                    message = "未授权";
+                                    if (flag) {
+                                        alert(message);
+                                    } else {
+                                        layer.msg(message);
+                                    }
+                                } else if (status == 500) {
+                                    message = '系统错误：' + message + '，请刷新页面，或者联系管理员';
+                                    if (flag) {
+                                        alert(message);
+                                    } else {
+                                        layer.msg(message);
+                                    }
+                                } else if (status == 504) {
+                                    layer.msg(message);
+                                }
+                            }
+
+
+                        });
+                    }
+                });
+            };
+            doc_head.appendChild(layui_script);
+
+            let layui_css = doc.createElement("link");
+            layui_css.rel = "stylesheet";
+            layui_css.href = LAYUI_V268 + "layui/css/layui.css";
+            layui_css.media = "all";
+            doc_head.appendChild(layui_css);
+        })(document);
+        function getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]);
+            return null;
+        }
+    </script>
+
+    <style>
+        .layui-fluid {
+            padding: 15px;
+        }
+
+        .layui-icon-next:before {
+            content: "显示>";
+        }
+
+        .layui-icon-prev:before {
+            content: "<隐藏";
+        }
+
+        .hand-notice {
+            float: right;
+            width: 50px;
+            height: 85px;
+            z-index: 100;
+            position: absolute;
+            right: 10px;
+            top: 110px;
+            text-align: center;
+            background: url('img/hand.png') no-repeat;
+            background-size: 40px;
+        }
+
+        .hand-notice .notice-text {
+            z-index: 100;
+            position: absolute;
+            bottom: 15px;
+            font-size: 10px;
+            color: red;
+            opacity: 0.4;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="width: 535px; height: 460px;">
+        <div class="layui-fluid">
+            <div id="u3692" class="hand-notice">
+                <div id="u3694" class="notice-text">
+                    <p><span>鼠标按住</span></p>
+                    <p><span>拖拽顺序</span></p>
+                </div>
+            </div>
+            <div id="containner"></div>
+            <div class="layui-btn-fluid" style="text-align: center;">
+                <a id="btn_confirm" href="javascript:void(0)" class="layui-btn layui-btn-normal layui-btn-sm">确定设置</a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

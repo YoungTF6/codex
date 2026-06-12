@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+        <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+        <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+        <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+        <script type="text/javascript" src="../../js/api/cpt.js"></script>
+
+        <!--    请求路径配置-->
+        <script type="text/javascript" src="../../js/constant.js"></script>
+        <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+        <!--    ajax全局配置-->
+        <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+        <link rel="stylesheet" href="../../css/communal.css" media="all">
+        <script type="text/javascript" src="../../js/common.js"></script>
+        <script type="text/javascript" src="../../js/constantPage/projectPageUrl.js"></script>
+<style>
+    html{
+        background: #fff;
+    }
+
+    /* 申报级别按钮：内容过长自动换行 */
+    .layui-btn.btn_wrap {
+        width: 162px;
+        white-space: normal;
+        height: auto;
+        line-height: 20px;
+        padding: 8px 10px;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        text-align: center;
+    }
+</style>
+    </head>
+
+    <body>
+
+        <div class="layui-fluid">
+            <form class="layui-form" action="" lay-filter="component-form-group">
+                <div class="layui-form-item" style="text-align: center;margin-top: 30px;">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">申报年度</label>
+                        <div class="layui-input-inline">
+                            <select name="holdYear" id="holdYear"  lay-filter="loadRow">
+                            </select>
+                            </div>
+                    </div>
+                </div>
+                <div style="padding:20px 0;text-align: center;">
+                    <div id="Row">
+                        <div>暂无可申报的项目级别，请联系管理员添加</div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </body>
+
+    <script>
+          // 全局配置及引入相关的模块
+    layui.use(['table', 'form','element'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var element = layui.element;
+        var li_str = "";
+        var my = new Date();
+        var userid= localStorage.getItem("unit-id");
+        let gZhCN = 1;
+        const _source = getUrlParam('source');
+
+        $(function () {
+            loadyear();
+            loadListRow();
+        });
+
+
+        function loadyear(){
+            //加载申报年度
+            $.ajax({
+                type: "post",
+                url: huayi_projectscore_url +"projectDicRegionLevel/getHoldYear",
+                data: {cmeStandardKind:localStorage.getItem("standardkind-id"),unitId:localStorage.getItem("unit-id")},
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+
+                    for(var year of data.data.entries()){
+                        $('#holdYear').append(new Option(year[1],year[1]));//往下拉菜单里添加元素
+                    }
+                    form.render('select'); //刷新select选择框渲染
+                },
+                error: function (data) {
+                    layer.msg("响应失败1");
+                }
+            });
+        }
+
+        function loadListRow(){
+            $.ajax({
+                type: "post",
+                url: huayi_projectscore_url +"projectDicRegionLevel/getLevelsByStandardIdAddProj",
+                async:false,//取消异步请求
+                data: {getLevelsByStandardId: localStorage.getItem("standardkind-id"),holdYear: $('#holdYear').val(),unitId:userid  },
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                    $('#Row').html("");
+                    var shthUnit =  getConfitUnit('hubei_shtt_unit');
+                    var syjsUnit =  getConfitUnit('hubei_syjs_unit');
+                    console.log('shthUnit:' + shthUnit)
+                    console.log('syjsUnit:' + syjsUnit)
+                    let thisUnitId = localStorage.getItem("unit-id");
+                    let unitType=localStorage.getItem("unit_type");
+                    var isSHTT = shthUnit.indexOf(thisUnitId) >= 0;
+                    if(data.data != null){
+                        $.each(data.data,function(index,item){
+                            if (item.regionLevelType != 3) {
+                                $('#Row').append(createListItem(item));
+                            } else if (unitType == 3 && item.regionLevelType == 3) {
+                                $('#Row').append(createListItem(item));
+                            }
+                            $('#Row').append(li_str);
+                        });
+                    }else {
+                        $('#Row').append('<div>暂无可申报的项目级别，请联系管理员添加</div>');
+                    }
+                }
+                ,
+                error: function (data) {
+                    layer.msg("响应失败");
+                }
+            });
+        }
+
+        function createListItem(item) {
+            return `<div class="layui-inline" style="padding: 5px 11px 0 10px;">
+                        
+                        <a href="javascript:void(0)" 
+                        onclick="clickLevel('${item.scoreLevelId}','${item.declarePath}','${item.regionLevelType}','${item.configType}','${item.regionLevelId}','${item.projType}','${item.projectType}')" 
+                        class="layui-btn btn_wrap">
+                        ${item.shortName}
+                        </a>
+                    </div>`;
+        }
+        /** 获取配置 */
+        function getConfitUnit(configName) {
+            let config_value = '',
+                config_name  = configName;
+            $.ajax({
+                async	: false,
+                type	: 'post',
+                url		: huayi_sjwh_url + 'cmeCommonConfig/getConfigByUnitFromRedis',
+                data	: {
+                    unitId		: localStorage.getItem('unit-id'),
+                    configNames	: config_name
+                },
+                success	: function (res) {
+                    if (res.success == true) {
+                        if (config_name == 'hubei_shtt_unit') {
+                            config_value = res.data.hubei_shtt_unit;
+                        }else if(config_name == 'hubei_syjs_unit'){
+                            config_value = res.data.hubei_syjs_unit;
+                        }
+                    } else {
+                        layer.msg('<sapn style="color: #666666;">获取配置出错</sapn>',
+                                { icon : 2, time : 1500 });
+                    }
+                },
+                error	: function () {
+                    layer.msg('<sapn style="color: #666666;">获取配置出错</sapn>',
+                            { icon : 7, time : 1500 });
+                }
+            });
+            return config_value;
+        }
+
+        //TODO
+        function noticeMessage(scoreLevelId, declarePath,projType,regionLevelId,projectType){
+            $.ajax({
+                type: "POST",
+                url: huayi_projectscore_url+"project/getNoticeMessage",
+                data: {scoreLevelId:scoreLevelId,unitId:localStorage.getItem("unit-id")},
+                dataType: 'json',
+                success:function(object){
+                    var holdYear = $('#holdYear').val();
+                    if(object.data.records[0]!=null){
+                        //layer.msg(object.data.records[0]["noticeContent"]);
+                        var parentindex=parent.layer.getFrameIndex(window.name);
+                        parent.layer.open({
+                            title: '通知',
+                            //btn: ['确认并同意'],
+                            //content:,
+                            content:"noticeMessage.html?scoreLevelId="+scoreLevelId +"&declarePath="+declarePath+ "&holdYear=" + holdYear + "&zhCn=" + gZhCN + "&source=" + _source+"&projType="+projType,
+                            type: 2,
+                            area: ['600px', '670px'],
+                            end: function(index, layero){
+                                    parent.layer.close(parentindex);
+                            }
+                        })
+                    }else{
+                        //若无提示，则直接展示添加项目页面
+                        //layer.msg(object.data.msg);
+                        // 新项目申报跳转帆软 参数: unitMainId, userCreate, projectType, subjectType, priviousCheckUnitId, holdYear, cmeStandardKindId, scoreLevelId
+                        // &scoreLevelId=e551a983-8236-4520-9deb-9bb50009e43e&unitId=090101&userCreate=f05def64-11a0-448a-b55b-3153199a777b&cmeStandardKindId=c7864061-7bd4-4ee7-a868-9b24009e92df&holdYear=2022
+                        var cmeStandardKindId = localStorage.getItem("standardkind-id")
+                            , userCreate = localStorage.getItem("user-id");
+                            var parentindex=parent.layer.getFrameIndex(window.name);
+                        let standardKindId = localStorage.getItem("standardkind-id");
+                        let unitId = localStorage.getItem('unit-id');
+                        let userId = localStorage.getItem("user-id");
+                        let deptId = localStorage.getItem("dept-id");
+                        // let cptUrl = getCptUrl(holdYear, scoreLevelId, 'declare') // create declarePath
+                        //     + '&standard_kind_id=' + standardKindId
+                        //     + '&unit_id=' + unitId
+                        //     + '&user_id=' + userId
+                        //     + '&score_level_id=' + scoreLevelId
+                        //     + '&source=' + _source
+                        //     + '&hold_year=' + holdYear
+                        //     + '&zh_cn=' + gZhCN;
+                         
+                        let cptUrl =getProjectPageUrl(holdYear, scoreLevelId, '',_source,0,projType,regionLevelId,projectType);
+                        if (cptUrl === '') {
+                            layer.msg('暂无申报页面配置');
+                            return;
+                        }
+                        parent.layer.open({
+                            title: '填报',
+                            content: cptUrl,
+                            type: 2,
+                            area: ['100%', '100%'],
+                            end: function(index, layero){
+                                parent.layer.close(parentindex);
+                            }
+                        })
+                    }
+                }
+
+            }) 
+
+        }
+        //year=2021&unitId=099999&scoreLevelId=693d04ae-32ed-4719-a34a-46139ff3d0fe
+        //判断当前时间当前项目级别是否允许申报 如果是省直属，还需要判断是否超过限制
+        //type:1 正常配置  2:特殊单位配置
+        window.clickLevel=function (scoreLevelId, declarePath, regionLevelType,configType,regionLevelId,projType,projectType) {
+            gZhCN = regionLevelType ? regionLevelType : 1;
+            $.ajax({
+                type: "POST",
+                url: huayi_projectscore_url+"projectApplyDate/isDelay",
+                data: {year:$('#holdYear').val(),unitId:userid,scoreLevelId:scoreLevelId,type:1,from:_source+'.decl',configType:configType,regionLevelId:regionLevelId},
+                dataType: 'json',
+                success:function(object){
+                    if(object.data.status=='5'){
+                        noticeMessage(scoreLevelId, declarePath,projType,regionLevelId,projectType);
+                    }else{
+                        layer.msg(object.data.msg);
+                    }
+                }
+
+            })
+
+        }
+        //下拉框值改变
+        form.on('select(loadRow)', function(data) {
+            $('#Row').html("");
+            loadListRow();
+        })
+
+      })
+    </script>
+</html>

@@ -1,0 +1,496 @@
+<div id="projectDetailPage2">
+
+    <form class="page-form layui-form" action="" lay-filter="page2-form" id="page2-form">
+        <input type="hidden" name="pageNum" value=2>
+        <input type="hidden" name="projectId">
+
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+            <legend>技术摘要（400字以内）</legend>
+        </fieldset>
+        <!-- 技术摘要 -->
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>技术摘要（400字以内）:</label> -->
+                <div>
+                    <textarea name="progress" placeholder="请简要说明：技术特征与优势，适应证及人群，临床安全性和效果，技术应用相关成本（费用），技术操作的人员和环境要求" class="layui-textarea"
+                              lay-verify="required|progress"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+            <legend>技术类型（可多选）</legend>
+        </fieldset>
+        <div class="layui-form-item">
+            <div class="layui-col-md9">
+                <label class="layui-form-label"><span
+                        style="color:red">*&nbsp;</span>技术类别:</label>
+                        <!-- 预防  诊断  检测   治疗   康复 其他（请注明：） -->
+               
+                <div class="layui-input-block technologyTypeDiv">
+                    <input type="checkbox" name="technologyType[1]" value="预防" title="预防" lay-filter="technologyType"  lay-skin="primary">
+                    <input type="checkbox" name="technologyType[2]" value="诊断" title="诊断" lay-filter="technologyType"  lay-skin="primary">
+                    <input type="checkbox" name="technologyType[3]" value="检测" title="检测" lay-filter="technologyType"  lay-skin="primary">
+                    <input type="checkbox" name="technologyType[4]" value="治疗" title="治疗" lay-filter="technologyType"  lay-skin="primary">
+                    <input type="checkbox" name="technologyType[5]" value="康复" title="康复" lay-filter="technologyType"  lay-skin="primary">
+                    <input type="checkbox" name="technologyType[6]" value="其他" title="其他" lay-filter="technologyType"  lay-skin="primary">
+                    <div class="layui-inline">
+                        <div class="layui-inline">
+                            <input type="" name="other1" id="other1" lay-verify="other1" autocomplete="off"
+                               style="display: none;" class="layui-input" placeholder="选择'其他'时输入">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            
+            <div class="layui-col-md9">
+                <label class="layui-form-label"><span
+                        style="color:red">*&nbsp;</span>技术涉及的创新产品:</label>
+                <div class="layui-input-block innovativeProductsDiv">
+                    <input type="checkbox" name="innovativeProducts[1]" value="设备" title="设备" lay-filter="innovativeProducts" lay-skin="primary">
+                    <input type="checkbox" name="innovativeProducts[2]" value="器械" title="器械" lay-filter="innovativeProducts" lay-skin="primary">
+                    <input type="checkbox" name="innovativeProducts[3]" value="药物" title="药物" lay-filter="innovativeProducts" lay-skin="primary">
+                    <input type="checkbox" name="innovativeProducts[4]" value="试剂" title="试剂" lay-filter="innovativeProducts" lay-skin="primary">
+                    <input type="checkbox" name="innovativeProducts[5]" value="耗材" title="耗材" lay-filter="innovativeProducts" lay-skin="primary">
+                    <input type="checkbox" name="innovativeProducts[6]" value="量表" title="量表" lay-filter="innovativeProducts" lay-skin="primary">
+                    <input type="checkbox" name="innovativeProducts[7]" value="其他" title="其他" lay-filter="innovativeProducts" lay-skin="primary">
+                    <div class="layui-inline">
+                        <input type="" name="other2" id="other2" lay-verify="other2" autocomplete="off"
+                            style="display: none;"  class="layui-input" placeholder="选择'其他'时输入">
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+        
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+            <legend>目前国内的替代技术</legend>
+        </fieldset>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>目前国内的替代技术:</label> -->
+                <div>
+                    <textarea name="alternativeTechnologies" placeholder="说明：国内预防/诊断/检测/治疗/康复相同疾病或适应证的技术" class="layui-textarea"
+                              lay-verify="required|alternativeTechnologies"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+            <legend>技术创新性和优势（与替代技术相比）</legend>
+        </fieldset>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>技术创新性和优势（与替代技术相比）:</label> -->
+                <div>
+                    <textarea name="technologyInnovation" placeholder="" class="layui-textarea"
+                              lay-verify="required|technologyInnovation"></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+            <legend>适应证和适用人群</legend>
+        </fieldset>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>适应证和适用人群:</label> -->
+                <div>
+                    <textarea name="adaptation" placeholder=
+"适应证的疾病名称：        ICD10编码：
+我国适应证的疾病负担估计（发病率和患病率）：
+禁忌证：
+                    " class="layui-textarea"
+                              lay-verify="required|adaptation"></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+            <legend>技术临床研究情况</legend>
+        </fieldset>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>技术临床研究情况:</label> -->
+                <div>
+                    <textarea name="clinicalFesearch" placeholder=
+"1.起讫时间：
+2.地点（机构）：
+3.资助机构：
+4.研究设计（研究对象特征和例数，设计、干预与对照，指标选择及随访时间等）
+5.其他需说明情况：
+6.公开发表文献数（提供材料）：
+                    " class="layui-textarea"
+                              lay-verify="required|clinicalFesearch"></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+            <legend>技术应用情况</legend>
+        </fieldset>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>技术应用情况:</label> -->
+                <div>
+                    <textarea name="technologyApplication" placeholder=
+"正式临床应用起始时间：
+目前应用的医院数：省级  市级  县级  乡镇级
+应用的科室：
+应用的患者例数：
+                    " class="layui-textarea"
+                              lay-verify="required|technologyApplication"></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+            <legend>安全性</legend>
+        </fieldset>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>安全性:</label> -->
+                <div>
+                    <textarea name="security" placeholder=
+"请附数据来源或相关材料
+1.不良反应率（注明：不良反应）：
+2.致死率：
+3.自残率：
+4.其他指标：
+                    " class="layui-textarea"
+                              lay-verify="required|security"></textarea>
+                </div>
+            </div>
+        </div>
+
+                
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+            <legend>有效性</legend>
+        </fieldset>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>安全性:</label> -->
+                <div>
+                    <textarea name="effectivenessDiagnosis" placeholder=
+"请附数据来源或相关材料
+1.拟推广诊断技术:灵敏度：    特异度：     
+其他指标：
+
+2.替代技术：灵敏度：    特异度：     其他指标：
+                    " class="layui-textarea"
+                              lay-verify="required|effectivenessDiagnosis"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>安全性:</label> -->
+                <div>
+                    <textarea name="effectivenessDetection" placeholder=
+"请附数据来源或相关材料
+1.拟推广检测技术：精密度：    准确度：    
+其他指标：
+
+2.替代技术：精密度：    准确度：    
+其他指标：
+                    " class="layui-textarea"
+                              lay-verify="required|effectivenessDetection"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>安全性:</label> -->
+                <div>
+                    <textarea name="effectivenessPrevent" placeholder=
+"请附数据来源或相关材料
+拟推广预防技术：保护率    效果指数   
+其他指标：
+
+替代技术：保护率    效果指数   
+其他指标：
+                    " class="layui-textarea"
+                              lay-verify="required|effectivenessPrevent"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>安全性:</label> -->
+                <div>
+                    <textarea name="effectivenessTreatment" placeholder=
+"请附数据来源或相关材料
+拟推广治疗技术：好转率：    治愈率   生活质量   
+复发率    其他指标（请注明）：
+
+替代技术：好转率    治愈率    生活质量   
+复发率    其他指标（请注明）：
+                        " class="layui-textarea"
+                              lay-verify="required|effectivenessTreatment"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>安全性:</label> -->
+                <div>
+                    <textarea name="effectivenessRecovery" placeholder=
+"请附数据来源或相关材料
+拟推广康复技术：好转率：    治愈率   生活质量   
+复发率    其他指标（请注明）：
+
+替代技术：好转率    治愈率    生活质量   
+复发率    其他指标（请注明）：
+                    " class="layui-textarea"
+                              lay-verify="required|effectivenessRecovery"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+            <legend>经济性</legend>
+        </fieldset>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>安全性:</label> -->
+                <div>
+                    <textarea name="economyCost" placeholder=
+"请提供成本或费用测算依据
+拟推广技术的应用成本或费用（药物、设备、耗材和人力成本）：    元/例
+对照技术的应用成本或费用（药物、设备购置和运行维护、耗材、人力成本）：    元/例
+                    " class="layui-textarea"
+                              lay-verify="required|economyCost"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>安全性:</label> -->
+                <div>
+                    <textarea name="economySelfPay" placeholder=
+"患者使用拟推广技术的自付费用：
+患者使用替代技术的自付费用：
+                    " class="layui-textarea"
+                              lay-verify="required|economySelfPay"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>安全性:</label> -->
+                <div>
+                    <textarea name="economyIsPay" placeholder=
+"拟推广技术是否有收费项目：□是   □否
+拟推广技术是否纳入医保或新农合目录：□是   □否
+                    " class="layui-textarea"
+                              lay-verify="required|economyIsPay"></textarea>
+                </div>
+            </div>
+        </div>
+
+        
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+            <legend>操作性</legend>
+        </fieldset>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>安全性:</label> -->
+                <div>
+                    <textarea name="operationalStep" placeholder="技术操作的具体流程和步骤（技术路线）：
+                    " class="layui-textarea"
+                              lay-verify="required|operationalStep"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>安全性:</label> -->
+                <div>
+                    <textarea name="operationalFacilityAsk" placeholder=
+"环境设备要求
+1.配套设备：
+2.仪器维护：
+3.试剂储备：
+4.场地要求：
+                    " class="layui-textarea"
+                              lay-verify="required|operationalFacilityAsk"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>安全性:</label> -->
+                <div>
+                    <textarea name="operationalPersonAsk" placeholder="人员数量和能力最低要求（文化程度、职称、专业、从业年限、技能）
+                    " class="layui-textarea"
+                              lay-verify="required|operationalPersonAsk"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>安全性:</label> -->
+                <div>
+                    <textarea name="operationalTimeAsk" placeholder="培训材料、人员和时间要求：
+                    " class="layui-textarea"
+                              lay-verify="required|operationalTimeAsk"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>安全性:</label> -->
+                <div>
+                    <textarea name="operationalRatioTrust" placeholder=
+"患者依从的比例：□20%以下   □21%-50%   □51%-80%    □80%以上   □不清楚
+患者对技术的信任度：□20%以下   □21-50%   □51%-80%  □80%以上  □不清楚
+                    " class="layui-textarea"
+                              lay-verify="required|operationalRatioTrust"></textarea>
+                </div>
+            </div>
+        </div>
+
+        
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+            <legend>适宜性</legend>
+        </fieldset>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>安全性:</label> -->
+                <div>
+                    <textarea name="suitabilityPerson" placeholder=
+"说明：分数越高可接受性越高
+患者可接受性：□1   □2  □3  □4  □5
+患者家庭可接性：□1   □2  □3  □4  □5
+临床人员可接受性：□1   □2  □3  □4  □5
+医疗机构可接受性：□1   □2  □3  □4  □5
+与在当地民族、宗教、风俗习惯不相符：□是□否
+伦理委员会批件：□有  □无 （如有请提供）
+                    " class="layui-textarea"
+                              lay-verify="required|suitabilityPerson"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>安全性:</label> -->
+                <div>
+                    <textarea name="suitabilityTechnology" placeholder=
+"技术操作指南或规范：□有   □无
+技术的准入制度：□有   □无
+技术质控标准：□有   □无
+                    " class="layui-textarea"
+                              lay-verify="required|suitabilityTechnology"></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+            <legend>应用技术推广的可能影响</legend>
+        </fieldset>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>安全性:</label> -->
+                <div>
+                    <textarea name="impact1" placeholder=
+"1.技术拟推广的级别：□省级  □市级  □县级以及下
+2.若技术推广可大范围替代现有替代技术的可能性：
+□高  □中  □低
+3.目前替代技术在适应证人群的应用比例为：
+□20%以下，□21%-50%，□51%-80%，□80%以上
+若本技术推广可以占多大比例：□20%以下，□21%-50%，□51%-80%，□80%以上
+                    " class="layui-textarea"
+                              lay-verify="required|impact1"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>安全性:</label> -->
+                <div>
+                    <textarea name="impact2" placeholder=
+"1.对患者健康的影响：
+□降低死亡率或延长生存时间
+□缓解症状或降低残疾程度
+□提高生活质量
+□其他：
+□不清楚
+请说明选择的原因：
+2.对患者经济负担的影响：
+□增加医疗费用
+□减少医疗费用
+□无变化
+□不清楚
+请说明选择的原因：
+                    " class="layui-textarea"
+                              lay-verify="required|impact2"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>安全性:</label> -->
+                <div>
+                    <textarea name="impact3" placeholder=
+"对医疗服务利用的影响：
+□增加卫生服务的利用
+□较少卫生服务的利用
+□重组卫生服务的流程
+□需要增加新的卫生服务
+□无变化
+□不明确
+请说明选择的原因：
+2.对医疗费用的影响：
+□增加医疗费用
+□减少医疗费用
+□无变化
+□不明确
+请说明选择的原因：
+                    " class="layui-textarea"
+                              lay-verify="required|impact3"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <!-- <label><span style="color:red">*&nbsp;</span>安全性:</label> -->
+                <div>
+                    <textarea name="impact4" placeholder=
+"对于医疗机构的影响：
+□增加机构服务量
+□减少机构服务量
+□无变化
+□不明确
+请说明选择的原因：
+2.对医疗机构收益的影响：
+□增加
+□减少
+□无变化
+□不明确
+请说明选择的原因：
+                    " class="layui-textarea"
+                              lay-verify="required|impact4"></textarea>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- 保存 -->
+        <div class="layui-form-item">
+            <div class="layui-col-sm12">
+                <div style="text-align: center;">
+                    <button class="layui-btn" type="submit" lay-submit lay-filter="save">保存</button>
+                    <button class="layui-btn" type="submit" lay-submit lay-filter="saveToNext">保存并进入下一页</button>
+                </div>
+            </div>
+        </div>
+
+
+    </form>
+</div>
+
+
+

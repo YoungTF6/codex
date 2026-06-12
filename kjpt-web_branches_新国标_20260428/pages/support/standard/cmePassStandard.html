@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <title>达标标准管理</title>
+
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+        media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+
+    <!-- 工具 -->
+    <script type="text/javascript" src="/js/base64.js"></script>
+    <script type="text/javascript" src="js/standard.js"></script>
+
+    <style>
+        .layui-card-body.layui_body_box {
+            padding: 0 !important;
+        }
+
+        .layui-form.layui-border-box.layui-table-view {
+            margin: 0 !important;
+        }
+
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+
+        #cme-unit-level {
+            margin: 15px 20px;
+            color: #446DBD;
+        }
+
+        .font-bold {
+            font-weight: bold;
+        }
+
+
+        /* 新增代码 */
+
+        .lay_box {
+            display: flex;
+            flex-wrap: wrap;
+            /* padding: 15px; */
+        }
+
+        .tit_box {
+            margin-bottom: 10px;
+            color: #446DBD;
+        }
+
+        .lay_item {
+            width: 330px;
+            margin: 20px;
+        }
+
+        .xx_list {
+            background: #F3F1F2;
+        }
+
+        .mc_box {
+            background: #f9f9f9;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .lay_list {
+            padding: 15px;
+            height: 200px;
+            overflow: auto;
+        }
+
+        .lay_list ul li {
+            color: #446DBD;
+            padding: 5px 0;
+            cursor: pointer;
+        }
+
+        .layui-form-label {
+            width: 100px;
+        }
+
+        .layui-input-block {
+            margin-left: 130px;
+        }
+
+         /* 表格显示多行 */
+        .layui-table-cell {
+            height: auto;
+        }
+
+    </style>
+</head>
+
+<body class="body-area">
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area">
+
+                    <!-- 筛选项 -->
+                    <div class="layui-inline layui-form" lay-filter="statistical-year-div">
+                        <label class="layui-form-label">选择年度</label>
+                        <div class="layui-input-block">
+                            <select id="statistical-year" lay-filter="statistical-year"></select>
+                        </div>
+                    </div>
+                    
+                    <div class="layui-inline">
+                        <label class="layui-form-label">适用医院级别</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="hospitalLevelName" placeholder="请输入适用医院级别" 
+                                autocomplete="off" class="layui-input" >
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">适用类别</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="scoreLevelName" placeholder="请输入适用类别" 
+                                autocomplete="off" class="layui-input" >
+                        </div>
+                    </div>
+                    
+                    <div class="layui-inline">
+                        <label class="layui-form-label">最高单位</label>
+                        <div class="layui-input-block" style="width: 220px;margin-left:0;float:left;">
+                            <input type="text" id="text_unit_name_search"  
+                                placeholder="请选择单位" autocomplete="off" class="layui-input"
+                                style="display: inline;">
+                            <input type="hidden" id="hidden_unit_id_search" >
+                        </div>
+                        <button class="layui-btn  layui-btn-sm" id="selectUnitBtnSearch" style="margin:5px 5px 5px 10px;">选择单位</button>
+                    </div>
+
+                    <div class="">
+                        <div class="layui-inline btn-search-positon">
+                            <a class="layui-btn layui-btn-sm" onclick="loaderTable()" id="searchBtn"
+                                lay-filter="table-search" data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                        </div>
+                    </div>
+            </div>
+
+
+            <!-- 表格区域 -->
+            <div class="layui-card-body layui_body_box">
+                <!-- 列表形式 -->
+                <table class="layui-table" style="margin: 0px 0px; display: none;" id="table_cme_pass_standard"
+                    lay-filter="table_cme_pass_standard">
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- 弹框内容 -->
+    <div id="pass-standard-alert" style=" display:none">
+        <form class="layui-form" style="padding: 20px;" lay-filter='pass_standard_form_alert'
+            id="pass_standard_form_alert">
+            <div class="layui-form-item" style="display: none;">
+                <div class="layui-inline">
+                    <label class="layui-form-label"></label>
+                    <div class="layui-input-block">
+                        <input type="text" name="cmePassStandardId" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">
+                        <font color="red">*&nbsp;</font>序号
+                    </label>
+                    <div class="layui-input-block">
+                        <input type="text" name="standNo" lay-verify="number|notBlank" placeholder="请输入"
+                            autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">
+                        <font color="red">*&nbsp;</font>年度
+                    </label>
+                    <div class="layui-input-block">
+                        <select name="cmeYearId" id="cmeYearSelectAdd" lay-verify="notBlank" lay-search="">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">
+                        <font color="red">*&nbsp;</font>范畴
+                    </label>
+                    <div class="layui-input-block">
+                        <select name="category" lay-verify="notBlank" lay-filter="category">
+                            <option value="01_充分条件">01_充分条件</option>
+                            <option value="02_最高分限制">02_最高分限制</option>
+                            <option value="03_替换条件">03_替换条件</option>
+                            <option value="04_必要条件">04_必要条件</option>
+                            <option value="81_产假">81_产假</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="layui-form-item">
+                <label class="layui-form-label"><font color="red">*&nbsp;</font>最高单位</label>
+                <div class="layui-input-block" style="width: 220px;margin-left:0;float:left;">
+                    <input type="text" id="text_unit_name" name="topUnitName" lay-verify="unitNameVerify"
+                        placeholder="请选择单位" autocomplete="off" class="layui-input"
+                        style="display: inline;">
+                    <input type="hidden" id="hidden_unit_id" name="topUnitId">
+                </div>
+                <button class="layui-btn  layui-btn-sm" id="selectUnitBtn" style="margin:5px 5px 5px 10px;">选择单位</button>
+            </div>
+
+            <div class="layui-form-item">
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">
+                        <font color="red">*&nbsp;</font>适用医院级别
+                    </label>
+                    <div class="layui-input-block">
+                        <div style="width: 500px;" id="unitLevelAddSelect" class="layui-input-inline"
+                            data-name="unitLevels"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">
+                        <font color="red">*&nbsp;</font>适用职称
+                    </label>
+                    <div class="layui-input-block">
+                        <!-- <input style="width: 500px;"  type="text" name="text_title" id="text_title_names" placeholder=""
+                                    autocomplete="off" class="layui-inline layui-input"> -->
+                        <textarea name="titleNames" style="width: 500px;" id="text_title_names"  lay-verify=""
+                            placeholder="请选择职称" disabled class="layui-textarea"></textarea>
+
+                        <input type="hidden" name="titleIds" id="hidden_title_ids" value="" />
+                        <button type="button" class="layui-btn" id="checkTitleBtn">选择职称</button>
+                        <!-- <select name="title" id="titleAdd" lay-verify="notBlank" lay-search="">
+                        </select> -->
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">
+                        <font color="red">*&nbsp;</font>适用类别
+                    </label>
+                    <div class="layui-input-block">
+                        <div style="width: 500px;" name="kindId" id="score-level-add-select" class="layui-input-inline"></div>
+                        <!-- <select name="kindId" id="score-level-add-select" lay-verify="notBlank" lay-search=""> -->
+                        <!-- </select> -->
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">
+                        <font color="red">*&nbsp;</font>限制条件
+                    </label>
+                    <div class="layui-input-block">
+                        <select name="limit" id="limit-add-select" lay-verify="notBlank">
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">
+                        <font color="red">*&nbsp;</font>分值
+                    </label>
+                    <div class="layui-input-block">
+                        <input type="text" name="score" lay-verify="number|notBlank" placeholder="请输入"
+                            autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline" style="width: 600px;">
+                    <label class="layui-form-label">达标规则描述</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="ruleDesc" lay-verify="" placeholder="请输入"
+                            autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline" style="width: 600px;">
+                    <label class="layui-form-label">不达标提示</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="description"  lay-verify="" placeholder="请输入"
+                            autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="layui-form-item">
+                <div class="layui-inline" style="width: 600px;">
+                    <label class="layui-form-label">具体规定说明</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="ruleList" lay-verify="" placeholder="请输入"
+                            autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="position: relative; top: 10px;">
+                <div class="layui-inline">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="submit">提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+
+    <!-- 表头工具条 -->
+    <script type="text/html" id="table_toolbar">
+        <span>
+            <a class="layui-btn layui-btn-sm" lay-event="add">添加</a>
+        </span>
+        <span style="padding-left: 40%; color: blue;font-size: larger;">当前套: {{localStorage.getItem("choose-standard-name")}}</span>
+    </script>
+
+    <!-- 表格内数据编辑、删除按钮 -->
+    <script type="text/html" id="rowBar">
+        <a class="layui-btn layui-btn-xs btn-row" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-xs btn-row" style="color:red;" lay-event="del">删除</a>
+    </script>
+    <script type="text/javascript">
+        const unitId = localStorage.getItem('unit-id'),
+            unitName = localStorage.getItem('unit-name'),
+            username = localStorage.getItem('user-name'),
+            cmeStandardKindId = localStorage.getItem('choose-standard-id'),
+            topUnitId = localStorage.getItem('top-unit-id');
+
+
+        layui.config({
+            base: '/js/layui/ext/'
+        }).extend({
+            xmSelect: 'xm-select',
+        });
+
+        /* 全局配置及引入相关的模块 */
+        layui.use(['table', 'form', 'jquery', 'layer', 'xmSelect'], function () {
+            var table = layui.table,
+                form = layui.form,
+                $ = layui.jquery,
+                layer = layui.layer
+                , xmSelect = layui.xmSelect
+                ;
+
+            window.layer = layui.layer;
+            var nextOrderIndex = 0;
+
+            var statisticalYearList = [];
+            var unitLevelId = "";
+            var topUnitIdList;
+
+            /* 页面初始化 */
+            $(() => {
+
+                // 统计年度
+                $.ajax({
+                    url: huayi_sjwh_url + 'cmeYear',
+                    type: 'get',
+                    async: false,
+                    dataType: 'json',
+                    data: { cmeStandardKindId: cmeStandardKindId },
+                    success: function (res) {
+                        if (res.status == 200) {
+                            let option = '';
+                            statisticalYearList = res.data;
+
+                            for (let i = 0; i < 10 && i < statisticalYearList.length; i++) {
+                                option += '<option value="' + statisticalYearList[i].cmeYearId + '">' +
+                                    statisticalYearList[i].cmeYear + '</option>';
+                            }
+                            $('#statistical-year').append(option);
+                            $('#cmeYearSelectAdd').append(option);
+                            form.render('select', 'statistical-year-div');
+                            // $('#statistical-year').parent().next().find('d1').html(statisticalYearList[0].startDate);
+                            // $('#statistical-year').parent().next().find('d2').html(statisticalYearList[0].endDate);
+                        } else {
+                            layer.msg('获取统计年度列表失败', { icon: 7, time: 1500 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg('获取统计年度列表失败', { icon: 7, time: 1500 });
+                    }
+                });
+
+                // 统计年度事件
+                // form.on('select(statistical-year)', function (data) {
+                //     for (let i = 0; i < statisticalYearList.length; i++) {
+                //         if (statisticalYearList[i].cmeYearId == data.value) {
+                //             $('#statistical-year').parent().next().find('d1').html(statisticalYearList[i].startDate);
+                //             $('#statistical-year').parent().next().find('d2').html(statisticalYearList[i].endDate);
+                //             break;
+                //         }
+                //     }
+                // });
+
+
+                // layer.ready(function () {
+                //     if (localStorage.getItem('choose-standard-id')) {
+                //         loaderTable();
+                //     } else {
+                //         layer.msg('请选择套标准')
+                //     }
+                // })
+
+            });
+
+            /* 加载表格 */
+            window.loaderTable = () => {
+                if(!chooseStandard()) return;
+
+                let msg = '<span style="color: #666666;">&nbsp;正在查询&nbsp;···</span>',
+                    load_index = layer.msg(msg, { icon: 16, shade: 0.3, time: 0 });
+                //    = layer.load(2, { shade: 0.3 });
+
+                if(!$('#statistical-year').val()){
+                    layer.msg('该套标准没有配置年度');
+                    return;
+                }
+                if(topUnitIdList != undefined && topUnitIdList.length <= 0){
+                    topUnitIdList = undefined;
+                }
+                table.render({
+                    elem: '#table_cme_pass_standard',
+                    url: huayi_sjwh_url + 'cmePassStandard/selectAll',
+                    headers: {
+                        'Authorization': localStorage.getItem('token'),
+                        'KJPT-USER-ID': localStorage.getItem('user-id')
+                    },
+                    where: {
+                        cmeStandardKindId: cmeStandardKindId,
+                        cmeYearId: $('#statistical-year').val(),
+                        hospitalLevelName: $('#hospitalLevelName').val(),
+                        scoreLevelName: $('#scoreLevelName').val(),
+                        unitId: localStorage.getItem('top-unit-id'),
+                        // topUnitIdList: !JSON.stringify(topUnitIdList) ? null : JSON.stringify(topUnitIdList).substr(1).substr(0,JSON.stringify(topUnitIdList).length - 2),
+                        topUnitIdList: topUnitIdList ? topUnitIdList.join(',') : topUnitIdList,
+                        unitLevelId: unitLevelId
+                    },
+                    cols: [[
+                        { field: 'standNo', title: '序号', sort: true, width: 80, fixed: 'left',  align: 'center' },
+                        { align: 'center', minWidth: 120, toolbar: '#rowBar',  fixed: 'left', title: '操作' },
+                        { field: 'topUnitId', title: '最高单位', minWidth: 90 },
+                        { field: 'topUnitName', title: '最高单位名称', minWidth: 180 },
+                        { field: 'category', title: '范畴', sort: true, minWidth: 130 },
+                        { field: 'limit', title: '限制条件', sort: true, minWidth: 110 },
+                        { field: 'score', title: '分值', sort: true, minWidth: 75 },
+                        { field: 'scoreLevelName', title: '适用类别', sort: true, minWidth: 200
+                            , templet: (d) => {
+                                let scoreLevelName =  d.scoreLevelName
+                                var html = "";
+                                if(scoreLevelName != null){
+                                    var dateArr = scoreLevelName.replace(' |  |', '').split(' | ');
+                                    layui.each(dateArr, function(index, item) {
+                                        html += '<p>' + item + '</p>';
+                                    });
+                                }
+                               console.log(html);
+                                return html;
+                                // return d.scoreLevelName.replace(' |  |', '').replaceAll(' | ', '<br>');
+                            } 
+                        },
+                        { field: 'ruleDesc', title: '达标规则描述', minWidth: 300 },
+                        {
+                            field: 'description', title: '不达标提示', minWidth: 150, templet: (d) => {
+                                let description = d.description == null ? '' : d.description;
+                                return '<span title="' + description + '">' + description + '</span>';
+                            }
+                        },
+                        {
+                            field: 'ruleList', title: '具体规定', minWidth: 280, templet: (d) => {
+                                let ruleList = d.ruleList == null ? '' : d.ruleList;
+                                return '<span title="' + ruleList + '">' + ruleList + '</span>';
+                            }
+                        },
+                        // {
+                        //     title: '适用医院及职称', width: 140, align: 'center', templet: (d) => {
+                        //         return '<a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row"' +
+                        //             ' lay-event="applicableScope">适用医院及职称</a>';
+                        //     }
+                        // },
+                        {
+                            title: '适用职称', fixed: 'right', width: 100, align: 'center', templet: (d) => {
+                                return '<a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row"' +
+                                    ' lay-event="applicableScope2">适用职称</a>';
+                            }
+                        }
+                    ]],
+                    title: '达标标准浏览',
+                    toolbar: '#table_toolbar',
+                    defaultToolbar: [],
+                    cellMinWidth: 50,
+                    id: 'table_cme_pass_standard',
+                    height: 'full-170',
+                    page: false,
+                    limit: Number.MAX_VALUE,
+                    parseData: function (res) {
+                        return {
+                            'code': res.status === 200 ? 0 : res.status, // 解析接口状态
+                            'msg': res.msg, // 解析提示文本
+                            'data': res.data // 解析数据列表
+                        }
+                    },
+                    done: function (res, curr, count) {
+                        if (res.data != null && res.data.length > 0) {
+                            let tempIndex = res.data[0].standNo;
+                            nextOrderIndex = ++tempIndex;
+                        } else {
+                            nextOrderIndex = 1;
+                        }
+                        layer.close(load_index);
+
+                        debugger
+                        // 表格显示多行时操作列调整
+                        $(".layui-table-main tr").each(function (index, val) {
+                            $($(".layui-table-fixed-l .layui-table-body tbody tr")[index]).height($(val).height());
+                            $($(".layui-table-fixed-r .layui-table-body tbody tr")[index]).height($(val).height());
+                        })
+                    }
+                });
+            };
+
+            // 监听页面排序
+            table.on('sort(table_cme_pass_standard)', function(obj) {
+                table.reload('table_cme_pass_standard', {
+                    initSort: obj
+                });
+            });
+
+            /* 监听表头工具条 */
+            table.on('toolbar(table_cme_pass_standard)', function (obj) {
+                let datas = obj.data;
+                $("#pass_standard_form_alert")[0].reset();
+
+                switch (obj.event) {
+                    case 'add':
+                        
+                        initUnitLevelSelect();
+                        initScoreKinds();
+                        //回显
+                        form.val('pass_standard_form_alert', {
+                            'standNo': nextOrderIndex,
+                            'cmeStandardKindId': cmeStandardKindId,
+                            'topUnitId': '',
+                            'titleIds': ''
+                        });
+                        layer.open({
+                            type: 1,
+                            title: '新增',
+                            area: ['60%', '90%'],
+                            content: $('#pass-standard-alert'),
+                            // btn: ['确定', '取消'],
+                            // yes: function(index, layero){
+                            //     $('#score_level_alert_confirm').click();
+                            // }
+                        });
+                        break;
+
+                    default:
+                }
+            });
+            /* 监听行工具条 */
+            table.on('tool(table_cme_pass_standard)', function (obj) {
+                let datas = obj.data;
+                $("#pass_standard_form_alert")[0].reset();
+
+                switch (obj.event) {
+                    case 'edit':
+                        
+                        getPassStandardFor(datas);
+                        initScoreKinds(datas.scoreLevelIds);
+                        initUnitLevelSelect(datas.hospitalLevelIds);
+
+                        console.log(datas)
+                        form.val('pass_standard_form_alert', datas);
+                        layer.open({
+                            type: 1,
+                            title: '编辑',
+                            content: $('#pass-standard-alert'),
+                            skin: '',
+                            area: ['60%', '90%'],
+                        });
+                        break;
+                    case 'del':
+                        layer.confirm('确认删除?', { icon: 3, title: '提示' }, function () {
+                            $.ajax({
+                                url: huayi_sjwh_url + 'cmePassStandard/deleted?cmePassStandardId=' + datas.cmePassStandardId,
+                                type: 'get',
+                                dataType: 'json',
+                                contentType: 'application/json;charset=UTF-8',
+                                success: function (res) {
+                                    if (res.status == 200) {
+                                        layui.layer.closeAll();
+                                        $('#searchBtn').click();
+                                        layer.msg('删除成功')
+                                    } else {
+                                        layui.layer.msg(res.msg || '系统繁忙，请稍后重试', {
+                                            time: 1000, //1s后自动关闭
+                                            end: function (o) {
+                                                layui.layer.closeAll();
+                                            }
+                                        });
+                                    }
+                                },
+                                error: function (req, msg) {
+                                    layui.layer.msg('系统繁忙，请稍后重试', {
+                                        time: 1000, //1s后自动关闭
+                                        end: function (o) {
+                                            layui.layer.closeAll();
+                                        }
+                                    });
+                                }
+                            });
+                        })
+                        break;
+                    case 'applicableScope':
+                        layer.open({
+                            type: 2,
+                            title: '适用医院及职称',
+                            content: 'applicable_scope.html' +
+                                '?cmePassStandardId=' + datas.cmePassStandardId +
+                                '&standNo=' + datas.standNo,
+                            // maxmin   : true,
+                            area: ['50%', '495px'],
+                            btn: ['关闭'],
+                            btnAlign: 'c'
+                        });
+                        break;
+                    case 'applicableScope2':
+                        layer.open({
+                            type: 2,
+                            title: '适用医院及职称',
+                            content: 'cme_pass_standard_title.html' +
+                                '?cmePassStandardId=' + datas.cmePassStandardId +
+                                '&standNo=' + datas.standNo,
+                            // maxmin   : true,
+                            area: ['100%', '100%'],
+                            btn: ['关闭'],
+                            btnAlign: 'c'
+                        });
+                        break;
+                    default:
+                }
+            });
+
+
+            /** form 表单相关操作 */
+            // 新增/修改表单提交
+            form.on('submit(submit)', function (data) {
+                // 用于判断是新增还是修改
+                var formTableId = $('#pass-standard-alert input[name=\"cmePassStandardId\"]').val();
+                var URL = huayi_sjwh_url + 'cmePassStandard/';
+                var datas = data.field;
+                datas.cmeStandardKindId = cmeStandardKindId;
+
+                // 适用医院级别
+                // var unitLevelAddSelect =  xmSelectUnitLevel.getValue();
+                // var hospitalLevelIds = '';
+                // $.each(unitLevelAddSelect, function (index, item) {
+                //     hospitalLevelIds += item.value + ',' ;
+                // });
+                // datas.hospitalLevelIds = hospitalLevelIds;
+
+                // 适用职称
+                datas.titleIds = $("#hidden_title_ids").val();
+
+                // 适用学分级别 
+                // var scoreLevelAddSelect =  xmSelectScoreLevel.getValue();
+                // var scoreLevelIds = '';
+                // $.each(scoreLevelAddSelect, function (index, item) {
+                //     scoreLevelIds += item.value + ',' ;
+                // });
+                // datas.scoreLevelIds = scoreLevelIds;
+
+                debugger
+                if(!datas.topUnitId){
+                    layer.msg('最高单位不可为空')
+                    return false;
+                }
+                if(!datas.hospitalLevelIds){
+                    layer.msg('适用医院级别不可为空')
+                    return false;
+                }
+                if(!datas.titleIds){
+                    layer.msg('适用职称不可为空')
+                    return false;
+                }
+
+                // 描述 具体规定详细说明 规则描述, 若未填写设置默认值
+                if(datas.ruleList == ""){
+                    datas.ruleList = "..";
+                }
+                if(datas.ruleDesc == ""){
+                    datas.ruleDesc = "..";
+                }
+                if(datas.description == ""){
+                    datas.description = "..";
+                }
+
+                var flag = formTableId === null || formTableId === '';
+                if (flag) {     // 走新增逻辑
+                    URL += 'save';
+                } else {        // 走修改逻辑
+                    URL += 'update';
+                }
+                axios({
+                    method: 'post',
+                    url: URL,
+                    data: JSON.stringify(datas),
+                    headers: { 'Content-Type': 'application/json;charset=UTF-8' }
+                }).then(response => {
+                    if (response.status == 200 && response.data.status == 200) {
+
+                        layer.closeAll();
+                        // 表格重载
+                        loaderTable();
+                        layer.msg('保存成功');
+
+                    } else {
+                        layer.msg(response.data.msg);
+                    }
+                }).catch(err => {
+                    layer.msg('网络异常，请稍后再试');
+                });
+                return false;
+            });
+
+             // 添加/编辑 选择单位按钮点击
+            $("#selectUnitBtn").click(function () {
+                layer.open({
+                    area: ['700px', '600px'],
+                    type: 2,
+                    title: '选择单位',
+                    content: '/pages/controls/unit/unitsMessage.html'
+                });
+                return false;
+            });
+            window.getChildUnitMsg = function (unitId, unitName) {
+                $("#hidden_unit_id").val(unitId);
+                $("#text_unit_name").val(unitName);
+            }
+            
+             // 搜索 选择单位按钮点击
+             $("#selectUnitBtnSearch").click(function () {
+                layer.open({
+                    area: ['700px', '600px'],
+                    type: 2,
+                    title: '选择单位',
+                    content: 'unitsMessage.html?unitIds=' + (topUnitIdList ? topUnitIdList : '')
+                });
+                return false;
+            });
+            window.getChildUnitMsg2 = function (unitIds, unitName) {
+                $("#hidden_unit_id_search").val(unitIds);
+                topUnitIdList = unitIds;
+                $("#text_unit_name_search").val(unitName);
+            }
+               // 获取 适用医院级别, 适用职称, 适用学分级别
+            var getPassStandardFor = function (datas) {
+                $.ajax({
+                    url: huayi_sjwh_url + 'cmePassStandard/passStandFor/' + datas.cmePassStandardId,
+					async: false,
+                    type: 'get',
+                    success: function (res) {
+                        if (res && res.success) {
+                            // 适用医院级别
+                            datas.hospitalLevelIds = res.data.hospitalLevelIds;
+                            // 适用职称
+                            datas.titleIds = res.data.titleIds;
+                            datas.titleNames = res.data.titleNames;
+
+                            datas.scoreLevelIds = res.data.scoreLevelIds;
+                        } else {
+                            console.log('score kind is null!');
+                        }
+                    }
+                });
+            };
+
+            // 初始化学分类别
+            var initScoreKinds = function (initArr) {
+                $.ajax({
+                    url: huayi_sjwh_url + 'cmecomscorelevel/kindAndLevel?cmeStandardKindId=' + cmeStandardKindId,
+					async: false,
+                    type: 'get',
+                    success: function (res) {
+                        var levelKindArray = res.data;
+                        if (levelKindArray != null && levelKindArray.length > 0) {
+                            $("#score-level-add-select").children("option").remove();
+                            $("#limit-add-select").children("option").remove();
+                            
+                            // 限制条件
+                            var limitOptions = '<option value=">=">&gt;=</option>'
+                                + '<option value="<=">&lt;=</option>'
+                                + '<option value="=">=</option>'
+                                + '<option value="&gt;">&gt;</option>'
+                                + '<option value="<"><</option>';
+                            // for (var i = 0; i < levelKindArray.length; i++) {
+                            //     // limitOptions += '<option value="' + levelKindArray[i].scorelevelid + '">' + levelKindArray[i].scorelevelname + '</option>';
+                            // }
+                            $('#limit-add-select').append(limitOptions);
+
+                              // 适用类别复选框
+                            xmSelectScoreLevel = xmSelect.render({
+                                el: '#score-level-add-select',
+                                // autoRow: true,
+                                name: 'scoreLevelIds',
+                                initValue: initArr,
+                                data: function () {
+                                    var scoreLevels = new Array();
+                                    scoreLevels.push({ "name": '总学分', "value": '总学分' });
+                                    scoreLevels.push({ "name": '总学时', "value": '总学时' });
+                                    scoreLevels.push({ "name": '类别合计', "value": '类别合计' });
+                                    for (var i = 0; i < levelKindArray.length; i++) {
+                                        scoreLevels.push({ "name": levelKindArray[i].scorelevelname, "value": levelKindArray[i].scorelevelid });
+                                    }
+                                    return scoreLevels;
+                                },
+                            });
+                            form.render('select'); //刷新select选择框渲染
+                        } else {
+                            console.log('score kind is null!');
+                        }
+                    }
+                });
+            };
+
+            // 单位级别复选下拉框
+            function initUnitLevelSelect(initArr) {
+                $.ajax({
+                    type: "get",
+					async: false,
+                    url: huayi_sjwh_url + "cmeUnitLevel/listNoPage",
+                    data: {
+                        cmeStandardKindId: cmeStandardKindId
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        // 复选框
+                        xmSelectUnitLevel = xmSelect.render({
+                            el: '#unitLevelAddSelect',
+                            // autoRow: true,
+                            name: 'hospitalLevelIds',
+                            initValue: initArr,
+                            data: function () {
+                                var unitLevels = new Array();
+                                if (data.data != null && data.data.length > 0) {
+                                    for (var i = 0; i < data.data.length; i++) {
+                                        unitLevels.push({ "name": data.data[i].unitLevelName, "value": data.data[i].unitLevelId });
+                                    }
+                                }
+                                return unitLevels;
+                            },
+                        });
+                        form.render('select'); //刷新select选择框渲染
+                    },
+                    error: function (data) {
+                        layer.msg("响应失败");
+                    }
+                });
+            }
+
+            // 选择职称
+            $("#checkTitleBtn").click(function () {
+                layer.open({
+                    type: 2,
+                    title: '适用医院及职称',
+                    content: 'checkTitle.html' +
+                        '?titleIds='+ $("#hidden_title_ids").val(),
+                    // maxmin   : true,
+                    area: ['80%', '80%'],
+                    // btn: ['关闭'],
+                    // btnAlign: 'c'
+                });
+            });
+
+
+        });
+        function getChildTitles(titleIds, titleNames) {
+            console.log(titleNames)
+            console.log(titleIds)
+            $("#text_title_names").val(titleNames);
+            $("#hidden_title_ids").val(titleIds);
+        }
+    </script>
+</body>
+
+</html>

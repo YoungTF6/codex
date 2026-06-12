@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>注册人员表单</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+
+    <link rel="stylesheet" href="/css/person/reset.css" />
+    <link rel="stylesheet" href="/css/person/style.css" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+        media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <!-- <script type="text/javascript" src="/js/global_ajax_setting.js"></script> -->
+
+    <!-- 工具 -->
+    <script type="text/javascript" src="/js/base64.js"></script>
+    <script type="text/javascript" src="/js/tools/verification.js"></script>
+    <script type="text/javascript" src="/js/tools/urlTools.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script src="../../../js/tools/aes-tool.js"></script>
+    <script src="../../../js/crypto-js-v3.1.2/rollups/aes.js"></script>
+    <style>
+        .ztree li span.button {
+            vertical-align: inherit !important;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body" style="margin:0 auto;">
+                <div class="layui-form" lay-filter="cmeDetail" style="text-align: center;">
+
+                    <fieldset class="layui-elem-field" style="margin-top: 10px; padding: 30px;">
+                        <legend
+                            style="color:rgba(235, 39, 39, 0.514);text-align: left;font-weight: bold; font-size: 18px;;">
+                            必填信息</legend>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <span style="color: red;float: left; line-height: 20px;">*</span>
+                                <div class="layui-input-inline" style="width: 115px;text-align: left;">
+                                    <select id="select_cert_type" name="certType" lay-verify="required"
+                                        lay-filter="select_cert_type">
+                                        <option value="9fcb08ce-ee86-4e4c-9611-9d430101cea4">身份证</option>
+                                        <option value="3444541a-9703-44ed-aae6-9d8b01574916">港澳台居民居住证</option>
+                                        <option value="a85da857-fd72-4e9a-8657-afa900a0f569">台湾居民来往大陆通行证</option>
+                                        <option value="031d0bdc-8cd0-11ee-9c60-005056a64c01">港澳居民来往内地通行证</option>
+                                        <option value="d681a2b3-df10-421a-8279-afa900a0f569">其他法定有效证件</option>
+                                    </select>
+                                </div>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="text_cert_id" name="certId" lay-verify="required"
+                                        placeholder="请输入证件号" autocomplete="off" class="layui-input" maxlength="30">
+                                </div>
+                                <input type="hidden" name="comPersonId" id="hidden_com_person_id" />
+                                <input type="hidden" name="personNo" id="hidden_person_no" />
+                                <input type="hidden" name="cmePersonKeyId" id="hidden_cme_person_key_id" />
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;"><span
+                                        class="tips_inp">*</span>姓名</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="text_person_name" name="personName" lay-verify="required"
+                                        placeholder="请输入姓名" autocomplete="off" class="layui-input" maxlength="30">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;"><span
+                                        class="tips_inp">*</span>性别</label>
+                                <div class="layui-input-inline" style="text-align: left;">
+                                    <select id="select_sex" name="sex" lay-verify="required">
+                                        <option value="">请选择性别</option>
+                                        <optgroup>
+                                            <option value="男">男</option>
+                                            <option value="女">女</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;"><span
+                                        class="tips_inp">*</span>出生日期</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="date_birthday" name="birthday"
+                                        autocomplete="off" placeholder="请选择出生日期" lay-verify="required" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;"><span
+                                        class="tips_inp">*</span>当前职称</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="text_title_name" name="titleName" placeholder="请输入当前职称"
+                                        autocomplete="off" class="layui-input" readonly />
+                                    <input type="hidden" name="titleId" id="hidden_title_id" />
+                                </div>
+                            </div>
+                            <div class="layui-inline layui-form" lay-filter="deptSelectArea">
+                                <label class="layui-form-label" style="width: 100px;"><span
+                                        class="tips_inp">*</span>科室</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" autocomplete="off" class="layui-input" lay-filter="deptSelect"
+                                        id="deptSelect" placeholder="请选择科室" autocomplete="off">
+                                </div>
+                                <input type="hidden" name="deptId" id="hidden_dept_id" />
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+
+                            <!-- <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;"><span
+                                        class="tips_inp">*</span>职称评定时间</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="date_grant_date" name="grantDate"
+                                        autocomplete="off" readonly placeholder="请选择职称评定时间">
+                                </div>
+                            </div> -->
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;"><span
+                                        class="tips_inp">*</span>在编状态</label>
+                                <div class="layui-input-inline" style="text-align: left;">
+                                    <select name="isIntheseries" id="select_is_intheseries" lay-verify="required">
+                                        <option value="">请选择在编状态</option>
+                                        <option value="0">在编</option>
+                                        <option value="1">不在编</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;"><span
+                                        class="tips_inp">*</span>职称聘任年度</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="date_job_date" name="jobDate" readonly
+                                        placeholder="请选择职称聘任年度">
+                                </div>
+                                <div class="layout_btn" style="position: absolute; left:330px;">
+                                    <input type="checkbox" id="checkbox_does_engage" lay-filter="checkbox_does_engage"
+                                        lay-skin="primary" title="未聘任" style="margin-top: -10px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <!-- <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;"><span
+                                        class="tips_inp">*</span>人员状态</label>
+                                <div class="layui-input-inline" style="text-align: left;">
+                                    <select name="personStateId" id="select_person_state_id" lay-verify="required"
+                                        lay-verify="required">
+                                        <option value="">请选择人员状态</option>
+                                    </select>
+                                </div>
+                            </div> -->
+                           
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;"><span
+                                        class="tips_inp">*</span>手机</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="mobile" id="text_mobile" lay-verify="required"
+                                        autocomplete="off" onblur="inputMobileBlur()" class="layui-input"
+                                        placeholder="请输入手机号" maxlength="30">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label"
+                                    style="width: 200px;color:red;text-align:left;">可通过手机号码找回个人密码</label>
+                                <div class="layui-input-inline" style="width: 90px;">
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline layui-form" lay-filter="specSelectArea">
+                                <label class="layui-form-label" style="width: 100px;"><span
+                                        class="tips_inp">*</span>专业</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" autocomplete="off" class="layui-input" lay-filter="specSelect"
+                                        id="specSelect" placeholder="请选择专业">
+                                </div>
+                                <input type="hidden" id="hidden_spec" name="spec">
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;"><span class="tips_inp"
+                                        id="photo_required_span">*</span>个人免冠照片</label>
+                                <div class="layui-input-inline">
+                                    <!-- style="position: absolute;left: 50px;" -->
+                                    <button type="button" class="layui-btn" id="btnImgUpload">上传照片</button>
+                                    <img alt="头像" id="div_show_photo" src="/img/person/touxiang.jpg" width="30"
+                                        height="30" style="cursor:pointer; display: none;" />
+                                    <input type="hidden" id="hidden_photo" name="photo" />
+                                </div>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                    <fieldset class="layui-elem-field" style="margin-top: 30px;padding: 30px">
+                        <legend style="color:rgb(55, 192, 112);text-align: left;font-weight: bold;font-size: 18px;">联系信息
+                        </legend>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;">联系电话</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="telephone" id="text_telephone" autocomplete="off"
+                                        class="layui-input" maxlength="30">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;">电子邮箱</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="email" id="text_email" autocomplete="off"
+                                        class="layui-input" maxlength="100">
+                                </div>
+                            </div>
+
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="layui-elem-field" style="margin-top: 30px;padding: 30px">
+                        <legend style="color:rgb(55, 192, 112);text-align: left;font-weight: bold;font-size: 18px;">选填信息
+                        </legend>
+
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;">原IC卡号</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="otherNo" id="text_otherNo" autocomplete="off"
+                                        class="layui-input" maxlength="20">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;">执业资格证书号</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="profCertId" id="text_profCertId" autocomplete="off"
+                                        class="layui-input" maxlength="50">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;">民族</label>
+                                <div class="layui-input-inline" style="text-align: left;">
+                                    <select class="con_sel" name="nation" id="select_nation">
+                                        <option value="">请选择民族</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;">毕业院校</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="university" id="text_university" autocomplete="off"
+                                        class="layui-input" maxlength="50">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;">学历</label>
+                                <div class="layui-input-inline" style="text-align: left;">
+                                    <select name="education" id="select_education">
+                                        <option value="">请选择学历</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;">学位</label>
+                                <div class="layui-input-inline" style="text-align: left;">
+                                    <select name="degree" id="select_degree">
+                                        <option value="">请选择学位</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item" id="div_row_administrator">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;">行政级别</label>
+                                <div class="layui-input-inline" style="text-align: left;">
+                                    <select name="administratorlevel" id="select_administratorlevel">
+                                        <option value="">请选择行政级别</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;">行政职务</label>
+                                <div class="layui-input-inline" style="text-align: left;">
+                                    <select name="administratorduty" id="select_administratorduty">
+                                        <option value="">请选择行政职务</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;">院内职务</label>
+                                <div class="layui-input-inline" style="text-align: left;">
+                                    <select name="hospitalDuty" id="select_hospital_duty">
+                                        <option value="">请选择院内职务</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;">内部编号</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="internals" id="text_internals" autocomplete="off"
+                                        class="layui-input" maxlength="30">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item shanxi">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;">籍贯</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="nativePlace" id="text_native_place" autocomplete="off"
+                                        class="layui-input" maxlength="100">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 100px;">微信号</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="wechatNumber" id="text_wechat_number" autocomplete="off"
+                                        class="layui-input" maxlength="100">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline" style="width: 680px;">
+                                <label class="layui-form-label" style="width: 100px;">备注</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="remark" id="text_remark" style="width: 540px;"
+                                        autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+
+                        </div>
+                    </fieldset>
+
+                    <div class="layui-btn-container">
+                        <button type="submit" class="layui-btn" lay-submit="" lay-filter="btnSave"
+                            id="btnSave">保存</button>
+                        <button class="layui-btn layui-btn-primary" id="btnCancel">取消</button>
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<div id="layer_notice" style="display: none;">
+    <img id="show_img" src="" height="400" />
+</div>
+
+<script>
+
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        treeSelect: 'treeSelect'
+    });
+
+    layui.use(['form', 'jquery', 'layer', "laydate", 'xmSelect', 'treeSelect'], function () {
+        var $ = layui.jquery;
+        var form = layui.form;
+        var layer = layui.layer;
+        var laydate = layui.laydate;
+        var xmSelect = layui.xmSelect;
+        var treeSelect = layui.treeSelect;
+        var origiMobile = "";
+        var curDeptId = "";
+        var fun_person_photo_required = '0';
+        var yitihuaTaoIds = ['6eec6713-670a-43cc-ad4d-9bd700a92928', 'a6280900-a9c2-11ec-84d6-fa163e9b64fb'];
+        var taoId = "", unitId = "";
+        window.getUnitId = function () {
+            if(unitId) return unitId;
+            return localStorage.getItem("unit-id");
+        }
+        window.getCmeStandardKindId = function () {
+            return localStorage.getItem("standardkind-id");
+        }
+
+        //获取配置的值
+        window.getConfig = function (config_name, unitId) {
+            var config_value = "";
+            $.ajax({
+                async: false,
+                type: "post",
+                url: huayi_sjwh_url + "cmeCommonConfig/getConfigByUnitFromRedis",
+                data: { unitId: unitId, configNames: "fun_person_photo_required" },
+                success: function (res) {
+                    if (res.success == true) {
+                        if (config_name == "fun_person_photo_required") {
+                            config_value = res.data.fun_person_photo_required;
+                        }
+                    } else {
+                        layer.msg("获取配置出错");
+                    }
+                },
+                error: function () {
+                    layer.msg("获取配置出错");
+                }
+            });
+            return config_value;
+        }
+
+        window.getDeptId = function () {
+            if (localStorage.getItem("user-type") == 13) {
+                let userId = localStorage.getItem("user-id");
+                $.ajax({
+                    async: false,
+                    headers: {
+                        'Authorization': localStorage.getItem('token'),
+                        'KJPT-USER-ID': localStorage.getItem('user-id')
+                    },
+                    url: huayi_permission_url + "comuser/detail",
+                    type: "get",
+                    data: { userId: userId },
+                    success: function (res) {
+                        if (res.success == true) {
+                            if (res.data != null && res.data != undefined && res.data != "") {
+                                curDeptId = res.data.base.unitId;
+                            }
+                        }
+                    },
+                    error: function () {
+                        layer.msg("发送信息失败");
+                    }
+                });
+            }
+        }
+
+        /** 科室选择下拉列表初始化 */
+        var deptTreeSelect;
+        window.initDeptTree = function (deptId, unitId) {
+            // var unitId = window.getUnitId();
+            deptTreeSelect = treeSelect.render({
+                elem: '#deptSelect',
+                data: huayi_personorg_url + 'comdept/tree/unit?unitId=' + unitId,
+                type: 'get',
+                search: true,
+                style: {
+                    folder: {     // 父节点图标
+                        enable: true   // 是否开启：true/false
+                    },
+                    line: {     // 连接线
+                        enable: true   // 是否开启：true/false
+                    }
+                },
+                click: function (data) {
+                    $("#hidden_dept_id").val(data.current.id);
+                },
+                success: function () {
+                    treeSelect.refresh('deptSelect');
+                    if (deptId != null && deptId != undefined && deptId != "") {
+                        deptTreeSelect.checkNode('deptSelect', deptId);
+                    }
+                }
+            });
+        }
+
+        //初始化人员状态下拉框
+        window.initPersonState = function () {
+            var cmeStandardKindId = window.getCmeStandardKindId();
+            $.ajax({
+                async: false,
+                url: huayi_personorg_url + "comperson/getPersonStateListByCmeStandardKindId",
+                type: "post",
+                data: { cmeStandardKindId: cmeStandardKindId },
+                success: function (result) {
+                    if (result.success == true) {
+                        var personStateList = result.data;
+                        var personState = {};
+                        for (var i = 0; i < personStateList.length; i++) {
+                            personState = personStateList[i];
+                            $("<option value=" + personState.person_state_id + ">" + personState.person_state_name + "</option>")
+                                .appendTo($("#select_person_state_id"));
+                        }
+                        form.render();
+                    }
+                    else {
+                        layer.msg("加载人员状态下拉框出现问题");
+                    }
+                }
+            });
+        }
+
+        /* 专业树初始化 */
+        var specTreeSelect;
+        window.initSpecTree = function (spec) {
+            specTreeSelect = treeSelect.render({
+                elem: '#specSelect',
+                data: huayi_sjwh_url + 'comPersonSpec/tree',
+                type: 'get',
+                search: true,
+                style: {
+                    folder: {   // 父节点图标
+                        enable: true   // 是否开启：true/false
+                    },
+                    line: {     // 连接线
+                        enable: true   // 是否开启：true/false
+                    }
+                },
+                click: function (data) {
+                    $("#hidden_spec").val(data.current.id);
+                },
+                success: function () {
+                    treeSelect.refresh('specSelect');
+                    if (spec != null && spec != undefined && spec != "") {
+                        specTreeSelect.checkNode('specSelect', spec);
+                    }
+                }
+            });
+        }
+
+        //初始化单个下拉框
+        window.initPerDic = function (select_id, kind_id, errorStr) {
+            $.ajax({
+                async: false,
+                url: huayi_sjwh_url + "comdictionary/getDicsByKindId",
+                data: { kindId: kind_id },
+                success: function (result) {
+                    if (result.success == true) {
+                        var objList = result.data;
+                        var obj = {};
+                        for (var i = 0; i < objList.length; i++) {
+                            obj = objList[i];
+                            $("<option value=" + obj.dict_id + ">" + obj.dict_name + "</option>").appendTo($("#" + select_id))
+                        }
+                    }
+                    else {
+                        layer.msg(errorStr);
+                    }
+                }
+            });
+        }
+
+        //初始化各种下拉框
+        window.initDics = function () {
+            //初始化学历下拉框
+            window.initPerDic("select_education", 1, "初始化学历下拉框失败");
+
+            //初始化学位下拉框
+            window.initPerDic("select_degree", 2, "初始化学位下拉框失败");
+
+            //初始化民族下拉框
+            window.initPerDic("select_nation", 3, "初始化民族下拉框失败");
+
+            //初始化民族行政职务
+            window.initPerDic("select_administratorduty", 10, "初始化行政职务下拉框失败");
+
+            //初始化院内职务
+            window.initPerDic("select_hospital_duty", 6, "初始化院内职务下拉框失败");
+
+            //初始化行政级别
+            window.initPerDic("select_administratorlevel", 9, "初始化行政级别下拉框失败");
+
+            form.render("select");
+
+        }
+
+        window.initAll = function () {
+
+            // 一体化禁用证件号修改
+            if(yitihuaTaoIds.includes(taoId) > 0){
+                $('#text_cert_id,#text_person_name,#text_mobile').addClass("layui-disabled").attr("disabled", "true");
+            } else {
+                $("#text_cert_id,#text_person_name,#text_mobile").removeClass("layui-disabled").removeAttr("disabled", "none");
+            }
+            laydate.render({
+                elem: '#date_birthday'
+                , trigger: 'click'
+            });
+            laydate.render({
+                elem: '#date_grant_date'
+                , trigger: 'click'
+            });
+            laydate.render({
+                elem: '#date_job_date'
+                , trigger: 'click',
+                type: "year"
+            });
+            // window.initPersonState();
+            window.initDics();
+        }
+
+        window.layClose = function () {
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //再执行关闭
+        }
+
+        window.getChildTitle = function (titleId, titleName, type_id, list_order) {
+            $("#hidden_title_id").val(titleId);
+            $("#text_title_name").val(titleName);
+            //当选择 无职称的 时候，职称评定时间为空禁止，聘任年度选择未聘任
+            if (titleId.toLowerCase() == "35208e7a-f827-498e-997d-9b2f0124b233" && titleName == "无职称") {
+                $("#date_grant_date").val("").addClass("layui-disabled").attr("disabled", "disabled");
+                $("#checkbox_does_engage").prop("checked", true).addClass("layui-disabled").attr("disabled", "disabled");
+                $("#date_job_date").val("").addClass("layui-disabled").attr("disabled", "disabled");
+            } else {
+                $("#date_grant_date").removeClass("layui-disabled").removeAttr("disabled");
+                $("#checkbox_does_engage").prop("checked", false).removeClass("layui-disabled").removeAttr("disabled");
+                $("#date_job_date").val("").removeClass("layui-disabled").removeAttr("disabled");
+            }
+            form.render("checkbox");
+        }
+
+        window.initComperson = function (comperson) {
+            if (getQueryString("operate") == "add") {
+                comperson.certId = $("#text_cert_id").val();
+            }
+            comperson.sex = $.trim(comperson.sex);
+            form.val("cmeDetail", comperson);
+            if (comperson.jobDate == null) {
+                $("#checkbox_does_engage").prop("checked", true);
+                $("#date_job_date").val("").addClass("layui-disabled").attr("disabled", "disabled");
+            }
+            form.render();
+
+            if (comperson.photo != null && comperson.photo != '' && comperson.photo != undefined) {
+                $("#div_show_photo").show();
+                $("#show_img").attr("src", comperson.photo.replace(/"/g, '')).show();
+                $("#hidden_photo").val(comperson.photo);
+            }
+        }
+
+
+        $("#text_title_name").focus(function () {
+            layer.open({
+                type: 2,
+                content: "/pages/controls/selectTitle/selectTitle.html",
+                area: ['610px', '380px'],
+                scrollbar: false
+            });
+        });
+
+        form.on('checkbox(checkbox_does_engage)', function (data) {
+            var checked = data.elem.checked;
+            if (checked == true) {
+
+                $("#date_job_date").val("").addClass("layui-disabled").attr("disabled", "disabled");
+            }
+            else {
+                $("#date_job_date").removeAttr("disabled").removeClass("layui-disabled");
+            }
+        });
+
+        window.checkInput = function () {
+            if ($("#select_cert_type").val() == "9fcb08ce-ee86-4e4c-9611-9d430101cea4") {
+                var certId = $("#text_cert_id").val();
+                if (isCertId(certId) == false) {
+                    layer.msg('请输入正确的身份证号', { icon: 5 });
+                    return false;
+                }
+            }
+            if ($("#hidden_title_id").val() == "") {
+                layer.msg('请选择职称', { icon: 5 });
+                return false;
+            }
+            let deptId = $("#hidden_dept_id").val();
+
+            // if (deptId == "" || (deptId != "" && deptId.substring(0, 6) != window.getUnitId())) {
+            if (deptId == "") {
+                layer.msg('请选择科室', { icon: 5 });
+                return false;
+            }
+
+            //"无职称"时， 聘任时间不用判断非空
+            if ($("#hidden_title_id").val().toLowerCase() != "35208e7a-f827-498e-997d-9b2f0124b233") {
+                if ($("#date_grant_date").val() == "") {
+                    $("#date_grant_date").css("border-color", "#FF5722");
+                    layer.msg('请选择职称评定时间', { icon: 5 });
+                    return false;
+                }
+            }
+            if ($("#checkbox_does_engage").prop("checked") == false) {
+                if ($("#date_job_date").val() == "") {
+                    layer.msg('请选择职称聘任年度', { icon: 5 });
+                    return false;
+                }
+            }
+            if ($("#hidden_spec").val() == "") {
+                layer.msg('请选择专业', { icon: 5 });
+                return false;
+            }
+            if (checkMobile($("#text_mobile").val()) == false) {
+                layer.msg('请输入正确的手机号', { icon: 5 });
+                return false;
+            }
+
+            let photoUrl = $("#hidden_photo").val();
+            if (fun_person_photo_required == "1") {
+                if (photoUrl == "" || photoUrl == null || photoUrl == undefined) {
+                    layer.msg('请上传人员照片', { icon: 5 });
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        window.getPerComPerson = function (kind, value) {
+            //首先判断已存在，如果存在，那么查询注册审核状态，如果注册审核状态为通过，查询调动状态
+            var comperson = null;
+            var data = null;
+            if (kind == "certId") {
+                data = { certId: value };
+            }
+            if (kind == "comPersonId") {
+                data = { comPersonId: value };
+            }
+            if (kind == "personNo") {
+                data = { personNo: value };
+            }
+
+            $.ajax({
+                async: false,
+                url: huayi_personorg_url + "comperson/getOne",
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                data: data,
+                success: function (result) {
+                    if (result.success == true) {
+                        comperson = result.data;
+                    } else {
+                        layer.msg(result.msg);
+                    }
+                },
+                error: function () {
+                    layer.msg("请求出现问题");
+                }
+            });
+            return comperson;
+        }
+
+        //该控制字段 is_update 只用于 看似是添加，实则是更新的场景(当单位添加的身份证号是人员注册但是未审核通过的场景)
+        var is_update = 0;
+        form.on('submit(btnSave)', function (data) {
+            if (checkInput() == true) {
+                var hasCertIdExists;
+                var certIdPersonNameMatches;
+                //添加
+                if (getQueryString("operate") == "add" && ($("#hidden_com_person_id").val() == "" || $("#hidden_com_person_id").val() == null || $("#hidden_com_person_id").val() == undefined)) {
+                    //验证手机号是否已经存在
+                    let mobile = $("#text_mobile").val();
+                    if (checkMobileExists(mobile)) {
+                        layer.msg("系统中已存在您输入的手机号,请更换");
+                        return false;
+                    }
+                    var personObj = data.field;
+                    personObj.userName = personObj.certId;
+                    let certIdLength = personObj.certId.length;
+                    let userPwd = personObj.certId.substring(certIdLength - 6, certIdLength);
+                    personObj.userPwd = encodeAesString(userPwd).toString();
+                    personObj.unitId = window.getUnitId();
+                    personObj.source = 1;
+                    personObj.photo = personObj.photo.replace(/"/g, "");
+                    personObj.operateUnit = localStorage.getItem("unit-id");
+                    personObj.operateUser = localStorage.getItem("user-name");
+                    $.ajax({
+                        async: false,
+                        url: huayi_personorg_url + "comperson/register",
+                        headers: {
+                            'Authorization': localStorage.getItem('token'),
+                            'KJPT-USER-ID': localStorage.getItem('user-id')
+                        },
+                        type: "post",
+                        data: JSON.stringify(personObj),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (result) {
+                            if (result.success == true) {
+                                console.log(result.data);
+                                var photoUrl = $("#hidden_photo").val();
+                                //var personNo = result.data.personNo;
+                                //changePhotoName(photoUrl, personNo);
+                                parent.reloadTable();
+                                window.layClose();
+                            }
+                            else {
+                                layer.msg("添加人员失败");
+                            }
+                        },
+                        error: function () {
+                            layer.msg("发送请求失败");
+                        }
+                    });
+                }
+
+                //编辑  is_update=1,是用于单位添加 该单位驳回的人和单位未审核的人的时候，看似是添加，其实是编辑
+                if ((getQueryString("operate") == "edit" || is_update == 1) && ($("#hidden_com_person_id").val() != "" && $("#hidden_com_person_id").val() != undefined && $("#hidden_com_person_id").val() != null)) {
+                    var personObj = data.field;
+
+                    personObj.unitId = window.getUnitId();
+                    personObj.photo = personObj.photo.replace(/"/g, "");
+                    personObj.userId = localStorage.getItem('user-id');
+                    personObj.source = 1;
+                    personObj.operateUnit = localStorage.getItem("unit-id");
+                    personObj.operateUser = localStorage.getItem("user-name");
+
+                    //验证手机号是否已经存在
+                    let mobile = $("#text_mobile").val();
+                    if (mobile != origiMobile) {
+                        if (checkMobileExists(mobile)) {
+                            layer.msg("系统中已存在您输入的手机号,请更换");
+                            return false;
+                        }
+                    }
+
+                    let url = huayi_personorg_url + "comperson/update";
+                    if (is_update == 1) {
+                        url = huayi_personorg_url + "comperson/updateForReRegister";
+
+                    }
+                    $.ajax({
+                        async: false,
+                        url: url,
+                        headers: {
+                            'Authorization': localStorage.getItem('token'),
+                            'KJPT-USER-ID': localStorage.getItem('user-id')
+                        },
+                        type: "post",
+                        data: JSON.stringify(personObj),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (result) {
+                            if (result.success == true) {
+                                parent.reloadTable();
+                                window.layClose();
+                            } else {
+                                layer.msg(result.msg);
+                            }
+                        },
+                        error: function () {
+                            layer.msg("发送请求失败");
+                        }
+                    });
+                }
+
+
+            }
+        });
+
+        $("#btnCancel").click(function () {
+            window.layClose();
+        });
+
+        /*
+             check_state 审核状态0:默认值未审核 1：审核通过  4 驳回  注：单位只能查询或统计未审核和审核通过的记录
+             单位添加人员时，填写身份证号码，此时判断该身份证有三种情况：
+             1、身份证号不符合填写规则，提示“请正确填写您的证件号码”。
+             2、证件号在人员库已存在，且已有单位接收时提示“您输入的证件号码在XXXX单位中已存在，请勿重复添加”。
+             3、当证件号在人员库已存在，且为调出状态时，提示：“您输入的证件号码在系统中已存在，为已调出状态，请至人员调动管理模块进行调入”。
+             4、当证件号已注册，但接收单位未接收或驳回状态时，提示“该证件号码个人已注册，但接收单位未审核或已驳回，是否获取该人注册信息直接添加？”，
+                点击是，添加页面所有信息直接读取个人注册的信息。
+        */
+        $("#text_cert_id").blur(function () {
+            window.CheckCertId();
+        });
+
+        form.on('select(select_cert_type)', function (data) {
+            // console.log(data.elem); //得到select原始DOM对象
+            // console.log(data.value); //得到被选中的值
+            // console.log(data.othis); //得到美化后的DOM对象
+            if ($("#text_cert_id").val() != "" && $("#text_cert_id").val() != null) {
+                window.CheckCertId();
+            }
+
+        });
+
+        window.CheckCertId = function () {
+            if (getQueryString("operate") == "add") {
+                var certId = $("#text_cert_id").val();
+                if ($.trim(certId) == "") {
+                    layer.msg('请输入证件号码', { icon: 5 });
+                    return false;
+                }
+                if ($("#select_cert_type").val() == "9fcb08ce-ee86-4e4c-9611-9d430101cea4") {
+                    if (isCertId(certId) == false) {
+                        layer.msg('请输入正确的身份证号', { icon: 5 });
+                        return false;
+                    }
+                }
+                var comperson = window.getPerComPerson("certId", certId);
+
+                if (comperson != null) {
+                    if (comperson.checkState == 0 || comperson.checkState == 4) {
+                        layer.confirm("该证件号码个人已注册，但接收单位未审核或已驳回，是否获取该人注册信息直接添加？", { icon: 3, title: '提示' },
+                            function (index) {
+                                layer.close(index);
+                                window.initComperson(comperson);
+                                //在此处获取下手机号， 用于判断手机号是否被用户修改了，如果手机号与原手机号不一样，
+                                //需要判断输入的手机号在数据库里不存在
+                                origiMobile = comperson.mobile;
+                                treeSelect.destroy('deptSelect');
+                                treeSelect.destroy('specSelect');
+                                window.initDeptTree(comperson.deptId);
+                                setTimeout(() => {
+                                    window.initSpecTree(comperson.spec);
+                                }, 500);
+                                is_update = 1;
+                            },
+                            function (index) {
+                                layer.close(index);
+                                window.layClose();
+                            }
+                        );
+                    }
+                    if (comperson.checkState == 1 && comperson.transferState != 1) {
+                        layer.alert("您输入的证件号码在" + comperson.unitName + "单位中已存在，请勿重复添加", function () {
+                            $('#btnSave').addClass("layui-btn-disabled").attr("disabled", true);
+                            window.layClose();
+                        });
+                    }
+                    if (comperson.checkState == 1 && comperson.transferState == 1) {
+                        layer.alert("您输入的证件号码在系统中已存在，为已调出状态，请至人员调动管理模块进行调入", function () {
+                            $('#btnSave').addClass("layui-btn-disabled").attr("disabled", true);
+                            window.layClose();
+                        });
+                    }
+                } else {
+                    if ($("#select_cert_type").val() == "9fcb08ce-ee86-4e4c-9611-9d430101cea4") {
+                        if (certId.length == 18) {
+                            var birthday = certId.substring(6, 14);
+                            var gender = certId.substring(16, 17);
+                            var year = birthday.substring(0, 4);
+                            var month = birthday.substring(4, 6);
+                            var day = birthday.substring(6, 8);
+                            $("#date_birthday").val(year + "-" + month + "-" + day);
+                            var gender_value = (gender % 2 == 0) ? "女" : "男";
+                            $("#select_sex").val(gender_value);
+                            form.val("cmeDetail", { sex: gender_value });
+
+                        }
+                    }
+                }
+            }
+        }
+
+        //上传图片
+        $("#btnImgUpload").click(function () {
+            var unitId = window.getUnitId();
+            var personNo = $("#hidden_person_no").val();
+            layer.open({
+                title: "上传头像",
+                type: 2,
+                area: ['800px', '550px'],
+                fixed: false, //不固定
+                maxmin: true,
+                content: '/pages/person/cropHtml/cropPhoto.html?unitId=' + unitId + "&cmeStandardKindId=" + taoId,
+                closeBtn: 1
+            });
+        });
+
+        //得到图片地址
+        window.getPhotoUrl = function (photoUrl, winName) {
+            layer.msg("上传成功");
+            console.log("photoUrl:" + photoUrl.replace(/"/g, ''));
+            $("#div_show_photo").show();
+            $("#show_img").attr("src", photoUrl.replace(/"/g, '')).show();
+            $("#hidden_photo").val(photoUrl);
+            var index = layer.getFrameIndex(winName);
+            layer.close(index);
+        }
+        //查看图片
+        $("#div_show_photo").click(function () {
+            layer.open({
+                type: 1,
+                shade: false,
+                title: false,
+                content: $('#layer_notice')
+            });
+        });
+        //添加人员成功后，修改图片名臣
+        window.changePhotoName = function (photoUrl, personNo) {
+            if (personNo === "") {
+                return;
+            }
+            //photoPath newName
+            var photoUrl = photoUrl.replace(/"/g, "");
+            var start = photoUrl.indexOf("/photo");
+            var end = photoUrl.length;
+            var photoPath = photoUrl.substring(start + 1, end);
+
+            $.ajax({
+                async: false,
+                type: "post",
+                url: huayi_personorg_url + "uploadApi/ChangeImageName",
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                data: { photoPath: photoUrl, newName: personNo },
+                success: function (result) {
+                    if (result.success == true) {
+                        let newPath = result.data;
+                        $.ajax({
+                            headers: {
+                                'Authorization': localStorage.getItem('token'),
+                                'KJPT-USER-ID': localStorage.getItem('user-id')
+                            },
+                            url: huayi_personorg_url + "comperson/updatePhoto",
+                            data: { personNo: personNo },
+                            type: "post",
+                            success: function (result1) {
+                                if (result1.success == true) {
+
+                                } else {
+                                    layer.msg("系统出错,请联系管理员");
+                                }
+                            }
+
+                        });
+                    } else {
+                        layer.msg("图片名称修改失败:" + result.msg);
+                    }
+                },
+                error: function () {
+                    layer.msg("请求报错");
+                }
+            });
+        }
+
+        // 判断手机号是否已经存在
+        window.checkMobileExists = function (mobile) {
+            mobile=encodeAesString(mobile).toString();
+            var check = false;
+            $.ajax({
+                async: false,
+                type: "get",
+                url: huayi_personorg_url + "comperson/doesMobileExists",
+                data: { "mobile": mobile },
+                success: function (result) {
+                    if (result.success == true) {
+                        check = result.data > 0 ? true : false;
+                    }
+                },
+                error: function () {
+                    layer.msg("请求报错");
+                }
+            });
+            return check;
+        }
+
+        window.inputMobileBlur = function () {
+            if ((getQueryString("operate") == "add" && ($("#hidden_com_person_id").val() == "" || $("#hidden_com_person_id").val() == null || $("#hidden_com_person_id").val() == undefined))) {
+                let mobile = $("#text_mobile").val();
+                if (checkMobileExists(mobile)) {
+                    layer.msg("系统中已存在您输入的手机号,请更换");
+                    return false;
+                }
+            }
+        }
+
+        $(function () {
+            taoId = getQueryString("taoId");
+            unitId = getQueryString("unitId");
+
+            window.initAll();
+
+            //山西隐藏行政职务和行政级别
+            if (getCmeStandardKindId().toLowerCase() == "db0d980b-03d4-4c9c-b2d4-9f890109ed47") {
+                $("#div_row_administrator").hide();
+                $(".shanxi").show();
+            } else {
+                $("#div_row_administrator").show();
+                $(".shanxi").hide();
+            }
+
+            //获取科室信息，存放在 curDeptId 中
+            getDeptId();
+
+            if (getQueryString("operate") == "edit") {
+                var comPersonId = getQueryString("comPersonId");
+                var comPerson = getPerComPerson("comPersonId", comPersonId);
+                origiMobile = comPerson.mobile;
+                window.initComperson(comPerson);
+                //编辑时，如果是单位角色，加载科室树并选中人员科室。如果是科室角色，科室直接不可编辑
+                if (curDeptId != null && curDeptId != undefined && curDeptId != "") {
+                    $("#hidden_dept_id").val(curDeptId);
+                    $("#deptSelect").val(localStorage.getItem('realname')).addClass("layui-disabled");
+                } else {
+                    window.initDeptTree(comPerson.deptId, comPerson.unitId);
+                }
+
+                setTimeout(() => {
+                    //编辑时，加载专业树并选中专业
+                    window.initSpecTree(comPerson.spec);
+                }, 500);
+                // fun_person_photo_required = getConfig("fun_person_photo_required", comPerson.unitId);
+                if (fun_person_photo_required == "0") {
+                    $("#photo_required_span").hide();
+                } else {
+                    $("#photo_required_span").show();
+                }
+
+                // $("#select_cert_type").addClass("layui-disabled").attr("disabled", "disabled");
+                // $("#text_cert_id").addClass("layui-disabled").attr("disabled", "disabled");
+                $("#select_person_state_id").addClass("layui-disabled").attr("disabled", "disabled");
+                $("#text_title_name").addClass("layui-disabled").attr("disabled", "disabled");
+                $("#date_grant_date").addClass("layui-disabled").attr("disabled", "disabled");
+
+                //当时无职称的时候
+                if ($("#hidden_title_id").val().toLowerCase() == "35208e7a-f827-498e-997d-9b2f0124b233") {
+                    $("#date_job_date").addClass("layui-disabled").attr("disabled", "disabled");
+                    $("#checkbox_does_engage").addClass("layui-disabled").attr("disabled", "disabled");
+                    form.render("select");
+                }
+
+                if (comPerson.photo !== "" && comPerson.photo != null && comPerson.photo != undefined) {
+                    $("#div_show_photo").show();
+                    $("#show_img").attr("src", comPerson.photo).show();
+                    $("#hidden_photo").val(comPerson.photo);
+                }
+                form.render();
+            } else {
+                //新增时，如果是单位角色，加载科室树。如果是科室角色，科室直接不可编辑
+                if (curDeptId != null && curDeptId != undefined && curDeptId != "") {
+                    $("#hidden_dept_id").val(curDeptId);
+                    $("#deptSelect").val(localStorage.getItem('realname')).addClass("layui-disabled");
+                } else {
+                    window.initDeptTree();
+                }
+
+                //如果两个树几乎同时加载，会全都加载不上
+                setTimeout(() => {
+                    //新增时，加载专业树
+                    window.initSpecTree();
+                }, 500);
+
+            }
+
+            form.render("select");
+        });
+
+    });
+</script>
+
+</html>

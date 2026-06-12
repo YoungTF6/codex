@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" lang2="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>verify.multi.jump</title>
+    <meta charset="UTF-8"/>
+    <meta name="renderer" content="webkit"/>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=0.5 maximum-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+
+</head>
+<body>
+<!-- body -->
+</body>
+
+<script type="text/javascript">
+    $(function () {
+        let href = window.location.href;
+        let arr = href.split('?');
+        window.location = '/pages/mod/verify/VerifyMulti.html?' + arr[1];
+    });
+</script>
+
+
+</html>

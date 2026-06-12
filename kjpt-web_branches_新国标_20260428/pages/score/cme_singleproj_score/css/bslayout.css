@@ -1,0 +1,110 @@
+body,html{
+	width:100%;
+	background: #f2f2f2;
+}
+body{
+	position:relative;
+}
+img{
+	border:none;
+	}
+a,input,span,label,li,button,dl,div,table{
+	-webkit-tap-highlight-color:transparent;
+	/*-webkit-appearance: none;*/
+}
+textarea,button,input,select{
+	outline: none;
+	border:none;
+	background:none;
+	padding: 0;
+}
+
+
+
+.layui_cont{
+	padding: 20px;
+}
+.p_tit{
+	width: 100%;
+	text-align: center;
+	
+}
+.p_tit h1{
+	color: #333;
+	font-size: 20px;
+	padding: 20px 0;
+}
+.del_list{
+	padding: 20px;
+}
+.del_list ul{
+	display: flex;
+	justify-content: center;
+}
+.del_list ul li{
+	flex: 1;
+	border: 1px solid #fff;
+	background: #fff;
+	padding: 20px 0;
+	text-align: center;
+	margin:0 15px;
+	cursor: pointer;
+	border-radius: 14px;
+	height: 200px;
+}
+.del_list ul li img{
+	margin: 30px 0 20px 0;
+}
+.del_list ul li span{
+	width: 100%;
+	display: block;
+	color: #333;
+}
+/* .del_list ul li.cur{
+	border:1px solid #009788;
+} */
+.btn_box{
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	padding: 30px 0;
+}
+.btn_box button{
+	width: 140px;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	font-size: 16px;
+	border-radius: 40px;
+	background: #009788;
+	color: #fff;
+	margin: 0 10px;
+	cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

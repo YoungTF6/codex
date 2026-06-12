@@ -1,0 +1,16 @@
+
+    /* 标题换行 */
+    .layui-card-header.myBoder {
+        height: auto;
+        line-height: 1.5;
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+
+    #stepTitle {
+        white-space: normal;
+        word-break: break-all;
+        overflow-wrap: anywhere;
+        margin: 0;
+    }
+

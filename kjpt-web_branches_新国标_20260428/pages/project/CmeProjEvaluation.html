@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>项目评价</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <!-- pdf -->
+    <script type="text/javascript" src="/js/api/expertPdf.js"></script>
+    <script type="text/javascript" src="/js/api/html2canvas.js"></script>
+    <script type="text/javascript" src="/js/pdfjs/build/pdf.js"></script>
+    <script type="text/javascript" src="/js/layui/ext/tool.js"></script>
+
+    <style>
+        .js-down-btn{
+            margin-top: 30px;
+        }
+        .layui-tab-title li{
+            background-color:unset;
+            color: #333333;
+            padding: 0px 50px;
+        }
+        .tab-default1.layui-this{
+            background-color:unset;
+            border-bottom: 3px solid rgb(9, 164, 162);
+        }
+        .tab-default1.layui-this:after{
+            border-bottom: unset;
+            border-top-left-radius: unset;
+            border-top-right-radius: unset;
+        }
+        .layui-tab-title .layui-this:after{
+            border-style:unset;
+        }
+        .layui-tab-title{
+            border-bottom-width:3px;
+            border-color: #b5b2b2;
+            max-width: 700px;
+        }
+        #pdf_container{
+            width: 100%;
+            margin: 0px auto;
+            max-width: 700px;
+            letter-spacing: 2px;
+        }
+        #evaluationCensus{
+            width: 100%;
+            padding: 30px 0px 50px;
+            text-align: center;
+        }
+        #evaluationStart{
+            padding: 30px 0px;
+        }
+        #evaluationCensus table{
+            width: 100%;
+            min-height: 350px;
+            text-align: center;
+            border-collapse: unset;
+        }
+        #evaluationCensus table tr:nth-child(1) th:nth-child(1){
+            font-weight: 900;
+            font-size: 21px;
+            line-height: 33px;
+            padding: 10px 75px;
+        }
+        /* 竖排仅作用于内层元素，避免 Firefox 在 table-cell 上 writing-mode 表现异常 */
+        #evaluationCensus table .table-left-title{
+            width: 30px;
+            min-width: 20px;
+            vertical-align: middle;
+            text-align: center;
+        }
+        #evaluationCensus table .table-left-title>span{
+            display: inline-block;
+            writing-mode: vertical-rl;
+            line-height: 1.5;
+        }
+        #evaluationCensus table .table-title-width{
+            min-width: 70px;
+        }
+        .table-small-title{
+            width: 40%;
+            min-width: 150px;
+            text-indent:7px;
+            text-align: left;
+            padding: 25px 5px;
+            line-height: 20px;
+            font-weight: 600;
+        }
+        .table-title-size{
+            font-weight: 600;
+            padding: 0px 4px;
+        }
+        .teacher-name-title{
+            text-align: center;
+            font-weight: 600;
+        }
+        .score-title{
+            width: 100%;
+            font-size: 27px;
+            font-weight: 600;
+            padding: 15px 0px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+        .first-starts-box,.other-starts-box{
+            display: flex;
+            justify-content:center;
+            margin-top: 50px;
+            flex-wrap: wrap;
+        }
+        .first-starts-box>div{
+            position: relative;
+            padding: 10px 28px;
+            border: 1px solid rgba(245, 154, 35, 1);
+            border-radius: 10px;
+            margin: 10px;
+            width: 30%;
+            max-width: 325px;
+            min-width: 280px;
+        }
+        .first-starts-box>div::before{
+            content: "";
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            transform:rotate(344deg);
+            top: -35px;
+            left: -5px;
+            background: url(../../img/project/crown.svg) no-repeat bottom right;
+            background-size: 100%;
+        }
+        .first-starts-box>div::after{
+            content: "第一名";
+            position: absolute;
+            display: block;
+            width: 250px;
+            top: -34px;
+            left: 50%;
+            margin-left: -125px;
+            font-size: 25px;
+            text-align: center;
+        }
+        .other-starts-box>div{
+            position: relative;
+            padding: 10px 20px 2px;
+            border: 1px solid rgba(215, 215, 215, 1);
+            border-radius: 10px;
+            margin: 40px 25px;
+            width: 25%;
+            min-width: 270px;
+            max-width: 300px;
+        }
+        .other-starts-box>div:nth-child(2){
+            border-color: rgba(242, 242, 242, 1);
+        }
+        .other-starts-box{
+            position: relative;
+        }
+        .other-starts-box::after{
+            content: "......";
+            font-size: 24px;
+            letter-spacing: 2px;
+            position: absolute;
+            bottom: -30px;
+            font-weight: 600;
+        }
+        .other-starts-box>div:nth-child(1):after{
+            content: "第二名";
+            position: absolute;
+            display: block;
+            width: 250px;
+            top: -34px;
+            left: 50%;
+            margin-left: -125px;
+            font-size: 25px;
+            text-align: center;
+        }
+        .other-starts-box>div:nth-child(2):after{
+            content: "第三名";
+            position: absolute;
+            display: block;
+            width: 250px;
+            top: -34px;
+            left: 50%;
+            margin-left: -125px;
+            font-size: 25px;
+            text-align: center;
+        }
+        .other-starts-box>div::before{
+            content: "";
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            transform:rotate(344deg);
+            top: -30px;
+            left: -5px;
+            background: url(../../img/project/crown.svg) no-repeat bottom right;
+            background-size: 100%;
+        }
+        .first-starts-box>div>div:first-child,.other-starts-box>div>div:first-child{
+            text-align: center;
+            font-size: 13px;
+            width: 90%;
+            margin: 3px auto;
+        }
+        .start-socre-box{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .start-socre-box span:nth-child(1),.start-socre-box span:nth-child(2){
+            color: #F7BA2A;
+            font-size: 20px;
+        }
+        .start-socre-box span:nth-child(3){
+            color: #3c3c3c;
+            margin-left: 20px;
+            font-size: 14px;
+        }
+        .my-starts-box{
+            margin: 65px 0px;
+            display: flex;
+            align-items:center;
+            justify-content: center;
+            flex-wrap: wrap;
+            font-size: 15px;
+        }
+        .my-starts-box span:nth-child(4){
+            color: #F7BA2A;
+            font-size: 18px;
+        }
+        .my-starts-box span:last-child{
+            font-size: 14px;
+            margin-left: 20px;
+        }
+        .my-rank{
+            display: inline-block;
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        .layui-btn-disabled{
+            display: none;
+        }
+
+        .container { width: 800px; margin: 0 auto; }
+    </style>
+
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!-- sheet页部分 -->
+        <div class="layui-tab" lay-filter="tabcheck">
+            <ul class="layui-tab-title" style="margin: 0 auto;display: flex;justify-content: center;">
+                <li class="tab-default1 layui-this">项目评价表</li>
+                <!-- <li class="tab-default1">星级排行榜</li> -->
+            </ul>
+        </div>
+
+        <!-- 项目评价表 -->
+        <div class="layui-card-body layui_body_box" id="evaluationCensus">
+            <div class="container" id="pdf_container"></div>
+            <!-- <a class="layui-btn layui-btn-sm layui-btn-radius js-down-btn layui-btn-disabled" onclick="printPdf()">导出</a> -->
+            <a id="exportReport" class="layui-btn layui-btn-sm layui-btn-radius js-down-btn layui-btn-disabled"><i class="layui-icon layui-icon-download-circle"></i>导出pdf</a>
+            <a id="exportExcel" class="layui-btn layui-btn-sm layui-btn-radius js-down-btn layui-btn-disabled"><i class="layui-icon layui-icon-download-circle"></i>导出Excel</a>
+        </div>
+        <!-- 星级排行表 -->
+        <div class="layui-card-body layui_body_box" id="evaluationStart" style="display: none;">
+            <div class="score-title">该年度/同级别/同学科星级排行</div>
+            <div class="first-starts-box"></div>
+            <div class="other-starts-box"></div>
+            <div class="my-starts-box"></div>
+        </div>
+    </div>
+</div>
+<iframe id="pdfIframe"  src="./PdfDownload.html" style="display: none;"></iframe>
+<script>
+
+    let winLoadFlag = false;
+    let ajaxLoadFlag = false;
+
+    // 全局配置及引入相关的模块
+    layui.config({
+            base: '/js/layui/ext/'
+        }).extend({
+            tool: 'tool'
+        });
+    layui.use(['table','element','rate','tool'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var element = layui.element;
+        var rate = layui.rate;
+        var tool = layui.tool;
+        var isLoadTable = false;
+        var isLoadRank = false;
+        var nowProjectId = "";
+        var nowType = 1;
+        var writeType = "3";//类型是3的为填空题
+
+        //ajax请求，返回星级排行信息
+        var getStartRate = function(projectId){
+            let rateLoading = layer.msg('加载中', {icon: 16, shade: 0.3, time:0});
+            $.ajax({
+                url: huayi_projectscore_url +"cmeProjEvaluation/getThreeRankAndMe",
+                type:'post',
+                data:{projectId:projectId,type:nowType,},
+                success:function(res){
+                    layer.close(rateLoading);
+                    if(res.status == 200){
+                        createThreeRank(res.data,projectId);
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                },
+                fail:function(res){ layer.close(rateLoading); }
+            });
+        }
+
+        //开始创建星级排行
+        var createThreeRank = function(datas,projectId){
+            if(datas.length == 0){
+                layer.msg("暂无排名");
+                return;
+            }
+            let otherStart = "";
+            for(let i = 0;i < datas.length;i++){
+                if(datas[i].rankIndex == 1 || datas[i].rankIndex == "0"){
+                    let firstHtml = '<div><div>《'+datas[i].projName+'》</div><div class="start-socre-box"><span id="avgScoreFirst"></span><span>'+datas[i].avgScore*2+'</span><span>'+datas[i].evaluationNum+'人评价</span></div></div>';
+                    $(".first-starts-box").append(firstHtml);
+                    createRate("#avgScoreFirst",datas[i].avgScore);
+                }
+                if(datas[i].rankIndex == 2 || datas[i].rankIndex == "2"){
+                    let firstHtml = '<div><div>《'+datas[i].projName+'》</div><div class="start-socre-box"><span id="avgScoreSecond"></span><span>'+datas[i].avgScore*2+'</span><span>'+datas[i].evaluationNum+'人评价</span></div></div>';
+                    $(".other-starts-box").append(firstHtml);
+                    createRate("#avgScoreSecond",datas[i].avgScore);
+                }
+                if(datas[i].rankIndex == 3 || datas[i].rankIndex == "3"){
+                    let firstHtml = '<div><div>《'+datas[i].projName+'》</div><div class="start-socre-box"><span id="avgScoreThird"></span><span>'+datas[i].avgScore*2+'</span><span>'+datas[i].evaluationNum+'人评价</span></div></div>';
+                    $(".other-starts-box").append(firstHtml);
+                    createRate("#avgScoreThird",datas[i].avgScore);
+                }
+                if(datas[i].projId == projectId){
+                    let firstHtml = '<span class="my-rank">第'+datas[i].rankIndex+'名</span><span>《'+datas[i].projName+'》</span><span id="myAvgScore"></span><span>'+datas[i].avgScore*2+'</span><span>'+datas[i].evaluationNum+'人评价</span>';
+                    $(".my-starts-box").append(firstHtml);
+                    createRate("#myAvgScore",datas[i].avgScore);
+                }
+            }
+        }
+
+        var isEmpty = function(item){
+            if(item == null || item == undefined || item ==""){
+                return true;
+            }
+            return false;
+        }
+
+        //加载项目评价表信息
+        var loadEvaluationStatistics = function(projectId){
+            let loading = layer.msg('加载中', {icon: 16, shade: 0.3, time:0});
+            $.ajax({
+                url: huayi_projectscore_url +"cmeProjEvaluation/getEvaluationStatistics",
+                type:'post',
+                data:{
+                    projectId:projectId,
+                    type:nowType,
+                },
+                success:function(res){
+                    layer.close(loading);
+                    if(res.status == 200){
+                        for(key in res.data){
+                            if(res.data[key].length == 0){
+                                $("#evaluationCensus").append("暂无评价数据");
+                                                                return;
+                            }
+                            ajaxLoadFlag = true;
+                            if(document.getElementsByClassName("js-down-btn").length > 0 && winLoadFlag){
+                                $(".layui-btn-disabled").removeClass("layui-btn-disabled");
+                            }
+                            let questionDatas = new Array();
+                            let teacherDatas = new Array();
+                            let writeDatas = new Array();
+                            let flag = false;
+                            for(let i=0;i<res.data[key].length;i++){
+                                let tempItems = new Array();
+                                for(let j=1;j<=6;j++){
+                                    if(!isEmpty(res.data[key][i]["item"+j])){
+                                        tempItems.push(res.data[key][i]["item"+j]);
+                                    }else{
+                                        res.data[key][i]["item"+j]="";
+                                    }
+                                }
+                                res.data[key][i]["tempItems"] = tempItems;
+                                if(res.data[key][i].evaType==writeType){
+                                    writeDatas.push(res.data[key][i]);
+                                    continue;
+                                }
+                                if(isNaN(res.data[key][i].dicType)){
+                                    teacherDatas.push(res.data[key][i]);
+                                    flag = true;
+                                }else{
+                                    questionDatas.push(res.data[key][i]);
+                                }
+                            }
+                            if(flag){
+                                createTeacherHtml(key,questionDatas,teacherDatas,writeDatas);
+                                return;
+                            }
+                            createQuestionHtml(res.data[key],key,res.data[key].length>10?5:3);
+                        }
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                },
+                error:function(res){
+                    layer.close(loading);
+                }
+            });
+        }
+
+        //创建有老师的评价表
+        var createTeacherHtml = function(key,questionDatas,teacherDatas,writeDatas){
+            let lastHtml = '';
+            let tableHtml = '<table border="1" id="censusTable"><colgroup><col width="30"><col><col><col><col></colgroup>';
+            tableHtml += '<tr><th colspan="5">'+key+'</th></tr>';
+            tableHtml += getQuestionHtml(questionDatas);
+            tableHtml += getTeacherHtml(teacherDatas);
+            tableHtml += getWriteHtml(writeDatas);
+            tableHtml += '</table>';
+            $("#pdf_container").append(tableHtml);
+        }
+
+        //有老师的创建填空题
+        var getWriteHtml = function(data,rowNum=2){
+            let tableHtml = '';
+            for(let obj of data){
+                tableHtml += `<tr>`+
+                    `<th class="table-left-title"><span>${obj.title}</span></th>`+
+                    `<td colspan="4" >${obj.answer}</td>`+
+                    `</tr>`;
+            }
+            return tableHtml;
+        }
+
+        //老师评价表中-----问题的回答
+        var getQuestionHtml = function(datas,rowNum=2){
+            let tableHtml = '';
+            let index = 0;
+            let dicNumArr = sortArr(datas);
+            for(let dicNum of dicNumArr){
+                // 问题评价表
+                for(let i=0;i<datas.length;i++){
+                    if(dicNum != datas[i].dicType) continue;
+                    if(datas[i].evaType == writeType || !isNaN(datas[i].title)) continue;
+                    let childRowsNum = 3*Math.ceil(datas[i]["tempItems"].length/rowNum);
+                    let firstChildHtml = "";
+
+                    //构建其他行
+                    tableHtml += getLineHtml(createData(datas[i]),index++,firstChildHtml,childRowsNum,rowNum);
+                }
+            }
+
+            return tableHtml;
+        }
+
+        //老师评价表中----对老师的评价
+        var getTeacherHtml = function(datas,rowNum=2){
+            let tableHtml = '';
+            let columnNum = 0;
+            for(let i =0;i < datas.length;i++){
+                if(datas[i].evaType ==writeType) continue;
+                columnNum+=(3*Math.ceil(datas[i]["tempItems"].length/2));
+            }
+            // 问题评价表
+            for(let i=0;i<datas.length;i++){
+                if(datas[i].dicType ==writeType) continue;
+                let childRowsNum = 3*Math.ceil(datas[i]["tempItems"].length/rowNum);
+                let firstChildHtml = "";
+                    tableHtml += `<tr><td colspan="2" class="table-title-size">${datas[i].title}</td><td colspan="8" style="text-align:left;">${writeAnswer}</td></tr>`;
+                //构建其他行
+                tableHtml += getLineHtml(createData(datas[i]),i,firstChildHtml,childRowsNum,rowNum,1);
+            }
+            return tableHtml;
+        }
+
+        //数组排序
+        var sortArr = function(datas) {
+            let numArr = [];
+            for(let obj of datas){
+                //如果是数字就加入数组
+                if(!isNaN(obj.dicType)) numArr.push(parseInt(obj.dicType));
+            }
+            //数组排序
+            for(let i=0;i<numArr.length-1;i++){
+                for(let j=i;j<numArr.length;j++) {
+                    if(numArr[i] > numArr[j]){
+                        let bigNum = numArr[i];
+                        numArr[i] = numArr[j];
+                        numArr[j] = bigNum;
+                    }
+                }
+            }
+            return numArr;
+        }
+
+        //创建只有题的评价表,7个单元格
+        var createQuestionHtml = function(datas,key,rowNum = 3){
+            let lastHtml = '';//存在的问题和建议
+            let columnNum = 0;//左侧需要向下合并多少格
+            let tableHtml = '<table border="1" id="censusTable"><colgroup><col><col width="4"><col width="30"><col><col><col><col></colgroup>';
+            tableHtml += '<tr><th colspan="9">'+key+'</th></tr>';
+
+            let dicNumArr = sortArr(datas);
+            //获取第一个做标题合并的个数
+            for(let obj of datas){
+                //填空题不做统计
+                if(obj.evaType ==writeType) continue;
+                //字典字段不存在，且不是对老师的评价，是垃圾数据
+                if(isEmpty(obj.evaType) && !isNaN(obj.dicType)) continue;
+                columnNum+=(3*Math.ceil(obj["tempItems"].length/rowNum));
+            }
+            let index = 0;
+            for(let dicNum of dicNumArr){
+                for(let obj of datas){
+                    if(obj.dicType != dicNum) continue;
+                    //填空题不做统计
+                    if(obj.evaType == writeType) continue;
+                    //字典字段不存在，且不是对老师的评价，是垃圾数据
+                    if(isEmpty(obj.evaType) && !isNaN(obj.dicType)) continue;
+                    let childRowsNum = 3*Math.ceil(obj["tempItems"].length/rowNum);
+                    let firstChildHtml = "";
+                    //第一行左侧标题
+                    if(index==0) firstChildHtml = '<td rowspan="'+columnNum+'" class="table-title-size table-left-title"><span>学员对该项目的评估意见</span></td>';
+                    tableHtml += getLineHtml(createData(obj),index++,firstChildHtml,childRowsNum,rowNum);
+                }
+            }
+
+            tableHtml += '</table>';
+            let table2Datas = [];
+            for(let i = 0; i < datas.length; i++){
+                if(datas[i].evaType != writeType) continue;
+                if(datas[i].title.includes('联系方式')) continue;
+                table2Datas.push(datas[i]);
+            }
+            if(table2Datas.length > 0) {
+                tableHtml += '<table border="1" id="censusTable2"><colgroup><col width="6"><col width="94"></colgroup>';
+                for(let i = 0; i < table2Datas.length; i++){
+                    let data = table2Datas[i];
+                    let writeAnswer = (data.answer != null && data.answer !== 'null') ? data.answer : "";
+                    if(writeAnswer.indexOf("<br><br>") >= 0) {
+                        writeAnswer = removeBr(writeAnswer);
+                    }
+                    if(writeAnswer.indexOf('<br>') === 0) {
+                        writeAnswer = writeAnswer.replace('<br>','');
+                    }
+                    tableHtml += `<tr><td colspan="1" class="table-title-size">${data.title}</td><td colspan="1" style="text-align:left;">${writeAnswer}</td></tr>`;
+                }
+                tableHtml += '</table>';
+            }
+            $("#pdf_container").append(tableHtml);
+        }
+
+        let removeBr = function(text='') {
+            while(true){
+                if(text.indexOf("<br><br>") <0){
+                    break;
+                }
+                text = text.replaceAll("<br><br>","<br>");
+            }
+            return text;
+        }
+
+        //构建一部分表格
+        let getLineHtml = function(data,index,firstChildHtml,childRowsNum,rowNum=3,colspan=2){
+            let tableHtml = "";
+            for(let j = 0;j < Math.ceil(data["tempItems"].length/rowNum);j++){
+                if(j == 0) {
+                    firstChildHtml += `<td rowspan="${childRowsNum}" colspan="${colspan}"  class="table-small-title">${index+1}.${data.title}</td>`;
+                }else{
+                    firstChildHtml = "";
+                }
+                //标题行
+                tableHtml   +=  `<tr>${firstChildHtml}`;
+                tableHtml   +=      '<td class="table-title-width"></td>';
+                for(let m = 0; m < rowNum;m++){
+                    tableHtml+=     `<td class="table-title-size">${data["item"+(rowNum*j+m+1)]}</td>`;
+                }
+                tableHtml   +=  '</tr>';
+                //人数行
+                tableHtml   +=  '<tr>';
+                tableHtml   +=      '<td class="table-title-size">人数</td>';
+                for(let m = 0; m < rowNum;m++){
+                    if(rowNum*j+m < data["answerNumArr"].length){
+                        tableHtml+=     '<td class="table-title-size">'+ data["answerNumArr"][rowNum*j+m] +'</td>';
+                    }else{
+                        tableHtml+=     '<td class="table-title-size"></td>';
+                    }
+                }
+                tableHtml   +=  '</tr>';
+                //百分比行
+                tableHtml   +=  '<tr>';
+                tableHtml   +=      '<td class="table-title-size">百分比</td>';
+                for(let m = 0; m < rowNum;m++){
+                    if(rowNum*j+m < data["answerPercentStr"].length){
+                        tableHtml+=     '<td class="table-title-size">'+ data["answerPercentStr"][rowNum*j+m] +'</td>';
+                    }else{
+                        tableHtml+=     '<td class="table-title-size"></td>';
+                    }
+                }
+                tableHtml   +=  '</tr>';
+            }
+            return tableHtml;
+        }
+
+        //重新构建data，为了在里面插入一个统计的数据
+        let createData = function(data){
+            let answerArr = data.answer.split(",");
+            let personNum = data.hasOwnProperty("personNum") ? data.personNum : answerArr.length;
+            let answerNumArr = Array.apply(null, Array(data["tempItems"].length)).map(() => 0);
+            let answerPercentStr = Array.apply(null, Array(data["tempItems"].length)).map(() => "");
+            //获取每个题的个数
+            for(let j = 0; j < answerArr.length ; j++){
+                if(answerArr[j] <= answerNumArr.length) answerNumArr[answerArr[j]-1] = answerNumArr[answerArr[j]-1]+1;
+            }
+            //获取每个题的百分比
+            for(let j = 0; j < answerNumArr.length; j++){
+                answerPercentStr[j] = Math.round(answerNumArr[j] / personNum * 100) + "%";
+            }
+            data["answerNumArr"] = answerNumArr;
+            data["answerPercentStr"] = answerPercentStr;
+            return data;
+        }
+
+        //回显星级评分显示
+        let createRate = function(elem,value){
+            let rateValue = value;
+            if(parseInt(value) == parseFloat(value)){
+                rateValue = parseInt(value);
+            }
+            rate.render({
+                elem:elem,
+                length: 5,
+                value:rateValue,
+                theme:'#F7BA2A',
+                half:true,
+                text:false,
+                readonly:true,
+            });
+        }
+
+        //解析url参数
+        let getParamFromUrl = function(paramName){
+            let urlStr = location.search;
+            if(urlStr.indexOf(paramName) < 0 || urlStr.indexOf("?")<0) return;
+            let paramKV = urlStr.substr(1).split("&");
+            for(let i = 0;i<paramKV.length;i++){
+                if(paramKV[i].indexOf(paramName) >= 0 ){
+                    return decodeURI(paramKV[i].split("=")[1]);
+                }
+            }
+        }
+
+        //页面初始化
+        var initHtml = function(){
+            let projectId = getParamFromUrl("projectId");
+            let type = getParamFromUrl("projectType");
+            nowProjectId = projectId;
+            if(isEmpty(projectId)){
+                layer.msg("缺少必要参数");
+                return;
+            }
+            if(!isEmpty(type)){
+                nowType = type;
+            }
+            loadEvaluationStatistics(projectId);
+        }
+
+        initHtml();
+
+        //展示评价表
+        var showEvaluation = function(){
+            $("#evaluationStart").css("display","none");
+            $("#evaluationCensus").css("display","block");
+        }
+
+        //展示星级排行
+        var showStartSort = function(){
+            $("#evaluationCensus").css("display","none");
+            $("#evaluationStart").css("display","block");
+            if(!isLoadRank){
+                isLoadRank = true;
+                getStartRate(nowProjectId);
+            }
+
+        }
+
+        element.on('tab(tabcheck)', function(data){
+            var num=data.index;
+            if(num == 0){
+                showEvaluation();
+            }else{
+                showStartSort();
+            }
+        });
+
+        let downExcel = document.getElementById("exportExcel");//点击导出事件
+        downExcel.onclick = function () {
+            let url = huayi_projectscore_url + "cmeProjEvaluation/exportEvaluationExcel";
+            tool.exportExcelPost(url,{"projId":nowProjectId},"项目评价表统计.xlsx");
+        }
+
+    });
+
+    function getStyleText(){
+        if(document.styleSheets.length == 0) return "";
+        let styleSheetArr;
+        for(let i=0;i<document.styleSheets.length;i++){
+            if(document.styleSheets[i].href == null){
+                styleSheetArr = document.styleSheets[i].cssRules;
+                break;
+            }
+        }
+        if(styleSheetArr.length == 0) return "";
+        let styleCss = "";
+        for(let i=0;i<styleSheetArr.length;i++){
+            styleCss += styleSheetArr[i].cssText;
+        }
+        return styleCss;
+    }
+
+    function loadIframe(styleCss,printText){
+        let ifr = document.getElementById("pdfIframe");
+        let iframWin = ifr.window || ifr.contentWindow;
+        let idoc = iframWin.document;
+        let headElem = idoc.getElementsByTagName('head')[0];
+        let styleElem = idoc.createElement("style");
+        styleElem.type = "text/css";
+        let textNode = idoc.createTextNode(styleCss);
+        styleElem.append(textNode);
+        headElem.append(styleElem);
+        let spaceElem = idoc.getElementById("printSpace");
+        spaceElem.innerHTML = printText;
+    }
+
+    window.onload = function(){
+        winLoadFlag = true;
+        if(document.getElementsByClassName("js-down-btn").length > 0 && ajaxLoadFlag){
+            $(".layui-btn-disabled").removeClass("layui-btn-disabled");
+        }
+    }
+
+    function printPdf(){
+        let styleCss = getStyleText();
+        let printText = document.getElementById("pdf_container").innerHTML;
+        printText = '<div class="layui-card-body layui_body_box" id="evaluationCensus"><div id="pdf_container">'+printText +'</div></div>';
+        loadIframe(styleCss,printText);
+        let ifr = document.getElementById("pdfIframe");
+        let iframWin = ifr.window || ifr.contentWindow;
+        iframWin.printWindow();
+        pdfexport();
+    }
+
+    let downPdf = document.getElementById("exportReport");
+    downPdf.onclick = function () {
+        window.pageYoffset = 0;
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        const margin = 40;
+        const topMargin = 20;
+        const bottomMargin = 20;
+        const a4Width = 595.28;
+        const a4Height = 841.89;
+        const contentWidth = a4Width - (2 * margin); // 内容实际可用宽度
+        const contentHeight = a4Height - topMargin - bottomMargin; // 内容实际可用高度
+        const title = '项目评价表';
+        const table1 = document.getElementById('censusTable');
+        const table2 = document.getElementById('censusTable2');
+        const pdf = new jsPDF('p', 'pt', 'a4');
+        // 处理单个表格渲染的函数（支持分页）
+        function renderTableToPdf(table, pdfDoc, isFirstPage = false) {
+            return new Promise((resolve) => {
+                // 获取表格的原始高度和位置
+                const tableRect = table.getBoundingClientRect();
+                const tableHeight = tableRect.height;
+                const imgWidth = contentWidth;
+                const scale = imgWidth / tableRect.width;
+                const maxCanvasHeight = contentHeight / scale;
+                let currentPosition = 0;
+                let pageCount = 0;
+                function captureAndAddPage() {
+                    const captureHeight = Math.min(maxCanvasHeight, tableHeight - currentPosition);
+                    const canvasOptions = {
+                        allowTaint: true,
+                        useCORS: true,
+                        scale: 2,
+                        logging: false,
+                        height: captureHeight,
+                        windowHeight: captureHeight,
+                        y: currentPosition,
+                        scrollY: -currentPosition
+                    };
+                    html2canvas(table, canvasOptions).then(canvas => {
+                        const imgHeight = (captureHeight * imgWidth) / tableRect.width;
+                        if ((!isFirstPage && pageCount === 0) || pageCount > 0) {
+                            pdfDoc.addPage();
+                        }
+                        // 将表格图像添加到PDF
+                        pdfDoc.addImage(
+                            canvas.toDataURL('image/jpeg', 1.0),
+                            'JPEG',
+                            margin,
+                            topMargin,
+                            imgWidth,
+                            imgHeight
+                        );
+                        // 更新位置和页数
+                        currentPosition += captureHeight;
+                        pageCount++;
+                        // 如果还有内容，继续捕获
+                        if (currentPosition < tableHeight) {
+                            setTimeout(captureAndAddPage, 100); // 添加延迟避免内存问题
+                        } else {
+                            resolve();
+                        }
+                    });
+                }
+                captureAndAddPage();
+            });
+        }
+        // 更准确判断表格内容是否为空的辅助函数
+        function isTableEmpty(table) {
+            if (!table) return true;
+            const rows = table.querySelectorAll('tr');
+            if (rows.length <= 1) return true; // 只有表头或没有行
+            let hasData = false;
+            for (let i = 1; i < rows.length; i++) { // 从第2行开始（跳过表头）
+                const cells = rows[i].querySelectorAll('td');
+                for (let cell of cells) {
+                    if (cell.textContent.trim() !== '') {
+                        hasData = true;
+                        break;
+                    }
+                }
+                if (hasData) break;
+            }
+            return !hasData;
+        }
+        // 先渲染第一个表格，再渲染第二个表格
+        renderTableToPdf(table1, pdf, true)
+            .then(() => {
+                if (!isTableEmpty(table2)) {
+                    return renderTableToPdf(table2, pdf);
+                }
+                return Promise.resolve();
+            })
+            .then(() => {
+                // 全部渲染完成后保存PDF
+                pdf.save(title + '.pdf');
+            })
+            .catch(err => {
+                console.error('PDF导出失败:', err);
+            });
+
+        return;
+    };
+
+</script>
+</body>
+</html>

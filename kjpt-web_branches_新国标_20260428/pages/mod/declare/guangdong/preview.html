@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=0.3, minimum-scale=0.3, maximum-scale=1.0, user-scalable=yes">
+    <title>guangdong.preview</title>
+    <link rel="stylesheet" href="/pages/mod/declare/css/reset.css"/>
+    <link rel="stylesheet" href="/pages/mod/declare/css/preview.css"/>
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script><script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+    <script type="text/javascript" src="/js/api/expertPdf.js"></script>
+    <script type="text/javascript" src="/js/api/html2canvas.js"></script>
+    <script type="text/javascript" src="/js/pdfjs/build/pdf.js"></script>
+</head>
+<body>
+<div class="loading_container">
+    <img alt="" src=""/>
+</div>
+<div class="container download_container">
+    <button id="download_btn" class='layui-btn layui-btn-sm'><i class="layui-icon layui-icon-download-circle"></i>下载
+    </button>
+</div>
+<div class="container" id="pdf_container">
+    <!-- page1.cover -->
+    <div class="text_box a4_portrait">
+        <div class="xmnum_box">
+            <p>编号：<span id="projectCode">123123123213</span></p>
+        </div>
+        <div class="tit_box">
+            <h1><span class="city_name">广东省</span>有组织的继续医学教育实践活动</h1>
+            <h1>申报表</h1>
+        </div>
+        <div class="xmmess_box">
+            <ul>
+                <li>
+                    <p>&emsp;&emsp;项目名称</p>
+                    <span id="projectName" class="text_center">项目名称项目名称项目名称</span>
+                </li>
+                <li>
+                    <p>&emsp;&emsp;所在学科&emsp;&emsp;<br>（二、三级学科）</p>
+                    <span id="knowledgeName2" class="text_center" style="margin-top: 18px;"></span>
+                </li>
+                <li>
+                    <p>申报单位（盖章）</p>
+                    <span id="applyUnit2" class="text_center"></span>
+                </li>
+                <!-- <li>
+                    <p>所属上级</p>
+                    <span id="applyUnitParent" class="text_center"></span>
+                </li> -->
+                <li>
+                    <p>&emsp;&emsp;邮政编码</p>
+                    <span id="postcode" class="text_center"></span>
+                </li>
+                <li>
+                    <p>&emsp;&emsp;申报日期</p>
+                    <span id="addTime" class="text_center"></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- page2.progress -->
+    <div class="table_big a4_portrait">
+        <div class="table_box">
+            <table>
+                <tr>
+                    <td>本省或国内外本领域的最新进展</td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre class="proj_text">
+                            <div id="progress"></div>
+                        </pre>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="table_big a4_portrait" style="display: none">
+        <div class="table_box">
+            <table>
+                <tr>
+                    <td>本省或国内外本领域的最新进展</td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre class="proj_text">
+                            <div id="progress_alt"></div>
+                        </pre>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!-- page3.question -->
+    <div class="table_big a4_portrait">
+        <div class="table_box">
+            <table>
+                <tr>
+                    <td>本领域存在的问题</td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre class="proj_text">
+                            <div id="question"></div>
+                        </pre>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="table_big a4_portrait" style="display: none">
+        <div class="table_box">
+            <table>
+                <tr>
+                    <td>本领域存在的问题</td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre class="proj_text">
+                            <div id="question_alt"></div>
+                        </pre>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!-- page4.target -->
+    <div class="table_big a4_portrait">
+        <div class="table_box">
+            <table>
+                <tr>
+                    <td>活动的目标</td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre class="proj_text">
+                            <div id="target"></div>
+                        </pre>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="table_big a4_portrait" style="display: none">
+        <div class="table_box">
+            <table>
+                <tr>
+                    <td>活动的目标</td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre class="proj_text">
+                            <div id="target_alt"></div>
+                        </pre>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!-- page5.innovation -->
+    <div class="table_big a4_portrait">
+        <div class="table_box">
+            <table>
+                <tr>
+                    <td>活动的创新之处</td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre class="proj_text">
+                            <div id="innovation"></div>
+                        </pre>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="table_big a4_portrait" style="display: none">
+        <div class="table_box">
+            <table>
+                <tr>
+                    <td>活动的创新之处</td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre class="proj_text">
+                            <div id="innovation_alt"></div>
+                        </pre>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!-- page6.projAnalyze -->
+    <div class="table_big a4_portrait">
+        <div class="table_box">
+            <table>
+                <tr>
+                    <td>活动培训需求及效益、效果分析</td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre class="proj_text">
+                            <div id="projAnalyze"></div>
+                        </pre>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="table_big a4_portrait" style="display: none">
+        <div class="table_box">
+            <table>
+                <tr>
+                    <td>活动培训需求及效益、效果分析</td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre class="proj_text">
+                            <div id="projAnalyze_alt"></div>
+                        </pre>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!-- page7.jobSummary -->
+    <div class="table_big a4_portrait">
+        <div class="table_box">
+            <table>
+                <tr>
+                    <td>主办单位近几年与活动有关的工作概况(包括开展的培训、科研工作以及师资队伍情况)</td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre class="proj_text">
+                            <div id="jobSummary"></div>
+                        </pre>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="table_big a4_portrait" style="display: none">
+        <div class="table_box">
+            <table>
+                <tr>
+                    <td>主办单位近几年与活动有关的工作概况(包括开展的培训、科研工作以及师资队伍情况)</td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre class="proj_text">
+                            <div id="jobSummary_alt"></div>
+                        </pre>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!-- page8.principal -->
+    <div class="table_big a4_portrait">
+        <div class="table_box">
+            <table>
+                <tbody>
+                <tr>
+                    <td rowspan="6" style="width: 26px;">活动负责人简况</td>
+                </tr>
+                <tr>
+                    <td colspan="1" style="width: 100px;">姓名</td>
+                    <td colspan="1" id="principal_personName"></td>
+                    <td colspan="1" style="width: 100px;">性别</td>
+                    <td colspan="1" id="principal_gender"></td>
+                    <td colspan="1" style="width: 100px;">年龄</td>
+                    <td colspan="1" id="principal_age"></td>
+                </tr>
+                <tr>
+                    <td colspan="1">职称</td>
+                    <td colspan="1" id="principal_titleName"></td>
+                    <td colspan="1">职务</td>
+                    <td colspan="1" id="principal_businessName"></td>
+                    <td colspan="1">最高学历</td>
+                    <td colspan="1" id="principal_educationName"></td>
+                </tr>
+                <tr>
+                    <td colspan="1">身份证号</td>
+                    <td colspan="5" id="principal_idCardNo"></td>
+                </tr>
+                <tr>
+                    <td colspan="6">工作简历</td>
+                </tr>
+                <tr>
+                    <td colspan="6">
+                        <pre class="prin_text" style="height: 836px;">
+                            <div id="principal_resume"></div>
+                        </pre>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- page9.principal -->
+    <div class="table_big a4_portrait">
+        <div class="table_box">
+            <table>
+                <tbody>
+                <tr>
+                    <td rowspan="5" style="width: 26px;">活动负责人简况</td>
+                </tr>
+                <tr>
+                    <td colspan="6">教育经历</td>
+                </tr>
+                <tr>
+                    <td colspan="6">
+                        <pre class="prin_text">
+                            <div id="principal_experience"></div>
+                        </pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6">本人曾开展过哪些相近的培训</td>
+                </tr>
+                <tr>
+                    <td colspan="6">
+                        <pre class="prin_text">
+                            <div id="principal_training"></div>
+                        </pre>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- page10.principal -->
+    <div class="table_big a4_portrait">
+        <div class="table_box">
+            <table>
+                <tbody>
+                <tr>
+                    <td rowspan="5" style="width: 26px;">活动负责人简况</td>
+                </tr>
+                <tr>
+                    <td colspan="6">本人曾开展过哪些相近的研究</td>
+                </tr>
+                <tr>
+                    <td colspan="6">
+                        <pre class="prin_text">
+                            <div id="principal_study"></div>
+                        </pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6">本人曾发表过哪些相近的文章</td>
+                </tr>
+                <tr>
+                    <td colspan="6">
+                        <pre class="prin_text">
+                            <div id="principal_article"></div>
+                        </pre>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- page11.course -->
+    <div class="table_big a4_portrait">
+        <div class="table_box">
+            <table>
+                <!-- 6.1 course -->
+                <caption>活动讲授题目及内容简要</caption>
+                <tr id="course_loop_head">
+                    <td colspan="3">授课题目</td>
+                    <td colspan="3">内容</td>
+                    <td colspan="2">授课教师</td>
+                    <td colspan="2">学时</td>
+                    <td colspan="2">教学方法</td>
+                </tr>
+                <!-- course loop.1 -->
+                <!--<tr>-->
+                <!--    <td colspan="3"><br></td>-->
+                <!--    <td colspan="3"></td>-->
+                <!--    <td colspan="2"></td>-->
+                <!--    <td colspan="2"></td>-->
+                <!--    <td colspan="2"></td>-->
+                <!--</tr>-->
+                <!-- course loop.1 end -->
+            </table>
+        </div>
+    </div>
+    <!-- page11.course_alt -->
+    <div class="table_big a4_portrait hide">
+        <div class="table_box">
+            <table>
+                <!-- 6.1 course -->
+                <caption>活动讲授题目及内容简要</caption>
+                <tr id="course_loop_head_alt">
+                    <td colspan="3">授课题目</td>
+                    <td colspan="3">内容</td>
+                    <td colspan="2">授课教师</td>
+                    <td colspan="2">学时</td>
+                    <td colspan="2">教学方法</td>
+                </tr>
+                <!-- course loop.1 -->
+                <!--<tr>-->
+                <!--    <td colspan="3"><br></td>-->
+                <!--    <td colspan="3"></td>-->
+                <!--    <td colspan="2"></td>-->
+                <!--    <td colspan="2"></td>-->
+                <!--    <td colspan="2"></td>-->
+                <!--</tr>-->
+                <!-- course loop.1 end -->
+            </table>
+        </div>
+    </div>
+    <!-- page11.course_plus -->
+    <div class="table_big a4_portrait hide">
+        <div class="table_box">
+            <table>
+                <!-- 6.1 course -->
+                <caption>活动讲授题目及内容简要</caption>
+                <tr id="course_loop_head_plus">
+                    <td colspan="3">授课题目</td>
+                    <td colspan="3">内容</td>
+                    <td colspan="2">授课教师</td>
+                    <td colspan="2">学时</td>
+                    <td colspan="2">教学方法</td>
+                </tr>
+                <!-- course loop.1 -->
+                <!--<tr>-->
+                <!--    <td colspan="3"><br></td>-->
+                <!--    <td colspan="3"></td>-->
+                <!--    <td colspan="2"></td>-->
+                <!--    <td colspan="2"></td>-->
+                <!--    <td colspan="2"></td>-->
+                <!--</tr>-->
+                <!-- course loop.1 end -->
+            </table>
+        </div>
+    </div>
+    <!-- page12.teacher -->
+    <div class="table_big a4_portrait">
+        <div class="table_box">
+            <table>
+                <tr id="teacher_loop_head">
+                    <td colspan="1" rowspan="3" id="teacher_rowspan" style="width: 26px">主要授课教师</td>
+                    <td colspan="2">姓名</td>
+                    <td colspan="2">专业技术职称</td>
+                    <td colspan="3">主要研究方向</td>
+                    <td colspan="2">所在单位</td>
+                    <td colspan="2">签名</td>
+                </tr>
+                <!-- course loop.2 -->
+                <!--<tr>-->
+                <!--    <td colspan="2"><br></td>-->
+                <!--    <td colspan="2"></td>-->
+                <!--    <td colspan="3"></td>-->
+                <!--    <td colspan="2"></td>-->
+                <!--    <td colspan="2"></td>-->
+                <!--</tr>-->
+                <!-- course loop.2 end -->
+            </table>
+        </div>
+    </div>
+    <!-- page12.teacher_alt -->
+    <div class="table_big a4_portrait hide">
+        <div class="table_box">
+            <table>
+                <tr id="teacher_loop_head_alt">
+                    <td colspan="1" rowspan="3" id="teacher_rowspan_alt" style="width: 26px">主要授课教师</td>
+                    <td colspan="2">姓名</td>
+                    <td colspan="2">专业技术职称</td>
+                    <td colspan="3">主要研究方向</td>
+                    <td colspan="2">所在单位</td>
+                    <td colspan="2">签名</td>
+                </tr>
+                <!-- course loop.2 -->
+                <!--<tr>-->
+                <!--    <td colspan="2"><br></td>-->
+                <!--    <td colspan="2"></td>-->
+                <!--    <td colspan="3"></td>-->
+                <!--    <td colspan="2"></td>-->
+                <!--    <td colspan="2"></td>-->
+                <!--</tr>-->
+                <!-- course loop.2 end -->
+            </table>
+        </div>
+    </div>
+    <!-- page12.teacher_plus -->
+    <div class="table_big a4_portrait hide">
+        <div class="table_box">
+            <table>
+                <tr id="teacher_loop_head_plus">
+                    <td colspan="1" rowspan="3" id="teacher_rowspan_plus" style="width: 26px">主要授课教师</td>
+                    <td colspan="2">姓名</td>
+                    <td colspan="2">专业技术职称</td>
+                    <td colspan="3">主要研究方向</td>
+                    <td colspan="2">所在单位</td>
+                    <td colspan="2">签名</td>
+                </tr>
+                <!-- course loop.2 -->
+                <!--<tr>-->
+                <!--    <td colspan="2"><br></td>-->
+                <!--    <td colspan="2"></td>-->
+                <!--    <td colspan="3"></td>-->
+                <!--    <td colspan="2"></td>-->
+                <!--    <td colspan="2"></td>-->
+                <!--</tr>-->
+                <!-- course loop.2 end -->
+            </table>
+        </div>
+    </div>
+    <!-- page13.project -->
+    <div class="table_big a4_portrait">
+        <div class="table_box">
+            <table>
+                <!-- <caption>项目其它信息</caption> -->
+                <!-- 6.2 other info -->
+                <tr>
+                    <td colspan="2">举办方式</td>
+                    <td colspan="10" id="holdTypeName"></td>
+                </tr>
+                <!-- 6.3 cycle info -->
+                <tr id="cycle_loop_head">
+                    <td colspan="2" rowspan="1" id="cycle_rowspan">举办起止日期</td>
+                    <td colspan="10" id="cycle_first"></td>
+                </tr>
+                <!-- cycle loop -->
+                <!--<tr>-->
+                <!--    <td colspan="10"></td>-->
+                <!--</tr>-->
+                <!-- cycle loop end -->
+                <tr>
+                    <td colspan="2">举办期限（天）</td>
+                    <td colspan="4" id="days"></td>
+                    <td colspan="2">考核方式</td>
+                    <td colspan="4" id="checkTypeName"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">教学对象</td>
+                    <td colspan="4" id="teachObject"></td>
+                    <td colspan="2">拟招收人数</td>
+                    <td colspan="4" id="number"></td>
+                </tr>
+                <tr>
+                    <td colspan="2" rowspan="2">教学总时数</td>
+                    <td colspan="4" rowspan="2" id="period"></td>
+                    <td colspan="2">讲授理论时数</td>
+                    <td colspan="4" id="theoryPeriod"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">实验(技术示范)时数</td>
+                    <td colspan="4" id="experimentPeriod"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">举办地点</td>
+                    <td colspan="4" id="holdPlace"></td>
+                    <td colspan="2">拟授学员分数</td>
+                    <td colspan="4" id="score"></td>
+                </tr>
+                <!-- <tr>
+                    <td colspan="1">申报单位</td>
+                    <td colspan="3" id="applyUnit"></td>
+                    <td colspan="1">联系电话</td>
+                    <td colspan="3" id="applyUnitPhone"></td>
+                    <td colspan="1">联系人</td>
+                    <td colspan="3" id="applyLinkman"></td>
+                </tr> -->
+                <tr>
+                    <td colspan="1">主办单位</td>
+                    <td colspan="3" id="unitName"></td>
+                    <td colspan="1">联系电话</td>
+                    <td colspan="3" id="unitPhone"></td>
+                    <td colspan="1">联系人</td>
+                    <td colspan="3" id="unitLinkman"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">活动负责人通讯地址</td>
+                    <td colspan="10" id="principal_address"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">活动负责人联系电话</td>
+                    <td colspan="4" id="principal_phone"></td>
+                    <td colspan="2">邮政编码</td>
+                    <td colspan="4" id="principal_postcode"></td>
+                </tr>
+                <tr id="other_blank">
+                    <td colspan="12"><br/></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!-- page14.opinion province -->
+    <div class="table_big a4_portrait only_province">
+        <div class="table_box">
+            <table>
+                <tr>
+                    <td colspan="2" class="opinion_unit">
+                        <label>申报单位意见</label>
+                    </td>
+                    <td colspan="10">
+                        <textarea class="opinion_text"></textarea>
+                        <p>（盖章）<span>&emsp;&emsp;&emsp;&emsp;</span>年<span>&emsp;&emsp;&emsp;&emsp;</span>月<span>&emsp;&emsp;&emsp;&emsp;</span>日
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="opinion_unit">
+                        <label><span class="city_name">市</span>继续医学教育委<br>员会审批意见</label>
+                    </td>
+                    <td colspan="10">
+                        <textarea class="opinion_text"></textarea>
+                        <p>（盖章）<span>&emsp;&emsp;&emsp;&emsp;</span>年<span>&emsp;&emsp;&emsp;&emsp;</span>月<span>&emsp;&emsp;&emsp;&emsp;</span>日
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="opinion_unit">
+                        <label>省继续医学教育委<br>员会审批意见</label>
+                    </td>
+                    <td colspan="10">
+                        <textarea class="opinion_text"></textarea>
+                        <p>（盖章）<span>&emsp;&emsp;&emsp;&emsp;</span>年<span>&emsp;&emsp;&emsp;&emsp;</span>月<span>&emsp;&emsp;&emsp;&emsp;</span>日
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="opinion_unit">备注</td>
+                    <td colspan="10">
+                        <textarea style="height: 90px;" id="remark"></textarea>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!-- page15.opinion city -->
+    <div class="table_big a4_portrait hide only_city">
+        <div class="table_box">
+            <table>
+                <tr>
+                    <td colspan="2" class="opinion_unit">
+                        <label>申报单位意见</label>
+                    </td>
+                    <td colspan="10">
+                        <textarea class="opinion_text"></textarea>
+                        <p>（盖章）<span>&emsp;&emsp;&emsp;&emsp;</span>年<span>&emsp;&emsp;&emsp;&emsp;</span>月<span>&emsp;&emsp;&emsp;&emsp;</span>日
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="opinion_unit">
+                        <label><span class="city_name">市</span>继续医学教育委<br>员会审批意见</label>
+                    </td>
+                    <td colspan="10">
+                        <textarea class="opinion_text"></textarea>
+                        <p>（盖章）<span>&emsp;&emsp;&emsp;&emsp;</span>年<span>&emsp;&emsp;&emsp;&emsp;</span>月<span>&emsp;&emsp;&emsp;&emsp;</span>日
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="opinion_unit">备注</td>
+                    <td colspan="10">
+                        <textarea style="height: 300px;" id="remark"></textarea>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="btn_box">
+    <!--<button>提交</button>-->
+</div>
+</body>
+<script type="text/javascript" src="/js/api/cpt.js"></script>
+<script type="text/javascript" src="/pages/mod/libs/vendor.p22f700c.bc56936s.js"></script>
+<script>
+    const GD_CITY_SCORE_LEVEL_ID = '95b9ef88-7265-11f0-adb9-005056a64c01';
+    const GD_COUNTY_SCORE_LEVEL_ID = '3037222a-2e5d-11f1-a586-005056a64c01';
+    let gdDeclPdfObserver = null;
+    let gdPreviewFootTimer = null;
+    function shouldRenderDeclAttachment(scoreLevelId) {
+        return [GD_COUNTY_SCORE_LEVEL_ID, GD_CITY_SCORE_LEVEL_ID].includes(scoreLevelId);
+    }
+    function refreshPreviewFootNums() {
+        let $visiblePages = $('#pdf_container .a4_portrait:visible');
+        $visiblePages.find('> .foot_num').remove();
+        $visiblePages.each(function (index, page) {
+            $(page).append('<p class="foot_num">' + (index + 1) + '</p>');
+        });
+    }
+    function scheduleRefreshPreviewFootNums(delay) {
+        clearTimeout(gdPreviewFootTimer);
+        gdPreviewFootTimer = setTimeout(function () {
+            refreshPreviewFootNums();
+        }, getOrDefault(delay, 80));
+    }
+    function appendDeclImage(url, fileName) {
+        let $page = $(
+            '<div class="table_big a4_portrait decl-preview-page">'
+            + '<div class="table_box decl-preview-image-box"><img alt="承诺书"></div>'
+            + '</div>'
+        );
+        $page.find('img').attr('src', url).attr('title', fileName || '承诺书');
+        $('#pdf_container').append($page);
+        scheduleRefreshPreviewFootNums();
+    }
+    function ensureDeclPdfObserver() {
+        if (gdDeclPdfObserver) {
+            return gdDeclPdfObserver;
+        }
+        gdDeclPdfObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (!entry.isIntersecting) {
+                    return;
+                }
+                let pageNode = entry.target;
+                gdDeclPdfObserver.unobserve(pageNode);
+                renderDeclPdfPage(pageNode);
+            });
+        }, {
+            root: null,
+            rootMargin: '600px 0px',
+            threshold: 0.01
+        });
+        return gdDeclPdfObserver;
+    }
+    function buildDeclPdfPage(pageNum, fileName) {
+        let page = document.createElement('div');
+        page.className = 'table_big a4_portrait decl-preview-page decl-preview-pdf-page';
+        page.setAttribute('data-page-num', pageNum);
+        page.setAttribute('data-file-name', fileName || '承诺书');
+        page.innerHTML = ''
+            + '<div class="table_box decl-preview-canvas-box">'
+            + '  <div class="decl-preview-loading">承诺书第 ' + pageNum + ' 页加载中...</div>'
+            + '  <canvas></canvas>'
+            + '</div>';
+        return page;
+    }
+    function renderDeclPdfPage(pageNode) {
+        if (!pageNode || pageNode.getAttribute('data-rendered') === '1') {
+            return;
+        }
+        let pdf = window.__gdDeclPdfDoc;
+        let pageNum = Number(pageNode.getAttribute('data-page-num'));
+        let canvas = pageNode.querySelector('canvas');
+        let loadingNode = pageNode.querySelector('.decl-preview-loading');
+        if (!pdf || !pageNum || !canvas) {
+            return;
+        }
+        pageNode.setAttribute('data-rendering', '1');
+        pdf.getPage(pageNum).then(function (page) {
+            let boxNode = pageNode.querySelector('.decl-preview-canvas-box');
+            let containerWidth = boxNode.clientWidth || 714;
+            let containerHeight = boxNode.clientHeight || 980;
+            let baseViewport = page.getViewport({scale: 1});
+            let cssScale = Math.min(containerWidth / baseViewport.width, containerHeight / baseViewport.height);
+            let outputScale = Math.min(window.devicePixelRatio || 1, 2);
+            let viewport = page.getViewport({scale: cssScale * outputScale});
+            let context = canvas.getContext('2d', {alpha: false});
+            canvas.width = Math.floor(viewport.width);
+            canvas.height = Math.floor(viewport.height);
+            canvas.style.width = Math.floor(baseViewport.width * cssScale) + 'px';
+            canvas.style.height = Math.floor(baseViewport.height * cssScale) + 'px';
+            canvas.setAttribute('title', pageNode.getAttribute('data-file-name') || '承诺书');
+            return page.render({
+                canvasContext: context,
+                viewport: viewport
+            }).promise;
+        }).then(function () {
+            pageNode.setAttribute('data-rendered', '1');
+            pageNode.removeAttribute('data-rendering');
+            loadingNode && loadingNode.remove();
+        }).catch(function () {
+            pageNode.removeAttribute('data-rendering');
+            if (loadingNode) {
+                loadingNode.textContent = '承诺书页面加载失败';
+            }
+        });
+    }
+    function appendDeclPdf(url, fileName) {
+        let loadingTask = pdfjsLib.getDocument({
+            url: url,
+            cMapUrl: '/js/pdfjs/web/cmaps/',
+            cMapPacked: true
+        });
+        loadingTask.promise.then(function (pdf) {
+            window.__gdDeclPdfDoc = pdf;
+            let observer = ensureDeclPdfObserver();
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                let pageNode = buildDeclPdfPage(pageNum, fileName);
+                $('#pdf_container').append(pageNode);
+                observer.observe(pageNode);
+            }
+            scheduleRefreshPreviewFootNums();
+            let firstPageNode = document.querySelector('.decl-preview-pdf-page[data-page-num="1"]');
+            if (firstPageNode) {
+                renderDeclPdfPage(firstPageNode);
+            }
+        });
+    }
+    function renderDeclAttachment(projectVo) {
+        if (!projectVo || !projectVo.declUrl || !shouldRenderDeclAttachment(projectVo.scoreLevelId)) {
+            return;
+        }
+        let declUrl = projectVo.declUrl;
+        let declName = decodeURIComponent((declUrl.split('?')[0] || '').split('/').pop() || '承诺书');
+        if (/\.pdf(?:\?|$)/i.test(declUrl)) {
+            appendDeclPdf(declUrl, declName);
+            return;
+        }
+        appendDeclImage(declUrl, declName);
+    }
+    function renderApplyUnitParent(upwardText, unitId) {
+        let cityUnit = parseCityUnit(upwardText);
+        let provinceUnit = parseProvinceUnit(upwardText);
+        let parentUnitName = cityUnit.unitName ? cityUnit.unitName : provinceUnit.unitName;
+        $('#applyUnitParent').text(parentUnitName);
+        getAction(`${huayi_personorg_url}/alternative/unit/pc/${unitId}`).then(response => {
+            let jsonRes = response.data;
+            if (jsonRes.success) {
+                if (jsonRes.data.phUnit) {
+                    $('#applyUnitParent').text(provinceUnit.unitName);
+                }
+            }
+        });
+    }
+    function buildTeacherPreviewList(courseVoList, shouldMergeTeacher) {
+        if (!shouldMergeTeacher) {
+            return courseVoList || [];
+        }
+        const teacherPreviewList = [];
+        const teacherKeySet = new Set();
+        (courseVoList || []).forEach(courseVo => {
+            const teacherName = $.trim(getOrDefault(courseVo.teacherName, ''));
+            const certType = $.trim(getOrDefault(courseVo.certType, ''));
+            const idCardNo = $.trim(getOrDefault(courseVo.idCardNo, ''));
+            const titleName = $.trim(getOrDefault(courseVo.titleName, ''));
+            const researchDirection = $.trim(getOrDefault(courseVo.researchDirection, ''));
+            const workUnit = $.trim(getOrDefault(courseVo.workUnit, ''));
+            if (!(teacherName && certType && idCardNo && titleName && researchDirection && workUnit)) {
+                teacherPreviewList.push(courseVo);
+                return;
+            }
+            const teacherKey = [teacherName, certType, idCardNo, titleName, researchDirection, workUnit].join('||');
+            if (teacherKeySet.has(teacherKey)) {
+                return;
+            }
+            teacherKeySet.add(teacherKey);
+            teacherPreviewList.push(courseVo);
+        });
+        return teacherPreviewList;
+    }
+    $.extend(true, _render, {
+        after_proj: function (projectVo) {
+            const that = this;
+            that.is2025 = 2025 === +(projectVo.holdYear);
+            renderApplyUnitParent(projectVo.upwardText, projectVo.unitId);
+            if (that.is2025) {
+                $('#theoryPeriod').prev().text('理论时长(分钟)');
+                $('#experimentPeriod').prev().text('实验技术时长(分钟)');
+            }
+            if ('95b9ef88-7265-11f0-adb9-005056a64c01' === projectVo.scoreLevelId) { //面向市
+                $('.only_province').hide();
+                $('.only_city').show();
+            }
+            renderDeclAttachment(projectVo);
+        },
+        course: function (courseVoList) {
+            const that = this;
+            const shouldMergeTeacher = that.projectVo && '95b9ef88-7265-11f0-adb9-005056a64c01' === that.projectVo.scoreLevelId;
+            const teacherVoList = buildTeacherPreviewList(courseVoList, shouldMergeTeacher);
+            if ('77e90cd2-cb04-45e2-94b0-92ce2c682772' === that.projectId) {
+                $('#course_loop_head_alt').parents('.a4_portrait').show();
+                $('#course_loop_head_plus').parents('.a4_portrait').show();
+                $('#teacher_loop_head_alt').parents('.a4_portrait').show();
+                $('#teacher_loop_head_plus').parents('.a4_portrait').show();
+                _draw.__course_page(courseVoList.slice(0, 11), '', false);
+                _draw.__course_page(courseVoList.slice(11, 24), '_alt', false);
+                _draw.__course_page(courseVoList.slice(24), '_plus', true);
+                _draw.__teacher_page(teacherVoList.slice(0, 16), '', false);
+                _draw.__teacher_page(teacherVoList.slice(16, 28), '_alt', false);
+                _draw.__teacher_page(teacherVoList.slice(28), '_plus', true);
+                _prev.footLabel();
+            } else {
+                _draw.course_base_alt(courseVoList);
+                _draw.teacher_base_alt(teacherVoList);
+            }
+            if (that.is2025) {
+                $('#course_loop_head td:eq(3)').text('教学时长(分钟)');
+                $('#teacher_loop_head').parent().find('tr td:not(.td_blank):last-child').remove();
+                $('#teacher_loop_head_alt').parent().find('tr td:not(.td_blank):last-child').remove();
+                $('#teacher_loop_head_plus').parent().find('tr td:not(.td_blank):last-child').remove();
+            }
+            scheduleRefreshPreviewFootNums(120);
+        },
+    });
+</script>
+<script type="text/javascript" src="/pages/mod/declare/js/preview.js"></script>
+<style>
+    .tit_box h1 {
+        font-weight: bold;
+    }
+    .text_box .xmnum_box {
+        display: flex;
+        justify-content: flex-start;
+    }
+    .text_box .xmnum_box p {
+        width: 280px;
+        font-size: 16px;
+        text-align: left;
+    }
+    .decl-preview-page .decl-preview-canvas-box,
+    .decl-preview-page .decl-preview-image-box {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    .decl-preview-page {
+        padding-bottom: 56px;
+    }
+    .decl-preview-page .table_box {
+        width: 100%;
+        height: 100%;
+        align-items: center;
+    }
+    .decl-preview-page .decl-preview-canvas-box {
+        position: relative;
+        min-height: 0;
+        background: #fff;
+        overflow: hidden;
+    }
+    .decl-preview-page .decl-preview-canvas-box canvas {
+        display: block;
+        margin: 0 auto;
+    }
+    .decl-preview-page .decl-preview-loading {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #999;
+        font-size: 16px;
+        background: linear-gradient(180deg, #fafafa 0%, #f3f3f3 100%);
+        border: 1px solid #e5e5e5;
+    }
+    .decl-preview-page .decl-preview-image-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    .decl-preview-page .decl-preview-image-box img {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        border: 1px solid #e5e5e5;
+    }
+</style>
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>角色套菜单管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script type="text/javascript" src="https://v8.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header" id ="role-standard-title" style="top: 15px;"></div>
+        <div class="layui-card-body" style="padding: 15px;">
+            <form class="layui-form" style = "padding: 30px;" lay-filter = 'role-group-menu-form' id ='role-group-menu-form'>
+
+                <div class="layui-form-item">
+<!--                    <label class="layui-form-label">角色名称：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="roleName"  value="科室" class="layui-input" disabled="true" readonly/>
+                    </div>-->
+
+                    <label class="layui-form-label"><font color="red">*&nbsp;</font>选择套：</label>
+                    <div class="layui-input-inline">
+                        <select name="cmeStandardKindId" lay-verify="notBlank" lay-search lay-filter = "layui-select-tao" id="role-group-menu-standard">
+                        </select>
+                    </div>
+                    <label class="layui-form-label"><font color="red">*&nbsp;</font>操作类型：</label>
+                    <div class="layui-input-inline">
+                        <select name="optType" lay-verify="notBlank" lay-filter = "layui-select-opt-type">
+                            <option value="">请选择操作类型</option>
+                            <option value="white">编辑白名单</option>
+                            <option value="black">编辑黑名单</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">菜单树：</label>
+                    <div class="layui-input-block" >
+                        <div style="width: 100%; min-height: 200px; overflow: scroll;padding: 10px;border: 1px solid #ddd">
+                            <div id="menu-white-tree"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item" >
+                    <div class="layui-inline">
+                        <div class="layui-input-block">
+                            <button type="submit" id = "role-group-menu-edit-submit" class="layui-btn" lay-filter = 'role-group-menu-edit-submit' lay-submit >提交</button>
+                            <button onclick="return goToBack()" class="layui-btn"  >返回</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" style=" display:none">
+                    <div class="layui-inline">
+                        <div class="layui-input-block">
+                            <input type="text" name="roleId" placeholder="角色" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+
+<script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+<script src="../../js/common.js"></script>
+<script src="../../js/constant.js"></script>
+<script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+<script>
+
+    var formatUrl=/\\|\/$/gi;
+    var permission =huayi_permission_url.replace(formatUrl,"");
+    var sjwh =huayi_sjwh_url.replace(formatUrl,"");
+
+    var standardKindListUrl = sjwh +"/cmestandardkind/list/all";
+    var roleMenuGroupUrl = permission + "/commenugroup/menu/tree";
+    var roleMenuGroupUpdateUrl = permission + "/commenugroup/menu/update";
+
+    //当前选中的套
+    var currentTao =null;
+    //当前选中的操作类型
+    var currentOptType = null;
+
+    var blackMenuList = [];
+
+    window.goToBack = function(){
+        window.history.back();
+        return false;
+    };
+
+    /**
+     * 判断是否是父子关系
+     */
+    window.isNotParent = function(id, pid, dataList){
+        if(id == pid) return true;
+        for(var i =0; i<dataList.length; i++){
+            if(dataList[i].id == id){
+                if(dataList[i].pid == pid){
+                    return false;
+                }else{
+                    return isNotParent(dataList[i].pid,pid,dataList);
+                }
+            }
+        }
+        return true;
+    }
+
+    //防止表单重复提交
+    var noRepeatLock = true;
+    var noRepeat = function(fun ){
+        if(noRepeatLock){
+            noRepeatLock = false;
+            try {
+                fun();
+            } catch (e) {
+                console.log(e);
+            }
+            setTimeout(function(){
+                noRepeatLock = true;
+            },3000);
+        }
+    };
+
+    layui.config({
+        base:'../../js/layui/ext/'
+    }).use(['form','authtree','layer'],function(){
+        var form = layui.form;
+        var authtree= layui.authtree;
+
+        //自定义FORM 校验规则
+        layui.form.verify({
+            notBlank: function(value, item){ //value：表单的值、item：表单的DOM对象
+                if(value == null || value ==""){
+                    return '必填项不能为空';
+                }
+            }
+        });
+
+        var roleId = getUrlParam("roleId");
+        var roleName = decodeURI(getUrlParam("roleName"));
+        if(roleId == null||roleId =="" ){
+            layui.layer.msg('获取角色信息异常！', {
+                time: 1000, //1s后自动关闭
+            });
+        }
+
+        $("#role-standard-title").html("当前角色："+roleName+"，请编辑该角色套级别菜单黑名单、白名单");
+        form.val("role-group-menu-form",{
+            "roleId":roleId,
+            "optType":"",
+            "cmeStandardKindId":""
+        })
+
+        //重新菜单树
+        window.renderTree = function(){
+            if(currentOptType != null && currentTao != null){
+                $.ajax({
+                    url: roleMenuGroupUrl+"?roleId="+roleId+"&cmeStandardKindId="+currentTao +"&optType="+currentOptType ,
+                    dataType: 'json',
+                    success: function(data){
+                        blackMenuList = data.data;
+                        var trees = layui.authtree.listConvert(data.data,{startPid: '-'});
+                        // 如果后台返回的不是树结构，请使用 authtree.listConvert 转换
+                        layui.authtree.render('#menu-white-tree', trees, {
+                            inputname: 'menuIds[]',
+                            layfilter: 'menu-white-tree',
+                            autowidth: true,
+                            autoclose:currentOptType == 'black',
+                            openall:true,
+                            checkType:'checkbox'
+                        });
+                    }
+                });
+            }
+        }
+
+        // ==============   初始化套选择框  ========================
+        //初始化检索框
+        $.ajax({
+            url:standardKindListUrl,
+            type:'get',
+            success:function(res){
+                var standards = res.data;
+                if(standards != null && standards.length > 0){
+                    var options = '<option value="" > 请选择套标准 </option>';
+                    for(var i =0; i< standards.length; i++){
+                        options += '<option value="' + standards[i].cmeStandardKindId + '">'+standards[i].description+'</option>';
+                    }
+                    $('#role-group-menu-standard').append(options);
+                    layui.form.render('select','role-group-menu-form');
+                }else{
+                    console.log('score kind is null!');
+                }
+            }
+        });
+
+        // ==============   监听黑白名单选择框   ========================
+        form.on("select(layui-select-opt-type)",function(data){
+            currentOptType = data.value;
+            renderTree();
+        });
+
+        // ==============   监听套选择框   ========================
+        form.on("select(layui-select-tao)",function(data){
+            currentTao = data.value;
+            renderTree();
+        });
+
+        //===========   监听黑名单树 并修改authTree原有的联动效果   =========
+        layui.authtree.on('change(menu-white-tree)',function(data){
+            if(currentOptType == 'black'){
+                // 获取最新选中
+                var lastChecked = layui.authtree.getLastChecked('#menu-white-tree');
+                var lastNotChecked = layui.authtree.getLastNotChecked('#menu-white-tree');
+                if(lastChecked.length > 0){
+                    //选中时选中所有子节点 无需处理 ，取消原有的父级联动
+                    //当前选中的节点 要排除父节点
+                    var currentChecked = data.value;
+                    var checkedList = layui.authtree.getChecked(data.dst);
+                    var checkedListNew = [];
+                    for (var i = 0; i < checkedList.length; i++) {
+                        if(isNotParent(currentChecked,checkedList[i],blackMenuList)){
+                            checkedListNew.push(checkedList[i]);
+                        }
+                    }
+
+                    var blackMenuListTemp = JSON.parse(JSON.stringify(blackMenuList));
+                    //更新选中状态
+                    for (var i = 0; i < blackMenuListTemp.length; i++) {
+                        blackMenuListTemp[i].checked = false;
+                        for (var j = 0; j <checkedListNew.length ; j++) {
+                            if(blackMenuListTemp[i].id == checkedListNew[j]){
+                                blackMenuListTemp[i].checked = true;
+                            }
+                        }
+                    }
+                    var treeData = layui.authtree.listConvert(blackMenuListTemp,{startPid: '-'});
+                    layui.authtree.render('#menu-white-tree', treeData, {
+                        inputname: 'menuIds[]',
+                        layfilter: 'menu-white-tree',
+                        autowidth: true,
+                        openall:true,
+                        checkType:'checkbox'
+                    });
+
+                }else{
+                    //取消选中时 取消所有父节点  /原有的取消子节点的联动逻辑干掉！(layui bug 当节点不可选时 点击节点会有级联效果)
+                    var blackMenuListTemp = JSON.parse(JSON.stringify(blackMenuList));
+                    var currentNotChecked = data.value;
+                    var checkedList = layui.authtree.getChecked(data.dst);
+
+                    // 如果取消的节点不含当前节点 说明当前节点为disable状态
+                    var isClickDisable = true;
+                    var lastNotChecked = layui.authtree.getLastNotChecked('#menu-white-tree');
+                    for (var i = 0; i <lastNotChecked.length ; i++) {
+                        if(lastNotChecked[i] == currentNotChecked){
+                            isClickDisable = false;
+                        }
+                    }
+                    if(isClickDisable){
+                        checkedList = checkedList.concat(lastNotChecked);
+                    }
+
+                    var checkedListNew = [];
+                    for (var i = 0; i < checkedList.length; i++) {
+                        if(isNotParent(currentNotChecked,checkedList[i],blackMenuList)){
+                            checkedListNew.push(checkedList[i]);
+                        }
+                    }
+
+                    //更新选中状态
+                    for (var i = 0; i < blackMenuListTemp.length; i++) {
+                        blackMenuListTemp[i].checked = false;
+                        for (var j = 0; j <checkedListNew.length ; j++) {
+                            if(blackMenuListTemp[i].id == checkedListNew[j]){
+                                blackMenuListTemp[i].checked = true;
+                            }
+                        }
+                    }
+
+                    var treeData = layui.authtree.listConvert(blackMenuListTemp,{startPid: '-'});
+                    layui.authtree.render('#menu-white-tree', treeData, {
+                        inputname: 'menuIds[]',
+                        layfilter: 'menu-white-tree',
+                        autowidth: true,
+                        openall:true,
+                        checkType:'checkbox'
+                    });
+                }
+            }
+        })
+
+        //更新关联菜单数据
+        form.on('submit(role-group-menu-edit-submit)', function(data){
+
+            noRepeat(function(){
+                var formParam =data.field;
+                $.ajax({
+                    url:roleMenuGroupUpdateUrl,
+                    type:'post',
+                    dataType:'json',
+                    contentType:'application/json;charset=UTF-8',
+                    data:JSON.stringify(formParam),
+                    success:function(res){
+                        if(res.status == 200){
+                            layui.layer.msg('操作成功！', {
+                                time: 1000, //1s后自动关闭
+                                end:function(o){
+                                    goToBack();
+                                }
+                            });
+                        }else{
+                            layui.layer.msg(res.msg || '系统繁忙，请稍后重试', {
+                                time: 1000, //1s后自动关闭
+                                end:function(o){
+                                    layui.layer.closeAll();
+                                }
+                            });
+                        }
+                    },
+                    error:function(req,msg){
+                        layui.layer.msg('系统繁忙，请稍后重试', {
+                            time: 1000, //1s后自动关闭
+                            end:function(o){
+                                layui.layer.closeAll();
+                            }
+                        });
+                    }
+                });
+            });
+            return false;
+        });
+    });
+
+</script>
+</html>

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>系统菜单</title>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+        <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+        <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+        <link rel="stylesheet" href="../../css/ztree/metroStyle.css" type="text/css">
+
+
+        <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+<script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+        <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+        <!--    请求路径配置-->
+        <script type="text/javascript" src="../../js/constant.js"></script>
+        <!--    ajax全局配置-->
+        <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+        <style>
+            ::-webkit-scrollbar {
+                width: 10px;
+                height: 10px;
+            }
+
+            ::-webkit-scrollbar-track {
+                background: #f6f6f6;
+                border-radius: 5px;
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: #aaa;
+                border-radius: 5px;
+            }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: #747474;
+            }
+
+            ::-webkit-scrollbar-corner {
+                background: #f6f6f6;
+            }
+
+            .layui-table-cell { /*最后的pic为字段的field*/
+                height: 100%;
+                max-width: 100%;
+            }
+
+            /* IE */
+             * {
+                scrollbar-arrow-color: #ccc;
+                /*三角箭头的颜色*/
+                scrollbar-face-color: #ddd;
+                /*立体滚动条的颜色*/
+                scrollbar-3dlight-color: #fff;
+                /*立体滚动条亮边的颜色*/
+                scrollbar-highlight-color: #fff;
+                /*滚动条空白部分的颜色*/
+                scrollbar-shadow-color: #fff;
+                /*立体滚动条阴影的颜色*/
+                scrollbar-darkshadow-color: #fff;
+                /*立体滚动条强阴影的颜色*/
+                scrollbar-track-color: #fff;
+                /*立体滚动条背景颜色*/
+                scrollbar-base-color: #fff;
+                /*滚动条的基本颜色*/
+            }
+
+            /* 新增代码 */
+            .layui-treeSelect .ztree li{
+                line-height: normal !important;
+            }
+            .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-card">
+                <!--搜索框区域-->
+                <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+                    <!-- <div class="layui_mess">
+                        <div class="layui_display"> -->
+                        <div class="layui-inline">
+                            <label class="layui-form-label">菜单名称</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="menu-tree-query" name = "parentMenuId" class="layui-input"/>
+                            </div>
+                        </div>
+
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="renderTable()"
+                               lay-filter="LAY-app-order-search"
+                               data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                        </div>
+                    <!-- </div>
+                    </div> -->
+                </div>
+
+                <!-- 表格区域-->
+                <div class="layui-card-body layui_body_box">
+                    <table class="layui-table" id="typeTable" lay-filter="demo" style="margin: 0px 0px;">
+                    </table>
+                </div>
+            </div>
+
+            <!-- 弹框内容 -->
+            <div id="score-kind-alert" style=" display:none;text-align: center">
+                <form class="layui-form" style="padding: 30px;" id="form1" lay-filter="menuAdd">
+                    <div class="layui-form-item" style="display: none">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">主键id:</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="menuId" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">菜单类型:</label>
+                            <div class="layui-input-block">
+                                <select name="menuType" >
+                                    <option value="1">目录</option>
+                                    <option value="2">菜单</option>
+                                    <option value="3">按钮</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">父级菜单:</label>
+                            <div class="layui-input-block">
+                                <input  id="menu-tree-form"  lay-filter = "menu-tree-form" name = "parentMenuId" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">是否主题窗口打开：</label>
+                            <div class="layui-input-block">
+                                <select name="target" lay-filter="aihao">
+                                    <option value="0">是</option>
+                                    <option value="1">否</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><font color="red">*&nbsp;</font>菜单名称:</label>
+                            <div class="layui-input-block">
+                                <input type="text" lay-verify="required" name="menuName" placeholder="请输入菜单名称" autocomplete="off" class="layui-input" >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">菜单链接：</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="menuUrl" placeholder="请输入菜单链接" autocomplete="off" class="layui-input"
+                                       defaultVal="50">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><font color="red">*&nbsp;</font>显示顺序：</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="listOrder" lay-verify="number" placeholder="顺序" autocomplete="off"
+                                       class="layui-input" defaultVal="50">
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><span style="color: red">*&nbsp;</span>宽度：</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="cwidth" placeholder="请输入菜单宽度" autocomplete="off"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><font color="red">*&nbsp;</font>高度：</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="cheight" placeholder="请输入菜单高度" autocomplete="off"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><font color="red">*&nbsp;</font>备注：</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="remark" lay-verify="beizhu" placeholder="菜单备注必须大于5个字符" autocomplete="off" class="layui-input"
+                                       defaultVal="50">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                            <button class="layui-btn" lay-submit lay-filter="formDemo">提交</button>
+                            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="unitIds-open" style="display: none">
+                <div>
+                    <ul id="test2" class="ztree"></ul>
+                </div>
+            </div>
+
+
+        </div>
+
+
+        <!--列表工具栏-->
+        <script type="text/html" id="barDemo">
+            <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="edit"><i
+                    class="layui-icon layui-icon-edit"></i>编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del"><i
+                    class="layui-icon layui-icon-delete"></i>删除</a>
+        </script>
+        <script type="text/html" id="barDemo1">
+            <a permission class="layui-btn layui-btn-sm" lay-event="user-add" style="border-radius: 4px;"><i class="layui-icon layui-icon-add-1"></i>新增</a>
+        </script>
+        <!--增加序号列-->
+        <script type="text/html" id="rank">
+            {{d.LAY_TABLE_INDEX+1}}
+        </script>
+
+        <script>
+            layui.config({
+                base: '../../js/layui/ext/'
+            }).extend({
+                treeSelect: "treeSelect"
+            }).use(['table', 'layer', 'form', 'laypage', 'treeSelect', 'authtree'], function () {
+                var table = layui.table;
+                var form = layui.form;
+                var $ = layui.jquery;
+                var treeSelect = layui.treeSelect;
+
+                $.ajax({
+                    type: 'get',
+                    url: huayi_permission_url + 'commenu/menu/tree',
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        //添加 编辑弹框 下拉树
+                        treeSelect.render({
+                            elem: '#menu-tree-form',
+                            DATA: res.data,
+                            search:true,
+                            type: 'get',
+                            placeholder: '选择父菜单',
+                            style: {
+                                line: {
+                                    enable: true
+                                }
+                            }
+                        });
+
+                        treeSelect.render({
+                            elem: '#menu-tree-query',
+                            DATA: res.data,
+                            search: true,
+                            type: 'get',
+                            placeholder: '选择父菜单',
+
+                            style: {
+                                line: {
+                                    enable: true
+                                }
+                            }
+                        });
+                    }
+                });
+
+                window.renderTable = function () {
+                    // 表格数据渲染
+                    var tableIns = table.render({
+                        elem: '#typeTable',
+                        url: huayi_permission_url + 'commenu',
+                        title: '菜单列表',
+                        defaultToolbar: [],
+                        where: {parentMenuId: $('#menu-tree-query').val()},
+                        // where: {menuName: $('#menuName').val()},
+                        cols: [[
+                            {field: 'xuhao', title: '序号', templet: '#rank', width: 60, align: 'center'},
+                            {field: 'menuId', title: '菜单id', hide: true},
+                            {field: 'menuName', title: '菜单名称', minWidth: 150},
+                            {field: 'menuType', title: '类型', minWidth: 60, align: 'center', templet: function (d) {
+                                return d.menuType == 1 ? '目录':( d.menuType  == 2 ? '菜单':'按钮');
+                            } },
+                            {field: 'parentMenuId', align: 'center', title: '父级菜单id', hide: true},
+                            {field: 'menuUrl', title: '菜单URL连接'},
+                            {field: 'listOrder', title: '显示顺序', sort: true, align: 'center'},
+                            {field: 'target', title: '主窗打开', minWidth: 90, align: 'center', templet: function (d) {
+                                if (d.target == 0) {
+                                    return "是";
+                                } else {
+                                    return "否";
+                                }
+                            } },
+                            {field: 'cwidth', title: '宽度', minWidth: 70, align: 'center'},
+                            {field: 'cheight', title: '高度', minWidth: 70, align: 'center'},
+                            {field: 'remark', title: '备注', minWidth: 150},
+                            {field: 'addTime', align: 'center', title: '添加时间'},
+                            {field: 'updateTime', title: '修改时间', sort: true},
+                            {field: 'operateUser', title: '操作人'},
+                            {
+                                field: 'cstate', align: 'center', title: '状态', templet:
+                                    function (d) {
+                                        if (d.cstate == 1) {
+                                            return "<span style='color: #5FB878'>正常</span>";
+                                        } else {
+                                            return "<span style='color: #FF5722'>已删除</span>";
+                                        }
+                                    }
+                            },
+                            {align: 'center', width: 150, toolbar: '#barDemo', title: '操作', fixed: 'right'}
+                        ]],
+                        toolbar: '#barDemo1',
+                        cellMinWidth: 100,
+                        id: "typeTable",
+                        height: 'full-145',
+                        page: true,
+                        limit: 100,
+                        limits: [10, 20, 30, 40, 50, 100],
+                        parseData: function (res) {
+                            return {
+                                "code": res.code, //解析接口状态
+                                "msg": res.message, //解析提示文本
+                                "count": res.data.total, //解析数据长度
+                                "data": res.data.records //解析数据列表
+                            }
+                        },
+                        request: {
+                            pageName: 'current',  // 页码的参数名称，默认：page
+                            limitName: 'size'  // 每页数据量的参数名，默认：limit
+                        }
+                    });
+                }
+                // 查询按钮执行方法
+                renderTable();
+
+                //监听头部工具条
+                table.on('toolbar(demo)', function (obj) {
+                    var data = obj.data;
+                    if (obj.event === 'edit') {
+                        alert("触发编辑按钮");
+                    } else if (obj.event === 'user-add') {
+
+                        form.val('menuAdd', {
+                            'menuId': null,
+                            'menuName':null,
+                            'parentMenuId':null,
+                            'menuUrl':null,
+                            'listOrder':null,
+                            'target':null,
+                            'cwidth':null,
+                            'cheight':null,
+                            'remark':null,
+                        });
+
+                        treeSelect.revokeNode('menu-tree-form', function(d){
+                        });
+                        layer.open({
+                            anim: 5,
+                            type: 1,
+                            title: '添加菜单',
+                            content: $('#score-kind-alert'),
+                            area: ['600px','90%'],
+                            shade: 0,
+                        });
+                    }
+                });
+
+                //监听行内工具条
+                table.on('tool(demo)', function (obj) {
+                    var data = obj.data;
+                    if (obj.event === 'edit') {
+                        if(data.parentMenuId){
+                            console.log(data.parentMenuId);
+                            treeSelect.checkNode('menu-tree-form' , data.parentMenuId);
+                        }else{
+                            treeSelect.revokeNode('menu-tree-form', function(d){
+                            });
+                        }
+                        layer.open({
+                            skin: 'layui-layer-molv',
+                            type: 1,
+                            title: '修改菜单信息',
+                            content: $('#score-kind-alert'),
+                            area: ['600px', '700px'],
+                            shade: 0,
+                            success: function (layero, index) {
+                                form.val('menuAdd', data);
+                            }
+
+                        });
+                    } else if (obj.event === 'del') {
+                        layer.confirm('确定删除数据', {icon: 3, title: '删除提示'}, function (index) {
+                            //do something
+                            $.ajax({
+                                type: 'get',
+                                url: huayi_permission_url + 'commenu/deleted',
+                                data: {id: data.menuId},
+                                contentType: 'application/json;charset=UTF-8',
+                                dataType: 'json',
+                                success: function (res) {
+                                    if (res.code === 0) {
+                                        layer.msg("删除成功");
+                                        table.reload('typeTable');
+                                    }
+                                }
+                            });
+                            layer.close(index);
+                        })
+                    }
+                });
+
+                form.on('submit(formDemo)', function (data) {
+                    var URL;
+                    var aa = $("input[name='menuId']").val();
+                    if (aa == null || aa == '') {
+                        URL = huayi_permission_url + 'commenu'
+                    } else {
+                        URL = huayi_permission_url + 'commenu/update'
+                    }
+                    var datas = JSON.stringify(data.field);
+                    $.ajax({
+                        type: 'post',
+                        url: URL,
+                        data: datas,
+                        contentType: 'application/json;charset=UTF-8',
+                        dataType: 'json',
+                        success: function (res) {
+                            layui.layer.msg('操作成功！', {
+                                time: 1000, //1s后自动关闭
+                                end:function(o){
+                                    layui.layer.closeAll();
+                                    $('#searchBtn').click();
+                                }
+                            });
+                        },
+                        error: function () {
+                            layer.msg("添加失败");
+                        }
+                    })
+                    return false;
+                });
+
+                form.verify({
+                    beizhu: function (value, item) {
+                        if(value.length <5){
+                            return '内容长度必须大于5个字符'
+                        }
+                    }
+                })
+            });
+
+        </script>
+
+    </body>
+
+</html>

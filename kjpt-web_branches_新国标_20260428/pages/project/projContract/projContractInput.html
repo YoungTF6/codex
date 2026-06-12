@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <title>已公布项目管理（单位）</title>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <script type="text/javascript" src="../../../js/constantPage/projectConstant.js"></script>
+    <script type="text/javascript" src="../../../js/jquery-3.5.1.min.js"></script>
+
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="../../../js/axios.min.js"></script>
+    <script type="text/javascript" src="../../../js/auth.js"></script>
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+
+
+
+    <style type="text/css">
+        .layui-card-body.layui_body_box {
+            padding: 0 !important;
+        }
+
+        .layui-tab-content {
+            padding: 0 !important;
+        }
+
+        .layui-form.layui-border-box.layui-table-view {
+            margin: 0 !important;
+        }
+
+        /* card tabs */
+        .layui-tab-card-1 {
+            background-color: #F5F5F5;
+            padding: 10px 30px 0 30px;
+            border: 0;
+            box-shadow: none;
+        }
+
+        .layui-tab-title-1 {
+            background-color: #f5f5f5 !important;
+            height: auto;
+            border: 0;
+        }
+
+        .layui-tab-title-1 li {
+            margin-right: 40px !important;
+            padding: 0;
+            line-height: 32px;
+            border: 0;
+            border-bottom: 3px solid #F5F5F5;
+            background-color: #F5F5F5;
+            color: #404040;
+        }
+
+        .layui-tab-title-1 li:hover {
+            background-color: #F5F5F5;
+            color: #404040;
+            opacity: 1;
+        }
+
+        .layui-tab-title-1 .layui-this {
+            background-color: #f5f5f5 !important;
+            color: #009688;
+            border-bottom: 3px solid #009688;
+        }
+
+        .layui-tab-title-1 .layui-this:hover {
+            color: #009688;
+        }
+
+        .layui-tab-title-1 .layui-this:after {
+            border: 0;
+        }
+
+        .layui-tab-content.padding-0 {
+            padding: 0;
+        }
+
+
+
+        .layui-tab-title li p.finish {
+            background: url(imgs/c_v_03.png) no-repeat;
+            background-position: right center;
+        }
+
+        .layui-tab-title li p {
+            background: url(imgs/p_v_03.png) no-repeat;
+            background-position: right center;
+            width: 100px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body class="body-area">
+    <div class="layui-fluid">
+        <div class="layui-card">
+
+            <div class="layui-tab" lay-filter="tabarea" id="tabarea">
+                <ul class="layui-tab-title">
+                    <li id="tab_1" lay-id='tab_1' class="tab-default layui-this">
+                        <p>基本信息</p>
+                    </li>
+                    <li id="tab_2" lay-id='tab_2' class="tab-default">
+                        <p>项目简介</p>
+                    </li>
+                    <li id="tab_3" lay-id='tab_3' class="tab-default">
+                        <p>办班信息</p>
+                    </li>
+                    <li id="tab_4" lay-id='tab_4' class="tab-default">
+                        <p>质量控制</p>
+                    </li>
+                    <li id="tab_5" lay-id='tab_5' class="tab-default">
+                        <p>经费收支</p>
+                    </li>
+                    <li id="tab_6" lay-id='tab_6' class="tab-default">
+                        <p>承诺书</p>
+                    </li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item" >
+                        <iframe scrolling="auto" frameborder="0" id="mainFrame" style="width:100%;height:85vh;"></iframe>
+                    </div>
+                    <div class="layui-tab-item">
+                        <iframe scrolling="auto" frameborder="0" id="projinfoFrame" style="width:100%;height:85vh;"></iframe>
+                    </div>
+                    <div class="layui-tab-item">
+                        <iframe scrolling="auto" frameborder="0" id="classFrame" style="width:100%;height:85vh;"></iframe>
+                    </div>
+                    <div class="layui-tab-item">
+                        <iframe scrolling="auto" frameborder="0" id="qualityFrame" style="width:100%;height:85vh;"></iframe>
+                    </div>
+                    <div class="layui-tab-item">
+                        <iframe scrolling="auto" frameborder="0" id="feeFrame" style="width:100%;height:85vh;"></iframe>
+                    </div>
+                    <div class="layui-tab-item">
+                        <iframe scrolling="auto" frameborder="0" id="promiseFrame" style="width:100%;height:85vh;"></iframe>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</body>
+
+
+<!--维护举办周期-->
+<script type="text/html" id="showPosDownList">
+    <a class="layui-btn layui-btn-xs" lay-event="showPosDownList" style="color: #ffb82e;background-color: transparent;">查看维护</a>
+</script>
+
+
+
+
+<script>
+    layui.config({
+        base: '../../../js/layui/ext/'
+    }).extend({
+    });
+
+    // 全局配置及引入相关的模块
+    layui.use(['table', 'form', 'element'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var element = layui.element;
+
+
+        window["projContractId"] = getUrlParamByName("projContractId");
+        window["projId"] = getUrlParamByName("projId");
+        window["downId"] = getUrlParamByName("downId");
+        window["oper"] = getUrlParamByName("oper");
+
+        /* 选项卡 */
+        // 一级选项卡
+        element.on('tab(tabarea)', function (data) {
+            const tabIdTemp = this.getAttribute('lay-id');
+            switch (tabIdTemp) {
+                case 'tab_1':
+                    $("#mainFrame").attr("src", "contractMain.html");
+                    break;
+                case 'tab_2':
+                    $("#projinfoFrame").attr("src", "contractProjinfo.html");
+                    break;
+                case 'tab_3':
+                    $("#classFrame").attr("src", "contractClass.html");
+                    break;
+                case 'tab_4':
+                    $("#qualityFrame").attr("src", "contractQuality.html");
+                    break;
+                case 'tab_5':
+                    $("#feeFrame").attr("src", "contractFee.html");
+                    break;
+                case 'tab_6':
+                    $("#promiseFrame").attr("src", "contractPromise.html");
+                    break;
+                default:
+                    return;
+            }
+
+        });
+
+
+
+        window.init = function () {
+            element.tabChange('tabarea', 'tab_1');
+        }
+
+        window.getFullFlag = function (partName) {
+            let url = huayi_projectscore_url + `cmeProjContract/projContractPartFullFlag/${window["projContractId"]}/${partName}`;
+            $.ajax({
+                type: "get",
+                url: url,
+                success: function (res) {
+                    if (res.success) {
+
+                        let fullObj = res.data;
+                        console.log(fullObj);
+                        if (partName == "All") {
+                            if (fullObj.mainFullFlag) {
+                                $("#tab_1 p").addClass("finish");
+                            }
+                            if (fullObj.projinfoFullFlag) {
+                                $("#tab_2 p").addClass("finish");
+                            }
+                            if (fullObj.classFullFlag) {
+                                $("#tab_3 p").addClass("finish");
+                            }
+                            if (fullObj.quanlityFullFlag) {
+                                $("#tab_4 p").addClass("finish");
+                            }
+                            if (fullObj.fundsFullFlag) {
+                                $("#tab_5 p").addClass("finish");
+                            }
+                            if (fullObj.promiseFullFlag) {
+                                $("#tab_6 p").addClass("finish");
+                            }
+                        }
+                        if(partName == "CmeProjContractMain") {
+                            if (fullObj.mainFullFlag) {
+                                $("#tab_1 p").addClass("finish");
+                            }
+                        }
+                        if(partName == "CmeProjContractProjInfo") {
+                            if (fullObj.projinfoFullFlag) {
+                                $("#tab_2 p").addClass("finish");
+                            }
+                        }
+                        if(partName == "CmeProjContractClass") {
+                            if (fullObj.classFullFlag) {
+                                $("#tab_3 p").addClass("finish");
+                            }
+                        }
+                        if(partName == "CmeProjContractQuality") {
+                            if (fullObj.quanlityFullFlag) {
+                                $("#tab_4 p").addClass("finish");
+                            }
+                        }
+                        if(partName == "CmeProjContractFunds") {
+                            if (fullObj.fundsFullFlag) {
+                                $("#tab_5 p").addClass("finish");
+                            }
+                        }
+                        if(partName == "Promise") {
+                            if (fullObj.promiseFullFlag) {
+                                $("#tab_6 p").addClass("finish");
+                            }
+                        }
+
+                    } else {
+                        layer.msg(res.msg, { icon: 2 });
+                    }
+                },
+                error: function () {
+                    layer.msg("发送数据失败", { icon: 2 });
+                }
+            });
+        }
+        
+        window.disableOtherByMain = function(bDisabledOther) {
+            if(bDisabledOther) {
+                $('.layui-tab-title li:gt(0)').prop("disabled",true).addClass("layui-disabled");
+             
+            } else {
+                $('.layui-tab-title li:gt(0)').prop('disabled', false).removeClass("layui-disabled");
+            }
+        }
+
+        window.closeLayer = function () {
+            parent.reloadTable();
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //再执行关闭
+        }
+
+        window.downPageReloadTable = function () {
+            parent.loaderTable();
+        }
+
+
+        $(function () {
+            window.init();
+            if(window["projContractId"] != null && window["projContractId"] != '') {
+                getFullFlag("All");
+                disableOtherByMain(false);
+            } else {
+                disableOtherByMain(true);
+            }
+            
+        });
+
+
+
+
+    });
+</script>

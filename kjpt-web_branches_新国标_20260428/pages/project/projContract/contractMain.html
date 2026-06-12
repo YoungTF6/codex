@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+
+    <link rel="stylesheet" href="../../../css/person/reset.css" />
+    <link rel="stylesheet" href="../../../css/person/style.css" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <!-- <script type="text/javascript" src="../../js/global_ajax_setting.js"></script> -->
+
+    <!-- 工具 -->
+
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+    <style>
+        .ztree li span.button {
+            vertical-align: inherit !important;
+        }
+
+        .layui-form-label-my {
+            width: 100px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="layui-fluid" style="height:94%">
+        <div class="layui-card" style="height:98%">
+            <div class="layui-card-body">
+                <div class="layui-form" lay-filter="mainForm">
+
+                    <input type="hidden" id="projContractId" name="projContractId" />
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label layui-form-label-my">项目级别:</label>
+                        <div class="layui-input-block">
+                            <input type="radio" name="scoreLevelName" value="国家级项目" title="国家级项目" lay-verify="radioChecked">
+                            <input type="radio" name="scoreLevelName" value="国家级备案项目" title="国家级备案项目" lay-verify="radioChecked">
+                            <input type="radio" name="scoreLevelName" value="省级项目" title="省级项目" lay-verify="radioChecked">
+                            <input type="radio" name="scoreLevelName" value="省级备案" title="省级备案" lay-verify="radioChecked">
+                            <input type="radio" name="scoreLevelName" value="异地备案" title="异地备案" lay-verify="radioChecked">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+
+                        <label class="layui-form-label layui-form-label-my">项目编号:</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="projNo" name="projNo" autocomplete="off" class="layui-input" readonly />
+                        </div>
+
+                    </div>
+
+                    <div class="layui-form-item">
+
+
+                        <label class="layui-form-label layui-form-label-my">项目名称:</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="projName" name="projName" autocomplete="off" class="layui-input" readonly />
+                        </div>
+
+                    </div>
+
+                    <div class="layui-form-item">
+
+                        <label class="layui-form-label layui-form-label-my">项目负责人:</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="projManagerName" name="projManagerName" autocomplete="off" class="layui-input" />
+                        </div>
+
+                    </div>
+
+                    <div class="layui-form-item">
+
+                        <label class="layui-form-label layui-form-label-my">项目主办单位:</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="projZhubanUnitName" name="projZhubanUnitName" autocomplete="off" class="layui-input" lay-verify="required"
+                            />
+                        </div>
+
+                    </div>
+
+
+                    <div class="layui-form-item">
+
+                        <label class="layui-form-label layui-form-label-my">项目协办单位:</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="projChengbanUnitName" name="projChengbanUnitName" autocomplete="off" class="layui-input" lay-verify="required"
+                            />
+                        </div>
+
+                    </div>
+                    <div class="layui-form-item">
+
+                        <label class="layui-form-label layui-form-label-my">填报日期:</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="dateApply" name="dateApply" autocomplete="off" class="layui-input" lay-verify="required|date" />
+                        </div>
+
+                    </div>
+
+
+                    <div class="layui-btn-container" style="text-align: center">
+                        <button class="layui-btn layui-btn-primary" id="btnCancel">返回列表</button>
+                        <button type="submit" class="layui-btn" lay-submit="" lay-filter="btnSave" id="btnSave">保存本页</button>
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
+
+
+<script>
+
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+
+    });
+
+    layui.use(['form', 'jquery', 'layer', "laydate"], function () {
+        var $ = layui.jquery;
+        var form = layui.form;
+        var layer = layui.layer;
+        var laydate = layui.laydate;
+        var projId = parent.window["projId"];
+        var downId = parent.window["downId"];
+        window.getProjContractId = function() {
+            return parent.window["projContractId"];
+        }
+        var projContractId = getProjContractId();
+        var oper = parent.window["oper"];
+        var main = layui.sessionData("projContract")["main"];
+
+        window.getUnitId = function () {
+            return localStorage.getItem("unit-id");
+        }
+        window.getCmeStandardKindId = function () {
+            return localStorage.getItem("standardkind-id");
+        }
+
+        var commonObj = {
+            projContractId: projContractId,
+            projId: projId,
+            downId: downId,
+            userCreate: localStorage.getItem("user-name"),
+            userUpdate: localStorage.getItem("user-name"),
+            unitId: getUnitId(),
+            deptId: localStorage.getItem("dept-id")
+        }
+
+
+
+        window.initAll = function () {
+
+            if (oper == "details") {
+                $(".layui-form").find("input").prop("disabled", "disabled").addClass("layui-disabled");
+                $(".layui-form").find("checkbox").prop("disabled", "disabled").addClass("layui-disabled");
+                $(".layui-form").find("select").prop("disabled", "disabled").addClass("layui-disabled");
+                $(".layui-form").find("textArea").prop("disabled", "disabled").addClass("layui-disabled");
+                $("#btnSave").hide();
+            }
+
+            let now = new Date();
+            let curYear = now.getFullYear();
+            let month = (now.getMonth() + 1);
+            month = (month < 10) ? "0" + month.toString() : month.toString();
+            let day = now.getDate();
+            laydate.render({
+                elem: '#dateApply'
+                , trigger: 'click'
+                , value: curYear + '-' + month + '-' + day
+            });
+
+
+            $("#projNo").val(main.projNo).addClass("layui-disabled");
+            $("#projName").val(main.projName).addClass("layui-disabled");
+            $("#projManagerName").val(main.projManagerName);
+            if (main.projManagerName != "") $("#projManagerName").prop("readonly", "readonly").addClass("layui-disabled");
+            $("#projZhubanUnitName").val(localStorage.getItem("realname"));
+
+            form.render();
+        }
+
+
+        window.getMainData = function () {
+
+            if (projContractId != null && projContractId != "") {
+                let url = huayi_projectscore_url + `cmeProjContract/projContractPartInfo/${projContractId}/CmeProjContractMain`;
+                $.ajax({
+                    url: url,
+                    type: "get",
+                    success: function (res) {
+                        if (res.success) {
+                            let cmeProjContractMain = res.data.cmeProjContractMain;
+                            form.val("mainForm", {
+                                scoreLevelName: cmeProjContractMain.scoreLevelName,
+                                projZhubanUnitName: cmeProjContractMain.projZhubanUnitName,
+                                projChengbanUnitName: cmeProjContractMain.projChengbanUnitName,
+                                dateApply: cmeProjContractMain.dateApply
+                            });
+                            if ($("input[name='scoreLevelName']:checked").length == 0) {
+                                $("input[name='scoreLevelName']").find('[value="异地备案"]').prop("checked", true);
+                            }
+                        } else {
+                            layer.msg(res.msg, { icon: 2 });
+                        }
+                    },
+                    error: function (res) {
+                        layer.msg("发送数据失败", { icon: 2 });
+                    }
+                });
+            }
+        }
+
+
+        $("#btnCancel").click(function () {
+            parent.closeLayer();
+        });
+
+        form.on('submit(btnSave)', function (data) {
+            $("#btnSave").prop("disabled","disabled");
+            let url = huayi_projectscore_url + `cmeProjContract/projContractPartInfo/${projContractId}/CmeProjContractMain`;
+            let mainData = { ...data.field, ...commonObj };
+            let submitData = { "cmeProjContractMain": mainData };
+
+            $.ajax({
+                url: url,
+                data: JSON.stringify(submitData),
+                type: "post",
+                contentType: "application/json",
+                dataType: "json",
+                success: function (res) {
+                    if (res.success) {
+                        let main = res.data;
+                        if(main != null) {
+                            parent.window["projContractId"] = main.projContractId;
+                            layer.msg("保存成功", { icon: 1,time:800 },function() {
+                                parent.getFullFlag('CmeProjContractMain');
+                                parent.disableOtherByMain(false);
+                                location.reload();
+                                $("#btnSave").prop("disabled","");
+                            });
+                        }
+
+                    } else {
+                        layer.msg(res.msg, { icon: 2 });
+                        $("#btnSave").prop("disabled","");
+                    }
+                },
+                error: function () {
+                    layer.msg("发送数据失败", { icon: 2 });
+                    $("#btnSave").prop("disabled","");
+                }
+            });
+            return false;
+        });
+
+        form.verify({
+
+            radioChecked: function (value, item) {
+                var $ = layui.$;
+                var verifyName = $(item).attr('name')
+                    , verifyType = $(item).attr('type')
+                    , formElem = $(item).parents('.layui-form')//获取当前所在的form元素，如果存在的话
+                    //,verifyElem=formElem.find('input[name='+verifyName+']')//获取需要校验的元素
+                    , verifyElem = formElem.find("input[name='" + verifyName + "']")//获取需要校验的元素
+                    , isTrue = verifyElem.is(':checked')//是否命中校验
+                    , focusElem = verifyElem.next().find('i.layui-icon');//焦点元素
+                if (!isTrue || !value) {
+                    //定位焦点
+                    focusElem.css(verifyType == 'radio' ? { "color": "#FF5722" } : { "border-color": "#FF5722" });
+                    //对非输入框设置焦点
+                    focusElem.first().attr("tabIndex", "1").css("outline", "0").blur(function () {
+                        focusElem.css(verifyType == 'radio' ? { "color": "" } : { "border-color": "" });
+                    }).focus();
+                    return '必填项不能为空';
+                }
+            }
+
+        });
+
+
+        $(function () {
+            window.initAll();
+            getMainData();
+        });
+    });
+
+</script>

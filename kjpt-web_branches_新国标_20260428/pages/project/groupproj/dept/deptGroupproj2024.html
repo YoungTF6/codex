@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>科室举办院内活动</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <!-- <link rel="stylesheet" href="../../../../js/layui-v2.6.8/layui/css/layui.css" media="all"> -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <!-- <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script> -->
+    <script src="../../../../js/layui-v2.6.8/layui/layui.js"></script>
+    <link rel="stylesheet" href="../../../../css/communal.css" media="all">
+    <link rel="stylesheet" href="../../../../css/project/deptGroupproj.css" media="all">
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../../js/constant.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/common.js"></script>
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <script type="text/javascript" src="/js/api/number.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../../../js/global_ajax_setting.js"></script>
+    <style>
+        .width_23_calc {
+            width: calc(23%);
+        } 
+        .layui-table-body{
+            height: calc(100vh - 290px) ;
+        }
+    </style>
+</head>
+
+<body style="background: #fff;">
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-tab layui-tab-card" lay-filter="my-filter">
+                <ul class="layui-tab-title">
+                    <li class="layui-this tab-default" lay-id="0" id="all">全部</li>
+                    <li lay-id="1" id="hasBeenHeld" class="tab-default">已举办</li>
+                    <li lay-id="2" id="notToHold" class="tab-default">未举办</li>
+                    <li lay-id="3" id="notGivenPoints" class="tab-default">待授分</li>
+                </ul>
+            </div>
+            <!--        搜索框区域-->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="background: #f5f5f5;">
+                <div class="layui_mess">
+                    <div class="layui_display">
+                        <div class="layui-inline width_23_calc">
+                            <label class="layui-form-label">举办年度</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="cmeYearSearch" placeholder="请选择年度" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-inline width_23_calc">
+                            <label class="layui-form-label">项目级别</label>
+                            <div class="layui-input-block">
+                                <select id="scoreLevelSearch" lay-filter="scoreLevelFilter"></select>
+                            </div>
+                        </div>
+                        <div class="layui-inline width_23_calc">
+                            <label class="layui-form-label">举办方式</label>
+                            <div class="layui-input-block">
+                                <select id="holdTypeSearch"></select>
+                            </div>
+                        </div>
+                        <div class="layui-inline width_23_calc">
+                            <label class="layui-form-label">二级学科</label>
+                            <div class="layui-input-block">
+                                <select id="knowledgeTwoSearch" lay-filter="knowledgeTwoFilter"></select>
+                            </div>
+                        </div>
+                        <div class="layui-inline width_23_calc">
+                            <label class="layui-form-label">三级学科</label>
+                            <div class="layui-input-block">
+                                <select id="knowledgeThreeSearch"></select>
+                            </div>
+                        </div>
+
+                        <div class="layui-inline width_23_calc">
+                            <label class="layui-form-label" style="width: 85px;padding-right: 10px;">院内活动名称</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="groupProjectNameSearch" placeholder="请输入院内活动名称" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-inline width_23_calc">
+                            <label class="layui-form-label" style="width: 85px;padding-right: 10px;">举办开始日期</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="startDateSearch" required lay-verify="required" placeholder="请选择开始时间范围" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-inline width_23_calc">
+                            <label class="layui-form-label" style="width: 85px;padding-right: 10px;">执行情况反馈</label>
+                            <div class="layui-input-block">
+                                <select name="fbStatus">
+                                    <option value="">请选择</option>
+                                    <option value="1">已反馈</option>
+                                    <option value="0">未反馈</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="loaderTable()" lay-filter="table-search" data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!--        表格区域-->
+            <div class="layui-card-body"  style="padding:7px 5px">
+                <table class="layui-table" id="cmeGroupproj" lay-filter="cmeGroupproj" style="margin: 0px 0px;"></table>
+            </div>
+            <div id="addGroupproj" style="display:none;text-align: center;padding: 35px;">
+                <form class="layui-form" id="groupProjForm" lay-filter="addGroupProjForm">
+                    <!-- row1 -->
+                    <input type="hidden" name="groupProjId">
+                    <div class="layui-form-item">
+                        <div class="layui-col-sm6">
+                            <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>举办年度</label>
+                            <div class="layui-input-block">
+                                <select name="cmeYear" id="cmeYearForm" lay-verify="required">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-col-sm6">
+                            <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>活动名称</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="groupProjName" lay-verify="required|groupProjName" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- row2 -->
+                    <div class="layui-form-item">
+                        <div class="layui-col-sm6">
+                            <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>学分级别</label>
+                            <div class="layui-input-block">
+                                <select name="scoreLevel" id="scoreLevelForm" lay-filter="scoreLevelForm" lay-verify="required"></select>
+                            </div>
+                        </div>
+                        <div class="layui-col-sm6">
+                            <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>学分</label>
+                            <div class="layui-input-block">
+                                <input type="number" name="score" id="score" min="0" lay-verify="required" autocomplete="off" class="layui-input number_ph">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- row3 -->
+                    <div class="layui-form-item">
+                        <div class="layui-col-sm6">
+                            <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>学时</label>
+                            <div class="layui-input-block">
+                                <input type="number" name="period" min="0" lay-verify="required" autocomplete="off" class="layui-input number_ph">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm6">
+                            <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>二级学科</label>
+                            <div class="layui-input-block">
+                                <select name="knowledgeTwoId" lay-filter="twoKnowledgeIdFrom" id="twoKnowledgeIdFrom" lay-verify="required" lay-search="true">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- row4 -->
+                    <div class="layui-form-item">
+                        <div class="layui-col-sm6">
+                            <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>三级学科</label>
+                            <div class="layui-input-block">
+                                <select name="knowledgeId" lay-filter="knowledgeIdSelector" id="knowledgeThreeFrom" lay-search="" lay-verify="required">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-col-sm6">
+                            <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>举办方式</label>
+                            <div class="layui-input-block">
+                                <select name="holdType" id="holdTypeFrom" lay-verify="required">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- row5 -->
+                    <div class="layui-form-item">
+                        <div class="layui-col-sm6">
+                            <label class="layui-form-label">考核方式</label>
+                            <div class="layui-input-block">
+                                <select name="checkType" id="checkTypeSelector">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-col-sm6">
+                            <label class="layui-form-label" id="noLabel">其他编号</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="otherNo" lay-verify="otherNo" autocomplete="off" class="layui-input" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- row6 -->
+                    <div class="layui-form-item">
+                        <div class="layui-col-sm6">
+                            <label class="layui-form-label">备注</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="remark" lay-verify="remark" autocomplete="off" class="layui-input" />
+                            </div>
+                        </div>
+                    </div>
+                    <!-- row7 -->
+                    <div class="layui-form-item">
+                        <div class="layui-col-sm12">
+                            <div style="text-align: center;">
+                                <button class="layui-btn" type="submit" lay-submit lay-filter="saveBack">保存并返回列表</button>
+                                <button class="layui-btn" type="submit" lay-submit lay-filter="nextStep">下一步完善举办周期</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+<!--表格内数据编辑、删除按钮-->
+<script type="text/html" id="rowBar">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>
+</script>
+<script type="text/html" id="bar">
+    <a class="layui-btn layui-btn-sm" lay-event="add" id="groupAdd"><i class="layui-icon layui-icon-add-1 layuiadmin-button-btn"></i>新增</a>
+</script>
+<script type="text/html" id="rowBar1">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="maintenanceCycle">维护举办周期</a>
+</script>
+<script type="text/html" id="rowBarProjApply">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="projApply">举办前预审</a>
+</script>
+<script type="text/html" id="rowBar2">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="maintainTestPaper">维护试卷</a>
+</script>
+<script type="text/html" id="rowBar3">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="sweepCodeAttendance">扫码考勤</a>
+</script>
+<script type="text/html" id="rowBar4">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="grantPoints">授分</a>
+</script>
+<script type="text/html" id="rowBar5">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="projectEvaluation">项目评价表</a>
+</script>
+<script type="text/html" id="rank">
+    {{d.LAY_TABLE_INDEX+1}}
+</script>
+<script type="text/html" id="groupFbCell">
+    {{# if(d.fbCycleCnt > 0) { }}
+    <a class="layui-btn layui-btn-xs btn-row " lay-event="editFeedback">已反馈</a>
+    {{# } else { }}
+    <a class="layui-btn layui-btn-xs btn-row layui-btn-warm btn-warm-row" lay-event="editFeedback">未反馈</a>
+    {{# } }}
+</script>
+
+<script>
+    // 全局配置及引入相关的模块
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        tool: 'tool'
+    })
+
+    layui.use(['table', 'form', 'element', 'laydate', 'tool'], function () {
+        var table = layui.table, form = layui.form, element = layui.element, laydate = layui.laydate;
+        var $ = layui.jquery, layer = layui.layer, tool = layui.tool;
+        let ajaxNum = 0, loading = null;
+        let _deptId = localStorage.getItem("dept-id");
+        let _unitId = localStorage.getItem("unit-id");
+        let _standardId = localStorage.getItem("standardkind-id");
+        var adaptedScoreLevels = [];
+
+        const _standardKindId = localStorage.getItem('standardkind-id');
+        const _isHainan = '6eec6713-670a-43cc-ad4d-9bd700a92928' === _standardKindId; // 海南
+        const _isShanxiJin = 'db0d980b-03d4-4c9c-b2d4-9f890109ed47' === _standardKindId; // 山西
+        const _isHuBei = '73ba18db-33fd-4746-ab41-9beb009f69a1' === _standardKindId; // 湖北
+        const _isGuangxi = '4a6d91fb-8ba4-4560-a801-9c6f00e6d999' === _standardKindId; // 广西
+        const _isNingxia = 'eee87ca0-7df1-426c-aae3-7cae782b4d6b' === _standardKindId; // 宁夏
+
+        let projectStatus = "0";
+        let gLayerIndex = -1;
+        let gOpenedProjId = '';
+        let gOpenedProjPeriod = 0;
+        let gCmeYear = (new Date()).getFullYear();
+        let _tableData = {};
+        let unitArr = [
+            {
+                "holdTypeId": "2f3a1a6f-925e-47fc-aadc-9fa70c2464bb",
+                "holdTypeName": "学术报告"
+            },
+            {
+                "holdTypeId": "5a6a6977-0faf-43f1-b67f-de1bdea10fbc",
+                "holdTypeName": "专题讲座"
+            },
+            {
+                "holdTypeId": "2a808fac-14d4-4c23-9b5c-8e0e7b246f6f",
+                "holdTypeName": "技术操作示教"
+            },
+            {
+                "holdTypeId": "e2706ddf-a843-437e-8681-df6daa2330b0",
+                "holdTypeName": "手术示范"
+            },
+            {
+                "holdTypeId": "5939b8b4-6cfb-45c3-9d72-88284eeb913b",
+                "holdTypeName": "新技术推广"
+            },
+            {
+                "holdTypeId": "1d3f2c3a-0c87-4226-b10d-9beb00aa3864",
+                "holdTypeName": "其他"
+            }
+        ];
+        let htArr = [
+            {
+                "holdTypeId": "422fe3f8-f64e-4d05-a47f-1daf4d0de144",
+                "holdTypeName": "临床病例讨论会"
+            },
+            {
+                "holdTypeId": "78671ac7-3429-42d6-9cd2-2422ec2cbf9b",
+                "holdTypeName": "案例讨论会",
+            },
+            {
+                "holdTypeId": "1d56799e-6d5c-450c-8ba0-fc2f56dcdbed",
+                "holdTypeName": "大查房",
+            },
+            {
+                "holdTypeId": "1d3f2c3a-0c87-4226-b10d-9beb00aa3864",
+                "holdTypeName": "其他",
+            }
+        ];
+        let unitAndHtArr = [
+            {
+                "holdTypeId": "2f3a1a6f-925e-47fc-aadc-9fa70c2464bb",
+                "holdTypeName": "学术报告"
+            },
+            {
+                "holdTypeId": "5a6a6977-0faf-43f1-b67f-de1bdea10fbc",
+                "holdTypeName": "专题讲座"
+            },
+            {
+                "holdTypeId": "2a808fac-14d4-4c23-9b5c-8e0e7b246f6f",
+                "holdTypeName": "技术操作示教"
+            },
+            {
+                "holdTypeId": "e2706ddf-a843-437e-8681-df6daa2330b0",
+                "holdTypeName": "手术示范"
+            },
+            {
+                "holdTypeId": "5939b8b4-6cfb-45c3-9d72-88284eeb913b",
+                "holdTypeName": "新技术推广"
+            },
+            {
+                "holdTypeId": "422fe3f8-f64e-4d05-a47f-1daf4d0de144",
+                "holdTypeName": "临床病例讨论会"
+            },
+            {
+                "holdTypeId": "78671ac7-3429-42d6-9cd2-2422ec2cbf9b",
+                "holdTypeName": "案例讨论会",
+            },
+            {
+                "holdTypeId": "1d56799e-6d5c-450c-8ba0-fc2f56dcdbed",
+                "holdTypeName": "大查房",
+            },
+            {
+                "holdTypeId": "1d3f2c3a-0c87-4226-b10d-9beb00aa3864",
+                "holdTypeName": "其他",
+            }
+        ];
+
+        //关闭closeLoading的判断
+        let closeLoading = function () {
+            ajaxNum--;
+            if (ajaxNum <= 0 && loading) layer.close(loading);
+        }
+        //打开加载
+        let openLoading = function () {
+            if (ajaxNum == 0) loading = layer.msg('加载中', { icon: 16, shade: 0.3, time: 0 });
+            ajaxNum++;
+        }
+        //公共ajax
+        let commonAjax = function (type = "get", url, data, failFun, successFun) {
+            openLoading();
+            $.ajax({
+                type: type,
+                url: url,
+                data: data,
+                success: function (res) {
+                    closeLoading(); successFun(res);
+                },
+                error: function (res) {
+                    closeLoading(); failFun();
+                }
+            });
+        }
+
+        // 表格相关操作
+        // 表格配置
+        window.loaderTable = function () {
+            openLoading();
+            table.render({
+                elem: '#cmeGroupproj',
+                url: huayi_projectscore_url + 'cmeGroupProj/getDeptList',
+                title: '院内活动表',
+                defaultToolbar: [],
+                where: {
+                    projectStatus: projectStatus,
+                    cmeYear: $('#cmeYearSearch').val(),
+                    scoreLevel: $('#scoreLevelSearch').val(),
+                    holdType: $('#holdTypeSearch').val(),
+                    knowledgeTwoId: $('#knowledgeTwoSearch').val(),
+                    knowledgeId: $('#knowledgeThreeSearch').val(),
+                    groupProjectName: $('#groupProjectNameSearch').val(),
+                    startDate: $('#startDateSearch').val(),
+                    deptId: _deptId,
+                    fbStatus: $('select[name=fbStatus]').val()
+                },
+                cols: [[
+                    { align: 'center', width: 60, title: '序号', templet: '#rank', fixed: 'left' },
+                    { field: 'oprate', align: 'center', width: 120, toolbar: '#rowBar', title: '操作', fixed: 'left' },
+                    { field: 'groupProjName', minWidth: 250, align: 'center', title: '活动名称', fixed: 'left' },
+                    { field: 'otherNo', align: 'center', title: '编号', hide: !_isShanxiJin, fixed: 'left' },
+                    { field: 'projDownload', title: '维护举办周期', align: 'center', toolbar: '#rowBar1' },
+                    { field: 'projApply', title: '举办前预审', width: 110, align: 'center', toolbar: '#rowBarProjApply', hide: projApplyHidden() },
+                    { field: 'projExam', title: '维护试卷', width: 90, align: 'center', toolbar: '#rowBar2' },
+                    { field: 'projAttendance', title: '扫码考勤', width: 90, align: 'center', toolbar: '#rowBar3' },
+                    { field: 'projScore', title: '授分', width: 70, align: 'center', toolbar: '#rowBar4', hide: projScoreHidden() },
+                    { field: 'projEvaluate', title: '项目评价表', align: 'center', toolbar: '#rowBar5' },
+                    { field: 'projFeedback', title: '执行情况反馈', align: 'center', templet: '#groupFbCell', hide: (!_isHainan && !_isGuangxi) },
+                    { field: 'deptName', title: '所在科室', align: 'center' },
+                    { field: 'scoreLevelName', title: '学分级别', align: 'center', },
+                    { field: 'knowledgeName', title: '学科', align: 'center', },
+                    { field: 'score', width: 80, title: '总学分', align: 'center', },
+                    { field: 'period', width: 80, title: '总学时', align: 'center', },
+                    {
+                        field: 'hostStatus', title: '是否已举办', align: 'center',
+                        templet: function (d) {
+                            const tempIsAttend = d.isHasAttendance;
+                            const tempIsHasScore = d.isHasScore;
+                            if (tempIsAttend == true || tempIsHasScore == true || projectStatus == "3") {
+                                return "已举办";
+                            } else {
+                                return "未举办";
+                            }
+                        }
+                    },
+                    { field: 'addTime', title: '添加时间', align: 'center', width: 200 },
+                    { field: 'updateTime', title: '修改时间', align: 'center', width: 200 }
+                ]],
+                toolbar: getToolbar(),
+                cellMinWidth: 120,
+                id: "cmeGroupproj",
+                //height: 'full-250',
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    getCountForStatus();
+                    _tableData = res.data.records;
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "count": res.data.recordsTotal, //解析数据长度
+                        "data": res.data.records, //解析数据列表
+                        "page": res.data.pageNum, //当前页
+                        "limit": res.data.pageSize, //每页条数
+                    }
+                },
+                request: {
+                    pageName: 'pageNum', //页码的参数名称，默认：page
+                    limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                },
+                done: function (res, curr, count) {
+
+                    if (window["fun_dept_agent_groupproj"] == 1) {
+                        $("[data-field='oprate']").css('display', 'none');
+
+                        //查找代办科室功能列      
+                        let fun_all_cols = ["projDownload", "projExam", "projAttendance", "projScore", "projFeedback", "projEvaluate"];
+                        let range_dept_agent_groupproj_func_cols = window["range_dept_agent_groupproj_func_cols"];
+                        let fun_show_cols = range_dept_agent_groupproj_func_cols.split('|');
+
+                        for (let i = 0; i < fun_all_cols.length; i++) {
+                            let flag_col = fun_all_cols[i];
+                            if (fun_show_cols.indexOf(flag_col) == -1) {
+                                $("[data-field='" + flag_col + "']").css('display', 'none');
+                            }
+                        }
+                    }
+                    closeLoading();
+
+                    //是否可以处理往年数据
+                    if(res.data != null && res.data.length > 0) {
+                       
+                        let cmeYear = res.data[0].cmeYear;
+                        let ableOper =  ableOperateLastYearData(cmeYear);
+                        if(ableOper == false) {
+                            $("#groupAdd").removeAttr("lay-event").addClass("layui-disabled");
+                            $("td[data-field='projScore']").find("a").removeAttr("lay-event").addClass("layui-disabled");
+                            $("td[data-field='oprate']").find("a").removeAttr("lay-event").addClass("layui-disabled");
+                        }
+                    }
+
+                },
+                error: function (res, curr, count) { closeLoading(); }
+            });
+        };
+
+        //获取举办方式
+        let getHoldType = function () {
+            const tempUrl = huayi_sjwh_url + "cmeHoldType/getHoldType";
+            commonAjax('get', tempUrl, { "standardKindId": _standardId, "projectType": 2, "userType": 2 },
+                function () { layer.msg("举办方式加载失败"); },
+                function (res) {
+                    if (res.status != 200) {
+                        layer.msg("举办方式加载失败"); return;
+                    }
+                    let data;
+                    if(_isHuBei) {
+                        data = [];
+                    } else if( _isNingxia) {
+                        data = [
+{"holdTypeId":"cbd68785-a9c7-4f12-b82d-abba0117117d","holdTypeName":"学术讲座"},
+{"holdTypeId":"339ee4f0-eb38-4c86-88e3-abba011729b5","holdTypeName":"专题讨论会"},
+{"holdTypeId":"530ec3c0-903c-4c98-a321-977418cbba9a","holdTypeName":"病理讨论"},
+{"holdTypeId":"54fb3f31-134f-4907-a93e-0b89119e6484","holdTypeName":"教学查房"}];
+                    } else {
+                        data = res.data;
+                    }
+                    setOptions(data, "holdTypeId", "holdTypeName", "holdTypeSearch");
+                    setOptions(data, "holdTypeId", "holdTypeName", "holdTypeFrom");
+                });
+        }
+
+        //获取学分级别
+        let getScoreLevel = function () {
+            //科室基本可举办项目级别
+            let tempUrl = huayi_sjwh_url + `/option/scoreLevelDept/list/${_standardId}/_1_`;
+            commonAjax('get', tempUrl, {}, function () { layer.msg("学分级别加载失败"); },
+                function (res) {
+                    if (res.status != 200) {
+                        layer.msg("学分级别加载失败"); return;
+                    }
+                    setOptions(res.data, "scoreLevelId", "scoreLevelName", "scoreLevelSearch");
+                    setOptions(res.data, "scoreLevelId", "scoreLevelName", "scoreLevelForm");
+                    res.data.forEach(per => {
+                        adaptedScoreLevels.push(per.scoreLevelId);
+                    });
+                    bindScoreLevel();
+                });
+            //科室举办活动级别设置菜单开启(刚开始是广西需求)
+            //特殊配置
+            let url = huayi_projectscore_url + 'CmeDeptGroupprojScoreLevelConfig/list';
+            commonAjax('get', url, { unitId: localStorage.getItem("unit-id"), deptId: localStorage.getItem("dept-id") }, function () { layer.msg("学分级别加载失败"); },
+                function (res) {
+                    if (res.status != 200) {
+                        layer.msg("学分级别加载失败"); return;
+                    }
+                    res.data = res.data == null ? [] : res.data;
+                    addOptions(res.data, "scoreLevelId", "scoreLevelName", "scoreLevelSearch");
+                    addOptions(res.data, "scoreLevelId", "scoreLevelName", "scoreLevelForm");
+                    res.data.forEach(per => {
+                        adaptedScoreLevels.push(per.scoreLevelId);
+                    });
+                    bindScoreLevel();
+                });
+
+        }
+
+        function isNeimengSpecial() {
+            return localStorage.getItem("unit-id") == "061048" ||  localStorage.getItem("unit-id") == "061053";
+        }
+
+        function getScoreLevelNeimengSpecial() {
+            $("#scoreLevelId").append('<option value="6926b861-5d4a-44af-8ca3-9f0a01000b93">自治区级继续医学教育项目</option>');
+        }
+
+        //获取二级学科
+        let getTwoKnowledge = function (twoKnowledgeId) {
+            const tempUrl = huayi_sjwh_url + 'comKnowledge';
+            const params = { 'knowledgeType': 2 };
+            commonAjax("get", tempUrl, params, function () { layer.msg("加载学科失败"); },
+                function (res) {
+                    if (res.status != 200) {
+                        layer.msg("二级学科加载失败");
+                        return;
+                    }
+                    setOptions(res.data, "knowledgeId", "knowledgeName", "knowledgeTwoSearch");
+                    setOptions(res.data, "knowledgeId", "knowledgeName", "twoKnowledgeIdFrom");
+                    bindKnowledgeTwo();
+                });
+        }
+
+        //获取三级学科
+        let getThreeKnowledge = function (id, twoKnowledgeId, doSomething) {
+            const tempUrl = huayi_sjwh_url + 'comKnowledge';
+            const params = { 'knowledgeType': 3, "knowledgeTwoId": twoKnowledgeId };
+            commonAjax("get", tempUrl, params, function () { layer.msg("加载学科失败"); },
+                function (res) {
+                    if (res.status != 200) {
+                        layer.msg("三级学科加载失败");
+                        return;
+                    }
+                    setOptions(res.data, "knowledgeId", "knowledgeName", id);
+                    doSomething();
+                });
+        }
+
+        let setOptions = function (data, idParam, valueParam, id) {
+            let option = '<option value="">全部</option>';
+            for (let obj of data) {
+                option += `<option value="${obj[idParam]}">${obj[valueParam]}</option>`;
+            }
+            $(`#${id}`).html(option);
+            form.render();
+        }
+
+        let addOptions = function (data, idParam, valueParam, id) {
+
+            for (let obj of data) {
+                option = `<option value="${obj[idParam]}">${obj[valueParam]}</option>`;
+                if ($(`#${id}`).find(`option[value='${obj[idParam]}']`).length == 0) {
+                    $(`#${id}`).append(option);
+                }
+            }
+
+            form.render();
+        }
+
+        //时间组件初始化
+        let dateInit = function () {
+            // 搜索栏年度选择
+            laydate.render({
+                elem: '#cmeYearSearch', type: 'year',
+                value: new Date().getFullYear(),
+            })
+            laydate.render({ elem: '#startDateSearch', type: 'date', range: true });
+            //年度初始化
+            tool.renderCmeYear('#cmeYearForm');
+        }
+
+        // 监听二级学科
+        let bindKnowledgeTwo = function () {
+            form.on('select(knowledgeTwoFilter)', function (data) {
+                if (data.value != "" && data.value != null) getThreeKnowledge("knowledgeThreeSearch", data.value, function () { });
+            });
+            form.on('select(twoKnowledgeIdFrom)', function (data) {
+                if (data.value != "" && data.value != null) getThreeKnowledge("knowledgeThreeFrom", data.value, function () { });
+            });
+        }
+
+        let bindScoreLevel = function () {
+            form.on('select(scoreLevelFilter)', function (data) {
+                changeHodeTypeByScoreLevel(data.value, "holdTypeSearch");
+            });
+            form.on('select(scoreLevelForm)', function (data) {
+                changeHodeTypeByScoreLevel(data.value, "holdTypeFrom");
+
+                //恢复默认
+                $("#score").val("").removeAttr("disabled").removeClass("layui-disabled");
+                
+                let specialScoreLevelScoreArr = JSON.parse(window["special_cme_groupuproj_score_level"]);
+                specialScoreLevelScoreArr.forEach(function(item){
+                    if(data.value == item.score_level_id) {
+                        $("#score").val(item.score).prop("disabled", "disabled").addClass("layui-disabled");
+                    }
+                });
+
+            });
+        }
+
+        let changeHodeTypeByScoreLevel = function (scoreLevelId, id) {
+            if (_isHuBei) {
+                //科室
+                if (scoreLevelId == "074bf5ee-f499-11ed-8e50-005056a64c01") {
+                    setOptions(htArr, "holdTypeId", "holdTypeName", id);
+                }
+                //机构
+                else if (scoreLevelId == "f7db2c56-f498-11ed-8e50-005056a64c01") {
+                    setOptions(unitArr, "holdTypeId", "holdTypeName", id);
+                } else {
+                    setOptions(unitAndHtArr, "holdTypeId", "holdTypeName", id);
+                }
+            }
+        }
+
+        //统计数字，0:全部;1:已举办;2:未举办;3:待授分;
+        let getCountForStatus = function () {
+            let params = {
+                projectStatus: projectStatus,
+                cmeYear: $('#cmeYearSearch').val(),
+                scoreLevel: $('#scoreLevelSearch').val(),
+                holdType: $('#holdTypeSearch').val(),
+                knowledgeTwoId: $('#knowledgeTwoSearch').val(),
+                knowledgeId: $('#knowledgeThreeSearch').val(),
+                groupProjectName: $('#groupProjectNameSearch').val(),
+                startDate: $('#startDateSearch').val(),
+                deptId: _deptId
+            };
+            const tempUrl = huayi_projectscore_url + 'cmeGroupProj/getDeptTabCount';
+            commonAjax("post", tempUrl, params, function () { layer.msg("加载统计数字失败"); },
+                function (res) {
+                    if (res.status != 200) {
+                        layer.msg("加载统计数字失败");
+                        return;
+                    }
+                    handerCountNum(res.data);
+                });
+        }
+
+        //处理统计数据
+        let handerCountNum = function (data) {
+            let allCount = 0, holdCount = 0, noHoldCount = 0, waitScoreCount = 0;
+            for (let tempObj of data) {
+                allCount += tempObj.statusCount;
+                //已举办
+                if (tempObj.isHasAttendance || tempObj.isHasScore) {
+                    holdCount += tempObj.statusCount;
+                }
+                //待授分
+                if (tempObj.isHasAttendance && !tempObj.isHasScore) {
+                    waitScoreCount += tempObj.statusCount;
+                }
+            }
+            noHoldCount = allCount - holdCount;
+            setCountForStatus(allCount, "0");
+            setCountForStatus(holdCount, "1");
+            setCountForStatus(noHoldCount, "2");
+            setCountForStatus(waitScoreCount, "3");
+        }
+
+        //设置对应tab页统计数字
+        let setCountForStatus = function (num = 0, type) {
+            switch (type) {
+                case "0":
+                    $("#all").html(`全部(${num})`);
+                    break;
+                case "1":
+                    $("#hasBeenHeld").html(`已举办(${num})`);
+                    break;
+                case "2":
+                    $("#notToHold").html(`未举办(${num})`);
+                    break;
+                case "3":
+                    $("#notGivenPoints").html(`待授分(${num})`);
+                    break;
+            }
+        }
+
+        let tabInit = function () {
+            // 选项卡切换事件
+            element.on('tab(my-filter)', function (elem) {
+                projectStatus = this.getAttribute('lay-id');
+                loaderTable();
+            });
+        }
+
+        //新增或者编辑院内活动
+        async function createDeptGroupproj(type, data) {
+            $("#groupProjForm")[0].reset();
+            $("#groupProjForm input[name='groupProjId']").val('');
+            if (type == "edit") {
+                renderScoreLevel();
+                await pause(100);
+                if ($("#scoreLevelForm").find("option[value='" + data.scoreLevel + "']").length == 0) {
+                    $("#scoreLevelForm").append(new Option(data.scoreLevelName, data.scoreLevel));
+                }
+                form.render("select");
+                getThreeKnowledge("knowledgeThreeFrom", data.knowledgeTwoId, function () {
+                    form.val("addGroupProjForm", data);
+                });
+                changeHodeTypeByScoreLevel(data.scoreLevel, "holdTypeFrom");
+
+            }
+            if (type == "add") {
+                renderScoreLevel();
+                changeHodeTypeByScoreLevel("", "holdTypeFrom");
+                form.render("select");
+            }
+            const title = type == "add" ? "添加院内活动" : "编辑院内活动";
+            layer.open({
+                type: 1,
+                title: title,
+                content: $('#addGroupproj'),
+                area: ['820px', '520px'],
+                success: function () {
+                    if (_isHuBei || _isGuangxi) {
+                        $("#score").prop("disabled", "disabled").addClass("layui-disabled");
+                    }
+                    if((new Date()) > new Date(window["value_forbid_some_operate_on_last_year_data"])) {
+                        $("#cmeYearForm").prop("disabled", "disabled").addClass("layui-disabled");
+                    }
+                   
+                    getConfig("special_cme_groupuproj_score_level");
+                },
+                cancel: function (index, layero) { $("#groupProjForm")[0].reset(); }
+            });
+           
+        }
+
+        function pause(delay) {
+            return new Promise(resolve => setTimeout(resolve, delay));
+        }
+
+        //删除院内活动
+        let delDeptGroupproj = function (id) {
+            layer.confirm('确定删除该项目吗?', { icon: 3, title: '提示' }, function (index) {
+                const tempUrl = huayi_projectscore_url + 'cmeGroupProj/delProjectById?projectId=' + id;
+                commonAjax("get", tempUrl, {}, function () { layer.msg("删除失败"); },
+                    function (res) {
+                        if (res.success == false) {
+                            layer.msg(res.msg);
+                            return;
+                        }
+                        layer.msg(res.data, { time: 3000 })
+                        table.reload('cmeGroupproj');
+                    });
+            });
+        }
+
+        //维护举办周期
+        let showCycleModal = function (projId, projPeriod, cmeYear) {
+            gOpenedProjId = projId;
+            gOpenedProjPeriod = projPeriod;
+            gCmeYear = cmeYear;
+            gLayerIndex = layer.open({
+                type: 2,
+                shade: 0.6,
+                shadeClose: true,
+                title: '完善举办周期',
+                content: '/pages/mod/group/modals/CycleModal.html?projId=' + projId + '&projPeriod=' + projPeriod + "&cmeYear=" + cmeYear,
+                area: ['100%', '100%']
+            });
+        }
+
+        let projApply = function (data) {
+            layer.open({
+                type: 2,
+                shade: 0.6,
+                shadeClose: true,
+                title: '举办前预审',
+                content: '/pages/mod/group/modals/CycleModal.html?projId=' + projId + '&projPeriod=' + projPeriod,
+                area: ['100%', '100%']
+            });
+        }
+
+        let projApplyHidden = function () {
+            //return !_isHuBei;
+            return true;
+        }
+
+        let projScoreHidden = function () {
+            return _isGuangxi;
+        }
+
+        // 维护试卷
+        let showPaper = function (data) {
+            layer.open({
+                title: '试卷维护',
+                type: 2,
+                area: ['100%', '100%'],
+                maxmin: false,
+                content: '/pages/project/CmeExamQuestion.html?projectId=' + data.groupProjId + '&paperName=' + data.groupProjName + '&projectType=2',
+                scrollbar: false
+            });
+        }
+
+        // 项目评价
+        let showProjEva = function (data) {
+            layer.open({
+                title: '项目评价',
+                type: 2,
+                area: ['100%', '100%'],
+                maxmin: true,
+                content: '/pages/project/CmeProjEvaluation.html?projectId=' + data.groupProjId + '&projectType=2',
+                scrollbar: false
+            });
+        }
+
+        //扫码考勤
+        let sweepAttendance = function (data) {
+            let userId = localStorage.getItem("user-id");
+            let attendanceUrl = '/pages/project/attendanceForTeach/AttendanceGroupChoose.html?projectId=' + data.groupProjId + '&projectType=2';
+            layer.open({
+                closeBtn: false,
+                title: false,
+                type: 2,
+                area: ['100%', '100%'],
+                maxmin: false,
+                content: attendanceUrl,
+                scrollbar: false
+            });
+        }
+
+        let showCoureseModel = function (action, courseFormVal) {
+            let create = ModalActionEnum.CREATE === action;
+            let edit = ModalActionEnum.EDIT === action;
+            layer.open({
+                type: 2,
+                shade: 0.4,
+                shadeClose: true,
+                title: create ? '添加课程' : (edit ? '编辑课程' : ''),
+                content: '/pages/mod/group/modals/CourseModal.html?' + jsonStr2urlParam(JSON.stringify(courseFormVal)),
+                area: ['100%', '100%'],
+                success: function (layero, index) {
+                }
+            });
+        }
+
+        let setPersonScore = function (data) {
+            layer.open({
+                title: '授分',
+                type: 2,
+                area: ['100%', '100%'],
+                maxmin: true,
+                content: 'deptAwardingPoints.html?projectId=' + data.groupProjId + '&projectType=2',
+                scrollbar: false
+            });
+        }
+
+        let getToolbar = function () {
+            //如果开启了科室代办功能，单位分配给科室院内活动，科室无法添加
+            if (window["fun_dept_agent_groupproj"] == 1) {
+                return false;
+            } else {
+                return "#bar";
+            }
+        }
+
+
+        // 监听头部新增按钮
+        let bindToolbar = function () {
+            table.on('toolbar(cmeGroupproj)', function (obj) {
+                obj.event == 'add' && createDeptGroupproj("add");
+            });
+
+            // 监听行内按钮
+            table.on('tool(cmeGroupproj)', function (obj) {
+                obj.event == 'edit' && createDeptGroupproj("edit", obj.data);
+                obj.event == 'del' && delDeptGroupproj(obj.data.groupProjId);
+                //维护举办周期
+                obj.event == 'maintenanceCycle' && showCycleModal(obj.data.groupProjId, obj.data.period, obj.data.cmeYear);
+                //举办前预审
+                obj.event == 'projApply' && projApply(obj.data);
+                //维护试卷
+                obj.event == 'maintainTestPaper' && showPaper(obj.data);
+                //项目评价
+                obj.event == 'projectEvaluation' && showProjEva(obj.data);
+                //扫码考勤
+                obj.event == 'sweepCodeAttendance' && sweepAttendance(obj.data);
+                //授分
+                obj.event == 'grantPoints' && setPersonScore(obj.data);
+
+                if (obj.event === 'editFeedback') {
+                    let gProjId = obj.data.groupProjId;
+                    let content = '/pages/mod/group/modals/GroupFeedback.html?a=a&g_proj_id=' + gProjId;
+                    layer.open({
+                        type: 2,
+                        shade: 0.6,
+                        shadeClose: true,
+                        title: '执行情况反馈',
+                        content: content,
+                        area: ['100%', '100%']
+                    });
+                }
+
+            });
+        }
+
+
+        form.on('submit(saveBack)', function (data) {
+            let fields = data.field;
+            if (Number(fields.score) > Number(fields.period)) {
+                layer.confirm('学分大于学时，是否继续添加？', {
+                    title: '提示',
+                    btn: ['确定', '取消']
+                }, function () {
+                    saveGroupProj(fields, 0);
+                }, function () { })
+            } else {
+                saveGroupProj(fields, 0);
+            }
+            return false;
+        });
+
+        form.on('submit(nextStep)', function (data) {
+            let fields = data.field;
+            if (Number(fields.score) > Number(fields.period)) {
+                layer.confirm('学分大于学时，是否继续添加？', {
+                    title: '提示',
+                    btn: ['确定', '取消']
+                }, function () {
+                    saveGroupProj(fields, 1);
+                }, function () {
+                })
+            } else {
+                saveGroupProj(fields, 1);
+            }
+            return false;
+        });
+
+        let saveGroupProj = function (groupProj, action) {
+            if(_isNingxia) {
+                if(groupProj.score > 0.5) {
+                    layer.msg("学分不得大于0.5分");
+                    return false;
+                }
+            }
+            let visit;
+            if (groupProj.groupProjId) {
+                // update
+                visit = huayi_projectscore_url + 'pgsi/gproj/update';
+                groupProj.userUpdate = _deptId;
+            } else {
+                // create
+                visit = huayi_projectscore_url + 'pgsi/gproj/create';
+                // not null constraint
+                groupProj.userCreate = _deptId;
+                groupProj.unitId = _unitId;
+                groupProj.deptId = _deptId;
+                groupProj.standardKindId = _standardKindId;
+            }
+            postAction(visit, groupProj).then((response) => {
+                let jsonRes = response.data;
+                if (jsonRes.success) {
+                    gProjId = jsonRes.data.groupProjId;
+                    layer.msg('已保存院内活动');
+                    layer.closeAll();
+                    loaderTable();
+                    if (1 === action) {
+                        // 下一步,完善举办周期
+                        console.log("groupProj:");
+                        console.log(groupProj);
+                        showCycleModal(gProjId, groupProj.period, groupProj.cmeYear);
+                    }
+                }
+            }).catch((error) => {
+                layer.msg("error:保存院内活动");
+            }).finally(() => { });
+        }
+
+        //自定义验证规则
+        form.verify({
+            groupProjName: function (value) {
+                if (value.length > 120) return '活动名称不能超过120个字符';
+            },
+            otherNo: function (value) {
+                if (value.length > 25) return '编号不能超过25个字符';
+            },
+            remark: function (value) {
+                if (value.length > 100) return '活动名称不能超过100个字符';
+            }
+        });
+
+        window.showGroupProjModal = function (active, projId) {
+            let data = {};
+            for (let tempData of _tableData) {
+                if (tempData.groupProjId == projId) {
+                    createDeptGroupproj("edit", tempData);
+                    break;
+                }
+            }
+            for (let tempData of _tableData) {
+                if (tempData.groupProjId.replaceAll("-", "") == projId) {
+                    createDeptGroupproj("edit", tempData);
+                    break;
+                }
+            }
+
+
+        };
+
+        window.showCourseModal = showCoureseModel;
+        window.refreshTable = refreshTable;
+        window.refreshCycle = refreshCycle;
+
+        function refreshTable() {
+            layer.closeAll();
+            loaderTable();
+        }
+        function refreshCycle() {
+            layer.closeAll();
+            showCycleModal(gOpenedProjId, gOpenedProjPeriod, gCmeYear);
+        }
+
+        /* 获取配置 */
+        window.getConfig = function (config_name) {
+            $.ajax({
+                async: false,
+                type: 'post',
+                url: huayi_sjwh_url + 'cmeCommonConfig/getConfigByUnitFromRedis',
+                data: {
+                    unitId: localStorage.getItem('unit-id'),
+                    configNames: config_name
+                },
+                success: function (res) {
+                    if (res.success == true) {
+                        window[config_name] = res.data[config_name];
+                    } else {
+                        layer.msg('获取配置失败');
+                    }
+                },
+                error: function () {
+                    layer.msg('获取配置失败');
+                }
+            });
+        }
+
+        function renderScoreLevel() {
+            !(isNeimengSpecial()) && getScoreLevel();
+            isNeimengSpecial() && getScoreLevelNeimengSpecial();
+        }
+
+        let htmlInit = function () {
+            getConfig("fun_dept_agent_groupproj");
+            getConfig("range_dept_agent_groupproj_func_cols");
+            getConfig('value_forbid_some_operate_on_last_year_data');
+            tool.renderCheckType('#checkTypeSelector');
+            dateInit();
+            tabInit();
+            getTwoKnowledge();
+            getHoldType();
+            renderScoreLevel();
+            loaderTable();
+            bindToolbar();
+        }
+
+        htmlInit();
+
+
+        window.ableOperateLastYearData = function(dataYear) {
+            let cgv = window["value_forbid_some_operate_on_last_year_data"];
+            if(cgv == null || cgv == "") {
+                return true;
+            }
+           
+            let able = true;
+            let deadline = new Date(cgv);
+            let now = new Date();
+            if(parseInt(dataYear) < now.getFullYear()){
+                if(deadline < now) {
+                    able = false;
+                }
+            }
+            return able;
+        }
+
+    });
+</script>
+
+</html>

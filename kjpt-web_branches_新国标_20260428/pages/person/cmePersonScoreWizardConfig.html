@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>个人学分录入项配置</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+</head>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                <span>个人学分录入项配置</span>
+                <span class="layui-badge layui-bg-gray" style="margin-left:8px;">配置后科室/个人在「依据本省学分管理办法向导录入」时仅展示下方勾选项</span>
+            </div>
+            <div class="layui-form layui-card-header condition-area">
+                <div class="layui-inline">
+                    <label class="layui-form-label">举办年度</label>
+                    <div class="layui-input-block">
+                        <select name="cmeYear" id="cmeYear" lay-filter="cmeYear"></select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">学分分类</label>
+                    <div class="layui-input-block" style="width: 220px;">
+                        <input type="text" autocomplete="off" name="scoreLevel" class="layui-input"
+                             lay-filter="scoreLevel" id="scoreLevel" placeholder="请选择">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button type="button" class="layui-btn layui-btn-sm" id="btnLoad">查询</button>
+                </div>
+                <div class="layui-inline">
+                    <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" id="btnSave">保存勾选项</button>
+                </div>
+            </div>
+            <div class="layui-card-body">
+                <table class="layui-table" id="configTable" lay-filter="configTable"></table>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/html" id="colCheckbox">
+        <input type="checkbox" name="configItem" lay-skin="primary" {{# if(d._checked){ }}checked{{# } }} value="{{ d.grantscoreStandardId != null ? d.grantscoreStandardId : '' }}">
+    </script>
+    <script type="text/html" id="colRank">
+        {{d.LAY_TABLE_INDEX+1}}
+    </script>
+
+    <script>
+        var GUANGDONG_CME_STANDARD_KIND_ID = '289bf0ca-52cb-4b19-b737-9bd200a69ce1';
+
+        layui.config({ base: '/js/layui/ext/' }).extend({ treeSelect: 'treeSelect' });
+        layui.use(['table', 'form', 'treeSelect'], function () {
+            var $ = layui.jquery, table = layui.table, form = layui.form, layer = layui.layer, treeSelect = layui.treeSelect;
+            var unitId = localStorage.getItem('unit-id');
+            var configCheckedSet = {}; // 已保存的勾选 key -> true
+
+            function initYearSelect() {
+                var currentYear = new Date().getFullYear();
+                var $sel = $('#cmeYear');
+                $sel.empty();
+                for (var y = currentYear; y >= currentYear - 3; y--) {
+                    $sel.append($('<option value="' + y + '">' + y + '</option>'));
+                }
+                $sel.val(currentYear);
+                form.render('select');
+            }
+
+            function initScoreLevelSelect() {
+                var year = $('#cmeYear').val();
+                if (!year) return;
+                if (window.scoreLevelSelInst) {
+                    try { treeSelect.destroy('scoreLevel'); } catch (e) {}
+                    $('#scoreLevel').val('');
+                }
+                window.scoreLevelSelInst = treeSelect.render({
+                    elem: '#scoreLevel',
+                    data: huayi_sjwh_url + 'option/scoreLevel/tree/' + GUANGDONG_CME_STANDARD_KIND_ID + '/' + year + '/__1',
+                    type: 'get',
+                    search: true,
+                    style: { folder: { enable: false }, line: { enable: true } }
+                });
+            }
+
+            function loadSavedConfig(callback) {
+                if (!unitId) {
+                    layer.msg('请先登录');
+                    if (callback) callback();
+                    return;
+                }
+                $.ajax({
+                    url: huayi_sjwh_url + 'cmegrantscorestandard/wizardEntryUnitConfig',
+                    data: { unitId: unitId, cmeStandardKindId: GUANGDONG_CME_STANDARD_KIND_ID },
+                    success: function (res) {
+                        configCheckedSet = {};
+                        if (res.status === 200 && res.data && res.data.length) {
+                            res.data.forEach(function (item) {
+                                if (item.grantscoreStandardId) configCheckedSet[item.grantscoreStandardId] = true;
+                            });
+                        }
+                        if (callback) callback();
+                    },
+                    error: function () {
+                        if (callback) callback();
+                    }
+                });
+            }
+
+            function loadWizardList() {
+                if (!unitId) {
+                    layer.msg('请先登录');
+                    return;
+                }
+                var loadIndex = layer.load(1, { shade: 0.3 });
+                $.ajax({
+                    url: huayi_sjwh_url + 'cmegrantscorestandard/wizardEntryList',
+                    data: {
+                        cmeStandardKindId: GUANGDONG_CME_STANDARD_KIND_ID,
+                        cmeYear: $('#cmeYear').val(),
+                        unitId: unitId,
+                        userType: '12',
+                        projType: '3',
+                        type: $('#scoreLevel').val() || undefined
+                    },
+                    success: function (res) {
+                        layer.close(loadIndex);
+                        if (res.status !== 200 || !res.data) {
+                            layer.msg(res.msg || '加载失败');
+                            return;
+                        }
+                        var list = res.data;
+                        list.forEach(function (row) {
+                            var gid = row.grantscoreStandardId != null ? String(row.grantscoreStandardId) : '';
+                            row._checked = !!configCheckedSet[gid];
+                        });
+                        $('#configTable').nextAll('.layui-table-view').remove();
+                        table.render({
+                            elem: '#configTable',
+                            data: list,
+                            cols: [[
+                                { type: 'numbers', title: '序号', width: 60 },
+                                { title: '全选 <input type="checkbox" id="checkboxCurrent" lay-skin="primary" lay-filter="checkboxCurrent">', templet: '#colCheckbox', width: 100, align: 'center' },
+                                { field: 'name', title: '具体名称', minWidth: 180, align: 'center' },
+                                { field: 'description', title: '具体规定', minWidth: 180, align: 'center' },
+                                { field: 'scoreLevelName', title: '学分分类', minWidth: 180, align: 'center' }
+                            ]],
+                            id: 'configTable',
+                            page: false,
+                            limit: 9999,
+                            done: function () {
+                                form.render('checkbox');
+                                syncCheckAllState();
+                            }
+                        });
+                    },
+                    error: function () {
+                        layer.close(loadIndex);
+                        layer.msg('请求失败');
+                    }
+                });
+            }
+
+            $('#btnLoad').on('click', function () {
+                loadSavedConfig(function () {
+                    loadWizardList();
+                });
+            });
+
+            function syncCheckAllState() {
+                var $view = $('#configTable').next('.layui-table-view');
+                var $items = $view.find('input[name="configItem"]');
+                var total = $items.length;
+                var checked = $view.find('input[name="configItem"]:checked').length;
+                $('#checkboxCurrent').prop('checked', total > 0 && total === checked);
+                form.render('checkbox');
+            }
+
+            // 本页全选（参考人员管理-个人注册信息审核）
+            form.on('checkbox(checkboxCurrent)', function (data) {
+                var child = $('#configTable').next('.layui-table-view').find('input[name="configItem"]');
+                if (data.elem.checked) {
+                    child.each(function (index, item) {
+                        item.checked = true;
+                    });
+                } else {
+                    child.each(function (index, item) {
+                        item.checked = false;
+                    });
+                }
+                form.render('checkbox');
+            });
+            $(document).on('change', 'input[name="configItem"]', function () {
+                syncCheckAllState();
+            });
+
+            $('#btnSave').on('click', function () {
+                if (!unitId) {
+                    layer.msg('请先登录');
+                    return;
+                }
+                var checked = [];
+                $('#configTable').next('.layui-table-view').find('input[name="configItem"]:checked').each(function () {
+                    var v = $(this).val();
+                    if (v) checked.push({ grantscoreStandardId: v });
+                });
+                $.ajax({
+                    type: 'POST',
+                    url: huayi_sjwh_url + 'cmegrantscorestandard/wizardEntryUnitConfig',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        unitId: unitId,
+                        cmeStandardKindId: GUANGDONG_CME_STANDARD_KIND_ID,
+                        items: checked
+                    }),
+                    success: function (res) {
+                        if (res.status === 200) {
+                            layer.msg('保存成功');
+                            configCheckedSet = {};
+                            checked.forEach(function (item) {
+                                if (item.grantscoreStandardId) configCheckedSet[item.grantscoreStandardId] = true;
+                            });
+                        } else {
+                            layer.msg(res.msg || '保存失败');
+                        }
+                    },
+                    error: function () {
+                        layer.msg('保存失败');
+                    }
+                });
+            });
+
+            initYearSelect();
+            initScoreLevelSelect();
+            form.on('select(cmeYear)', function () {
+                initScoreLevelSelect();
+            });
+            loadSavedConfig(function () {
+                loadWizardList();
+            });
+        });
+    </script>
+</body>
+</html>

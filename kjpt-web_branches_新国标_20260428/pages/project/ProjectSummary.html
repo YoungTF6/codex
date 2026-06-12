@@ -1,0 +1,1285 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>项目申报汇总</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script type="text/javascript" src="../../js/api/cpt.js"></script>
+    <script type="text/javascript" src="../../js/axios.min.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/api/expertPdf.js"></script>
+    <script type="text/javascript" src="/js/api/html2canvas.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script type="text/javascript" src="/js/tools/verification.js"></script>
+    <script type="text/javascript" src="../../js/constantPage/projectConstant.js"></script>
+    <script src="/js/tools/aes-tool.js"></script>
+    <script type="text/javascript" src="../../js/constantPage/projectPageUrl.js"></script>
+    <style>
+        .layui-table-cell {
+            height:auto;
+        }
+        .layui-layer-content {
+            overflow: visible !important;
+        }
+
+        .tab_others {
+            width: 100px !important;
+        }
+
+        .tab_this {
+            width: 100px !important;
+        }
+
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .layui_display {
+            flex: 1 auto;
+        }
+
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+        .tab_others {
+            background-color: #009688;
+            color: #ffffff;
+            margin-left: 6px;
+        }
+
+        .tab_this {
+            background-color: #f5f5f5;
+            color: #404040;
+            margin-left: 6px;
+            border-bottom: 1px solid #F5F5F5;
+        }
+        .layui-table-tool-temp {
+            padding-right: 10px;
+        }
+        .project-summary-pdf-stage {
+            position: absolute;
+            left: -20000px;
+            top: 0;
+            width: 1123px;
+            background: #ffffff;
+            z-index: -1;
+        }
+        .project-summary-pdf-page {
+            width: 1123px;
+            min-height: 794px;
+            padding: 36px 44px 28px;
+            box-sizing: border-box;
+            background: #ffffff;
+            page-break-after: always;
+            font-family: 'SimSun', 'Songti SC', serif;
+        }
+        .project-summary-pdf-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #111111;
+            letter-spacing: 1px;
+            line-height: 1.4;
+            margin: 6px 0 40px;
+        }
+        .project-summary-pdf-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #111111;
+        }
+        .project-summary-pdf-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            font-size: 12px;
+            font-family: 'SimSun', 'Songti SC', serif;
+            color: #111111;
+        }
+        .project-summary-pdf-table th,
+        .project-summary-pdf-table td {
+            border: 0.7px solid #333333;
+            padding: 0;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .project-summary-pdf-table th {
+            height: 44px;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.35;
+        }
+        .project-summary-pdf-table td {
+            height: 64px;
+        }
+        .project-summary-pdf-cell {
+            height: 64px;
+            padding: 4px 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            word-break: break-all;
+            font-size: 11px;
+            font-weight: 400;
+            line-height: 1.35;
+            box-sizing: border-box;
+        }
+        .project-summary-pdf-cell.text-left {
+            justify-content: flex-start;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body style="background-color: white;">
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <!--        搜索框区域-->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="background-color: #f5f5f5;">
+                <div class="layui_mess">
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">申报年度</label>
+                            <div class="layui-input-block">
+                                <select name="holdYear" id="holdYear" lay-filter="loadReport">
+                        </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" name="lblProjectLevel"></label>
+                            <div class="layui-input-block">
+                                <select name="CmeComScoreLevel" id="CmeComScoreLevel" lay-filter="loadHoldType">
+                                    <option value="">全部</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">申报代码</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="projectCode" id="projectCode" placeholder="请填写申报代码" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        
+                        <div class="layui-inline">
+                            <label class="layui-form-label">项目名称</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="projectName" id="projectName" placeholder="请填写项目名称关键字" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">项目负责人</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="PrincipalName" id="PrincipalName" placeholder="请填写项目负责人" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" name="lblActivityForm"></label>
+                            <div class="layui-input-block">
+                                <select name="holdType" id="holdType">
+                            <option value="">全部</option>
+                            </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" name="lblActivityContent"></label>
+                            <div class="layui-input-block">
+                                <select name="ActivityContent" id="ActivityContent">
+                                    <option value="">全部</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" name="lblActivityType"></label>
+                            <div class="layui-input-block">
+                                <select name="ActivityType" id="ActivityType">
+                                    <option value="">全部</option>
+                                    <option value="1">推荐项目</option>
+                                    <option value="2">推广项目</option>
+                                    <!-- <option value="3">非项目类</option> -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">公布状态</label>
+                            <div class="layui-input-block">
+                                <select name="isPublish" id="isPublish">
+                                    <option value="">全部</option>
+                                    <option value="1">已公布</option>
+                                    <option value="0">未公布</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" name="lblMedicalSystem"></label>
+                            <div class="layui-input-block">
+                                <select name="projectType" id="projectType">
+                                    <option value="">全部</option>
+                                    <option value="1">西医</option>
+                                    <option value="2">中医</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="layui-inline">
+                            <label class="layui-form-label">审核状态</label>
+                            <div class="layui-input-block">
+                                <select name="checkStatus" id="checkStatus">
+                                    <option value="">全部</option>
+                                    <option value="53">预审通过</option>
+                                    <option value="52">预审不通过</option>
+                                    <option value="3">终审通过</option>
+                                    <option value="2">终审不通过</option>
+                                </select>
+                            </div>
+                        </div>
+                       
+                    </div>
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" id="searchBtn" lay-submit lay-filter="LAY-app-order-search">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!--        表格区域-->
+            <div class="layui-card-body layui_body_box">
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <table class="layui-table" id="project" lay-filter="project" style="margin: 0px 0px;"></table>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- 弹窗框--导出必须录入的信息 -->
+            <div id="exportBox" style="display:none;">
+                <div class="layui-form" lay-filter="export-form" style="padding:15px 15px 0px 15px;text-align: center;margin-left:-80px;">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label width100">登录密码</label>
+                            <div class="layui-input-inline"> 
+                                <input type="password" name="userPwd" lay-verify="required" autocomplete="new-password" placeholder="请输入登录密码" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label width100">导出人姓名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="personName" lay-verify="required" autocomplete="off" placeholder="请输入姓名" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                            <div class="layui-inline" style="margin-left:115px;">
+                                <label class="layui-form-label width100">导出人手机号</label>
+                                <div class="layui-input-inline" style="width:320px">
+                                    <input type="text" name="mobile" lay-verify="required|phone" autocomplete="off" placeholder="请输入手机号" class="layui-input" style="width:190px;display: inline-block">
+                                    <button type="button" class="layui-btn  layui-btn-sm" style="width:120px" onclick="sendCode(this)">发送验证码</button>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label width100">验证码</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="code" lay-verify="required|number" autocomplete="off" placeholder="请输入验证码" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item" id="qinghai_export_info_div">
+                        <div class="layui-inline ">
+                            <div class="layui-input-inline" style="width:290px;margin-left:80px; ">
+                                <label>
+                                    <input type="checkbox" name="hasRead" id="hasRead" lay-ignore 
+                                    style=" width:16px; height:16px;vertical-align:middle;"><span style="margin-left:5px; ">我已阅读并接受 <a href="javascript:void(0)"
+                                            style="color:#1E9FFF" onclick="showExportInfo()">《数据导出声明》</a></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- 弹窗框--导出免责声明 -->
+            <div id="exportInfo" style="display:none;">
+                <div id="exportInfofiles">
+                </div>
+            </div>
+            <div id="projectSummaryPdfStage" class="project-summary-pdf-stage"></div>
+        </div>
+    </div>
+
+    <script type="text/html" id="viewProjInfo">
+        <a class="layui-table-link orderNumber"  style="cursor: pointer;" lay-event="view" title="点击查看项目详情">{{d.projectCode}}</a>
+    </script>
+    <!--表格内数据编辑、删除按钮-->
+    <script type="text/html" id="rowBar">
+    </script>
+    <!--表格内数据编辑、删除按钮-->
+    <script type="text/html" id="rowCheckBar">
+        <a class="layui-btn layui-btn-xs" lay-event="viewSubmitProj" style="color: #ffb82e;background-color: transparent;">查看</a>
+    </script>
+
+    <script type="text/html" id="bar">
+        <button class="layui-btn layui-btn-sm btnRounded" lay-event="visbale"  >设置显示列</button>
+        <button class="layui-btn layui-btn-sm btnRounded" lay-event="excel" >导出项目汇总表</button>
+        <!-- <button class="layui-btn layui-btn-sm btnRounded" lay-event="pdf" style="display:none;" >导出项目汇总表PDF</button> -->
+        <button class="layui-btn layui-btn-sm btnRounded" lay-event="pdf2" style="display:none;" >导出项目汇总表PDF</button>
+    </script>
+
+
+    <script>
+        layui.config({
+            base: '/js/layui/ext/'
+        }).extend({
+            selectM :   'selectM',
+            eleTree :   'eleTree',
+            tool    :   'tool'
+        });
+        // 全局配置及引入相关的模块
+        layui.use(['table', 'form', 'element','tool'], function() {
+            var table = layui.table;
+            var form = layui.form;
+            var $ = layui.jquery;
+            var layer = layui.layer,tool=layui.tool;
+            var element = layui.element;
+            var year = $('#holdYear').val();
+            var my = new Date();
+            var status = -1;
+            var userid= localStorage.getItem("unit-id"); 
+            var pendingExportAction = null;
+            const standardkindId = localStorage.getItem("standardkind-id");
+            const _isGuangdong = standardkindId === "289bf0ca-52cb-4b19-b737-9bd200a69ce1"; 
+
+            function refreshPdfExportButtons() {
+                $("button[lay-event='pdf'], button[lay-event='pdf2']").toggle(_isGuangdong);
+            }
+
+            // 将constantPage.js 常量赋值给label
+            $("label").each(function() {
+                const name = $(this).attr("name");
+                if (projectLabels[name] !== undefined) {
+                    $(this).text(projectLabels[name]);
+                }
+            });
+
+            window.colArray = [{
+                field: 'status',
+                title: '状态',
+                hide: true,
+               
+            }];
+
+            function getSummaryQueryParams() {
+                return {
+                    HoldYear: $('#holdYear').val(),
+                    CmeComScoreLevel: $('#CmeComScoreLevel').val(),
+                    ProjectName: $('#projectName').val(),
+                    ProjectCode: $('#projectCode').val(),
+                    holdTypeId: $('#holdType').val(),
+                    personName: $('#PrincipalName').val(),
+                    cmeStandardKindId: localStorage.getItem("standardkind-id"),
+                    userCreate: localStorage.getItem("user-id"),
+                    unitId: localStorage.getItem("unit-id"),
+                    status: status,
+                    isPublish: $('#isPublish').val(),
+                    projType : $('#ActivityType').val(),
+                    scoreType : $('#ActivityContent').val(),
+                    projectType : $('#projectType').val(),
+                    checkStatus : $('#checkStatus').val()
+                };
+            }
+
+            function getExportHeaders() {
+                return {
+                    "Accept": 'application/json',
+                    "Authorization": localStorage.getItem("token"),
+                    "KJPT-USER-ID": localStorage.getItem("user-id"),
+                    "cmestandard-id": localStorage.getItem("standardkind-id")
+                };
+            }
+
+            function escapeHtml(value) {
+                return String(value == null ? '' : value)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            function escapeHtmlWithLineBreak(value) {
+                return escapeHtml(value).replace(/&lt;br\s*\/?&gt;/gi, '<br>');
+            }
+
+            function formatDateText(value) {
+                if (!value) {
+                    return '';
+                }
+                var text = String(value);
+                var match = text.match(/\d{4}-\d{2}-\d{2}/);
+                if (match) {
+                    return match[0];
+                }
+                match = text.match(/\d{4}\/\d{2}\/\d{2}/);
+                if (match) {
+                    return match[0].replace(/\//g, '-');
+                }
+                return text;
+            }
+
+            function getProjectPrincipalName(item) {
+                return item.personName || item.principalName || item.projManager || item.projManagerName || '';
+            }
+
+            function getProjectApplyDate(item) {
+                return formatDateText(item.addTime || item.dateCreate || item.applyTime || item.createTime || '');
+            }
+
+            function getProjectNature(item) {
+                if (item.previousIdName || item.projectNatureName || item.projectPropertyName || item.natureName) {
+                    return item.previousIdName || item.projectNatureName || item.projectPropertyName || item.natureName;
+                }
+                var previousId = item.previousId;
+                if (previousId === undefined || previousId === null || previousId === '') {
+                    previousId = item.previous_id;
+                }
+                if (previousId === undefined || previousId === null || previousId === '') {
+                    return '新申报项目';
+                }
+                return '备案项目';
+            }
+
+            function getProjectScore(item) {
+                return item.score == null ? '' : item.score;
+            }
+
+            function getProjectTrainNumber(item) {
+                return item.number == null ? '' : item.number;
+            }
+
+            function getProjectRemark(item) {
+                return item.remark || item.provincialRemark || item.provincial_remark || '';
+            }
+
+            function getProjectSummaryPdfTitle() {
+                var selectedText = $('#CmeComScoreLevel option:selected').text() || '';
+                return $.trim(selectedText) + '项目汇总表';
+            }
+
+            function requireScoreLevelForPdf() {
+                if ($('#CmeComScoreLevel').val()) {
+                    return true;
+                }
+                layer.alert('请选择学分分类，点击查询后进行导出。', {icon: 5});
+                return false;
+            }
+
+            function openExportDialog(exportAction) {
+                if(window["fun_record_info_when_export_score"]!="1"){
+                    exportAction();
+                    return;
+                }
+                pendingExportAction = exportAction;
+                let index = layer.open({
+                    type: 1,
+                    title: '导出信息',
+                    content: $('#exportBox'),
+                    btn: ["下载 ", "返回 "],
+                    btnAlign: 'c',
+                    area: ['50%', '63%'],
+                    success: function () {
+                        form.val("export-form",{
+                            "userPwd":"",
+                            "personName":"",
+                            "mobile":"",
+                            "code":"",
+                        });
+                        $("#hasRead").prop("checked","");
+                    },
+                    yes: function () {
+                        let check =  checkExportInput();
+                        if(!check){
+                            return;
+                        }
+                        let data = tool.getFormVal('export-form');
+                        data.userId = localStorage.getItem("user-id");
+                        $.ajax({
+                            type:"get",
+                            url: huayi_projectscore_url + "projectScoreStatistis/verifyExportInfo",
+                            data:data,
+                            success:function(re){
+                                if(re.success==true){
+                                    if (typeof pendingExportAction === 'function') {
+                                        pendingExportAction();
+                                    }
+                                    pendingExportAction = null;
+                                    layer.close(index);
+                                }else{
+                                    layer.alert(re.msg, {icon: 5});
+                                }
+                            }
+                        });
+                    },
+                    end: function () {
+                        pendingExportAction = null;
+                    }
+                });
+            }
+
+            function fetchProjectSummaryPage(pageNum, pageSize) {
+                return axios({
+                    method: 'GET',
+                    url: huayi_projectscore_url + 'project/selectProjSummary',
+                    headers: getExportHeaders(),
+                    params: $.extend({}, getSummaryQueryParams(), {
+                        pageNum: pageNum,
+                        pageSize: pageSize
+                    })
+                }).then(function (res) {
+                    return res.data || {};
+                });
+            }
+
+            function fetchProjectSummaryRecords(pageNum, pageSize, result) {
+                var currentPageNum = pageNum || 1;
+                var currentPageSize = pageSize || 200;
+                var mergedResult = result || [];
+                return fetchProjectSummaryPage(currentPageNum, currentPageSize).then(function (response) {
+                    if (response.status !== 200 || !response.data) {
+                        return Promise.reject(response.message || '项目汇总数据获取失败');
+                    }
+                    var pageData = response.data || {};
+                    var records = pageData.records || [];
+                    var total = pageData.recordsTotal || 0;
+                    var allRecords = mergedResult.concat(records);
+                    if (allRecords.length < total && records.length > 0) {
+                        return fetchProjectSummaryRecords(currentPageNum + 1, currentPageSize, allRecords);
+                    }
+                    return allRecords;
+                });
+            }
+
+            function buildPdfTableRows(records, startIndex) {
+                return $.map(records, function (item, index) {
+                    return '' +
+                        '<tr>' +
+                            '<td style="width:4%;"><div class="project-summary-pdf-cell">' + escapeHtml(startIndex + index + 1) + '</div></td>' +
+                            '<td style="width:10%;"><div class="project-summary-pdf-cell">' + escapeHtml(item.projectCode || '') + '</div></td>' +
+                            '<td style="width:21%;"><div class="project-summary-pdf-cell text-left">' + escapeHtml(item.projectName || '') + '</div></td>' +
+                            '<td style="width:9%;"><div class="project-summary-pdf-cell">' + escapeHtml(getProjectNature(item)) + '</div></td>' +
+                            '<td style="width:12%;"><div class="project-summary-pdf-cell text-left">' + escapeHtml(item.unitName || '') + '</div></td>' +
+                            '<td style="width:5%;"><div class="project-summary-pdf-cell">' + escapeHtml(getProjectPrincipalName(item)) + '</div></td>' +
+                            '<td style="width:17%;"><div class="project-summary-pdf-cell">' + escapeHtmlWithLineBreak(item.projectbatchtime || '') + '</div></td>' +
+                            '<td style="width:8%;"><div class="project-summary-pdf-cell">' + escapeHtml(item.holdPlace || '') + '</div></td>' +
+                            '<td style="width:5%;"><div class="project-summary-pdf-cell">' + escapeHtml(getProjectScore(item)) + '</div></td>' +
+                            '<td style="width:5%;"><div class="project-summary-pdf-cell">' + escapeHtml(getProjectTrainNumber(item)) + '</div></td>' +
+                            '<td style="width:4%;"><div class="project-summary-pdf-cell">' + escapeHtml(getProjectRemark(item)) + '</div></td>' +
+                        '</tr>';
+                }).join('');
+            }
+
+            function buildProjectSummaryPdfPages(records) {
+                var rowsPerPage = 8;
+                var pageHtml = [];
+                var unitName = localStorage.getItem('unit-name') || '';
+                var printDate = formatDateText(new Date().toISOString().slice(0, 10));
+                var title = getProjectSummaryPdfTitle();
+                for (var index = 0; index < records.length; index += rowsPerPage) {
+                    var pageRows = records.slice(index, index + rowsPerPage);
+                    pageHtml.push('' +
+                        '<div class="project-summary-pdf-page">' +
+                            '<div class="project-summary-pdf-title">' + escapeHtml(title) + '</div>' +
+                            '<div class="project-summary-pdf-meta">' +
+                                '<span>填报单位（公章）：' + escapeHtml(unitName) + '</span>' +
+                                '<span>填报日期：' + escapeHtml(printDate) + '</span>' +
+                            '</div>' +
+                            '<table class="project-summary-pdf-table">' +
+                                '<thead>' +
+                                    '<tr>' +
+                                        '<th style="width:4%;">序号</th>' +
+                                        '<th style="width:10%;">申请代码</th>' +
+                                        '<th style="width:21%;">项目名称</th>' +
+                                        '<th style="width:9%;">项目性质</th>' +
+                                        '<th style="width:12%;">举办单位</th>' +
+                                        '<th style="width:5%;">项目负责人</th>' +
+                                        '<th style="width:17%;">举办时间</th>' +
+                                        '<th style="width:8%;">举办地点</th>' +
+                                        '<th style="width:5%;">拟授予学分</th>' +
+                                        '<th style="width:5%;">拟培训人数</th>' +
+                                        '<th style="width:4%;">备注</th>' +
+                                    '</tr>' +
+                                '</thead>' +
+                                '<tbody>' + buildPdfTableRows(pageRows, index) + '</tbody>' +
+                            '</table>' +
+                        '</div>');
+                }
+                return pageHtml.join('');
+            }
+
+            function clearProjectSummaryPdfStage() {
+                $('#projectSummaryPdfStage').empty();
+            }
+
+            function renderProjectSummaryPdf(records) {
+                $('#projectSummaryPdfStage').html(buildProjectSummaryPdfPages(records));
+                return $('#projectSummaryPdfStage .project-summary-pdf-page').toArray();
+            }
+
+            // 可选值：clear(更清晰)、compact(更小)、balanced(平衡)
+            var projectSummaryPdfRenderMode = 'clear';
+            var projectSummaryPdfRenderPreset = {
+                clear: { margin: 10, scale: 2.6, jpegQuality: 0.92, compression: 'MEDIUM' },
+                compact: { margin: 12, scale: 2.0, jpegQuality: 0.82, compression: 'FAST' },
+                balanced: { margin: 12, scale: 2.3, jpegQuality: 0.88, compression: 'MEDIUM' }
+            };
+
+            function generateProjectSummaryPdf(pageNodes) {
+                var renderConfig = projectSummaryPdfRenderPreset[projectSummaryPdfRenderMode] || projectSummaryPdfRenderPreset.balanced;
+                var pdf = new jsPDF('l', 'pt', 'a4');
+                var pageWidth = pdf.internal.pageSize.getWidth();
+                var pageHeight = pdf.internal.pageSize.getHeight();
+                var margin = renderConfig.margin;
+                var maxRenderWidth = pageWidth - (margin * 2);
+                var maxRenderHeight = pageHeight - (margin * 2);
+                var canvasScale = Math.max(1.5, renderConfig.scale);
+                var sequence = Promise.resolve();
+                $.each(pageNodes, function (index, node) {
+                    sequence = sequence.then(function () {
+                        return html2canvas(node, {
+                            allowTaint: true,
+                            useCORS: true,
+                            backgroundColor: '#ffffff',
+                            scale: canvasScale,
+                            windowWidth: node.scrollWidth,
+                            windowHeight: node.scrollHeight,
+                            logging: false
+                        }).then(function (canvas) {
+                            if (index > 0) {
+                                pdf.addPage();
+                            }
+                            var renderWidth = maxRenderWidth;
+                            var renderHeight = canvas.height * renderWidth / canvas.width;
+                            if (renderHeight > maxRenderHeight) {
+                                renderHeight = maxRenderHeight;
+                                renderWidth = canvas.width * renderHeight / canvas.height;
+                            }
+                            pdf.addImage(canvas.toDataURL('image/jpeg', renderConfig.jpegQuality), 'JPEG', margin, margin, renderWidth, renderHeight, undefined, renderConfig.compression);
+                        });
+                    });
+                });
+                return sequence.then(function () {
+                    pdf.save('申报项目汇总表.pdf');
+                });
+            }
+
+            function exportProjectSummaryPdf() {
+                var loading = layer.load(0, {
+                    shade: false
+                });
+                fetchProjectSummaryRecords(1, 200, []).then(function (records) {
+                    if (!records.length) {
+                        layer.close(loading);
+                        layer.msg('暂无可导出的项目数据');
+                        return;
+                    }
+                    var pageNodes = renderProjectSummaryPdf(records);
+                    return generateProjectSummaryPdf(pageNodes).then(function () {
+                        layer.close(loading);
+                        clearProjectSummaryPdfStage();
+                    });
+                }).catch(function (error) {
+                    layer.close(loading);
+                    clearProjectSummaryPdfStage();
+                    layer.alert(typeof error === 'string' ? error : 'PDF 导出失败，请稍后重试', {icon: 5});
+                    console.error(error);
+                });
+            }
+
+            function exportProjectSummaryPdf2() {
+                var loading = layer.load(0, {
+                    shade: false
+                });
+                axios({
+                    method: 'GET',
+                    url: huayi_projectscore_url + 'projectExclel/pdfExportProjSummary',
+                    responseType: 'blob',
+                    headers: getExportHeaders(),
+                    params: $.extend({}, getSummaryQueryParams(), {
+                        CmeComScoreLevelName: $('#CmeComScoreLevel option:selected').text() || ''
+                    })
+                }).then(function (res) {
+                    var data = res.data;
+                    if (!data || !data.size) {
+                        layer.close(loading);
+                        layer.alert('PDF2 导出失败，请稍后重试', {icon: 5});
+                        return;
+                    }
+                    return data.slice(0, 5).text().then(function (headerText) {
+                        layer.close(loading);
+                        if (headerText !== '%PDF-') {
+                            layer.alert('PDF2 导出失败，请稍后重试', {icon: 5});
+                            return;
+                        }
+                        var blob = new Blob([data], {type: 'application/pdf'});
+                        var url = URL.createObjectURL(blob);
+                        var exportLink = document.createElement('a');
+                        exportLink.setAttribute('download', '申报项目汇总表.pdf');
+                        exportLink.href = url;
+                        document.body.appendChild(exportLink);
+                        exportLink.click();
+                        document.body.removeChild(exportLink);
+                        URL.revokeObjectURL(url);
+                    });
+                }).catch(function (error) {
+                    layer.close(loading);
+                    layer.alert('PDF2 导出失败，请稍后重试', {icon: 5});
+                    console.error(error);
+                });
+            }
+
+            if(localStorage.getItem("standardkind-id")!="73ba18db-33fd-4746-ab41-9beb009f69a1"){
+                let column=""; 
+                column={field: 'center',width: 100,toolbar: '#rowCheckBar',title: '审批进度',align: 'center',};
+                window.colArray.push(column);
+            }
+            $.ajax({
+                type: "POST",
+                headers: {
+                    "Accept": 'application/json',
+                    "Authorization": localStorage.getItem("token"),
+                    "KJPT-USER-ID": localStorage.getItem("user-id"),
+                    "cmestandard-id": localStorage.getItem("standardkind-id")
+                },
+                async: false,
+                url: huayi_projectscore_url + "project/comcolumnList",
+                data: JSON.stringify({
+                    "module_name": "Project"
+                }),
+                contentType: "application/json",
+                success: function(data) {
+                    $.each(data.data, function(index, item) {
+                        let column="";
+                        if(item.columnCamelCase=="projectCode"){
+                            column={field: item.columnCamelCase, title: item.columnName,width: item.columnwidth, sort: item.orderable,toolbar:'#viewProjInfo'};
+                        }else{
+                            column={field: item.columnCamelCase, title: item.columnName, sort: item.orderable,width: item.columnwidth};
+                        }
+                        window.colArray.push(column);
+                    })
+                },
+                error: function(data, xhr, stus) {
+                    layer.msg("响应失败");
+                }
+            })
+
+
+            // 表格相关操作
+            // 表格配置
+            function loaderTable() {
+                window.mainTable = table.render({
+                    elem: '#project',
+                    url: huayi_projectscore_url + 'project/selectProjSummary',
+                    title: '用户表',
+                    defaultToolbar: [],
+                    where: getSummaryQueryParams(),
+
+                    cols: [
+                        window.colArray
+                    ],
+                    toolbar: '#bar',
+                    cellMinWidth: 100,
+                    id: "project",
+                    height: 'full-230',
+                    page: true,
+                    limit: 10,
+                    limits: [10, 50, 100, 150, 200],
+                    done: function () {
+                        // layui表格单元格设置高度自适应后, 设置为fixed的表格列的高度无法自适应的处理
+                        $(".layui-table-main tr").each(function(index, val) {
+                            $($(".layui-table-fixed .layui-table-body tbody tr")[index]).height($(val).height());
+                        });
+                        refreshPdfExportButtons();
+                    },
+                    parseData: function(res) {
+                        return {
+                            "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                            "msg": res.message, //解析提示文本
+                            "count": res.data.recordsTotal, //解析数据长度
+                            "data": res.data.records, //解析数据列表
+                            "page": res.data.pageNum, //当前页
+                            "limit": res.data.pageSize, //每页条数
+                        }
+
+                    },
+                    request: {
+                        pageName: 'pageNum', //页码的参数名称，默认：page
+                        limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                    }
+                });
+            };
+
+            window.colSettingClaaback = function(obj) {
+                var str = {
+                    "module_name": "Project"
+                };
+                $.ajax({
+                    type: "POST",
+                    headers: {
+                        "Accept": 'application/json',
+                        "Authorization": localStorage.getItem("token"),
+                        "KJPT-USER-ID": localStorage.getItem("user-id"),
+                        "cmestandard-id": localStorage.getItem("standardkind-id")
+                    },
+                    async: false,
+                    url: huayi_projectscore_url + "project/comcolumnList",
+                    data: JSON.stringify(str),
+                    contentType: "application/json",
+                    success: function(data) {
+                        window.colArray = [];
+                        if(localStorage.getItem("standardkind-id")!="73ba18db-33fd-4746-ab41-9beb009f69a1"){
+                            let column=""; 
+                            column={field: 'center',width: 100,toolbar: '#rowCheckBar',title: '审批进度',align: 'center',};
+                            window.colArray.push(column);
+                        }
+                        $.each(data.data, function(index, item) {
+                            let column="";
+                            if(item.columnCamelCase=="projectCode"){
+                                column={field: item.columnCamelCase, title: item.columnName, sort: item.orderable,width: item.columnwidth,toolbar:'#viewProjInfo'};
+                            }else{
+                                column={field: item.columnCamelCase, title: item.columnName, sort: item.orderable,width: item.columnwidth};
+                            }
+                            window.colArray.push(column);
+                        })
+                        loaderTable();
+                        if (obj && obj.success) {
+                            layer.close(window.colLayerIndex);
+                        } else {
+                            layui.msg(obj.msg);
+                        }
+                    },
+                    error: function(data, xhr, stus) {
+                        layer.msg("响应失败");
+                    }
+                })
+            }
+
+
+            $(function() {
+                tool.setMedicalTypeSelectById("#projectType");
+                ddlList();
+                loaderTable();
+                refreshPdfExportButtons();
+                ddlscoreLevel();
+                getConfig("fun_record_info_when_export_score");
+                getConfig("value_declare_file_when_export_score");
+                
+            });
+            $(".tab_others").on("click", function() {
+                var index = $(this).index();
+                $(this).addClass("tab_this").siblings().removeClass("tab_this");
+
+            });
+            function ddlscoreLevel(){
+                //加载项目级别
+                $.ajax({
+                    type: "post",
+                    url: huayi_projectscore_url + "projectDicRegionLevel/getLevelsByStandardId",
+                    data: {
+                        getLevelsByStandardId: localStorage.getItem("standardkind-id"),
+                        holdYear: $('#holdYear').val(),
+                        unitId:userid
+                    },
+                    async: false,
+                    dataType: 'json',
+                    success: function(data) {
+                        $('#CmeComScoreLevel').empty();
+                        $('#CmeComScoreLevel').append(new Option("全部",""));//往下拉菜单里添加元素
+                        $.each(data.data, function(index, item) {
+                            $('#CmeComScoreLevel').append(new Option(item.scoreLevelName, item.scoreLevelId)); //往下拉菜单里添加元素
+                        })
+                        form.render('select'); //刷新select选择框渲染
+                    },
+                    error: function(data) {
+                        layer.msg("响应失败");
+                    }
+                });
+            }
+            function ddlList() {
+                //加载申报年度
+                $.ajax({
+                    type: "post",
+                    url: huayi_projectscore_url +"projectDicRegionLevel/getHoldYear",
+                    data: {cmeStandardKind:localStorage.getItem("standardkind-id"),unitId:localStorage.getItem("unit-id")},
+                    dataType: 'json',
+                    async: false,
+                    success: function (data) {
+                        if("6427ddba-c02f-4229-bd73-49fc1c5d21f6"===localStorage.getItem("standardkind-id")){
+                            //如是青海那么去除data里2024
+                            data.data = data.data.filter(year => year !== '2024');
+                        }
+                        for(var year of data.data.entries()){
+                            $('#holdYear').append(new Option(year[1],year[1]));//往下拉菜单里添加元素
+                        }
+                        form.render('select'); //刷新select选择框渲染
+                    },
+                    error: function (data) {
+                        layer.msg("响应失败1");
+                    }
+                });
+            }
+
+            
+        
+            table.on('sort(project)', function(obj){ //sort 是工具条事件名
+                //如果你的表格列表里有设置排序sort, 需要添加一个sort监听事件, 根据单元格内容的高度重新计算表格的行高
+                $(".layui-table-main tr").each(function(index, val) {
+                    $($(".layui-table-fixed .layui-table-body tbody tr")[index]).height($(val).height());
+                });
+            });
+
+            // 监听头部新增按钮
+            table.on('toolbar(project)', function(obj) {
+                var datas = obj.data;
+                if (obj.event === 'excel') {
+                    openExportDialog(excelExportProj);
+                } else if (obj.event === 'pdf') {
+                    if (!requireScoreLevelForPdf()) {
+                        return;
+                    }
+                    // 暂时取消 PDF 导出前的手机号/验证码输入验证，改为直接导出。
+                    // openExportDialog(exportProjectSummaryPdf);
+                    exportProjectSummaryPdf();
+                } else if (obj.event === 'pdf2') {
+                    if (!requireScoreLevelForPdf()) {
+                        return;
+                    }
+                    openExportDialog(exportProjectSummaryPdf2);
+                } else if (obj.event === 'visbale') {
+                    window.colLayerIndex = layer.open({
+                        content: "../../column_setting.html?module_name=Project&callBack=colSettingClaaback",
+                        type: 2,
+                        area: ['600px', '600px']
+                    })
+                }
+            });
+            window.checkExportInput=function(){
+                let data = tool.getFormVal('export-form');
+                //userPwd personName mobile code 
+                let userPwd=data.userPwd;
+                let personName=data.personName;
+                let mobile=data.mobile;
+                let code=data.code;
+
+                if(window["fun_record_info_when_export_score"]=="1"){
+                    let hasRead =$("#hasRead").prop("checked");
+                    if(!hasRead){
+                        layer.alert('请阅读并接受《数据导出声明》', {icon: 5});
+                        return false;
+                    }
+                    
+                }
+                if($.trim(userPwd) ==""){
+                    layer.alert('请输入登录时的密码', {icon: 5});
+                    return false;
+                }
+                if($.trim(personName) ==""){
+                    layer.alert('请输入导出人姓名', {icon: 5});
+                    return false;
+                }
+                if($.trim(mobile) ==""){
+                    layer.alert('请输入导出人手机号', {icon: 5});
+                    return false;
+                }
+                if(checkMobile(mobile)==false){
+                    layer.alert('请输入正确的手机号', {icon: 5});
+                    return false;
+                }
+                if($.trim(code) ==""){
+                    layer.alert('请输入验证码', {icon: 5});
+                    return false;
+                }
+                if(checkCode(mobile,code)==false){
+                    return false;
+                }
+                return true;
+            };
+            //点击获取验证码按钮，获取验证码
+            window.sendCode = function (obj) {
+            
+                let data = tool.getFormVal('export-form');
+                let mobile =data.mobile;
+                let msgData = { "msgCodeType": "EXPORT_VERIFY", "phone": encodeAesString(mobile).toString() };
+                //发送短信验证码
+                $.ajax({
+                    type: "post",
+                    url: huayi_mcenter_url + "message/code/send",
+                    contentType: "application/json",
+                    data: JSON.stringify(msgData),
+                    success: function (result) {
+                        if (result.success == true) {
+                            layer.msg('验证码已发送,请注意查收');
+                            $(obj).attr("disabled", "disabled");
+                            let count = 60;
+                            let timer = setInterval(function () {
+                                count--;
+                                $(obj).text("("+ count +")秒后重新获取");
+                                if(count==0){
+                                    clearInterval(timer);
+                                    $(obj).removeAttr("disabled");
+                                    $(obj).text("发送验证码");
+                                }
+                            }, 1000);
+                        } else {
+                            layer.alert(result.msg);
+                        }
+                    }
+                });
+            };
+            function excelExportProj(){
+                var loading=layer.load(0, {
+                        shade: false
+                    });
+                    //导出excel
+                    axios({
+                        method: 'GET',
+                        url: huayi_projectscore_url + "projectExclel/excelExportProj",
+                        responseType: 'blob',
+                        headers: getExportHeaders(),
+                        params: {
+                            HoldYear: $('#holdYear').val(),
+                            CmeComScoreLevel: $('#CmeComScoreLevel').val(),
+                            ProjectName: $('#projectName').val(),
+                            ProjectCode: $('#projectCode').val(),
+                            DictId: $('#holdType').val(),
+                            personName: $('#PrincipalName').val(),
+                            cmeStandardKindId: localStorage.getItem("standardkind-id"),
+                            userCreate: localStorage.getItem("user-id"),
+                            unitId: localStorage.getItem("unit-id"),
+                            userId: localStorage.getItem("user-id"),
+                            status: status,
+                            modulename:"ProjectSummary",
+                            isPublish: $('#isPublish').val(),
+                            projType : $('#ActivityType').val(),
+                            scoreType : $('#ActivityContent').val(),
+                            projectType : $('#projectType').val(),
+                            checkStatus: $('#checkStatus').val()
+                        }
+                    }).then(function (res) {
+                        layer.close(loading);
+                        var data = res.data;
+                        var blob = new Blob([data], {type: 'application/octet-stream'});
+                        var url = URL.createObjectURL(blob);
+                        var exportLink = document.createElement('a');
+                        exportLink.setAttribute("download","项目信息.xlsx");
+                        exportLink.href = url;
+                        document.body.appendChild(exportLink);
+                        exportLink.click();
+                    })
+            };
+            window.addEventListener('message', event => {
+                let fromFr = event.origin.indexOf('kjptfr.wsglw.net') !== -1;
+                let fromFrTest = event.origin.indexOf('121.36.86.74') !== -1;
+                if ('declare' === event.data.sender || fromFr || fromFrTest) {
+                    if(event.data.closeModal){
+                        layui.layer.closeAll();
+                    }
+                    table.reload('project');
+                }
+            });
+
+            // 监听行内按钮
+            table.on('tool(project)', function(obj) {
+                var datas = obj.data;
+                if (obj.event === 'view') {
+                    let standardKindId = localStorage.getItem("standardkind-id");
+                    let cptUrl =getProjectPageUrl(datas.holdYear, datas.scoreLevelId, datas.projectId,'unit',1);
+                    if (cptUrl === '') {
+                        layer.msg('暂无申报页面配置');
+                        return;
+                    }
+
+                    layer.open({
+                        type: 2,
+                        title: '浏览',
+                        content: cptUrl,
+                        skin: '',
+                        area: ['100%', '100%'],
+                    })
+                }else if( obj.event ==='viewSubmitProj'){
+                    layer.open({
+                        type: 2,
+                        title: '',
+                        content: 'projectProgress/projCheckProgress.html?projectId=' + obj.data.projectId+'&pagseType=summary',
+                        area: ['560px', '380px'],
+                    })
+                }
+            });
+
+            //下拉框值改变
+            form.on('select(loadReport)', function(data) {
+                $('#holdType').empty().append($('<option value="">请选择</option>'));
+                $('#ActivityContent').empty().append($('<option value="">请选择</option>'));
+                $('#ActivityType').empty().append($('<option value="">请选择</option>'));
+                // $('#projectType').val('');
+                loaderTable();
+                //重新加载项目级别
+                ddlscoreLevel();
+            })
+            form.on('select(loadHoldType)', function(data) {
+                //加载举办方式
+                let keyName     = projectLabels.lblProjectLevel,
+                scoreLevel  = $('#CmeComScoreLevel').val();
+                $.ajax({
+                    url     : huayi_sjwh_url + 'option/holdType/list/' +  localStorage.getItem("standardkind-id")+ '/' + scoreLevel + '/1__',
+                    async   : false,
+                    success : re => {
+                        if (re.status == 200) {
+                            let $item = $('#holdType');
+                            $item.empty().append($('<option value="">请选择</option>'));
+                            $.each(re.data, (i, d) => $item.append($('<option value="' + d.holdTypeId + '">' + d.holdTypeName + '</option>')));
+                        } else layer.msg(keyName + '加载失败', { icon: 7, time: 1500 });
+                    },
+                    error   : () => layer.msg(keyName + '加载失败', { icon: 7, time: 1500 })
+                });
+                $.ajax({
+                    url     : huayi_sjwh_url + 'option/scoreLevelContent/list',
+                    data    : { scoreLevel: scoreLevel },
+                    async   : false,
+                    success : re => {
+                        if (re.status == 200) {
+                            let $item = $('#ActivityContent');
+                            $item.empty().append($('<option value="">请选择</option>'));
+                            $.each(re.data, (i, d) => $item.append($('<option value="' + d.value + '">' + d.scoreLevelContentName + '</option>')));
+                        } else layer.msg(keyName + '加载失败', { icon: 7, time: 1500 });
+                    },
+                    error   : () => layer.msg(keyName + '加载失败', { icon: 7, time: 1500 })
+                });
+                form.render();
+            })
+                //鼠标悬停提示特效
+            $("#hint").hover(function() {
+                openMsg();
+            }, function() {
+                layer.close(subtips);
+            });
+
+            function openMsg() {
+                subtips = layer.tips('提示信息', '#hint', {
+                    tips: [1, '#ff6700'],
+                    time: 30000
+                });
+            }
+            element.on('tab(tabcheck)', function(data) {
+                var nums = data.index;
+                status = nums;
+                loaderTable();
+            });
+
+            //点击查询按钮，重载表格
+            $('#searchBtn').on('click', function() {
+                loaderTable();
+            });
+            // 显示数据导出声明
+            window.showExportInfo = function () {
+                getConfig("fun_record_info_when_export_score");
+                getConfig("value_declare_file_when_export_score");
+                if(window["fun_record_info_when_export_score"] =="1"){
+                    let fileUrls =  window["value_declare_file_when_export_score"];
+                    let fileArr = fileUrls.split(',');
+                    $("#exportInfofiles").empty();
+                    for(let i=0;i<fileArr.length;i++){
+                        $("#exportInfofiles").append($(`<img src="${fileArr[i]}" alt="导出声明" style="width:100%" />`));
+                    }
+                     
+                    layer.open({
+                        type: 1,
+                        title: '数据导出声明',
+                        content: '<div style="overflow-y: auto; height: 80vh;">' + $('#exportInfo').html() + '</div>',
+                        area: ['90%', '90%'] 
+                    })
+                }
+            };
+            /* 获取配置 */
+            let getConfig = function (config_name, scoreLevel) {
+                $.ajax({
+                    async   : false,
+                    type    : 'post',
+                    url     : huayi_sjwh_url + 'cmeCommonConfig/getConfigByUnitFromRedis',
+                    data    : { 
+                        unitId       : userid, 
+                        configNames  : config_name,
+                        scoreLevelId : scoreLevel
+                    },
+                    success : function (res) {
+                        if (res.success == true) {
+                            window[config_name] = res.data[config_name];
+                        } else {
+                            layer.msg('获取配置失败');
+                        }
+                    },
+                    error   : function () {
+                        layer.msg('获取配置失败');
+                    }
+                });
+            }
+           
+
+
+        });
+        window.checkCode=function(mobile,code){
+            let checkCode=false;
+            let msgData = {
+                        "msgCodeType": "EXPORT_VERIFY",
+                        "phone": encodeAesString(mobile).toString(),
+                        "code": encodeAesString(code).toString()
+                    };
+            $.ajax({
+                async: false,
+                type: "post",
+                url: huayi_mcenter_url + "message/code/check",
+                contentType: "application/json",
+                dataType: "json",
+                data: JSON.stringify(msgData),
+                success: function (result) {
+                    if (result.success == true) {
+                        checkCode=true;
+                    }
+                    else {
+                        checkCode=false;
+                        layer.alert(result.msg, {icon: 5});
+                    }
+                }
+            });
+            return checkCode;
+        }
+        
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <title>已公布项目管理（单位）</title>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+
+
+    <style type="text/css">
+        .layui-card-body.layui_body_box {
+            padding: 0 !important;
+        }
+
+        /* 新增代码 */
+
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .layui-treeSelect .ztree li {
+            line-height: normal !important;
+        }
+    </style>
+
+
+</head>
+
+<body class="body-area">
+    <div class="layui-fluid">
+        <div class="layui-card">
+
+            <!-- 搜索框区域 -->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto" id="searchDiv" lay-filter="searchDiv" style="background-color: #f5f5f5;">
+                <div class="layui_mess">
+                    <div class="layui_display">
+
+                        <div class="layui-inline" lay-filter="deptSelectArea">
+                            <label class="layui-form-label">科室</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" disabled lay-filter="deptSelect" id="deptSelect" placeholder="请选择">
+                            </div>
+                            <input type="hidden" id="hidden_dept_id" />
+                        </div>
+
+
+
+                        <div class="layui-inline">
+                            <label class="layui-form-label">项目级别</label>
+                            <div class="layui-input-block">
+                                <select id="scoreLevelId">
+                                    <option value="">全部</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" lay-submit lay-filter="LAY-app-order-search" onclick="loaderTable()">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!--        表格区域-->
+            <div class="layui-card-body layui_body_box" id="dataDiv">
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <table class="layui-table" id="cmeDeptGroupprojScoreLevelConfig" lay-filter="cmeDeptGroupprojScoreLevelConfig">
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+</body>
+
+<script type="text/html" id="rowBar1">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="del">删除</a>
+</script>
+
+<script type="text/html" id="bar">
+    <a class="layui-btn layui-btn-sm" lay-event="add"><i class="layui-icon layui-icon-add-1 layuiadmin-button-btn"></i>添加</a>
+</script>
+
+<div style="display: none;" class="layui-card" id="addConfig">
+    <form class="layui-form" id="groupProjForm" lay-filter="groupProjForm">
+
+        <div class="layui-form-item">
+            <div class="layui-col-md8 layui-col-md-offset2">
+                <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>配置科室</label>
+                <div class="layui-input-block">
+                    <input type="text" autocomplete="off" class="layui-input" lay-filter="formDeptSelect" id="formDeptSelect" name="deptId" placeholder="请选择"
+                    />
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-col-md8 layui-col-md-offset2">
+                <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>学分级别</label>
+                <div class="layui-input-block">
+                    <select name="scoreLevelId" id="formScoreLevelSelector" lay-filter="formScoreLevelSelector" lay-verify="required">
+                        <option value=""></option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- row7 -->
+        <div class="layui-form-item">
+            <div class="layui-col-sm12">
+                <div style="text-align: center;">
+                    <button class="layui-btn" type="submit" lay-submit lay-filter="save">保存</button>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+    });
+
+    layui.use(['table', 'form', 'laydate', 'element', 'treeSelect', 'tool'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var tool = layui.tool;
+        var treeSelect = layui.treeSelect;
+        const TAOID = localStorage.getItem("standardkind-id");
+        const UNITID = localStorage.getItem("unit-id");
+
+
+        /** 科室选择下拉列表初始化 */
+        window.initDeptTree = function (id, deptId) {
+            let deptTreeSelect = treeSelect.render({
+                elem: '#' + id,
+                data: huayi_personorg_url + 'comdept/tree/unit?unitId=' + UNITID,
+                type: 'get',
+                search: true,
+                style: {
+                    folder: {     // 父节点图标
+                        enable: true   // 是否开启：true/false
+                    },
+                    line: {     // 连接线
+                        enable: true   // 是否开启：true/false
+                    }
+                },
+                success: function () {
+                    if (deptId != null && deptId != undefined && deptId != "") {
+                        deptTreeSelect.checkNode(id, deptId);
+                    }
+                }
+            });
+        }
+
+        window.initScoreLevel = function (id) {
+
+            let currentYear = (new Date()).getFullYear();
+            let url = huayi_sjwh_url + "option/scoreLevel/list/" + TAOID + "/" + currentYear + "/_1_";
+            $.ajax({
+                type: "get",
+                url: url,
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    if (res.success == true) {
+                        let scoreLevels = res.data;
+                        // $("#" + id).find("option").remove().append(' <option value="">全部</option>');
+                        scoreLevels.forEach(function (scoreLevel) {
+                            $("#" + id).append("<option value='" + scoreLevel.scoreLevelId + "'>" + scoreLevel.scoreLevelName + "</option>")
+                        });
+                        form.render('select');
+                    } else {
+                        layer.msg(res.msg, { time: 3000 })
+                    }
+                },
+                error: function () {
+                    layer.msg("请求失败")
+                }
+            });
+        }
+
+        window.loaderTable = function () {
+            table.render({
+                elem: '#cmeDeptGroupprojScoreLevelConfig',
+                url: huayi_projectscore_url + 'CmeDeptGroupprojScoreLevelConfig/pageList',
+                title: '院内活动学分级别配置表',
+                defaultToolbar: [],
+                where: {
+                    unitId: UNITID,
+                    deptId: $('#deptSelect').val(),
+                    scoreLevelId: $('#scoreLevelId').val(),
+                },
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                cols: [[
+                    // 项目级别、是否已举办、添加账号、修改时间、代办科室。
+                    { field: 'id', hide: true, align: 'center' },
+                    { title: '操作', align: 'center', toolbar: '#rowBar1' },
+                    { field: 'deptId', align: 'center', title: '科室编号' },
+                    { field: 'deptName', align: 'center', title: '科室名称' },
+                    { field: 'scoreLevelName', align: 'center', title: '增加学分级别' },
+                    { field: 'addUserRealName', align: 'center', title: '添加账号' },
+                    { field: 'addTime', align: 'center', title: '添加时间' }
+                ]],
+                toolbar: '#bar',
+                cellMinWidth: 150,
+                id: "cmeDeptGroupprojScoreLevelConfig",
+                height: tool.getTableHeight("layui-card-header") + 30,
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "count": res.data.recordsTotal, //解析数据长度
+                        "data": res.data.records, //解析数据列表
+                        "page": res.data.pageNum, //当前页
+                        "limit": res.data.pageSize, //每页条数
+                    }
+                },
+                request: {
+                    pageName: 'pageNum', //页码的参数名称，默认：page
+                    limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                },
+                done: function (res, curr, count) {
+                }
+            });
+        };
+
+
+        // 监听头部新增按钮
+        table.on('toolbar(cmeDeptGroupprojScoreLevelConfig)', function (obj) {
+            var datas = obj.data;
+            if (obj.event === 'add') {
+                gLayerIndex = layer.open({
+                    type: 1,
+                    shade: 0.6,
+                    shadeClose: true,
+                    title: "添加配置",
+                    content: $('#addConfig'),
+                    area: ['620px', '300px'],
+                    success: function () {
+                        treeSelect.revokeNode('formDeptSelect', function (d) { });
+                        $("#formScoreLevelSelector").val("");
+                        form.render('select');
+                    }
+                });
+            }
+        });
+
+        form.on('submit(save)', function (data) {
+            let fields = data.field;
+            console.log("fields")
+            console.log(fields);
+            //scoreLevelId deptId
+            if (fields.deptId == null || fields.deptId == "") {
+                layer.msg("请选择科室")
+                return false;
+            }
+            if (fields.scoreLevelId == null || fields.scoreLevelId == "") {
+                layer.msg("请选择项目级别")
+                return false;
+            }
+            saveConfig(fields);
+            return false;
+        });
+
+        function saveConfig(fields) {
+            fields.unitId = UNITID;
+            fields.addUser = localStorage.getItem("user-name");
+            let visit = huayi_projectscore_url + 'CmeDeptGroupprojScoreLevelConfig/add';
+            console.log(fields);
+            postAction(visit, fields).then((response) => {
+                let jsonRes = response.data;
+                if (jsonRes.success) {
+                    gProjId = jsonRes.data.groupProjId;
+                    layer.msg('保存成功', {
+                        icon: 1,
+                        time: 1500 //2秒关闭（如果不配置，默认是3秒）
+                    }, function () {
+                        layer.closeAll();
+                        loaderTable();
+                    });
+                }
+                else {
+                    layer.msg(jsonRes.msg, { time: 1500 });
+                }
+            }).catch((error) => {
+                layer.msg("error:保存配置");
+            }).finally(() => {
+
+            });
+        }
+
+
+        // 监听行内按钮
+        table.on('tool(cmeDeptGroupprojScoreLevelConfig)', function (obj) {
+            if (obj.event === 'del') {
+                // 删除
+                layer.confirm('确定删除该配置吗?', { icon: 3, title: '提示' }, function (index) {
+                    $.ajax({
+                        type: 'post',
+                        url: huayi_projectscore_url + 'CmeDeptGroupprojScoreLevelConfig/delete?id=' + obj.data.id,
+                        contentType: 'application/json;charset=UTF-8',
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.success == true) {
+                                layer.msg("删除成功", { time: 3000 })
+                                loaderTable();
+                            } else {
+                                layer.msg(res.msg, { time: 3000 })
+                            }
+                        },
+                        error: function () {
+                            layer.msg("请求失败")
+                        }
+                    })
+                    layer.close(index);
+                });
+            }
+        });
+
+        $(function () {
+            initDeptTree("deptSelect");
+            initScoreLevel("scoreLevelId");
+            initDeptTree("formDeptSelect");
+            initScoreLevel("formScoreLevelSelector");
+            form.render('select');
+            loaderTable();
+        });
+
+    });
+
+
+</script>

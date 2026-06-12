@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/constantPage/projectConstant.js"></script>
+    <script type="text/javascript" src="/js/tools/urlTools.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+
+
+</head>
+
+<body style="background-color: white;">
+    <div class="layui-fluid">
+        <div class="layui-card">
+
+            <!--        项目信息展示     -->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="background-color: #f5f5f5;">
+                <div class="layui-inline" style="width: 100%;">
+                    <label class="layui-form-label">项目编号</label>
+                    <label class="layui-form-label" style="overflow: hidden;width: 200px;text-align: left;" id='projNo'></label>
+                    <label class="layui-form-label">项目名称</label>
+                    <label class="layui-form-label" style="overflow: hidden;width: 300px;text-align: left;" id='projName'></label>
+                    <input type="hidden" id="scoreLevelId" />
+                </div>
+            </div>
+
+
+            <!--        表格区域         -->
+            <div class="layui-card-body layui_body_box">
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <table class="layui-table" id="cmeProjPosDownList" lay-filter="cmeProjPosDownList" style="margin: 0px 0px;">
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <!--   添加举办周期     -->
+    <div class="layui-form" style="background-color: #f5f5f5;display: none; text-align: center; " id="div_addPos">
+        <input type="hidden" id="pop_operate" />
+        <input type="hidden" id="pop_downId" />
+        <div class="layui-inline" style="padding: 20px;">
+            <div class="layui-input-inline">
+                <input type="text" name="startDt" id="startDt" placeholder="举办开始日期" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline" style="padding: 20px;">
+            <div class="layui-input-inline">
+                <input type="text" name="endDt" id="endDt" placeholder="举办结束日期" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <br />
+        <div class="layui-btn-container">
+            <button type="button" class="layui-btn" id='btnCmeProjPosCancel'>取消</button>
+            <button type="button" class="layui-btn" id='btnCmeProjPosSave'>保存</button>
+        
+        </div>
+    </div>
+</body>
+
+
+<!--编辑删除课程-->
+<script type="text/html" id="cmeProjTeachRowBar">
+    {{# 
+        let opera = true;
+        if(window['fun_modify_downAndCourse_when_apply_check_pass']==='0'){
+            if(d.projCycleApplicationCheckState=='3' && !isHeNan){
+                opera=false;
+            }    
+        }
+        if(window['fun_modify_downAndCourse_when_apply_check_pass']==='2'){
+            if(d.projCycleApplicationCheckState > 1 && !isHeNan){
+                opera=false;
+            }    
+        }
+        let courseLockedHainan = isHaiNan && isHoldPeriodStarted(d.posHoldStartDt);
+        let operaCourse = opera && !courseLockedHainan;
+        let disEditStyle = courseLockedHainan ? 'color:#bbb;background-color:transparent;opacity:0.7;' : 'color: #27b1a2;background-color: transparent;';
+        let disDelStyle = courseLockedHainan ? 'color:#bbb;background-color:transparent;opacity:0.7;' : 'color: #f25643;background-color: transparent;';
+        if(d.holdQualification==true && operaCourse){  }}
+    <a class="layui-btn layui-btn-xs" lay-event="editCourse" data-fun="editCourse"  style="color: #27b1a2;background-color: transparent;">编辑</a>
+    <a class="layui-btn layui-btn-xs" lay-event="delCourse" data-fun="delCourse" style="color: #f25643;background-color: transparent;">删除</a>
+    {{# }else{  }}
+    <a class="layui-btn layui-btn-xs layui-disabled" data-fun="editCourse"  style="{{= disEditStyle }}">编辑</a>
+    <a class="layui-btn layui-btn-xs layui-disabled" data-fun="delCourse" style="{{= disDelStyle }}">删除</a>
+    {{# } }} 
+</script>
+
+
+<!--表格内数据编辑、删除按钮-->
+<script type="text/html" id="toolBar"> 
+    <button class="layui-btn layui-btn-sm btnRounded" lay-event="addPos" data-fun="addPos">添加举办周期</button>
+</script>
+
+
+
+
+
+
+<script>
+    let _cmeStandardKindId = localStorage.getItem("standardkind-id");
+    const isHubei = StandardKind.HU_BEI == _cmeStandardKindId; 
+    const isNingxia = StandardKind.NING_XIA == _cmeStandardKindId;
+    const isHaiNan = StandardKind.HAI_HAN == _cmeStandardKindId;
+    const isHeNan = StandardKind.HE_NAN == _cmeStandardKindId;
+    const isGuangDong = StandardKind.GUANG_DONG == _cmeStandardKindId;
+    const isZheJiang = StandardKind.ZHE_JIANG == _cmeStandardKindId;
+
+    /** 举办周期开始时间已到（供主表、子表 laytpl 共用） */
+    function isHoldPeriodStarted(startDtStr) {
+        if (startDtStr == null || startDtStr === '') return false;
+        var t = new Date(startDtStr).getTime();
+        if (isNaN(t)) return false;
+        return Date.now() >= t;
+    }
+
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        treeSelect: 'treeSelect',
+        opTable: '/opTable/opTable'
+    });
+
+    // 全局配置及引入相关的模块
+    layui.use(['table', 'form', 'laydate', 'opTable'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var laydate = layui.laydate;
+        var opTable = null;
+        
+    
+        //获取套
+        function getCmeStandardKindId() {
+            var cmeStandardKindId = localStorage.getItem("standardkind-id");
+            return cmeStandardKindId;
+        }
+
+        //获取单位
+        window.getUnitId = function () {
+            var unitId = localStorage.getItem("unit-id");
+            return unitId;
+        }
+
+        window.init = function () {
+    
+            Promise.all([
+                getConfig('down_with_datetime'),
+                getConfig('fun_addOrEditDownAnd_addOrEditOrDelTeach'),
+                getConfig('fun_show_hold_state'),
+                getConfig('fun_modify_downAndCourse_when_apply_check_pass', $("#scoreLevelId").val()),
+                getConfig('fun_teachdate_equal_downdate')
+            ]).then(() => {
+                // 配置获取完成后再初始化表格
+                window.initTable();
+            });
+
+
+            let curYear = getQueryString("cmeYear");
+            let minDate = curYear +'-01-01';
+            let maxDate = curYear + '-12-31 23:59:59';
+            $(this).removeAttr("lay-key");
+
+            let type = (window["down_with_datetime"] == 1) ? "datetime" : "date";
+
+            let dateArr = ["startDt","endDt"];
+
+            for(let dateId of dateArr){
+                let config = {
+                    elem: `#${dateId}`
+                    , trigger: 'click'
+                    , min : minDate
+                    , max : maxDate
+                    , type : type
+                    , btns: ['clear', 'confirm']
+                };
+                if(dateId === 'endDt'){
+                    config.done = function(value, date){
+                        if(type=="datetime" && value && date.hours === 0 && date.minutes === 0 && date.seconds === 0){
+                            let dateOnly = value.split(' ')[0];
+                            setTimeout(function(){
+                                $('#endDt').val(dateOnly + ' 23:59:59');
+                            }, 0);
+                        }
+                    };
+                }
+                laydate.render(config);
+            }            
+        }
+
+        //页面的项目信息
+        window.initProjInfo = function () {
+            var projId = getQueryString("projId");
+            var req_data = { projId: projId };
+            $.ajax({
+                async: false,
+                type: "post",
+                url: huayi_projectscore_url + "cmeCmeProj/getOne",
+                data: JSON.stringify(req_data),
+                contentType: "application/json",
+                dataType: 'json',
+                success: function (result) {
+                    if (result.success == true) {
+                        var data = result.data;
+                        if (data != null && data != undefined) {
+                            //projNo projName score period
+                            $("#projNo").text(data.projNo);
+                            $("#projName").text(data.projName);
+                            $("#scoreLevelId").val(data.scoreLevel);
+                        }
+                    } else {
+                        layer.msg(result.msg);
+                    }
+
+                }
+            });
+
+        };
+
+
+        //根据条件生成按钮列
+        let generateBtns = function(d) {
+            let btns = ``;
+            let opera = true;
+            if(window['fun_modify_downAndCourse_when_apply_check_pass'] === '0' && d.projCycleApplicationCheckState == 3){                
+                opera=false;
+            }
+            if(window['fun_modify_downAndCourse_when_apply_check_pass'] === '2' && d.projCycleApplicationCheckState > 1){                
+                opera=false;
+            }
+           
+            if(d.holdQualification==true && opera){ 
+                btns = `<a class="layui-btn layui-btn-xs" lay-event="edit" data-fun="editPos" style="color: #27b1a2;background-color: transparent;">编辑</a>`;
+                // if(isGuangDong){
+                    // btns += `<a class="layui-btn layui-btn-xs" lay-event="choose" data-fun="editPos" style="color: #27b1a2;background-color: transparent;">选择考勤机</a>`;
+                // }
+                if(!isZheJiang) {
+                    btns += `<a class="layui-btn layui-btn-xs" lay-event="del" data-fun="delPos"  style="color: #f25643;background-color: transparent;">删除</a>`;
+                }
+            } else {
+                btns += `<a class="layui-btn layui-btn-xs layui-disabled" data-fun="editPos"  style="color: #27b1a2;background-color: transparent;">编辑</a>`
+                // if(isGuangDong){
+                    //btns += `<a class="layui-btn layui-btn-xs" lay-event="choose"  style="color: #27b1a2;background-color: transparent;">选择考勤机</a>`;
+                // }
+                btns += `<a class="layui-btn layui-btn-xs layui-disabled"  data-fun="delPos" style="color: #f25643;background-color: transparent;">删除</a>`;
+            }
+            var courseLocked = isHaiNan && isHoldPeriodStarted(d.startDt);
+            var disableAddCourse = courseLocked || (isZheJiang && opera === false);
+            if (disableAddCourse) {
+                btns += `<a class="layui-btn layui-btn-xs layui-disabled" data-fun="addCourse" style="color:#bbb;background-color:transparent;opacity:0.7;">添加课程</a>`;
+            } else {
+                btns += `<a class="layui-btn layui-btn-xs" lay-event="addCourse"  data-fun="addCourse" style="color: #ffb82e;background-color: transparent;">添加课程</a>`;
+            }
+            let tempHtml = `<span id="${d.downId}" class="oprateSpan" data-holdQualification="${d.holdQualification}"  data-holdState="${d.holdState}">${btns}</span>`;
+
+            return tempHtml;
+        }
+
+
+
+        //初始化表格
+        window.initTable = function () {
+            var projId = getQueryString("projId");
+            var showEditBtn = true;
+            if(isZheJiang){
+                showEditBtn = false;
+            }
+            
+            opTable = layui.opTable.render({
+                elem: '#cmeProjPosDownList', 
+                id: 'cmeProjPosDownList', 
+                url: huayi_projectscore_url + 'cmeProjPosDownload', 
+                where: {
+                    projId: projId
+                }, cols: [[
+                    {
+                        field: 'firstCol', title: '展开全部', align: 'center', width: 160,
+                        templet: function (data) {
+                            return '课程列表';
+                        }
+                    },
+                    { title: '操作', align: "center",templet(d) {
+                        let btnHtml = generateBtns(d);
+                        return btnHtml;
+                    } , width: 180
+                    }, 
+                    {
+                        field: 'batch', title: '举办批次', align: "center", width: 130,
+                        templet: function (data) {
+                            return "第 " + data.batch + " 批次";
+                        }
+                    }
+                    , {
+                        field: 'holdState', title: '举办状态', align: "center", templet: function (data) {
+                            return (data.holdState == true) ? "已举办" : "未举办";
+                        }, hide: (window["fun_show_hold_state"] == "1") ? false : true
+                    }
+                    , { field: 'startDt', title: '举办开始日期', align: "center" }
+                    , { field: 'endDt', title: '举办结束日期', align: "center" }
+                ]],
+                toolbar: showEditBtn ? '#toolBar' : false,
+
+                cellMinWidth: 100,
+                height: 'full-145',
+                page: false,
+                openType: 1,
+                isAloneColumn: false,
+                parseData: function (res) {
+                    if (res.data.length > 0) {
+                        for (let i = 0; i < res.data.length; i++) {
+                            res.data[i].firstCol = "展开课程";
+                        }
+                    }
+                    if(window["down_with_datetime"] != 1) {
+                        if(res.data != null && res.data.length > 0) {
+                            for(let i=0; i< res.data.length; i++) {
+                                res.data[i].startDt = res.data[i].startDt.substring(0,10);
+                                res.data[i].endDt = res.data[i].endDt.substring(0,10);
+                            }
+                        }
+                    }
+                    return {
+                        'code': res.status === 200 ? 0 : res.status,  // 解析接口状态
+                        'msg': res.msg,                          // 解析提示文本
+                        'count': res.data.length,                // 解析数据长度
+                        'data': res.data                    // 解析数据列表
+                    }
+                },
+                onOpen: function (itemData, itemIndex, dom, childTable) {
+                    console.log("onOpen", '行数据：', itemData, "行下标：" + itemIndex, "行dom元素", dom, "子表实例：", childTable)
+                    //保存展开行的数据
+                    openRoWData = itemData;
+                    //监听子表的行工具栏
+                    table.on('tool(' + childTable.config.id + ')', function (obj) {
+                        var data = obj.data;
+                        var projTeachId = data.projTeachId;
+                        if (obj.event === 'editCourse') {
+                            if (isHaiNan && isHoldPeriodStarted(data.posHoldStartDt)) {
+                                layer.msg('举办周期已开始，不可维护课程信息');
+                                return;
+                            }
+                            var projId = getQueryString("projId");
+                            let tid = layer.open({
+                                title: "编辑课程",
+                                type: 2,
+                                content: "CmeCmeProjTeachAdd.html?projId=" + projId + "&downId=" + data.downId + "&projTeachId=" + projTeachId + "&startDt=" + data.startDt+ "&endDt=" + data.endDt + "&mode=edit",
+                                area: ['95%', '100%'],
+                                maxmin: true,
+                                closeBtn: 1
+                            });
+                            layer.full(tid);
+                        } else if (obj.event === 'delCourse') {
+                            if (isHaiNan && isHoldPeriodStarted(data.posHoldStartDt)) {
+                                layer.msg('举办周期已开始，不可维护课程信息');
+                                return;
+                            }
+                            layer.confirm('确认要删除该课程吗?', { icon: 3, title: '提示' }, function (index) {
+                                let url = huayi_projectscore_url + "cmeCmeProjTeach/delete";
+                                let data = { projTeachId: projTeachId,downId: obj.data.downId };
+                                $.ajax({
+                                    url: url,
+                                    type: "post",
+                                    data: data,
+                                    success: function (re) {
+                                        if (re.success == true) {
+                                            layer.msg("课程删除成功");
+                                            window.reloadTable();
+                                        } else {
+                                            layer.msg(re.msg);
+                                        }
+                                    }
+                                });
+                                layer.close(index);
+                            });
+                        }
+                    });
+                
+                }
+                , openTable: function (itemData) {
+                    var downId = itemData.downId;
+                    return {
+                        elem: '#cmeCmeProjTeach_' + itemData.LAY_INDEX
+                        , id: 'cmeCmeProjTeach_' + itemData.LAY_INDEX
+                        , url: huayi_projectscore_url + 'cmeCmeProjTeach'
+                        , page: false
+                        , where: {
+                            projId: projId,
+                            downId: downId
+                        }
+                        , openVisible: false
+                        , cols: [[
+                            //todo: fun_addOrEditDownAnd_addOrEditOrDelTeach 配置在 课程这里已经无法满足全部省份， 浙江要求为0的时候显示; 需要再写一个配置
+                            { title: '操作', toolbar: '#cmeProjTeachRowBar', align: "center" , 
+                                         hide: (window["fun_addOrEditDownAnd_addOrEditOrDelTeach"] == '0' && !isZheJiang) },
+                            { field: 'startDate', title: '课程开始时间', align: "center", sort: true, hide: (window["fun_teachdate_equal_downdate"] === '1')  },
+                            { field: 'endDate', title: '课程结束时间', align: "center", sort: true,  hide: (window["fun_teachdate_equal_downdate"] === '1')  },
+                            { field: 'teachSubject', title: '讲授题目', align: "center", sort: true },
+                            { field: 'teacherNames', title: '授课教师', align: "center", sort: true },
+                            // { field: 'score', title: '学分', align: "center" },
+                            { field: 'period', title: '时长', align: "center", sort: true },
+                        ]]
+                        , parseData: function (res) {
+                            var list = res.data || [];
+                            if (isHaiNan && list.length > 0) {
+                                for (var i = 0; i < list.length; i++) {
+                                    list[i].posHoldStartDt = itemData.startDt;
+                                }
+                            }
+                            return {
+                                'code': res.status === 200 ? 0 : res.status,  // 解析接口状态
+                                'msg': res.msg,                          // 解析提示文本
+                                'count': list.length,                // 解析数据长度
+                                'data': list                    // 解析数据列表
+                            }
+                        }
+                    }
+                }
+                , done: function (res, curr, count) {
+
+                    //逾期或者被取消举办资格
+                    let holdTipIndex = null;
+                    $(".oprateSpan[data-holdqualification='false']").each(function (i, e) {
+                        let id = "#" + $(this).attr("id");
+                        $(e).parents("tr").mouseenter(function () {
+                            holdTipIndex = layer.tips('该周期因逾期未举办或其他原因，已被取消举办资格,详情请咨询上级主管部门', id, {
+                                tips: [2, '#78BA32']
+                            });
+                        });
+                    });
+
+                    //如果已经举办，无法删除和修改周期
+                    $(".oprateSpan[data-holdState='true']").each(function (i, e) {
+                        $(e).find("a[data-fun='delPos']").removeAttr("lay-event").addClass("layui-disabled");
+                        $(e).find("a[data-fun='editPos']").removeAttr("lay-event").addClass("layui-disabled");
+                        if(isGuangDong) {
+                            $(e).find("a[data-fun='addCourse']").removeAttr("lay-event").addClass("layui-disabled");
+                        }
+                    });
+
+                    //如果要求隐藏各种操作按钮
+                    if (window["fun_addOrEditDownAnd_addOrEditOrDelTeach"] == '0') {
+                        $('[data-fun="addPos"]').hide();
+                        $('[data-fun="delPos"]').hide();
+                        if(!isZheJiang) {
+                            $('[data-fun="addCourse"]').hide();
+                        }
+                       
+                    }
+
+                    opTable.openAll();
+                }
+            })
+        }
+
+        window.reloadTable = function () {
+            var projId = getQueryString("projId");
+            opTable.reload({
+                elem: '#cmeProjPosDownList'
+                , id: 'cmeProjPosDownList'
+                , where: {
+                    projId: projId
+                }
+            });
+        }
+
+        window.closeChildPage = function (widowName) {
+            var index = layer.getFrameIndex(widowName); //先得到当前iframe层的索引
+            layer.close(index); //再执行关闭
+            window.reloadTable();
+        }
+
+        /* 获取配置 */
+        window.getConfig = function (config_name,scoreLevel) {
+            $.ajax({
+                async: false,
+                type: 'post',
+                url: huayi_sjwh_url + 'cmeCommonConfig/getConfigByUnitFromRedis',
+                data: {
+                    unitId: window.getUnitId(),
+                    scoreLevelId: scoreLevel,
+                    configNames: config_name
+                },
+                success: function (res) {
+                    if (res.success == true) {
+                        window[config_name] = res.data[config_name];
+                    } else {
+                        layer.msg('获取配置失败');
+                    }
+                },
+                error: function () {
+                    layer.msg('获取配置失败');
+                }
+            });
+        }
+
+
+        var editIndex = null;
+        //维护举办周期
+        table.on('tool(cmeProjPosDownList)', function (obj) {
+            var event = obj.event;
+            var data = obj.data;
+            var addCourseId = guid();
+            if (event == "edit") {
+                $("#pop_operate").val("edit");
+                $("#pop_downId").val(data.downId);
+                editIndex = layer.open({
+                    title: "编辑举办周期",
+                    type: 1,
+                    area: ['600px', '170px'],
+                    // offset: '100px',
+                    // maxmin: true,
+                    content: $('#div_addPos'),
+                    closeBtn: 1,
+                    success: function () {
+                        //初始化周期编辑弹框
+                        if ($("#pop_operate").val() == "edit" && $("#pop_downId").val() == data.downId) {
+                            $.ajax({
+                                url: huayi_projectscore_url + "cmeProjPosDownload/getOne",
+                                type: "get",
+                                data: { downId: data.downId },
+                                success: function (re) {
+                                    if (re.success == true) {
+                                        var cmeProjPosDown = re.data;
+                                        if (cmeProjPosDown != null && cmeProjPosDown != undefined && cmeProjPosDown != "") {
+                                            var startDt = cmeProjPosDown.startDt;
+                                            var endDt = cmeProjPosDown.endDt;
+                                            if(window["down_with_datetime"] != 1 ) {
+                                                startDt = startDt.substring(0,10);
+                                                endDt = endDt.substring(0,10);
+                                            }
+                                            
+                                            $("#startDt").val(startDt);
+                                            $("#endDt").val(endDt);
+                                        }
+                                    } else {
+                                        layer.msg(re.msg);
+                                    }
+                                }
+
+                            });
+                        }
+
+                    }
+                });
+
+            }
+            if (event == "del") {
+                layer.confirm('确认要删除该举办周期吗?', { icon: 3, title: '提示' }, function (index) {
+                    var downId = data.downId;
+                    var projId = data.projId;
+                    $.ajax({
+                        url: huayi_projectscore_url + "cmeProjPosDownload/deleted",
+                        type: "get",
+                        data: { downId: downId, projId: projId },
+                        success: function (re) {
+                            if (re.success == true) {
+                                //layer.alert("删除成功,还没有写考勤和授分限制的逻辑，记得以后要加喔");
+                                window.reloadTable();
+                            } else {
+                                layer.msg(re.msg);
+                            }
+                        }
+                    });
+
+                    layer.close(index);
+                });
+            }
+            if (event == "choose") {
+                let tid = layer.open({
+                    title: "选择考勤机",
+                    type: 2,
+                    content: "cmeProjPosDownloadList.html?downId=" + data.downId ,
+                    area: ['80%', '67%'],
+                    maxmin: true,
+                    closeBtn: 1
+                });
+            }
+            if (event == "addCourse") {
+                if (isHaiNan && isHoldPeriodStarted(data.startDt)) {
+                    layer.msg('举办周期已开始，不可维护课程信息');
+                    return;
+                }
+                console.log(data);
+                var projId = getQueryString("projId");
+                let tid = layer.open({
+                    title: "添加课程",
+                    type: 2,
+                    content: "CmeCmeProjTeachAdd.html?projId=" + projId + "&downId=" + data.downId + "&projTeachId=" + addCourseId + "&startDt=" + data.startDt + "&endDt=" + data.endDt + "&mode=add",
+                    area: ['95%', '95%'],
+                    maxmin: true,
+                    closeBtn: 1
+                }, function () {
+                    //添加周期页面如果是通过关闭按钮关闭弹框，说明没有添加成功，所以需要删除可能添加的老师
+                    //删除添加的老师信息
+                    var url = huayi_projectscore_url + 'cmeCmeProjTeacher/deleteTeacherByProjTeachId';
+                    var data = { projTeachId: addCourseId };
+                    $.ajax({
+                        type: 'post',
+                        url: url,
+                        data: data,
+                        success: function (res) {
+                            if (res.status === 200) {
+                                parent.reloadTable();
+                                layer.close(layer.index);
+
+                            } else if (res.status === 500) {
+                                layer.msg(res.msg);
+                            }
+                        }
+
+                    });
+                });
+                layer.full(tid);
+                console.log("addCourse");
+            }
+
+        });
+
+
+
+
+        // 周期表格监听头部新增按钮
+        var addIndex = null;
+        table.on('toolbar(cmeProjPosDownList)', function (obj) {
+            var event = obj.event;
+            var data = obj.data;
+            if (obj.event === 'addPos') {
+
+                //首先判断能否添加
+                var data = { projId: getQueryString("projId"), unitId: window.getUnitId(), typeId: 1, scoreLevelId: $("#scoreLevelId").val() };
+                $.ajax({
+                    async: false,
+                    type: "post",
+                    url: huayi_projectscore_url + "cmeProjPosDownload/canInsert",
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    success: function (result) {
+                        if (result.success == true) {
+
+                            $("#pop_operate").val("add");
+                            $("#pop_downId").val("");
+                            $("#startDt").val("");
+                            $("#endDt").val("");
+                            addIndex = layer.open({
+                                title: "添加举办周期",
+                                type: 1,
+                                area: ['600px', '170px'],
+                                content: $('#div_addPos'),
+                                closeBtn: 1
+                            });
+
+                        } else {
+                            layer.msg(result.msg);
+                        }
+                    }
+                });
+
+
+
+            }
+        });
+
+        //添加周期
+        $("#btnCmeProjPosSave").click(function () {
+            var startDt = $("#startDt").val();
+            var endDt = $("#endDt").val();
+            if(window["down_with_datetime"] != 1) {
+                startDt = startDt + " 00:00:00";
+                endDt = endDt + " 23:59:59";
+            }
+            if (startDt == "" || endDt == "") {
+                layer.msg("开始日期或者结束日期不能为空");
+                return;
+            }
+            var projId = getQueryString("projId");
+            var dst = new Date(startDt);
+            var den = new Date(endDt);
+            if (den < dst) {
+                layer.msg("结束时间不能小于开始时间");
+                return;
+            }
+            var data = { 
+                startDt: startDt,
+                endDt: endDt, 
+                projId: projId, 
+                unitId: window.getUnitId(),
+                typeId: 1, 
+                scoreLevelId: $("#scoreLevelId").val(),
+                cmeStandardKindId: getCmeStandardKindId()
+             };
+            var pop_operate = $("#pop_operate").val();
+            var pop_downId = $("#pop_downId").val();
+            if (pop_operate == "add" && pop_downId == "") {
+                $("#startDt").val("");
+                $("#endDt").val("");
+                $.ajax({
+                    type: "post",
+                    url: huayi_projectscore_url + "cmeProjPosDownload/save",
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    success: function (result) {
+                        if (result.success == true) {
+                            layer.msg("添加成功");
+                            window.reloadTable();
+                            layer.close(addIndex);
+                        } else {
+                            layer.msg(result.msg);
+                        }
+                    }
+                });
+            }
+            if (pop_operate == "edit" && (pop_downId != ""  && pop_downId != null)) {
+                var startDt = $("#startDt").val();
+                var endDt = $("#endDt").val();
+                var cmeProjPosDownload = null;
+                $.ajax({
+                    async: false,
+                    url: huayi_projectscore_url + "cmeProjPosDownload/getOne",
+                    type: "get",
+                    data: { downId: pop_downId },
+                    success: function (re) {
+                        if (re.success == true) {
+                            cmeProjPosDownload = re.data;
+                        } else {
+                            layer.msg(re.msg);
+                        }
+                    }
+                });
+                if(window["down_with_datetime"] != 1) {
+                    startDt = startDt + " 00:00:00";
+                    endDt = endDt + " 23:59:59";
+                }
+                cmeProjPosDownload.startDt =  startDt;
+                cmeProjPosDownload.endDt = endDt;
+                cmeProjPosDownload.cmeStandardKindId = getCmeStandardKindId();
+                var data = JSON.stringify(cmeProjPosDownload);
+                $.ajax({
+                    url: huayi_projectscore_url + "cmeProjPosDownload/update",
+                    type: "post",
+                    data: data,
+                    contentType: "application/json",
+                    success: function (re) {
+                        if (re.success == true) {
+                            layer.msg("更新成功");
+                            layer.close(editIndex);
+                            window.reloadTable();
+                        } else {
+                            layer.msg(re.msg);
+                        }
+                    }
+                })
+
+
+
+            }
+        });
+
+        //关闭添加周期窗口
+        $("#btnCmeProjPosCancel").click(function () {
+            if (addIndex != null) {
+                layer.close(addIndex);
+            }
+            if (editIndex != null) {
+                layer.close(editIndex);
+            }
+        });
+
+        $(function () {
+            window.init();
+            window.initTable();
+            window.initProjInfo();
+        });
+
+
+    });
+</script>

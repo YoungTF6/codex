@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>s1check.2</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/iife.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+    <style>
+        /* 新增代码 */
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+        .layui-table-tool-temp {
+            padding-right: 0;
+        }
+    </style>
+</head>
+<body style="background-color: white;">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!-- 查询区域 -->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" id="queryArea"
+             style="background-color: #f5f5f5;">
+            <div class="layui_mess">
+                <div class="layui_display">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span data-id="lblYear">年度</span></label>
+                        <div class="layui-input-block"></div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span data-id="lblScoreLevel" data-check-parent="1">学分级别</span></label>
+                        <div class="layui-input-block"></div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span data-id="lblActivityForm" data-alias="holdType">活动形式</span></label>
+                        <div class="layui-input-block"></div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">活动名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="projName" placeholder="请填写活动名称"
+                                   autocomplete="off" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">开始日期</label>
+                        <div class="layui-input-inline" style="float: left;">
+                            <input type="text" name="startDate" class="layui-input" id="startDateSelector"
+                                   autocomplete="off" placeholder="选择开始日期">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">结束日期</label>
+                        <div class="layui-input-inline" style="float: left;">
+                            <input type="text" name="endDate" class="layui-input" id="endDateSelector"
+                                   autocomplete="off" placeholder="选择结束日期">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">人员编号</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="personNo" placeholder="请填写人员编号"
+                                   autocomplete="off" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">人员姓名</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="personName" placeholder="请填写人员姓名"
+                                   autocomplete="off" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">审核状态</label>
+                        <div class="layui-input-block">
+                            <select name="checkStates">
+                                <option value="">全部</option>
+                                <option value="100" selected>待本级审核</option>
+                                <option value="0,4">未审核</option>
+                                <option value="3">审核通过</option>
+                                <option value="2">审核不通过</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">人员类别</label>
+                        <div class="layui-input-block">
+                            <select name="medicaltype">
+                                <option value="">全部</option>
+                                <option value="1">西医类别</option>
+                                <option value="2">中医类别</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">录入方式</label>
+                        <div class="layui-input-block">
+                            <select name="scoreModes" lay-filter="scoreModeSel">
+                                <option value="">全部</option>
+                                <option value="1,2,5,7,8,10">手工录入</option>
+                                <option value="4,6,9,11">考勤得分</option>
+                                <option value="3">网络授分</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui_display">
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-sm btnRounded" lay-submit
+                                onclick="refreshSingleScoreTable()">
+                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 数据表格 -->
+        <div class="layui-card-body layui_body_box" style="padding-left: 0;padding-right: 0">
+            <table class="layui-table" id="singleScoreTable" lay-filter="singleScoreTable"
+                   style="margin: 0;"></table>
+        </div>
+    </div>
+</div>
+</body>
+<!-- toolbar -->
+<script type="text/html" id="tableToolbar">
+    {{# if(!iszhejiangpreview()) { }}
+    <input type="checkbox" name="layTableCheckbox" value="cp" title="本页全选" lay-filter="layTableAllChoose">
+    <a class='layui-btn layui-btn-sm' lay-event='approveBtn'>审核通过</a>
+    <a class='layui-btn layui-btn-sm layui-btn-danger' lay-event='rejectBtn'>审核不通过</a>
+    {{# if(isShowRemoteTip) { }}
+    <a class="table-tips" style="color: red">提示：远程学分仅省卫健委和指定市县卫健委可在远程学分审核模块审核</a>
+    {{# } }}
+    {{# } }}
+    <a class="layui-btn layui-btn-sm" lay-event="exportExcel" style="float: right;">导出Excel</a>
+</script>
+<script type="text/html" id="thumbCell">
+    <a class="layui-btn layui-btn-xs btn-row" lay-event="showThumb">查看</a>
+    {{# if(d.evidenceNameVerifyAbnormal){ }}
+    <span class="evidence-verify-warn-badge">!</span>
+    {{# } }}
+</script>
+<script type="text/javascript" src="/js/constantPage/projectConstant.js"></script>
+<script>
+    const scoreKindId = getUrlParamByName('scoreKindId');
+    const scoreLevelId = getUrlParamByName('scoreLevelId');
+    scoreKindId && $('span[data-id=lblScoreLevel]').attr('data-echo-values', scoreKindId);
+    scoreLevelId && $('span[data-id=lblScoreLevel]').attr('data-echo-values', scoreLevelId);
+    var isShowRemoteTip = !(typeof _isZhejiang !== 'undefined' && _isZhejiang);
+    window.iszhejiangpreview = function () {
+        if (_isZhejiang) {
+            // 赴外省面授获得学分
+            if ('ae79aeb6-f3e2-4735-8f51-d9cc9b12aa69' === scoreKindId) return false;
+            let arr = ['68015778-3b87-4adb-8c97-6a4e5c220d7e', // 外出进修
+                '5904b52c-100e-47fe-a3bd-b6ba8f131729', // 在职学历（学位）教育
+                '', // 可验证自学
+                'feb67704-8ec7-4ab2-8789-710a52cd9143', // 专项培训
+                '802e5814-8aba-40eb-886e-71b2fc7de391', // 其他
+            ];
+            return arr.includes(scoreKindId);
+        }
+        return false;
+    }
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        excel: 'excel',
+        lat: 'lat',
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'xmSelect', 'excel', 'lat'], function () {
+        let table = layui.table;
+        let layer = layui.layer;
+        let form = layui.form;
+        let laydate = layui.laydate;
+        let dropdown = layui.dropdown;
+        let element = layui.element;
+        let $ = layui.jquery;
+        let xmSelect = layui.xmSelect;
+        let excel = layui.excel;
+        let lat = layui.lat;
+        const EVIDENCE_VERIFY_WARN_TIP = '该佐证材料照片中疑似未包含学分归属人姓名，请您关注并查验';
+        /** 为佐证核验异常角标绑定 layer 悬停提示，避免表格单元格裁剪原生 title */
+        function bindEvidenceVerifyWarnBadgeTips(tableView) {
+            let tipIndex;
+            tableView.find('.evidence-verify-warn-badge')
+                .off('mouseenter.evidenceWarn mouseleave.evidenceWarn')
+                .on('mouseenter.evidenceWarn', function () {
+                    tipIndex = layer.tips(EVIDENCE_VERIFY_WARN_TIP, this, {tips: [2, '#808080']});
+                })
+                .on('mouseleave.evidenceWarn', function () {
+                    layer.close(tipIndex);
+                });
+        }
+        window.refreshSingleScoreTable = refreshSingleScoreTable;
+        let phototitle = _isZhejiang ? '佐证材料' : '学分证明照片';
+        layer.ready(function () {
+            _lbl_inst.sdysel = lat.renderDaySelector('#startDateSelector', yearFirstDay(), {min: `${_cur_year}-01-01`, max: `${_cur_year}-12-31`});
+            _lbl_inst.edysel = lat.renderDaySelector('#endDateSelector', today(), {min: `${_cur_year}-01-01`, max: `${_cur_year}-12-31`});
+            setmedicaltype();
+            setTimeout(() => {
+                renderSingleScoreTable();
+            }, 400);
+        });
+        table.on('toolbar(singleScoreTable)', function (obj) {
+            let checkStatus = table.checkStatus(obj.config.id);
+            let selectedRowArr = checkStatus.data;
+            selectedRowArr = selectedRowArr.filter(selectedRow => !canCheckHenan(selectedRow));
+            if ('exportExcel' === obj.event) {
+                if (selectedRowArr.length < 1) {
+                    lat.failMsg('先选择要导出的学分');
+                    return false;
+                } else {
+                    lay_exportExcel('singleScoreTable', '个人活动学分.xlsx', 'xlsx')
+                }
+            } else {
+                if (selectedRowArr.length < 1) {
+                    lat.failMsg('先选择要审核的学分');
+                    return false;
+                }
+                let params;
+                if ('approveBtn' === obj.event) {
+                    params = {
+                        'msiList': getMsiList(selectedRowArr, {
+                            'checkState': CheckStateEnum.APPROVE,
+                            'flowChainState': getFcsByCs(CheckStateEnum.APPROVE),
+                            'checkUnit': _unitId,
+                            'checkUser': _unitId,
+                        }),
+                        'action': 'approve-s1check2',
+                        'fcs': getFcsByCs(CheckStateEnum.APPROVE),
+                        'fp': fp,
+                        'userId': _userId,
+                    };
+                    docheckscore(params);
+                } else if ('rejectBtn' === obj.event) {
+                    layer.prompt({
+                        title: '不通过原因',
+                        success: function (layero, index) {
+                            // console.info('success');
+                        },
+                        cancel: function (index, layero) {
+                            // console.info('cancel');
+                        },
+                        end: function (layero, index) {
+                            // console.info('end');
+                        }
+                    }, function (value, index, elem) {
+                        // console.info('value: %s, index: %s', value, index);
+                        params = {
+                            'msiList': getMsiList(selectedRowArr, {
+                                'checkState': CheckStateEnum.REJECT,
+                                'flowChainState': getFcsByCs(CheckStateEnum.REJECT),
+                                'checkUnit': _unitId,
+                                'checkUser': _unitId,
+                                'checkMemo': value
+                            }),
+                            'action': 'reject-s1check2',
+                            'fcs': getFcsByCs(CheckStateEnum.REJECT),
+                            'fp': fp,
+                            'userId': _userId,
+                        };
+                        docheckscore(params);
+                        layer.close(index);
+                    });
+                } else {
+                    //
+                }
+            }
+        });
+        function docheckscore(params) {
+            // console.info('checkScore params: ', JSON.stringify(params));
+            // check
+            checkScoreAction(params).then((response) => {
+                let jsonRes = response.data;
+                if (jsonRes.success) {
+                    layer.msg('审核完成', {time: 500}, function () {
+                        refreshSingleScoreTable();
+                    });
+                } else {
+                    layer.msg(jsonRes.msg);
+                }
+            }).catch(error => {
+                layer.msg('error:审核学分');
+            }).finally(() => {
+            });
+        }
+        table.on('tool(singleScoreTable)', function (obj) {
+            let rowData = obj.data;
+            if ('showThumb' === obj.event) {
+                if (rowData.scoreTypeVal === 4 || rowData.scoreTypeVal === 2) {
+                    layer.msg(`继教项目和院内活动无${phototitle}`);
+                    return false;
+                }
+                let visit = `${huayi_projectscore_url}s1/single/photo/${rowData.scoreId}`;
+                if ((rowData.remark || '').includes('自学-')) {
+                    visit = `${huayi_sjwh_url}zixue/filelist/${rowData.remark.replace('自学-', '')}`
+                }
+                getAction(visit).then(response => {
+                    let jsonRes = response.data;
+                    if (jsonRes.success && jsonRes.data.length > 0) {
+                        let arr = jsonRes.data;
+                        arr = arr.map((f, index) => {
+                            return {
+                                'fileName': f.fileName,
+                                'scorePhotoUrl': f.scorePhotoUrl || f.fileUrl,
+                                'photoSize': f.photoSize | f.fileSize,
+                            };
+                        });
+                        localStorage.setItem('tmp_single_photo', JSON.stringify(arr));
+                        layer.open({
+                            type: 2,
+                            shade: 0.4,
+                            shadeClose: true,
+                            title: phototitle,
+                            content: '/pages/mod/check/modals/SinglePhotoModal_2.html?score_id=1',
+                            area: ['100%', '100%'],
+                            end: function (layero, index) {
+                                localStorage.removeItem('tmp_single_photo');
+                            }
+                        });
+                    } else {
+                        layer.msg('未查询到该个人活动相关的照片');
+                    }
+                }).catch(error => {
+                    layer.msg(`error:加载${phototitle}`);
+                })
+            }
+        });
+        function renderSingleScoreTable() {
+            table.render({
+                id: 'singleScoreTable',
+                elem: '#singleScoreTable',
+                height: 'full-150',
+                toolbar: '#tableToolbar',
+                defaultToolbar: [],
+                url: huayi_projectscore_url + 's1/score/page',
+                method: 'POST',
+                contentType: 'application/json',
+                loading: true,
+                page: true,
+                limit: getPageSize(),
+                limits: [10, 50, 100, 150, 200],
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                where: getsifter(),
+                request: {
+                    pageName: 'pageNum', // 页码的参数名称，默认：page
+                    limitName: 'pageSize' // 每页数据量的参数名，默认：limit
+                },
+                parseData: function (res) {
+                    return {
+                        'code': res.status === 200 ? 0 : res.status, // 解析接口状态
+                        'msg': res.message, // 解析提示文本
+                        'count': res.data.recordsTotal, // 解析数据长度
+                        'data': res.data.records, // 解析数据列表
+                        'page': res.data.pageNum, // 当前页
+                        'limit': res.data.pageSize // 每页条数
+                    }
+                },
+                cols: [[
+                    {
+                        title: '选择',
+                        width: 60,
+                        align: 'center',
+                        fixed: 'left',
+                        // type: 'checkbox',
+                        templet: function (data) {
+                            let tips = canCheckHenan(data);
+                            if (!tips) {
+                                return '<input type="checkbox" name="layTableCheckbox" lay-skin="primary">';
+                            } else {
+                                return '<img src="/pages/mod/img/disableIcon.png" style="width:24px;" alt="' + tips + '" onmouseenter="showTips(this)" onmouseleave="closeTips()"/>';
+                            }
+                        }
+                    },
+                    // {title: '选择1', width: 60, align: 'center', fixed: 'left', type: 'checkbox', hide: true},
+                    {field: 'personName', title: '姓名', minWidth: 80, align: 'center', sort: true},
+                    {field: 'personNo', title: '人员编号', minWidth: 110, align: 'center', sort: true},
+                    {field: 'titleName', title: '职称', minWidth: 110, align: 'center', sort: true},
+                    {field: 'studyDate', title: '活动日期', minWidth: 110, align: 'center', sort: true},
+                    {field: 'projName', title: '活动名称', minWidth: 240, align: 'center', sort: true},
+                    {field: 'projNo', title: '活动编号', minWidth: 240, align: 'center', sort: true},
+                    {field: 'extdata', title: '详细信息', minWidth: 240, align: 'center', sort: true, templet: data => _txt.ext__data(data)},
+                    {field: 'scoreLevelName', title: '学分级别', minWidth: 200, align: 'center', sort: true},
+                    {field: 'score', title: '学分', minWidth: 60, align: 'center', sort: true},
+                    {field: 'period', title: '学时', minWidth: 60, align: 'center', sort: true},
+                    {field: 'holdTypeName', title: '举办方式', minWidth: 104, align: 'center', sort: true},
+                    {field: 'teachUnit', title: '举办单位', minWidth: 240, align: 'center', sort: true, templet: data => _txt.holdUnit(data)},
+                    {field: 'knowledgeName', title: '学科', minWidth: 104, align: 'center', sort: true},
+                    {field: 'addTime', title: '录入时间', minWidth: 180, align: 'center', sort: true},
+                    {field: 'scoreMode', title: '录入方式', minWidth: 120, align: 'center', sort: true, templet: (data) => _txt.scoreMode(data)},
+                    {field: '', title: phototitle, minWidth: 120, align: 'center', templet: '#thumbCell'},
+                    {field: 'personUnitName', title: '单位', minWidth: 120, align: 'center', sort: true},
+                    {field: 'deptName', title: '科室', minWidth: 120, align: 'center', sort: true},
+                    {field: 'specName', title: '专业', minWidth: 80, align: 'center', sort: true},
+                    {field: 'checkState', title: '审核状态', minWidth: 110, align: 'center', sort: true, templet: (data) => _txt.checkState(data)},
+                    {field: 'ifAvail', title: '有效状态', minWidth: 60, align: 'center', sort: true, templet: (data) => _txt.ifAvail(data)},
+                    {field: 'checkUnitName', title: '审核单位', minWidth: 200, align: 'center', sort: true},
+                    {field: 'checkMemo', title: '审核意见', minWidth: 110, align: 'center', sort: true},
+                    {field: 'checkTime', title: '审核时间', minWidth: 110, align: 'center', sort: true},
+                    {field: 'remark', title: '备注', minWidth: 110, align: 'center', sort: true},
+                    // {field: 'teachUnitName', title: '授分单位', minWidth: 110, align: 'center', sort: true},
+                ]],
+                done: function (res, curr, count) {
+                    let tableView = this.elem.next();
+                    for (let i = 0; i < res.data.length; i++) {
+                        if (res.data[i].evidenceNameVerifyAbnormal) {
+                            tableView.find('tr[data-index="' + i + '"]').addClass('score-evidence-name-abnormal');
+                        }
+                    }
+                    bindEvidenceVerifyWarnBadgeTips(tableView);
+                }
+            });
+        }
+        function getsifter() {
+            const medicaltype = toNum($('select[name=medicaltype]').val());
+            let states = $('select[name=checkStates]').val(), fcs = null;
+            if ('100' === states) {
+                states = null;
+                fcs = _uut * 10;
+            }
+            let titletypes = null, unittypes = null;
+            if (_isGov) {
+                unittypes = medicaltype === 1 ? '1,0' : (medicaltype === 2 ? '2' : null);
+            } else {
+                titletypes = medicaltype === 1 ? _titleTypes1 : (medicaltype === 2 ? _titleTypes2 : null);
+            }
+            return {
+                'unitId': pickUnitId(_unitId),
+                'depth': getDepthPlus(),
+                'standardKindId': _standardKindId,
+                'projName': $('input[name=projName]').val(),
+                'personNo': $('input[name=personNo]').val(),
+                'personName': $('input[name=personName]').val(),
+                'checkStates': states,
+                'flowChainState': fcs,
+                'startDate': toDayHeader($('#startDateSelector').val()),
+                'endDate': toDayTail($('#endDateSelector').val()),
+                'unitTypes': unittypes,
+                'titleTypes': titletypes,
+                'scoreLevelIds': _lbl_inst.getVal('lblScoreLevel_ids'),
+                'holdTypeIds': _lbl_inst.getVal('lblActivityForm_ids'),
+                'downId': PseudoNull.UUID,
+                'scoreModes': $('select[name=scoreModes]').val(),
+                // 'statex': '___5',
+            }
+        }
+        function refreshSingleScoreTable() {
+            table.reload('singleScoreTable', {
+                where: getsifter()
+            });
+        }
+        function canCheckHenan(row) {
+            if (_tips.isReScore(row)) return '远程教育学分';
+            let fcs = row.flowChainState || 0;
+            if (fcs < 1) {
+                return '新录入学分请于20分钟后操作';
+            }
+            let floor = _uut * 10;
+            let ceil = _uut * 10 + 10;
+            if (fcs < floor) {
+                return '待下级审核';
+            }
+            if (fcs > ceil) {
+                return '已由上级单位审核'
+            }
+            return '';
+        }
+    });
+</script>
+<script type="text/javascript" src="/pages/mod/js/label_data.js"></script>
+<script type="text/javascript" src="/pages/mod/libs/vendor.gq12mdzl.d3ec9qak.js"></script>
+<style>
+    .score-evidence-name-abnormal > td {
+        background: #fff1f0 !important;
+        color: #cf1322;
+    }
+    .evidence-verify-warn-badge {
+        display: inline-block;
+        margin-left: 6px;
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
+        border-radius: 50%;
+        text-align: center;
+        background: #ff4d4f;
+        color: #fff;
+        font-size: 12px;
+        cursor: help;
+    }
+</style>
+</html>

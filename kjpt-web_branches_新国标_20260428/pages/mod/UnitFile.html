@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>unit.file</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.4 -->
+    <!--<link rel="stylesheet" href="/js/layui-v2.6.4/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="/js/layui-v2.6.4/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <script type="text/javascript" src="/js/api/base64.min.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+</head>
+<body style="background-color: white;">
+<button type="button" class="layui-btn layui-btn-sm hide" id="uploadBtn">
+    <i class="layui-icon">&#xe67c;</i>上传
+</button>
+<!-- 数据表格 -->
+<div class="layui-card-body layui_body_box" style="padding-left: 0;padding-right: 0">
+    <table class="layui-table" id="unitFileTable" lay-filter="unitFileTable"
+           style="margin: 0;"></table>
+</div>
+</body>
+<!-- operation cell-->
+<script type="text/html" id="operationCell">
+    <a class="layui-btn layui-btn-xs btn-row" lay-event="preview">预览</a>
+    <a class="layui-btn layui-btn-xs btn-row btn-danger-row" lay-event="delete">移除</a>
+</script>
+<!-- toolbar -->
+<script type="text/html" id="tableToolbar">
+    <a class='layui-btn layui-btn-sm' lay-event='upload1'><i class="layui-icon">&#xe681;</i>上传医疗机构执业许可证/社会团体法人证</a>
+    <a class="layui-btn layui-btn-xs btn-row" lay-event="example">查看示例</a>
+    <a class="table-tips" style="color: red">请参照示例上传竖版证书文件</a>
+</script>
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        lat: 'lat'
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'xmSelect', 'lat', 'upload'], function () {
+        let table = layui.table;
+        let layer = layui.layer;
+        let form = layui.form;
+        let laydate = layui.laydate;
+        let dropdown = layui.dropdown;
+        let element = layui.element;
+        let $ = layui.jquery;
+        let xmSelect = layui.xmSelect;
+        let lat = layui.lat;
+        let upload = layui.upload;
+        let gCategory;
+        let gFileName;
+        let gLayerIndex = -1;
+        window.refreshTable = refreshTable;
+        $(function () {
+            console.info('2.document.ready');
+            renderTable();
+            renderUpload();
+        });
+        table.on('tool(unitFileTable)', function (obj) {
+            let rowData = obj.data;
+            if ('preview' === obj.event) {
+                lat.previewThumb(rowData.url);
+            } else if ('delete' === obj.event) {
+                let visit = huayi_sjwh_url + 'unit/file/delete/' + rowData.id;
+                postAction(visit).then(response => {
+                    let jsonRes = response.data;
+                    if (jsonRes.success) {
+                        lat.okMsg('删除完成');
+                        refreshTable();
+                    } else {
+                        lat.failMsg(jsonRes.msg);
+                    }
+                }).catch(error => {
+                    lat.errorMsg('error:删除unitFile');
+                }).finally(() => {
+                });
+            }
+        });
+        table.on('toolbar(unitFileTable)', function (obj) {
+            if ('upload1' === obj.event) {
+                gCategory = 1;
+                $('#uploadBtn').click();
+            } else if ('example' === obj.event) {
+                let url = _pdp + '/pages/mod/img/example.png';
+                gPhotoJson.data = [
+                    {
+                        "alt": "附件",
+                        "pid": 109,
+                        "src": url,
+                        "thumb": ""
+                    }
+                ];
+                layer.photos({
+                    photos: gPhotoJson,
+                    anim: 5,
+                    shade: 0.2,
+                    tab: function (pic, layero) {
+                        // console.log(pic) //当前图片的一些信息
+                        $('.layui-layer-imguide').show()
+                        $('.layui-layer-imgbar').show()
+                    }
+                });
+            }
+        });
+        function renderUpload() {
+            upload.render({
+                elem: '#uploadBtn',
+                url: huayi_upload_url + 'uploadApi/upload',
+                size: 15 * 1024,  // 15M
+                accept: 'file', // 普通文件
+                exts: 'pdf|png|jpg|jpeg',
+                multi: false,
+                choose: function (obj) {
+                    gLayerIndex = lat.loadingShade();
+                },
+                before: function (obj) {
+                    let files = this.files = obj.pushFile();
+                    for (let key in files) {
+                        gFileName = files[key].name;
+                    }
+                    let fileType = gFileName.endsWith('pdf') ? 'DOC' : 'IMAGE';
+                    this.data = {
+                        fileType: fileType,
+                        path: `/unit_file/${_standardKindId}/${_unitId}`,
+                    }
+                },
+                done: function (res, index, upload) {
+                    delete this.files[index];
+                    if (res.code !== 200) {
+                        lat.failMsg('上传失败');
+                    } else {
+                        lat.okMsg('上传完成');
+                        let fileUrl = res.data.picUrl;
+                        // console.info('fileUrl: %s', fileUrl);
+                        saveUnitFile(gCategory, gFileName, fileUrl);
+                    }
+                    layer.close(gLayerIndex);
+                },
+                error: function () {
+                    lat.errorMsg('上传失败');
+                }
+            });
+        }
+        function saveUnitFile(category, fileName, url) {
+            console.info('saveUnitFile: %s, %s, %s', category, fileName, url);
+            let visit = huayi_sjwh_url + 'unit/file/save';
+            let params = {
+                unitId: _unitId,
+                category: category,
+                fileName: fileName,
+                url: url,
+                createBy: _unitId
+            };
+            postAction(visit, params).then(response => {
+                let jsonRes = response.data;
+                if (jsonRes.success) {
+                    refreshTable();
+                } else {
+                    lat.failMsg(jsonRes.msg);
+                }
+            }).catch(error => {
+                lat.errorMsg('error:保存unitFile');
+            }).finally(() => {
+            });
+        }
+        const _category = {
+            '1': '医疗机构执业许可证/社会团体法人证',
+            '2': '项目负责人职称证明',
+            '3': '授课教师意愿书',
+            '4': '继续医学教育项目承诺书',
+            '5': '年检或校验合格证明材料',
+        };
+        function categoryText(category) {
+            return _category[category.toString()];
+        }
+        function renderTable() {
+            table.render({
+                id: 'unitFileTable',
+                elem: '#unitFileTable',
+                height: 'full-100',
+                toolbar: '#tableToolbar',
+                defaultToolbar: [],
+                url: huayi_sjwh_url + 'unit/file/page',
+                method: 'POST',
+                contentType: 'application/json',
+                loading: true,
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                where: {
+                    unitId: _unitId
+                },
+                request: {
+                    pageName: 'pageNum', // 页码的参数名称，默认：page
+                    limitName: 'pageSize' // 每页数据量的参数名，默认：limit
+                },
+                parseData: function (res) {
+                    return {
+                        'code': res.status === 200 ? 0 : res.status, // 解析接口状态
+                        'msg': res.message, // 解析提示文本
+                        'count': res.data.recordsTotal, // 解析数据长度
+                        'data': res.data.records, // 解析数据列表
+                        'page': res.data.pageNum, // 当前页
+                        'limit': res.data.pageSize // 每页条数
+                    }
+                },
+                cols: [[
+                    {
+                        field: 'category',
+                        title: '类别',
+                        align: 'center',
+                        minWidth: 90,
+                        templet: (data) => categoryText(data.category)
+                    },
+                    {
+                        field: 'fileName',
+                        title: '名称',
+                        align: 'center',
+                        minWidth: 90,
+                    },
+                    {
+                        field: 'createTime',
+                        title: '上传时间',
+                        align: 'center',
+                        minWidth: 90,
+                    },
+                    {title: '操作', minWidth: 188, align: 'center', templet: '#operationCell'}
+                ]],
+                done: function (res, curr, count) {
+                }
+            });
+        }
+        function refreshTable() {
+            table.reload('unitFileTable');
+        }
+    });
+</script>
+<style>
+</style>
+</html>

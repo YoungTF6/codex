@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.0</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <!-- <link rel="shortcut icon" th:href="@{/static/images/huayi1.jpg}" type="image/x-icon"/>
+    <link rel="stylesheet" th:href="@{/static/css/font.css}"> -->
+    <!-- <script type="text/javascript" src="static/js/jquery.js"></script>
+    <script src="static/layui/layui.js"></script>
+    <script type="text/javascript" src="static/js/xadmin.js"></script> -->
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f6f6f6;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #aaa;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #747474;
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: #f6f6f6;
+        }
+
+        .layui-table-cell { /*最后的pic为字段的field*/
+            height: 100%;
+            max-width: 100%;
+        }
+
+        /*IE*/
+        * {
+            scrollbar-arrow-color: #ccc;
+            /*三角箭头的颜色*/
+            scrollbar-face-color: #ddd;
+            /*立体滚动条的颜色*/
+            scrollbar-3dlight-color: #fff;
+            /*立体滚动条亮边的颜色*/
+            scrollbar-highlight-color: #fff;
+            /*滚动条空白部分的颜色*/
+            scrollbar-shadow-color: #fff;
+            /*立体滚动条阴影的颜色*/
+            scrollbar-darkshadow-color: #fff;
+            /*立体滚动条强阴影的颜色*/
+            scrollbar-track-color: #fff;
+            /*立体滚动条背景颜色*/
+            scrollbar-base-color: #fff;
+            /*滚动条的基本颜色*/
+        }
+    </style>
+</head>
+
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <blockquote class="layui-form layui-form-item layui-elem-quote one-btn">
+                <div class="layui-inline">
+                    <label class="layui-form-label">用户名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="search_login_name" name="search_login_name"
+                               placeholder="请输入用户名" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="renderTable()"
+                       lay-filter="LAY-app-order-search"
+                       data-type="reload">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                    </a>
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加项目','./toUserAdd')">添加</button>
+                </div>
+            </blockquote>
+        </div>
+
+
+
+       <div class="layui-card-body">
+
+        <table class="layui-table" id="typeTable" lay-filter="demo" style="margin: 0px 0px; "></table>
+        <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1">
+            <div class="layui-table-box">
+                <div class="layui-table-header">
+                    <table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+                        <thead>
+                            <tr>
+                                <th data-field="row" data-unresize="true">
+                                    <div class="layui-table-cell laytable-cell-1-row laytable-cell-numbers"><span>序号</span></div>
+                                </th>
+                                <th data-field="login_name">
+                                    <div class="layui-table-cell laytable-cell-1-login_name"><span>用户名</span></div>
+                                </th>
+                                <th data-field="login_pwd">
+                                    <div class="layui-table-cell laytable-cell-1-login_pwd"><span>密码</span></div>
+                                </th>
+                                <th data-field="real_name">
+                                    <div class="layui-table-cell laytable-cell-1-real_name" align="center"><span>真实姓名</span></div>
+                                </th>
+                                <th data-field="user_type">
+                                    <div class="layui-table-cell laytable-cell-1-user_type" align="center"><span>用户类型</span></div>
+                                </th>
+                                <th data-field="remark">
+                                    <div class="layui-table-cell laytable-cell-1-remark" align="center"><span>备注</span></div>
+                                </th>
+                                <th data-field="cstate">
+                                    <div class="layui-table-cell laytable-cell-1-cstate" align="center"><span>状态</span></div>
+                                </th>
+                                <th data-field="insert_time">
+                                    <div class="layui-table-cell laytable-cell-1-insert_time" align="center"><span>添加时间</span></div>
+                                </th>
+                                <th data-field="update_time">
+                                    <div class="layui-table-cell laytable-cell-1-update_time" align="center"><span>修改时间</span></div>
+                                </th>
+                                <th data-field="9">
+                                    <div class="layui-table-cell laytable-cell-1-9" align="center"><span>操作</span></div>
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="layui-table-body layui-table-main">
+                    <table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+                        <tbody>
+                            <tr data-index="0" class="">
+                                <td data-field="row">
+                                    <div class="layui-table-cell laytable-cell-1-row laytable-cell-numbers">1</div>
+                                </td>
+                                <td data-field="login_name">
+                                    <div class="layui-table-cell laytable-cell-1-login_name">ceshi1</div>
+                                </td>
+                                <td data-field="login_pwd">
+                                    <div class="layui-table-cell laytable-cell-1-login_pwd">12366666666</div>
+                                </td>
+                                <td data-field="real_name" align="center">
+                                    <div class="layui-table-cell laytable-cell-1-real_name">子辰</div>
+                                </td>
+                                <td data-field="user_type" align="center">
+                                    <div class="layui-table-cell laytable-cell-1-user_type">49680EB0-ED1C-462E-9E79-C64433E93836</div>
+                                </td>
+                                <td data-field="remark" align="center">
+                                    <div class="layui-table-cell laytable-cell-1-remark">测试专用</div>
+                                </td>
+                                <td data-field="cstate" align="center" data-content="1">
+                                    <div class="layui-table-cell laytable-cell-1-cstate"> 可用 </div>
+                                </td>
+                                <td data-field="insert_time" align="center">
+                                    <div class="layui-table-cell laytable-cell-1-insert_time">2020-08-13 20:29:20</div>
+                                </td>
+                                <td data-field="update_time" align="center">
+                                    <div class="layui-table-cell laytable-cell-1-update_time">2020-08-13 20:29:20</div>
+                                </td>
+                                <td data-field="9" align="center" data-off="true">
+                                    <div class="layui-table-cell laytable-cell-1-9"> <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a> </div>
+                                </td>
+                            </tr>
+                            <tr data-index="1" class="">
+                                <td data-field="row">
+                                    <div class="layui-table-cell laytable-cell-1-row laytable-cell-numbers">2</div>
+                                </td>
+                                <td data-field="login_name">
+                                    <div class="layui-table-cell laytable-cell-1-login_name">ceshi2</div>
+                                </td>
+                                <td data-field="login_pwd">
+                                    <div class="layui-table-cell laytable-cell-1-login_pwd">123456</div>
+                                </td>
+                                <td data-field="real_name" align="center">
+                                    <div class="layui-table-cell laytable-cell-1-real_name">子辰1</div>
+                                </td>
+                                <td data-field="user_type" align="center">
+                                    <div class="layui-table-cell laytable-cell-1-user_type">5E5ADB62-024F-4837-A56C-0B1793816DB9</div>
+                                </td>
+                                <td data-field="remark" align="center">
+                                    <div class="layui-table-cell laytable-cell-1-remark">测试专用</div>
+                                </td>
+                                <td data-field="cstate" align="center" data-content="0">
+                                    <div class="layui-table-cell laytable-cell-1-cstate"> 不可用 </div>
+                                </td>
+                                <td data-field="insert_time" align="center">
+                                    <div class="layui-table-cell laytable-cell-1-insert_time">2020-08-14 09:55:24</div>
+                                </td>
+                                <td data-field="update_time" align="center">
+                                    <div class="layui-table-cell laytable-cell-1-update_time">2020-08-14 09:55:24</div>
+                                </td>
+                                <td data-field="9" align="center" data-off="true">
+                                    <div class="layui-table-cell laytable-cell-1-9"> <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a> </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="layui-table-fixed layui-table-fixed-l">
+                    <div class="layui-table-header">
+                        <table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+                            <thead>
+                                <tr>
+                                    <th data-field="row" data-unresize="true">
+                                        <div class="layui-table-cell laytable-cell-1-row laytable-cell-numbers"><span>序号</span></div>
+                                    </th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="layui-table-body" style="height: auto;">
+                        <table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+                            <tbody>
+                                <tr data-index="0" class="">
+                                    <td data-field="row">
+                                        <div class="layui-table-cell laytable-cell-1-row laytable-cell-numbers">1</div>
+                                    </td>
+                                </tr>
+                                <tr data-index="1" class="">
+                                    <td data-field="row">
+                                        <div class="layui-table-cell laytable-cell-1-row laytable-cell-numbers">2</div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="layui-table-fixed layui-table-fixed-r layui-hide" style="right: -1px;">
+                    <div class="layui-table-header">
+                        <table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+                            <thead>
+                                <tr>
+                                    <th data-field="9">
+                                        <div class="layui-table-cell laytable-cell-1-9" align="center"><span>操作</span></div>
+                                    </th>
+                                </tr>
+                            </thead>
+                        </table>
+                        <div class="layui-table-mend"></div>
+                    </div>
+                    <div class="layui-table-body" style="height: auto;">
+                        <table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+                            <tbody>
+                                <tr data-index="0" class="">
+                                    <td data-field="9" align="center" data-off="true">
+                                        <div class="layui-table-cell laytable-cell-1-9"> <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a> </div>
+                                    </td>
+                                </tr>
+                                <tr data-index="1" class="">
+                                    <td data-field="9" align="center" data-off="true">
+                                        <div class="layui-table-cell laytable-cell-1-9"> <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a> </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-table-page">
+                <div id="layui-table-page1">
+                    <div class="layui-box layui-laypage layui-laypage-default" id="layui-laypage-1"><a href="javascript:;" class="layui-laypage-prev layui-disabled" data-page="0"><i class="layui-icon"></i></a><span class="layui-laypage-curr"><em class="layui-laypage-em"></em><em>1</em></span><a href="javascript:;" class="layui-laypage-next layui-disabled"
+                            data-page="2"><i class="layui-icon"></i></a><span class="layui-laypage-skip">到第<input type="text" min="1" value="1" class="layui-input">页<button type="button" class="layui-laypage-btn">确定</button></span><span class="layui-laypage-count">共 1 条</span>
+                        <span
+                            class="layui-laypage-limits"><select lay-ignore=""><option value="10" selected="">10 条/页</option><option value="20">20 条/页</option><option value="30">30 条/页</option><option value="40">40 条/页</option><option value="50">50 条/页</option><option value="60">60 条/页</option><option value="70">70 条/页</option><option value="80">80 条/页</option><option value="90">90 条/页</option></select></span>
+                    </div>
+                </div>
+                <style>
+                    .laytable-cell-1-row {
+                        width: 50px;
+                    }
+
+                    .laytable-cell-1-login_name {
+                        width: 120px;
+                    }
+
+                    .laytable-cell-1-login_pwd {
+                        width: 120px;
+                    }
+
+                    .laytable-cell-1-real_name {
+                        width: 120px;
+                    }
+
+                    .laytable-cell-1-user_type {
+                        width: 150px;
+                    }
+
+                    .laytable-cell-1-remark {
+                        width: 300px;
+                    }
+
+                    .laytable-cell-1-cstate {
+                        width: 100px;
+                    }
+
+                    .laytable-cell-1-insert_time {
+                        width: 200px;
+                    }
+
+                    .laytable-cell-1-update_time {
+                        width: 200px;
+                    }
+
+                    .laytable-cell-1-9 {
+                        width: 150px;
+                    }
+                </style>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+</div>
+<!--判断自定义列模板-->
+<script type="text/html" id="stateTpl">
+    {{#  if(d.cstate == 1){ }}
+    可用
+    {{#  } else { }}
+    不可用
+    {{#  } }}
+</script>
+
+
+<!--列表工具栏-->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+</script>
+
+
+<script th:inline="none">
+    layui.use(['table', 'layer', 'form'], function () {
+        var table = layui.table;
+
+        window.renderTable = function () {
+            var tableIns = table.render({
+                elem: '#typeTable',
+                url: '/user/getUser',
+                title: '课程类型列表',
+                cols: [[
+                    {field: 'row', type: "numbers", width: 50, fixed: 'left', title: '序号'},
+                    {field: 'login_name', width: 120, title: '用户名'},
+                    {field: 'login_pwd', width: 120, title: '密码'},
+                    {field: 'real_name', width: 120, align: 'center', title: '真实姓名'},
+                    {field: 'user_type', width: 150, align: 'center', title: '用户类型'},
+                    {field: 'remark', width: 300, align: 'center', title: '备注'},
+                    {field: 'cstate', width: 100, align: 'center', templet: '#stateTpl', title: '状态'},
+                    {field: 'insert_time', width: 200, align: 'center', title: '添加时间'},
+                    {field: 'update_time', width: 200, align: 'center', title: '修改时间'},
+                    {align: 'center', width: 150, fixed: 'right', toolbar: '#barDemo', title: '操作'}
+                ]],
+                page: true,
+                id: "typeTable",
+                where: {
+                    search_login_name: $("#search_login_name").val()
+                },
+                height: 'full-155',
+                done: function () {
+                    $("[data-field='jsqx_user_id']").css('display', 'none');
+                }
+            });
+        };
+        renderTable();
+
+
+        //监听工具条
+        table.on('tool(demo)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'detail') {
+                layer.msg('ID：' + data.id + ' 的查看操作');
+            } else if (obj.event === 'del') {
+                layer.confirm('确定删除该轮播图吗', function (index) {
+                    obj.del();
+                    layer.close(index);
+                    //删除轮播图异步操作
+                    $.ajax({
+                        type: "post",
+                        url: "/type/deleteType",
+                        data: {
+                            type_id: data.id
+                        },
+                        success: function (data) {
+                            if (data == 1) {
+                                layer.alert("删除成功");
+                                $(obj).parents("tr").remove();
+                                //layer.msg('已删除!',{icon:1,time:1000});
+                            } else {
+                                layer.alert("删除失败,请联系管理员");
+                            }
+                        }
+                    })
+
+
+                });
+            } else if (obj.event === 'edit') {
+                x_admin_show('编辑', '/user/toUserEdit?jsqx_user_id=' + data.jsqx_user_id)
+            }
+        });
+
+
+        window.searchPage = function () {
+
+            renderTable();
+
+        }
+
+
+    });
+
+
+</script>
+<script>
+
+$('.layui-fluid').width($(window).width()-30+'px');
+// $('.layui-card-body').width($(window).width()-60+'px');
+    $('.layui-border-box').width($('.layui-fluid').width()-30+'px');
+    $(window).resize(function() {
+        $('.layui-fluid').width($(window).width()-30+'px');
+        // $('.layui-card-body').width($(window).width()-60+'px');
+       $('.layui-border-box').width($('.layui-fluid').width()-30+'px');
+    })
+
+</script>
+</body>
+
+</html>

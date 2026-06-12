@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>省份选择</title>
+    <meta name="viewport" content="width=device-width, initial-scale=0.3, minimum-scale=0.3, maximum-scale=1.0, user-scalable=yes">
+    <link rel="stylesheet" href="../../css/person/reset.css">
+    <link rel="stylesheet" href="../../css/person/style.css">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../css/admin.css" media="all">
+    <style>
+        .require {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+
+    <script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+<script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="../../js/jquery.cookie.js"></script>
+    <!-- 请求路径全局配置 -->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <script type="text/javascript" src="../../js/common.js"></script>
+    <!-- 工具 -->
+    <script type="text/javascript" src="../../js/tools/urlTools.js"></script>
+
+    <script type="text/javascript" src="../../js/axios.min.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="top_box">
+            <span class="top_tit"></span>
+        </div>
+
+        <div class="cent_box">
+            <!--注册、返回登录-->
+            <div class="cent_top">
+                <span class="cent_tit">省份选择</span>
+                <a href="javascript:void(0)" onclick="tologin()"><span class="cent_return">返回登录</span></a>
+            </div>
+
+            <div class="cent_content" style="padding:30px 120px;">
+                <form class="layui-form" action="">
+                    <!--省份选择-->
+                    <div class="layui-row" style="height:300px">
+                        <div class="layui-col-md8 layui-col-md-offset2">
+                            <div style="margin-bottom:20px;">请选择您执业单位所在的地区：</div>
+                            <div class="layui-btn-container" id="btnContainer">
+                                
+                                <button type="button" value="170000" class="layui-btn layui-btn-radius layui-btn-primary" style=" width: 130px;margin: 15px 15px;border-color:#1e9fff;">湖北省</button>
+                                <button type="button" value="630000" class="layui-btn layui-btn-radius layui-btn-primary " style=" width: 130px;margin: 15px 15px;border-color:#1e9fff;">青海省</button>
+                                <!-- <button type="button" value="090000" class="layui-btn layui-btn-radius layui-btn-primary " style=" width: 130px;margin: 15px 15px;border-color:#1e9fff;">黑龙江省</button> -->
+                                <!-- <button type="button" value="180000" class="layui-btn layui-btn-radius layui-btn-primary " style=" width: 130px;margin: 15px 15px;border-color:#1e9fff;">湖南省</button> -->
+                                <!-- <button type="button" value="360000" class="layui-btn layui-btn-radius layui-btn-primary" style=" width: 130px;margin: 15px 15px;border-color:#1e9fff;">江西省</button> -->
+                                <!-- <button type="button" value="070000" class="layui-btn layui-btn-radius layui-btn-primary " style=" width: 130px;margin: 15px 15px;border-color:#1e9fff;">辽宁省</button> -->
+                                <!-- <button type="button" value="200000" class="layui-btn layui-btn-radius layui-btn-primary" style=" width: 130px;margin: 15px 15px;border-color:#1e9fff;">广西自治区</button> -->
+                                <button type="button" value="060000" class="layui-btn layui-btn-radius layui-btn-primary" style=" width: 130px;margin: 15px 15px;border-color:#1e9fff;">内蒙古自治区</button>
+                                <button type="button" value="640000" class="layui-btn layui-btn-radius layui-btn-primary" style=" width: 130px;margin: 15px 15px;border-color:#1e9fff;">宁夏回族自治区</button>
+                                <button type="button" value="330000" class="layui-btn layui-btn-radius layui-btn-primary" style=" width: 130px;margin: 15px 15px;border-color:#1e9fff;">浙江省</button>
+                                <button type="button" value="720000" class="layui-btn layui-btn-radius layui-btn-primary" style=" width: 130px;margin: 15px 15px;border-color:#1e9fff;">甘肃省</button>
+                                <button type="button" value="190000" class="layui-btn layui-btn-radius layui-btn-primary" style=" width: 130px;margin: 15px 15px;border-color:#1e9fff;">广东省</button>
+                                <button type="button" value="080000" class="layui-btn layui-btn-radius layui-btn-primary" style=" width: 130px;margin: 15px 15px;border-color:#1e9fff;">吉林省</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </form>
+
+            </div>
+
+        </div>
+
+        <span class="ind_tips"></span>
+
+    </div>
+
+</body>
+<script>
+    $(".close_img").click(function () {
+        $(".tips_hidden").hide();
+    })
+
+    $('.cent_text01').on('click', function () {
+        $('.cent_content').children('div:lt(4)').hide();
+        $('.cent_content').children('div:eq(0)').show();
+    });
+    $('.cent_text02:eq(0)').on('click', function () {
+        $('.cent_content').children('div:lt(4)').hide();
+        $('.cent_content').children('div:eq(1)').show();
+    });
+    $('.cent_text02:eq(1)').on('click', function () {
+        $('.cent_content').children('div:lt(4)').hide();
+        $('.cent_content').children('div:eq(2)').show();
+    });
+    $('.cent_text02:eq(2)').on('click', function () {
+        $('.cent_content').children('div:lt(4)').hide();
+        $('.cent_content').children('div:eq(3)').show();
+    });
+
+
+
+
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({});
+
+    /** 全局配置及引入相关的模块 */
+    layui.use(['table', 'form', 'jquery', 'layer'], function () {
+        var table = layui.table,
+            form = layui.form,
+            $ = layui.jquery,
+            layer = layui.layer
+
+        /** 触发事件：选择省份 */
+        form.on('select(provinceSelect)', function (data) {
+            if (data.value != '') {
+                window.location.href = 'register.html?root=' + data.value;
+            }
+        });
+
+        window.tologin = function () {
+            let login_url = localStorage.getItem("login-url");
+            if (login_url == "" || login_url == undefined || login_url == null) {
+                location.href = "/login.html";
+            }
+            else {
+                location.href = login_url;
+            }
+        }
+
+        $("#btnContainer").find("button").mouseover(function () {
+            $(this).removeClass("layui-btn-primary").addClass("layui-btn-normal");
+        }).mouseout(function(){
+            $(this).addClass("layui-btn-primary").removeClass("layui-btn-normal");
+        }).click(function(){
+            let val = $(this).attr("value");
+            if (val != '') {
+                sessionStorage.setItem('provinceRoot', val);
+                window.location.href = 'register.html';
+            }
+        });
+
+    });
+</script>
+
+</html>

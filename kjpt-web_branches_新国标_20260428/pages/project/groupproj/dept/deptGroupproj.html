@@ -1,0 +1,1916 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <title>科室举办院内活动</title>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <!-- <link rel="stylesheet" href="../../../../js/layui-v2.6.8/layui/css/layui.css" media="all"> -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <!-- <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script> -->
+    <script src="../../../../js/layui-v2.6.8/layui/layui.js"></script>
+    <link rel="stylesheet" href="../../../../css/communal.css" media="all">
+    <link rel="stylesheet" href="../../../../css/project/deptGroupproj.css" media="all">
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="../../../../js/constant.js"></script>
+    <script type="text/javascript" src="../../../../js/constantPage/projectConstant.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/common.js"></script>
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <script type="text/javascript" src="/js/api/number.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="../../../../js/global_ajax_setting.js"></script>
+    <style>
+        /* .width_23_calc {
+            width: calc(23%);
+        } 
+        .layui-table-body{
+            height: calc(100vh - 290px) ;
+        }
+
+        .layui-treeSelect .ztree li {
+            line-height: 19.5px !important;
+        }
+        .layui-treeSelect-body .level0 {
+            color: gray;
+        } */
+
+        .layui-card-body.layui_body_box {
+            padding: 0 !important;
+        }
+
+        .layui-tab-content {
+            padding: 0 !important;
+        }
+
+        .layui-form.layui-border-box.layui-table-view {
+            margin: 0 !important;
+        }
+
+        /* card tabs */
+        .layui-tab-card-1 {
+            background-color: #F5F5F5;
+            padding: 10px 30px 0 30px;
+            border: 0;
+            box-shadow: none;
+        }
+
+        .layui-tab-title-1 {
+            background-color: #f5f5f5 !important;
+            height: auto;
+            border: 0;
+        }
+
+        .layui-tab-title-1 li {
+            margin-right: 40px !important;
+            padding: 0;
+            line-height: 32px;
+            border: 0;
+            border-bottom: 3px solid #F5F5F5;
+            background-color: #F5F5F5;
+            color: #404040;
+        }
+
+        .layui-tab-title-1 li:hover {
+            background-color: #F5F5F5;
+            color: #404040;
+            opacity: 1;
+        }
+
+        .layui-tab-title-1 .layui-this {
+            background-color: #f5f5f5 !important;
+            color: #009688;
+            border-bottom: 3px solid #009688;
+        }
+
+        .layui-tab-title-1 .layui-this:hover {
+            color: #009688;
+        }
+
+        .layui-tab-title-1 .layui-this:after {
+            border: 0;
+        }
+
+        .layui-tab-content.padding-0 {
+            padding: 0;
+        }
+        .tab-title {
+            display: flex;
+        }
+
+        .tab-title li {
+            margin-right: 20px;
+            padding: 8px 0;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        /* 标签抖动 */
+        .shake_tab {
+            text-align: center;
+            animation: shakeH .6s ease-in-out infinite alternate;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        /* 新增代码 */
+
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+
+        .layui-layer-setwin .layui-layer-close2 {
+            right: -15px !important;
+            top: -15px !important;
+        }
+
+        .layui-treeSelect .ztree li {
+            line-height: 19.5px !important;
+        }
+        .width_23_calc {
+            width: calc(23%);
+        } 
+
+        #div-table {
+            padding: 7px 5px;
+        }
+        #div-table {
+            padding: 7px 5px;
+        }
+        #addGroupProj-div {
+            display: none;
+            padding: 35px 35px 35px 25px;
+        }
+        .layui-form-item .layui-inline {
+            margin-bottom: 15px; 
+            margin-right: 0;
+        }
+        .layui-form-item .layui-form-label {
+            padding: 9px 10px;
+            width: 95px;
+        }
+        .layui-form-item .layui-input-block {
+            margin-left: 115px;
+        }
+        #addGroupProj-div .div-btn {
+            text-align: center;
+            margin-top: 5px;
+        }
+        .child-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%; /* 根据需要调整宽度 */
+            background-color: white; /* 可选：根据你的设计调整背景颜色 */
+        }
+    </style>
+</head>
+
+<body style="background: #fff;">
+    <div class="layui-fluid">
+        <div class="layui-card">
+
+            <!-- <div class="layui-tab layui-tab-card" lay-filter="my-filter">
+                <ul class="layui-tab-title">
+                    <li class="layui-this tab-default" lay-id="0" id="all">全部</li>
+                    <li lay-id="1" id="hasBeenHeld" class="tab-default">已举办</li>
+                    <li lay-id="2" id="notToHold" class="tab-default">未举办</li>
+                    <li lay-id="3" id="notGivenPoints" class="tab-default">待授分</li>
+                </ul>
+            </div> -->
+
+
+            <div class="layui-tab" lay-filter="tabarea" id="tabarea">
+
+                    <ul class="layui-tab-title">
+                        <li id="tab_1" lay-id='tab_1' class="tab-default layui-this">举办状态</li>
+                        <li id="tab_2" lay-id='tab_2' class="tab-default" style="display: none">举办前申请情况</li>
+                        <li id="tab_3" lay-id='tab_3' class="tab-default" style="display: none">执行情况反馈情况</li>                   
+                    </ul>
+                    <div class="layui-tab-content">
+                        <div class="layui-tab-item">
+                            <div class="layui-tab layui-tab-card layui-tab-card-1" lay-filter="tabarea_1" id="tabarea_1">
+                                <ul class="layui-tab-title layui-tab-title-1">
+                                    <li id="tab_1_0" lay-id="tab_1_0" class="layui-btn-sm">全部</li>
+                                    <li id="tab_1_1" lay-id="tab_1_1" class="layui-btn-sm layui-this">未举办</li>
+                                    <li id="tab_1_5" lay-id="tab_1_5">部分已举办</li>
+                                    <li id="tab_1_2" lay-id="tab_1_2" class="layui-btn-sm">已举办</li>
+                                    <li id="tab_1_3" lay-id="tab_1_3" class="layui-btn-sm">待授分</li>
+                                    <li id="tab_1_4" lay-id="tab_1_4" class="layui-btn-sm">逾期未举办</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="layui-tab-item">
+                            <div class="layui-tab layui-tab-card layui-tab-card-1" lay-filter="tabarea_2" id="tabarea_2">
+                                <ul class="layui-tab-title layui-tab-title-1">
+                                    <li id="tab_2_1" lay-id="tab_2_1" class="layui-btn-sm layui-this">未上报</li>
+                                    <li id="tab_2_2" lay-id="tab_2_2" class="layui-btn-sm layui-this">审核中</li>
+                                    <li id="tab_2_3" lay-id="tab_2_3" class="layui-btn-sm">审核通过</li>
+                                    <li id="tab_2_4" lay-id="tab_2_4" class="layui-btn-sm">退回修改</li>
+                                    <li id="tab_2_5" lay-id="tab_2_5" class="layui-btn-sm">审核不通过</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="layui-tab-item">
+                            <div class="layui-tab layui-tab-card layui-tab-card-1" lay-filter="tabarea_3" id="tabarea_3">
+                                <ul class="layui-tab-title layui-tab-title-1">
+                                    <li id="tab_3_1" lay-id="tab_3_1" class="layui-btn-sm layui-this">未上报</li>
+                                    <li id="tab_3_2" lay-id="tab_3_2" class="layui-btn-sm layui-this">审核中</li>
+                                    <li id="tab_3_3" lay-id="tab_3_3" class="layui-btn-sm">审核通过</li>
+                                    <li id="tab_3_4" lay-id="tab_3_4" class="layui-btn-sm">退回修改</li>
+                                    <li id="tab_3_5" lay-id="tab_3_5" class="layui-btn-sm">审核不通过</li>
+                                    <li id="tab_3_7" lay-id="tab_3_7" class="layui-btn-sm" style="display: none">未反馈</li>
+                                    <li id="tab_3_8" lay-id="tab_3_8" class="layui-btn-sm" style="display: none">已反馈</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+    
+            </div>
+
+
+            <!-- 搜索 -->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="background: #f5f5f5;">
+                <div class="layui_mess">
+                    <div class="layui_display">
+                        <div class="layui-inline width_23_calc">
+                            <label class="layui-form-label">举办年度</label>
+                            <div class="layui-input-block">
+                                <select name="cmeYearSearch" id="cmeYearSearch" lay-filter="cmeYearSearch">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="layui-inline width_23_calc">
+                            <label class="layui-form-label" id="lblActivityLevel"></label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" lay-filter="scoreLevelSearch" id="scoreLevelSearch" name="scoreLevelSearch" placeholder="请选择">
+                            </div>
+                        </div>
+                        <div class="layui-inline width_23_calc">
+                            <label class="layui-form-label" id="lblActivityForm"></label>
+                            <div class="layui-input-block">
+                                <select id="holdTypeSearch"></select>
+                            </div>
+                        </div>
+                        <!-- 活动内容（仅浙江显示） -->
+                        <div class="layui-inline width_23_calc zhejiang_show" style="display:none;">
+                            <label class="layui-form-label">活动内容</label>
+                            <div class="layui-input-block">
+                                <select name="scoreTypeSearch" id="scoreTypeSearch">
+                                    <option value="">全部</option>
+                                    <option value="1">专业课</option>
+                                    <option value="2">选修课</option>
+                                    <option value="3">公需课</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline width_23_calc">
+                            <label class="layui-form-label" id="lblMedicalSystem" style="width: 85px;padding-right: 10px;"></label>
+                            <div class="layui-input-block">
+                                <select name="medicalTypeSearch" id="medicalTypeSearch">
+                                    <option value="">请选择</option>
+                                    <option value="1">西医</option>
+                                    <option value="2">中医</option>
+                                    <!-- <option value="3">蒙医</option> -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline width_23_calc">
+                            <label class="layui-form-label">二级学科</label>
+                            <div class="layui-input-block">
+                                <select id="knowledgeTwoSearch" lay-filter="knowledgeTwoFilter"></select>
+                            </div>
+                        </div>
+                        <div class="layui-inline width_23_calc">
+                            <label class="layui-form-label">三级学科</label>
+                            <div class="layui-input-block">
+                                <select id="knowledgeThreeSearch"></select>
+                            </div>
+                        </div>
+
+                        <div class="layui-inline width_23_calc">
+                            <label class="layui-form-label" style="width: 85px;padding-right: 10px;">院内活动名称</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="groupProjectNameSearch" placeholder="请输入院内活动名称" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-inline width_23_calc">
+                            <label class="layui-form-label" style="width: 85px;padding-right: 10px;">举办开始日期</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="startDateSearch" required lay-verify="required" placeholder="请选择开始时间范围" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="loaderTable()" lay-filter="table-search" data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <!-- 表格 -->
+            <div class="layui-card-body" id="div-table">
+                <table class="layui-table" id="cmeGroupproj" lay-filter="cmeGroupproj" style="margin: 0px 0px;"></table>
+            </div>
+
+
+            <!-- 弹窗 -->
+            <div id="addGroupProj-div">
+
+            </div>
+
+        </div>
+    </div>
+</body>
+
+
+<!--表格内数据编辑、删除按钮-->
+<script type="text/html" id="rowBar">
+    {{# if( !d.applyBeforeHoldHasSubmit ) { }}
+    <a class="layui-btn layui-btn-xs  layui-btn-normal" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>
+    {{# }  }}
+</script>
+<script type="text/html" id="bar">
+    <a class="layui-btn layui-btn-sm" lay-event="add" id="groupAdd"><i class="layui-icon layui-icon-add-1 layuiadmin-button-btn"></i>新增</a>
+    <label class="zhejiang_show" style="color:red;display:none;padding-left:10px;">内部培训由科室账号发起、举办及授分，单位账号负责审核</label>
+</script>
+<script type="text/html" id="rowBar1">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="maintenanceCycle">维护举办周期</a>
+</script>
+<script type="text/html" id="rowBarProjApply">
+    {{# if(showProjApplyAndFeedback(d.scoreLevel) ){ }}
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="projApply">举办前申请</a>
+    {{# } }}
+</script>
+<script type="text/html" id="rowBar2">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="maintainTestPaper">维护试卷</a>
+</script>
+<script type="text/html" id="rowBar3">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="sweepCodeAttendance">扫码考勤</a>
+</script>
+<script type="text/html" id="rowBar4">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="grantPoints">授分</a>
+</script>
+<script type="text/html" id="rowBar5">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="projectEvaluation">项目评价表</a>
+</script>
+<script type="text/html" id="examResultRowBar">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="viewExamResult">考试结果</a>
+</script>
+<script type="text/html" id="rank">
+    {{d.LAY_TABLE_INDEX+1}}
+</script>
+<script type="text/html" id="groupFbCell">
+    {{# 
+        if(showProjApplyAndFeedback(d.scoreLevel) ){ }}
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="editFeedback">
+        {{# if(_isNeiMeng){ }}执行情况反馈{{# } else { }}举办后反馈{{# } }}
+    </a>
+    {{# } }}
+</script>
+
+
+<script>
+    // 全局配置及引入相关的模块
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        tool: 'tool'
+    });
+    const   _standardKindId = localStorage.getItem('standardkind-id'),
+                _isGuangxi      = StandardKind.GUANG_XI === _standardKindId,
+                _isHainan       = StandardKind.HAI_HAN === _standardKindId,
+                _isHenan        = StandardKind.HE_NAN === _standardKindId,
+                _isHuBei        = StandardKind.HU_BEI === _standardKindId,
+                _isNingxia      = StandardKind.NING_XIA === _standardKindId,
+                _isQingHai      = StandardKind.QING_HAI === _standardKindId,
+                _isNeiMeng      = StandardKind.NEI_MENG === _standardKindId,
+                _isShanxiJin    = StandardKind.SHAN_XI === _standardKindId,
+                _isZheJiang     = StandardKind.ZHE_JIANG === _standardKindId,
+                _isFuJian       = StandardKind.FU_JIAN === _standardKindId,
+                _isGanSu        = StandardKind.GAN_SU === _standardKindId,
+                _isjilin        = StandardKind.JILIN === _standardKindId,
+                _isGuangdong    = StandardKind.GUANG_DONG === _standardKindId,
+                _isSiChuan      = StandardKind.SI_CHUAN === _standardKindId;
+
+    const   HENAN_LIMIT_PEROSN_MAX = 1000;
+    const   HAINAN_CYCLE_DURATION_ERROR = '现有举办周期时间小于预设时长，请重新设置。';
+    
+    if(_isZheJiang) {
+        $('#addGroupProj-div').load('addGroupproj-zhejiang.html');
+        // 浙江套显示活动内容查询框
+        $(function() { $('.zhejiang_show').show(); });
+    } else if(_isHenan) {
+        $('#addGroupProj-div').load('addGroupproj-henan.html');
+    } else {
+        $('#addGroupProj-div').load('addGroupproj-common.html');
+    }
+  
+
+    layui.use([ 'table', 'form', 'element', 'laydate', 'tool', 'treeSelect' ], () => {
+        let { table, form, element, laydate, jquery: $, layer, tool, treeSelect } = layui,
+            ajaxNum             = 0, 
+            loading             = null,
+            _deptId             = localStorage.getItem("dept-id"),
+            _unitId             = localStorage.getItem("unit-id"),
+            _standardId         = localStorage.getItem("standardkind-id"),
+            adaptedScoreLevels  = [],
+            nowYear             = new Date().getFullYear(),
+            nowYearForm         = new Date().getFullYear(),
+            tabIdCurrent        = 'tab_1_1', // 当前选中的二级标签页
+            extendData          = { holdState: 'NO_HOLD' }; // 签标签页的额外参数
+            const  HENAN_LIMIT_PEROSN_MAX = 1000;
+    
+        let projectStatus = '0';
+        let gLayerIndex = -1;
+        let gOpenedProjId = '';
+        let gOpenedProjPeriod = 0;
+        let gCmeYear = (new Date()).getFullYear();
+        let _tableData = {};
+        let unitArr = [
+            {
+                'holdTypeId': '2f3a1a6f-925e-47fc-aadc-9fa70c2464bb',
+                'holdTypeName': '学术报告'
+            },
+            {
+                'holdTypeId': '5a6a6977-0faf-43f1-b67f-de1bdea10fbc',
+                'holdTypeName': '专题讲座'
+            },
+            {
+                'holdTypeId': '2a808fac-14d4-4c23-9b5c-8e0e7b246f6f',
+                'holdTypeName': '技术操作示教'
+            },
+            {
+                'holdTypeId': 'e2706ddf-a843-437e-8681-df6daa2330b0',
+                'holdTypeName': '手术示范'
+            },
+            {
+                'holdTypeId': '5939b8b4-6cfb-45c3-9d72-88284eeb913b',
+                'holdTypeName': '新技术推广'
+            },
+            {
+                'holdTypeId': '1d3f2c3a-0c87-4226-b10d-9beb00aa3864',
+                'holdTypeName': '其他'
+            }
+        ];
+        let htArr = [
+            {
+                'holdTypeId': '422fe3f8-f64e-4d05-a47f-1daf4d0de144',
+                'holdTypeName': '临床病例讨论会'
+            },
+            {
+                'holdTypeId': '78671ac7-3429-42d6-9cd2-2422ec2cbf9b',
+                'holdTypeName': '案例讨论会',
+            },
+            {
+                'holdTypeId': '1d56799e-6d5c-450c-8ba0-fc2f56dcdbed',
+                'holdTypeName': '大查房',
+            },
+            {
+                'holdTypeId': '1d3f2c3a-0c87-4226-b10d-9beb00aa3864',
+                'holdTypeName': '其他',
+            }
+        ];
+        let unitAndHtArr = [
+            {
+                'holdTypeId': '2f3a1a6f-925e-47fc-aadc-9fa70c2464bb',
+                'holdTypeName': '学术报告'
+            },
+            {
+                'holdTypeId': '5a6a6977-0faf-43f1-b67f-de1bdea10fbc',
+                'holdTypeName': '专题讲座'
+            },
+            {
+                'holdTypeId': '2a808fac-14d4-4c23-9b5c-8e0e7b246f6f',
+                'holdTypeName': '技术操作示教'
+            },
+            {
+                'holdTypeId': 'e2706ddf-a843-437e-8681-df6daa2330b0',
+                'holdTypeName': '手术示范'
+            },
+            {
+                'holdTypeId': '5939b8b4-6cfb-45c3-9d72-88284eeb913b',
+                'holdTypeName': '新技术推广'
+            },
+            {
+                'holdTypeId': '422fe3f8-f64e-4d05-a47f-1daf4d0de144',
+                'holdTypeName': '临床病例讨论会'
+            },
+            {
+                'holdTypeId': '78671ac7-3429-42d6-9cd2-2422ec2cbf9b',
+                'holdTypeName': '案例讨论会',
+            },
+            {
+                'holdTypeId': '1d56799e-6d5c-450c-8ba0-fc2f56dcdbed',
+                'holdTypeName': '大查房',
+            },
+            {
+                'holdTypeId': '1d3f2c3a-0c87-4226-b10d-9beb00aa3864',
+                'holdTypeName': '其他',
+            }
+        ];
+
+        // 初始化搜索lable
+        $('label').each(function () {
+            const id = $(this).attr('id');
+            if (projectLabels[id]) {
+                let flag_required = $(this).hasClass('required');
+                console.log("=============" + flag_required)
+                if (flag_required) $(this).html('<i class="required-item"></i>' + projectLabels[id]);
+                else $(this).html(projectLabels[id]);
+            }
+        });
+
+        // 关闭closeLoading的判断
+        let closeLoading = function () {
+            ajaxNum--;
+            if (ajaxNum <= 0 && loading) layer.close(loading);
+        }
+        // 打开加载
+        let openLoading = function () {
+            if (ajaxNum == 0) loading = layer.msg('加载中', { icon: 16, shade: 0.3, time: 0 });
+            ajaxNum++;
+        }
+        // 公共ajax
+        let commonAjax = function (type = "get", url, data, failFun, successFun) {
+            openLoading();
+            $.ajax({
+                type: type,
+                url: url,
+                data: data,
+                success: function (res) {
+                    closeLoading(); successFun(res);
+                },
+                error: function (res) {
+                    closeLoading(); failFun();
+                }
+            });
+        }
+
+        window.showProjApplyAndFeedback = function(scoreLevelId) {
+            let arr = window["json_score_level_ids_open_apply_and_feedback"];
+           
+            if (arr == undefined) return false;
+            if (typeof arr === 'string') {
+                try {
+                    arr = JSON.parse(arr);
+                } catch (e) {
+                    console.log(e)
+                    return false; // JSON 解析失败，默认隐藏
+                }
+            }
+            if (!Array.isArray(arr)) return false;
+            return arr.includes(scoreLevelId);
+        };
+
+        // 表格相关操作
+        // 表格配置
+        window.loaderTable = function () {
+            // openLoading();
+            let whereData = getDefaultData();
+            whereData = {...whereData,...extendData};
+            
+            let cols = [
+                { align: 'center', width: 60, title: '序号', templet: '#rank', fixed: 'left' },
+                { field: 'oprate', align: 'center', width: 120, toolbar: '#rowBar', title: '操作', fixed: 'left' },
+                { field: 'groupProjectName', minWidth: 250, align: 'center', title: '活动名称', fixed: 'left' },
+                { field: 'otherNo', align: 'center', title: '编号', hide: !_isShanxiJin, fixed: 'left' },
+                { field: 'projDownload', title: '维护举办周期', align: 'center', toolbar: '#rowBar1' },
+                { field: 'projExam', title: '维护试卷', width: 90, align: 'center', toolbar: '#rowBar2' },
+                { field: 'projApply', title: '举办前申请', width: 110, align: 'center', toolbar: '#rowBarProjApply' },                
+                { field: 'projAttendance', title: '扫码考勤', width: 90, align: 'center', toolbar: '#rowBar3' },
+                { field: 'projScore', title: '授分', width: 70, align: 'center', toolbar: '#rowBar4', hide: _isQingHai },
+                { field: 'projFeedback', title: '执行情况反馈', align: 'center', templet: '#groupFbCell' },
+                { field: 'projEvaluate', title: '项目评价表', align: 'center', toolbar: '#rowBar5' },
+                { title: '考试结果', align: 'center', toolbar: '#examResultRowBar' },
+                { field: 'deptName', title: '所在科室', align: 'center' },
+                { field: 'scoreLevelName', title: projectLabels.lblActivityLevel, align: 'center',minWidth:200 },
+                // 活动内容（仅浙江显示）
+                { field: 'scoreType', title: '活动内容', align: 'center', minWidth: 120, hide: !_isZheJiang,
+                    templet: function(d){
+                        switch (Number(d.scoreType)) {
+                            case 1: return '专业课';
+                            case 2: return '选修课';
+                            case 3: return '公需课';
+                            default: return '';
+                        }
+                    }
+                },
+                { field: 'holdTypeName', title: projectLabels.lblActivityForm, align: 'center', },
+                { field: 'medicalType', title: projectLabels.lblMedicalSystem, align: 'center',
+                    templet: function (d) {
+                        if (d.medicalType == 1) return "西医";
+                        if (d.medicalType == 2) return "中医";
+                        if (d.medicalType == 3) return "蒙医";
+                        return "";
+                    }
+                },
+                //{ field: 'knowledgeName', title: '学科', align: 'center', },
+                { field: 'score', width: 80, title: '总学分', align: 'center', },
+                { field: 'period', width: 80, title: '总学时', align: 'center', },
+                { field: 'addTime', title: '添加时间', align: 'center', width: 200 },
+                { field: 'updateTime', title: '修改时间', align: 'center', width: 200 }
+            ];
+
+            if (window["fun_dept_agent_groupproj"] == 1) {
+                cols.forEach( obj => { if(obj.field == "oprate") obj["hide"] = true; });
+            }
+
+            //查找代办科室功能列      
+            let allFuncCols = ["projDownload", "projExam","projApply", "projAttendance", "projScore", "projFeedback", "projEvaluate"];
+            let showFuncCols = window["range_dept_agent_groupproj_func_cols"].split('|');            
+
+            cols.forEach((e) => {
+                if(allFuncCols.includes(e.field) && !showFuncCols.includes(e.field)) {
+                    e["hide"] = true;
+                }  
+            });
+
+            table.render({
+                elem: '#cmeGroupproj',
+                url: huayi_projectscore_url + 'cmeGroupProj/getList',
+                title: '院内活动表',
+                defaultToolbar: [],
+                where: whereData,
+                cols: [ cols ],
+                toolbar: getToolbar(),
+                cellMinWidth: 120,
+                id: "cmeGroupproj",
+                height: 'full-250',
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    _tableData = res.data.records;
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "count": res.data.recordsTotal, //解析数据长度
+                        "data": res.data.records, //解析数据列表
+                        "page": res.data.pageNum, //当前页
+                        "limit": res.data.pageSize, //每页条数
+                    }
+                },
+                request: {
+                    pageName: 'pageNum', //页码的参数名称，默认：page
+                    limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                },
+                done: function (res, curr, count) {
+                    countNum();
+                    
+                    // closeLoading();
+                    //是否可以处理往年数据
+                    if(res.data != null && res.data.length > 0) {
+                       
+                        let cmeYear = res.data[0].cmeYear;
+                        let ableOper =  ableOperateLastYearData(cmeYear);
+                        if(ableOper == false) {
+                            $("#groupAdd").removeAttr("lay-event").addClass("layui-disabled");
+                            $("td[data-field='projScore']").find("a").removeAttr("lay-event").addClass("layui-disabled");
+                            $("td[data-field='oprate']").find("a").removeAttr("lay-event").addClass("layui-disabled");
+                        }
+                    }
+
+                },
+                error: function (res, curr, count) { closeLoading(); }
+            });
+        };
+
+      
+
+        window.getHoldType = (scoreLevelName, holdTypeName) => {
+            let keyName     = projectLabels.lblActivityLevel,
+                scoreLevel  = $(`#${scoreLevelName}`).val() == null ? "" : $(`#${scoreLevelName}`).val();
+    
+            $.ajax({
+                url     : huayi_sjwh_url + 'option/holdType/list/' + _standardKindId + '/' + scoreLevel + '/_1_',
+                async   : false,
+                success : re => {
+                    if (re.status == 200) {
+                        let $item = $(`#${holdTypeName}`);
+                        $item.empty().append($('<option value="">请选择</option>'));
+                        $.each(re.data, (i, d) => $item.append($('<option value="' + d.holdTypeId + '">' + d.holdTypeName + '</option>')));
+                    } else layer.msg(keyName + '加载失败', { icon: 7, time: 1500 });
+                },
+                error   : () => layer.msg(keyName + '加载失败', { icon: 7, time: 1500 })
+            });
+            form.render();
+        }
+
+       //scoreLevelSearch   holdTypeSearch
+       //scoreLevelForm     holdTypeFrom 
+        window.getScoreLevel = (slId, hyId) => {
+            treeSelect.destroy(slId), $('#'+slId).val('');
+            treeSelect.render({
+                elem    : '#'+slId,
+                data    : huayi_sjwh_url + 'option/scoreLevel/tree/' + _standardKindId + '/' + nowYear + '/_1_',
+                type    : 'get',
+                search  : true,
+                style   : {
+                    folder  : { enable: false }, // 父节点图标
+                    line    : { enable: true} // 连接线
+                },
+                disabledParent: true,
+                click   : d => { getHoldType(slId, hyId); setSpecialScoreLevelScore(slId, d); 
+                    (!_isZheJiang) && initScoreLevelContentSel(slId); },
+                success : d => { 
+                    if (_isGuangdong && window.g_dept_modal_action === 'add' && slId === 'scoreLevelForm') {
+                        setTimeout(() => {
+                            treeSelect.checkNode(slId, '95b9ef06-7265-11f0-adb9-005056a64c01');
+                            getHoldType(slId, hyId); 
+                            initScoreLevelContentSel(slId); 
+                        }, 50);
+                    } else {
+                        getHoldType(slId, hyId); 
+                        initScoreLevelContentSel(slId); 
+                    }
+                    if(_isZheJiang){
+                        // 监听下拉框展开事件，确保每次打开都自动展开所有节点
+                        var scoreLevelInput = $('#scoreLevelForm');
+                        var selectTitle = scoreLevelInput.next().find('.layui-select-title');
+                        
+                        // 移除之前的事件监听，避免重复绑定
+                        selectTitle.off('click.treeExpand');
+                        
+                        // 绑定点击事件
+                        selectTitle.on('click.treeExpand', function() {
+                            setTimeout(function() {
+                                var $select = $(this).parent();
+                                if ($select.hasClass('layui-form-selected')) {
+                                    var treeObj = treeSelect.zTree('scoreLevelForm');
+                                    treeObj && treeObj.expandAll(true);
+                                }
+                            }.bind(this), 50);
+                        });
+                    }
+                   
+                },
+            });
+        }
+
+        window.initScoreLevelContentSel = slId => {
+            let keyName     = projectLabels.lblActivityContent,
+                scoreLevel  = $('#' + slId).val();
+            $.ajax({
+                url     : huayi_sjwh_url + 'option/scoreLevelContent/list',
+                data    : { scoreLevel: scoreLevel },
+                async   : false,
+                success : re => {
+                    if (re.status == 200) {
+                        let $item = $('#scoreType');
+                        $item.empty().append($('<option value="">请选择</option>'));
+                        $.each(re.data, (i, d) => {
+                            if(_isZheJiang && d.value == 2) return true; //浙江不要选修课
+                            $item.append($('<option value="' + d.value + '">' + d.scoreLevelContentName + '</option>'));
+                        });
+                    } else layer.msg(keyName + '加载失败', { icon: 7, time: 1500 });
+                },
+                error   : () => layer.msg(keyName + '加载失败', { icon: 7, time: 1500 })
+            });
+            form.render();
+        };
+
+        function isNeimengSpecial() {
+            return localStorage.getItem("unit-id") == "061048" ||  localStorage.getItem("unit-id") == "061053";
+        }
+
+        //获取二级学科
+        let getTwoKnowledge = function () {
+            $("#knowledgeThreeSearch").empty();
+            const tempUrl = huayi_sjwh_url + 'comKnowledge';
+            const params = { 'knowledgeType': 2,"cmeStandardKindId":_standardKindId,"versionYear":nowYear };
+            commonAjax("get", tempUrl, params, function () { layer.msg("加载学科失败"); },
+                function (res) {
+                    if (res.status != 200) {
+                        layer.msg("二级学科加载失败");
+                        return;
+                    }
+                    setOptions(res.data, "knowledgeId", "knowledgeName", "knowledgeTwoSearch");
+                    bindKnowledgeTwo();
+                });
+        }
+
+        //获取三级学科
+        let getThreeKnowledge = function (id, twoKnowledgeId, doSomething) {
+            const tempUrl = huayi_sjwh_url + 'comKnowledge';
+            const params = { 'knowledgeType': 3, "knowledgeTwoId": twoKnowledgeId,"cmeStandardKindId":_standardKindId,"versionYear":nowYear };
+            commonAjax("get", tempUrl, params, function () { layer.msg("加载学科失败"); },
+                function (res) {
+                    if (res.status != 200) {
+                        layer.msg("三级学科加载失败");
+                        return;
+                    }
+                    setOptions(res.data, "knowledgeId", "knowledgeName", id);
+                    doSomething();
+                });
+        }
+
+         //获取二级学科(表单)
+        let getTwoKnowledgeForm = function () {
+            $("#knowledgeThreeFrom").empty();
+            const tempUrl = huayi_sjwh_url + 'comKnowledge';
+            const params = { 'knowledgeType': 2,"cmeStandardKindId":_standardKindId,"versionYear":nowYearForm };
+            commonAjax("get", tempUrl, params, function () { layer.msg("加载学科失败"); },
+                function (res) {
+                    if (res.status != 200) {
+                        layer.msg("二级学科加载失败");
+                        return;
+                    }
+                    setOptions(res.data, "knowledgeId", "knowledgeName", "twoKnowledgeIdFrom");
+                    bindKnowledgeTwoForm();
+                });
+        }
+
+        //获取三级学科（表单）
+        let getThreeKnowledgeForm = function (id, twoKnowledgeId, doSomething) {
+            const tempUrl = huayi_sjwh_url + 'comKnowledge';
+            const params = { 'knowledgeType': 3, "knowledgeTwoId": twoKnowledgeId,"cmeStandardKindId":_standardKindId,"versionYear":nowYearForm };
+            commonAjax("get", tempUrl, params, function () { layer.msg("加载学科失败"); },
+                function (res) {
+                    if (res.status != 200) {
+                        layer.msg("三级学科加载失败");
+                        return;
+                    }
+                    setOptions(res.data, "knowledgeId", "knowledgeName", id);
+                    doSomething();
+                });
+        }
+
+        let setOptions = function (data, idParam, valueParam, id) {
+            let option = '<option value="">全部</option>';
+            for (let obj of data) {
+                option += `<option value="${obj[idParam]}">${obj[valueParam]}</option>`;
+            }
+            $(`#${id}`).html(option);
+            form.render();
+        }
+
+        let addOptions = function (data, idParam, valueParam, id) {
+
+            for (let obj of data) {
+                option = `<option value="${obj[idParam]}">${obj[valueParam]}</option>`;
+                if ($(`#${id}`).find(`option[value='${obj[idParam]}']`).length == 0) {
+                    $(`#${id}`).append(option);
+                }
+            }
+
+            form.render();
+        }
+
+
+
+        /* 选项卡 */        
+        // 一级选项卡
+        element.on('tab(tabarea)', function (data) {
+            const tabIdTemp = this.getAttribute('lay-id');
+            // if (tabIdCurrent.startsWith(tabIdTemp)) { // 所选标签页为已选中状态时
+            //     return;
+            // }
+            switch (tabIdTemp) {
+                case 'tab_1':
+                    $("#holdRateSpan").show();
+                    $("#feedbackRateSpan").hide();
+                    tabIdCurrent = 'tab_1_1';
+                    element.tabChange('tabarea_1', 'tab_1_1');
+                    tabChange();
+                    getHoldRate();
+                    break;
+
+                case 'tab_2':
+                    $("#holdRateSpan").hide();
+                    $("#feedbackRateSpan").hide();
+                    tabIdCurrent = 'tab_2_1';
+                    element.tabChange('tabarea_2', 'tab_2_1');
+                    tabChange();
+                    break;
+
+                case 'tab_3':
+                    $("#holdRateSpan").hide();
+                    $("#feedbackRateSpan").show();
+                    tabIdCurrent = _isHainan ? "tab_3_7" :  'tab_3_1';
+                    element.tabChange('tabarea_3', tabIdCurrent);          
+                    tabChange();
+                    getFeedbackRate();
+                    break;
+
+                default:
+                    return;
+            }
+
+        });
+
+        // 举办状态，二级选项卡
+        element.on('tab(tabarea_1)', function (data) {
+            const tabIdTemp = this.getAttribute('id');
+            if (tabIdCurrent == tabIdTemp) { // 所选标签页为已选中状态时
+                return;
+            } else {
+                tabIdCurrent = tabIdTemp;
+                tabChange();
+            }
+        });
+        // 举办签申请情况，二级选项卡
+        element.on('tab(tabarea_2)', function (data) {
+            const tabIdTemp = this.getAttribute('id');
+            if (tabIdCurrent == tabIdTemp) { // 所选标签页为已选中状态时
+                return;
+            } else {
+                tabIdCurrent = tabIdTemp;
+                tabChange();
+            }
+        });
+        // 执行情况反馈情况，二级选项卡
+        element.on('tab(tabarea_3)', function (data) {
+            const tabIdTemp = this.getAttribute('id');
+            if (tabIdCurrent == tabIdTemp) { // 所选标签页为已选中状态时
+                return;
+            } else {
+                tabIdCurrent = tabIdTemp;
+                tabChange();
+            }
+        });
+
+        
+        // 二级标签页切换
+        function tabChange() {
+            // layer.msg(tabIdCurrent);
+            switch (tabIdCurrent) {
+                case 'tab_1_0':
+                    extendData = { holdState: 'ALL' }
+                    break;
+                case 'tab_1_1':
+                    extendData = { holdState: 'NO_HOLD' };
+                    break;
+                case 'tab_1_2':
+                    extendData = { holdState: 'HOLD' };
+                    break;
+                case 'tab_1_3':
+                    extendData = { holdState: 'TO_SCORE' };
+                    break;
+                case 'tab_1_4':
+                    extendData = { holdState: 'OVERDUE' };
+                    break;
+                case 'tab_1_5':
+                    extendData = { holdState: 'PART_HOLD' };
+                    break;
+                case 'tab_2_0':
+                    extendData = {};
+                    break;
+                case 'tab_2_1':
+                    extendData = { applyBeforeHoldState: 'NO_REPORT' };
+                    break;
+                case 'tab_2_2':
+                    extendData = { applyBeforeHoldState: 'CHECKING' };
+                    break;
+                case 'tab_2_3':
+                    extendData = { applyBeforeHoldState: 'FINISH' };
+                    break;
+                case 'tab_2_4':
+                    extendData = { applyBeforeHoldState: 'BACK' };
+                    break;
+                case 'tab_2_5':
+                    extendData = { applyBeforeHoldState: 'NOT_PASS' };
+                    break;
+                case 'tab_3_0':
+                    extendData = {};
+                    break;
+                case 'tab_3_1':
+                    extendData = { feedbackState: 'NO_REPORT' };
+                    break;
+                case 'tab_3_2':
+                    extendData = { feedbackState: 'CHECKING' };
+                    break;
+                case 'tab_3_3':
+                    extendData = { feedbackState: 'FINISH' };
+                    break;
+                case 'tab_3_4':
+                    extendData = { feedbackState: 'BACK' };
+                    break;
+                case 'tab_3_5':
+                    extendData = { feedbackState: 'NOT_PASS' };
+                    break;
+                case 'tab_3_6':
+                    extendData = { feedbackState: 'FINISH_REPORT' };
+                    break;
+                case 'tab_3_7':
+                    extendData = { feedbackState: 'HAINAN_NO_REPORT' }; 
+                    break;
+                case 'tab_3_8':
+                    extendData = { feedbackState: 'HAINAN_FINISH_REPORT' };
+                    break;
+                default:
+                    return;
+            }
+            loaderTable();
+        }
+
+        /* 获取举办率 */
+        function getHoldRate() {
+            let cmeYear = $("#cmeYearSearch").val();
+            $.ajax({
+                type: "post",
+                url: huayi_projectscore_url + 'cmeGroupProj/getHoldRate',
+                data: { unitId: _unitId, cmeYear: cmeYear },
+                success: function (re) {
+                    if (re.success == true) {
+                        let rate = re.data;
+                        let rate_str = (rate * 100).toFixed(2).toString() + "%";
+                        $("#holdRate").text(rate_str);
+                    }
+                }
+            });
+        }
+
+        /* 获取反馈率 */
+        function getFeedbackRate() {
+            let cmeYear = $("#cmeYearSearch").val();
+            $.ajax({
+                type: "post",
+                url: huayi_projectscore_url + 'cmeGroupProj/getFeedbackRate',
+                data: { unitId: _unitId, cmeYear: cmeYear },
+                success: function (re) {
+                    if (re.success == true) {
+                        let rate = re.data;
+                        let rate_str = (rate * 100).toFixed(2).toString() + "%";
+                        $("#feedbackRate").text(rate_str);
+                    }
+                }
+            });
+        }
+
+
+
+        /* 标签页计数 */
+        function countNum() {
+            let url = huayi_projectscore_url,
+                data = getDefaultData(),
+                tabId = tabIdCurrent;
+            if (tabId.startsWith('tab_1')) {
+                url += 'cmeGroupProj/holdState';
+            } else if (tabId.startsWith('tab_2')) {
+                url += 'cmeGroupProj/applyBeforeHoldState';
+            } else if (tabId.startsWith('tab_3')) {
+                url += 'cmeGroupProj/feedbackState';
+            }
+            axios({
+                method: 'get',
+                url: url,
+                responseType: 'json',
+                params:  { ...data, withCheckInfo:false }
+            }).then(response => {
+                
+                if (response.status == 200 && response.data.status == 200) {
+                    var data = response.data.data;
+                    if (tabId.startsWith('tab_1')) {
+                        $('#tab_1_0').html('全部&nbsp;&nbsp;(' + data.ALL + ')');
+                        $('#tab_1_1').html('未举办&nbsp;&nbsp;(' + data.NO_HOLD + ')');
+                        $('#tab_1_5').html('部分已举办&nbsp;&nbsp;(' + data.PART_HOLD + ')');
+                        $('#tab_1_2').html('已举办&nbsp;&nbsp;(' + data.HOLD + ')');
+                        $('#tab_1_3').html('待授分&nbsp;&nbsp;(' + data.TO_SCORE + ')');
+                        $('#tab_1_4').html('逾期未举办&nbsp;&nbsp;(' + data.OVERDUE + ')');
+                    } else if (tabId.startsWith('tab_2')) {
+                        // $('#tab_2_0').html('全部&nbsp;&nbsp;(' + data.ALL + ')');
+                        $('#tab_2_1').html('未申请&nbsp;&nbsp;(' + data.NO_REPORT + ')');
+                        $('#tab_2_2').html('审核中&nbsp;&nbsp;(' + data.CHECKING + ')');
+                        $('#tab_2_3').html('审核通过&nbsp;&nbsp;(' + data.FINISH + ')');
+                        $('#tab_2_4').html('退回修改&nbsp;&nbsp;(' + data.BACK + ')');
+                        if (0 < data.BACK) $('#tab_2_4').addClass('shake_tab');
+                        $('#tab_2_5').html('审核不通过&nbsp;&nbsp;(' + data.NOT_PASS + ')');
+                    } else if (tabId.startsWith('tab_3')) {
+                        // $('#tab_3_0').html('全部&nbsp;&nbsp;(' + data.ALL + ')');                        
+                        if (_isHainan) {
+                            $('#tab_3_7').html('未反馈&nbsp;&nbsp;(' + data.HAINAN_NO_REPORT + ')');
+                            $('#tab_3_8').html('已反馈&nbsp;&nbsp;(' + data.HAINAN_FINISH_REPORT + ')');
+                        } else {
+                            $('#tab_3_1').html('未反馈&nbsp;&nbsp;(' + data.NO_REPORT + ')');
+                            $('#tab_3_2').html('审核中&nbsp;&nbsp;(' + data.CHECKING + ')');
+                            $('#tab_3_3').html('审核通过&nbsp;&nbsp;(' + data.FINISH + ')');
+                            $('#tab_3_4').html('退回修改&nbsp;&nbsp;(' + data.BACK + ') ');
+                            if (0 < data.BACK) $('#tab_3_4').addClass('shake_tab');
+                            $('#tab_3_5').html('审核不通过&nbsp;&nbsp;(' + data.NOT_PASS + ')');
+                        }
+                        
+                    }
+                } else {
+                    layer.msg('项目统计失败', { icon: 2, time: 1000 });
+                }
+            }).catch(error => {
+                layer.msg('项目统计异常', { icon: 7, time: 1000 });
+                console.log(error);
+            });
+        }
+
+        /* 列表基础参数 */
+        function getDefaultData() {
+
+            return {
+
+                    cmeYear: $('#cmeYearSearch').val(),
+                    scoreLevel: $('#scoreLevelSearch').val(),
+                    holdType: $('#holdTypeSearch').val(),
+                    medicalType: $('#medicalTypeSearch').val(),
+                    knowledgeId: $('#knowledgeThreeSearch').val(),
+                    groupProjectName: $('#groupProjectNameSearch').val(),
+                    startDate: $('#startDateSearch').val(),
+                    unitId: localStorage.getItem("unit-id"),
+                    deptId: localStorage.getItem("dept-id"),
+                    userType: localStorage.getItem('user-type'),
+                    cmeStandardKindId: _standardKindId,
+                    withCheckInfo: false,
+                    unitUserType: localStorage.getItem('unit-user-type'),
+                    // 活动内容（仅浙江使用）
+                    scoreType: _isZheJiang ? ($('#scoreTypeSearch').val() || '') : ''
+            };
+
+        }
+
+
+
+        //时间组件初始化
+        let dateInit = function () {
+            
+            cmeYearInit();
+            laydate.render({
+                elem: '#startDateSearch',
+                type: 'date',
+                range: true
+            });
+            //年度初始化
+            //tool.renderCmeYear('#cmeYearForm');
+            //$("#cmeYearForm").addClass("layui-disabled").prop("disabled","disabled");
+            //年度不可选
+            //bindCmeYearForm();
+            let curYear = (new Date()).getFullYear();
+            $('#cmeYearForm').append(`<option value='${curYear}' >${curYear}</option>`);
+        }
+
+        //监听举办年度（表单）
+        function bindCmeYearForm() {
+            form.on('select(cmeYearForm)', function (data) {
+                nowYearForm = data.value;
+                getTwoKnowledgeForm();
+                renderScoreLevel('scoreLevelForm','holdTypeFrom');
+            });
+        }
+
+        //获取举办年度
+        let cmeYearInit = function() {
+            var currentYear = (new Date()).getFullYear();            
+            for (var i = currentYear; i >= currentYear-8 ; i--) {
+                let option = "";
+                if (i == currentYear) {
+                    option = "<option value='" + i + "' selected>" + i + "</option>";
+                } else {
+                    option = "<option value='" + i + "'>" + i + "</option>";
+                }
+                $("#cmeYearSearch").append($(option));
+            }
+
+            form.render("select");
+        }
+
+        //监听举办年度
+        form.on('select(cmeYearSearch)', function(data){
+            nowYear = data.value;
+            getTwoKnowledge();
+            renderScoreLevel('scoreLevelSearch','holdTypeSearch');
+        });
+
+        // 监听二级学科
+        let bindKnowledgeTwo = function () {
+            form.on('select(knowledgeTwoFilter)', function (data) {
+                if (data.value != "" && data.value != null) {
+                    getThreeKnowledge("knowledgeThreeSearch", data.value, function () { });
+                } else {
+                    $("#knowledgeThreeSearch").empty();
+                    form.render();
+                }
+            });
+        }
+
+        // 监听二级学科（表单）
+        let bindKnowledgeTwoForm = function () {
+            form.on('select(twoKnowledgeIdFrom)', function (data) {
+                if (data.value != "" && data.value != null) {
+                    getThreeKnowledgeForm("knowledgeThreeFrom", data.value, function () { });
+                } else {
+                    $("#knowledgeThreeFrom").empty();
+                    form.render();
+                }
+            });
+        }
+
+        let setSpecialScoreLevelScore = function (slId, data) {
+            if (slId == "scoreLevelForm" && window["special_cme_groupuproj_score_level"] != '') {
+                let specialScoreLevelScoreArr = JSON.parse(window["special_cme_groupuproj_score_level"]);
+                specialScoreLevelScoreArr.forEach(function(item) {
+                    if (data.current.id == item.score_level_id) {
+                        $("#score").val(item.score).prop("disabled", "disabled").addClass("layui-disabled");
+                    }
+                });
+            }
+        }
+
+        let syncActivityContentRequired = function () {
+            const required = _isZheJiang || _isNeiMeng;
+            $('#scoreType').attr('lay-verify', required ? 'required' : '');
+            $('#lblActivityContent').find('.required-item')[required ? 'show' : 'hide']();
+        }
+
+        let syncNeiMengFixedFields = function () {
+            if (!_isNeiMeng) return;
+
+            $('#period')
+                .val(1)
+                .prop('readonly', true)
+                .addClass('layui-disabled');
+            $('#score')
+                .val(0.2)
+                .prop('readonly', true)
+                .addClass('layui-disabled');
+        }
+
+        // 新增或者编辑院内活动
+        async function createDeptGroupproj(type, data) {
+            window.g_dept_modal_action = type;
+            $('#groupProjForm')[0].reset();
+            $('#groupProjForm input[name=groupProjId]').val('');
+
+            syncActivityContentRequired();
+            syncNeiMengFixedFields();
+
+            if (type == 'edit') {
+                nowYearForm = data.cmeYear;
+                getTwoKnowledgeForm();
+                renderScoreLevel('scoreLevelForm', 'holdTypeFrom');
+                $('#scoreLevelForm').val(data.scoreLevel);
+                data.scoreLevel && initScoreLevelContentSel('scoreLevelForm');
+                await pause(100);
+                getThreeKnowledgeForm('knowledgeThreeFrom', data.knowledgeTwoId, function () {
+                    form.val('addGroupProjForm', data);
+                    syncNeiMengFixedFields();
+                    treeSelect.checkNode('scoreLevelForm', data.scoreLevel);
+                });
+                $('#scoreLevelForm').val(data.scoreLevel);
+                getHoldType('scoreLevelForm', 'holdTypeFrom');
+            }
+            if (type == 'add') {
+                nowYearForm = new Date().getFullYear();
+                getTwoKnowledgeForm();
+                renderScoreLevel('scoreLevelForm', 'holdTypeFrom');
+                
+                // 广东特有逻辑：新增时，举办年度下拉框默认显示当前年度
+                if (_isGuangdong) {
+                    $('#cmeYearForm').val(nowYearForm);
+                }
+            }
+            form.render('select');
+            
+            layer.open({
+
+                type    : 1,
+                title   : type == 'add' ? '添加活动' : '编辑活动',
+                content : $('#addGroupProj-div'),
+                area    : [ '820px', (_isHenan) ? '590px' : '550px' ],
+                success: function () {
+                    if (_isHuBei || _isGuangxi || _isHainan || _isGuangdong) $('#score').prop('disabled', 'disabled').addClass('layui-disabled');
+                    if ((new Date()) > new Date(window['value_forbid_some_operate_on_last_year_data'])) {
+                        $('#cmeYearForm').prop('disabled', 'disabled').addClass('layui-disabled');
+                    }
+                    if (_isGuangdong) {
+                        $('#period-container').hide();
+                        $('#score-container').hide();
+                        $('#period').removeAttr('lay-verify').val(0);
+                        $('#score').removeAttr('lay-verify').val(0);
+                        $('#limitPerson-container').insertBefore('#medicalType-container');
+                    }
+                },
+                cancel: function (index, layero) { $('#groupProjForm')[0].reset(); }
+            });
+        }
+
+        function pause(delay) {
+            return new Promise(resolve => setTimeout(resolve, delay));
+        }
+
+        //删除院内活动
+        let delDeptGroupproj = function (id) {
+            layer.confirm('确定删除该项目吗?', { icon: 3, title: '提示' }, function (index) {
+                const tempUrl = huayi_projectscore_url + 'cmeGroupProj/delProjectById?projectId=' + id;
+                commonAjax("get", tempUrl, {}, function () { layer.msg("删除失败"); },
+                    function (res) {
+                        if (res.success == false) {
+                            layer.msg(res.msg);
+                            return;
+                        }
+                        layer.msg(res.data, { time: 3000 })
+                        table.reload('cmeGroupproj');
+                    });
+            });
+        }
+
+        //维护举办周期
+        let showCycleModal = function (projId, projPeriod, cmeYear) {
+            gOpenedProjId = projId;
+            gOpenedProjPeriod = projPeriod;
+            gCmeYear = cmeYear;
+            gLayerIndex = layer.open({
+                type: 2,
+                shade: 0.6,
+                shadeClose: true,
+                title: '完善举办周期',
+                content: '/pages/mod/group/modals/CycleModal.html?projId=' + projId + '&projPeriod=' + projPeriod + "&cmeYear=" + cmeYear,
+                area: ['100%', '100%']
+            });
+        }
+
+        let projApply = function (data) {
+            layer.open({
+                type: 2,
+                shade: 0.6,
+                shadeClose: true,
+                title: '举办前申请',
+                content: '/pages/project/internalHospitalActivities/GroupProjApplyBeforeHold.html?projectId=' + data.groupProjectId + '&scoreLevel=' +  data.scoreLevel + '&cmeYear=' +  data.cmeYear ,
+                area: ['100%', '100%']
+            });
+        }
+
+
+        // 维护试卷
+        let showPaper = function (data) {
+            layer.open({
+                title: '试卷维护',
+                type: 2,
+                area: ['100%', '100%'],
+                maxmin: false,
+                content: '/pages/project/CmeExamQuestion.html?projectId=' + data.groupProjectId + '&paperName=' + data.groupProjectName + '&projectType=2',
+                scrollbar: false
+            });
+        }
+
+        // 项目评价
+        let showProjEva = function (data) {
+            layer.open({
+                title: '项目评价',
+                type: 2,
+                area: ['100%', '100%'],
+                maxmin: true,
+                content: '/pages/project/CmeProjEvaluation.html?projectId=' + data.groupProjectId + '&projectType=2',
+                scrollbar: false
+            });
+        }
+        // 考试结果
+        let viewExamResult = function (data) {
+             // 考试结果查看
+             layer.open({
+                title: '考试结果',
+                type: 2,
+                area: ['100%', '100%'],
+                maxmin: true,
+                content : '/pages/project/CmeExamResultPeople.html?projectId=' +  data.groupProjectId + '&projectType=2',
+                scrollbar: false
+            });
+        }
+
+        //扫码考勤
+        let sweepAttendance = function (data) {
+            let userId = localStorage.getItem("user-id");
+            //let attendanceUrl = '/pages/project/attendanceForTeach/AttendanceGroupChoose.html?projectId=' + data.groupProjectId + '&projectType=2'+"&scoreLevel=" + data.scoreLevel;
+            
+             // 扫码考勤（广东走签到签退页）
+             
+            let attendanceQuery = 'projectId=' + data.groupProjectId  + '&projectType=2' + "&scoreLevel=" + data.scoreLevel;
+            let attendanceUrl = (_isGuangdong ? '/pages/project/attendanceForTeach/AttendanceGroupChooseSignInOut.html?' 
+                                                : '/pages/project/attendanceForTeach/AttendanceGroupChoose.html?') + attendanceQuery;
+
+            layer.open({
+                closeBtn: false,
+                title: false,
+                type: 2,
+                area: ['100%', '100%'],
+                maxmin: false,
+                content: attendanceUrl,
+                scrollbar: false
+            });
+        }
+
+        let showCoureseModel = function (action, courseFormVal) {
+            let create = ModalActionEnum.CREATE === action;
+            let edit = ModalActionEnum.EDIT === action;
+            layer.open({
+                type: 2,
+                shade: 0.4,
+                shadeClose: true,
+                title: create ? '添加课程' : (edit ? '编辑课程' : ''),
+                content: '/pages/mod/group/modals/CourseModal.html?' + jsonStr2urlParam(JSON.stringify(courseFormVal)),
+                area: ['100%', '100%'],
+                success: function (layero, index) {
+                }
+            });
+        }
+
+        let setPersonScore = function (data) {
+            layer.open({
+                title: '授分',
+                type: 2,
+                area: ['100%', '100%'],
+                maxmin: true,
+                content: 'deptAwardingPoints.html?projectId=' + data.groupProjectId + '&projectType=2&scoreLevel='+data.scoreLevel,
+                scrollbar: false
+            });
+        }
+
+        let getToolbar = function () {
+            //如果开启了科室代办功能，单位分配给科室院内活动，科室无法添加
+            if (window["fun_dept_agent_groupproj"] == 1) {
+                return false;
+            } else {
+                return "#bar";
+            }
+        }
+
+
+        // 监听头部新增按钮
+        let bindToolbar = function () {
+            table.on('toolbar(cmeGroupproj)', function (obj) {
+                obj.event == 'add' && createDeptGroupproj("add");
+            });
+
+            // 监听行内按钮
+            table.on('tool(cmeGroupproj)', function (obj) {
+                obj.event == 'edit' && createDeptGroupproj("edit", obj.data);
+                obj.event == 'del' && delDeptGroupproj(obj.data.groupProjectId);
+                //维护举办周期
+                obj.event == 'maintenanceCycle' && showCycleModal(obj.data.groupProjectId, obj.data.period, obj.data.cmeYear);
+                //举办前预审
+                obj.event == 'projApply' && projApply(obj.data);
+                //维护试卷
+                obj.event == 'maintainTestPaper' && showPaper(obj.data);
+                //项目评价
+                obj.event == 'projectEvaluation' && showProjEva(obj.data);
+                // 考试结果
+                obj.event == 'viewExamResult' && viewExamResult(obj.data);
+                //扫码考勤
+                obj.event == 'sweepCodeAttendance' && sweepAttendance(obj.data);
+                //授分
+                obj.event == 'grantPoints' && setPersonScore(obj.data);
+
+                if (obj.event === 'editFeedback') {
+
+                    let gProjId = obj.data.groupProjectId;
+                    let content = `/pages/project/CmeGroupProjFeedback.html?projectId=${gProjId}&cmeYear=${obj.data.cmeYear}`;
+                    if(_isHainan) {
+                        content = '/pages/mod/group/modals/GroupFeedback.html?a=a&g_proj_id=' + gProjId;
+                    }
+                    layer.open({
+                        type: 2,
+                        shade: 0.6,
+                        shadeClose: true,
+                        title: '执行情况反馈',
+                        content: content,
+                        area: ['100%', '100%']
+                    });
+
+                }
+
+            });
+        }
+
+
+        function normalizeDateValue(value) {
+            if (!value) return value;
+            if ('string' === typeof value) return value.replace(/-/g, '/');
+            return value;
+        }
+
+        function getCycleDurationHours(startDate, endDate) {
+            if (!startDate || !endDate) {
+                return 0;
+            }
+            let startTime = new Date(normalizeDateValue(startDate)).getTime();
+            let endTime = new Date(normalizeDateValue(endDate)).getTime();
+            if (Number.isNaN(startTime) || Number.isNaN(endTime)) {
+                return 0;
+            }
+            return (endTime - startTime) / 3600000;
+        }
+
+        function hasCycleDurationShorterThanPreset(cycleVoList, presetPeriod) {
+            let presetHours = Number(presetPeriod || 0);
+            if (!(presetHours > 0) || !Array.isArray(cycleVoList) || 0 === cycleVoList.length) {
+                return false;
+            }
+            return cycleVoList.some(cycleVo => getCycleDurationHours(cycleVo.startDate, cycleVo.endDate) < presetHours);
+        }
+
+        function validateHainanCyclesBeforeSubmit(groupProj) {
+            let groupProjId = groupProj.groupProjId;
+            if (!_isHainan || !groupProjId) {
+                return Promise.resolve(true);
+            }
+            return axios({
+                method: 'get',
+                url: huayi_projectscore_url + 'pgsi/gproj/detail/' + groupProjId,
+                responseType: 'json'
+            }).then((response) => {
+                let jsonRes = response.data || {};
+                if (!jsonRes.success) {
+                    layer.msg(jsonRes.msg || '加载举办周期失败');
+                    return false;
+                }
+                let cycleVoList = jsonRes.data && jsonRes.data.cycleVoList ? jsonRes.data.cycleVoList : [];
+                if (hasCycleDurationShorterThanPreset(cycleVoList, groupProj.period)) {
+                    layer.msg(HAINAN_CYCLE_DURATION_ERROR);
+                    return false;
+                }
+                return true;
+            }).catch(() => {
+                layer.msg('加载举办周期失败');
+                return false;
+            });
+        }
+
+        function submitGroupProj(fields, action) {
+            validateHainanCyclesBeforeSubmit(fields).then((valid) => {
+                if (valid) {
+                    saveGroupProj(fields, action);
+                }
+            });
+        }
+
+        form.on('submit(saveBack)', data => {
+            let fields = data.field;
+            if (Number(fields.score) > Number(fields.period)) {
+                layer.confirm('学分大于学时，是否继续添加？', {
+                    title   : '提示',
+                    btn     : ['确定', '取消']
+                },
+                () => submitGroupProj(fields, 0),
+                () => {});
+            } else submitGroupProj(fields, 0);
+            return false;
+        });
+        form.on('submit(nextStep)', data => {
+            let fields = data.field;
+            if (Number(fields.score) > Number(fields.period)) {
+                layer.confirm('学分大于学时，是否继续添加？', {
+                    title   : '提示',
+                    btn     : ['确定', '取消']
+                }, 
+                () => submitGroupProj(fields, 1),
+                () => {});
+            } else submitGroupProj(fields, 1);
+            return false;
+        });
+        let saveGroupProj = function (groupProj, action) {
+            let visit;
+            if (_isNeiMeng) {
+                groupProj.period = 1;
+                groupProj.score = 0.2;
+            }
+            if (groupProj.groupProjId) {
+                // update
+                visit = huayi_projectscore_url + 'pgsi/gproj/update';
+                groupProj.userUpdate = _deptId;
+            } else {
+                // create
+                visit = huayi_projectscore_url + 'pgsi/gproj/create';
+                // not null constraint
+                groupProj.userCreate = _deptId;
+                groupProj.unitId = _unitId;
+                groupProj.deptId = _deptId;
+                groupProj.standardKindId = _standardKindId;
+            }
+            postAction(visit, groupProj).then((response) => {
+                let jsonRes = response.data;
+                if (jsonRes.success) {
+                    gProjId = jsonRes.data.groupProjId;
+                    layer.msg('已保存院内活动');
+                    layer.closeAll();
+                    loaderTable();
+                    if (1 === action) {
+                        // 下一步,完善举办周期
+                        showCycleModal(gProjId, groupProj.period, groupProj.cmeYear);
+                    }
+                }
+            }).catch((error) => {
+                layer.msg("error:保存院内活动");
+            }).finally(() => { });
+        }
+
+
+
+        $("#period").on("input", function(event) {
+            var $this = $(this);
+            var value = $this.val();
+
+            // 允许退格清空，避免单字符无法修改
+            if (value === "") {
+                return;
+            }
+            
+            // 仅当输入为整数时，按省份规则自动计算学分
+            if (/^\d+$/.test(value)) {
+                if(_isGuangxi) {
+                    let period = parseInt(value);
+                    if(Number.isNaN(period)) {
+                        $("#score").val(0);
+                    } else {
+                        let score = period < 6 ? 0.2 : 1;
+                        $("#score").val(score);
+                    }
+                } else if(_isHenan || _isHainan || _isGuangdong ) {
+                    let period = parseInt(value);
+                    if(Number.isNaN(period)) {
+                        $("#score").val(0);
+                    }else if(period <= 30) {
+                        let result =  period / 6;
+                        let score = (result == parseInt(result)) ? result : parseInt(result)+0.2;
+                        $("#score").val(score);
+                    }else {
+                        $("#score").val(5);
+                    }
+                }             
+                if(_isNingxia) {
+                    let period = parseInt(value);
+                    if(Number.isNaN(period)) {
+                        $("#score").val(0);
+                    }else if(period < 1) {
+                        $("#score").val(0);
+                    }else {
+                        let score = period < 6 ? 0.2 : 1;
+                        $("#score").val(score);
+                    }
+                } 
+                return;
+            } else {
+                // 如果不是整数，撤销这次输入
+                $this.val($this.data('lastValidValue'));
+                
+            }
+        }).on("keydown", function(event) {
+            // 存储最后一次有效的整数值
+            $(this).data('lastValidValue', $(this).val());
+        }).on("blur",function() {
+            if($(this).val() == "") {
+                (_isHenan || _isHainan) &&  $("#score").val(0);
+                layer.msg("请录入学时",{icon:7});
+            }
+        });
+        
+        let timeout;
+        $("#limitPerson").on("input", function(event) {
+            var $this = $(this);
+            var value = $this.val();
+           
+            if (value != "" && !/^\d+$/.test(value)) {
+                // 如果不是整数，撤销这次输入
+                $this.val($this.data('lastValidValue'));
+            }
+            if(_isHenan) {
+                clearTimeout(timeout);
+                if(value > HENAN_LIMIT_PEROSN_MAX) {
+                    timeout = setTimeout(() => {
+                        $this.val(1000);
+                    }, 300);
+                }
+            }
+        }).on("keydown", function(event) {
+            // 存储最后一次有效的整数值
+            $(this).data('lastValidValue', $(this).val());
+        });
+
+
+        //自定义验证规则
+        form.verify({
+            groupProjName: function (value) {
+                if (value.length > 120) return '活动名称不能超过120个字符';
+            },
+            period: function(value) {
+                if(parseInt(value) != value) {
+                    return '学时应该是整数';
+                }
+            },
+            score: function(value) {
+                let period = $("#period").val();
+                if(_isGuangxi) {
+                    let periodNum = Number(period);
+                    let score = periodNum < 6 ? 0.2 : 1;
+                    let check =  (value == score);
+
+                    if(check == false) {
+                        return `学时学分限制规则：录入学时生成学分，学时只能录入整数。1-5小时为0.2学分；6小时及以上为1学分，最高1分。`;
+                    }
+                } else if(_isHenan || _isHainan || _isGuangdong) {
+                    let score;
+                    if(period <= 30) {
+                        let result =  period / 6;
+                        score = (result == parseInt(result)) ? result : parseInt(result)+0.2;
+                    }else {
+                        score = 5;
+                    }
+                    let check =  (value == score);
+
+                    if(check == false) {
+                        return `学时学分限制规则：录入学时生成学分，学时只能录入整数。大于0小于6为0.2学分; 6学时1学分; 大于6学时小于12学时获得1.2学分; 12学时2学分;
+                        大于12学时小于18学时获得2.2学分; 18学时3学分;大于18学时小于24学时获得4.2学分; 24学时4学分;大于24学时小于30学时获得4.2学分; 大于等于30学时5学分;`;
+                    }
+                }
+            },
+            otherNo: function (value) {
+                if (value.length > 25) return '编号不能超过25个字符';
+            },
+            remark: function (value) {
+                if (value.length > 100) return '备注不能超过100个字符';
+            },
+            limitPerson: function(value) {
+                if(parseInt(value) != value) {
+                    return '拟授分人数应该是整数';
+                }
+                if(_isHenan) {
+                    if(parseInt(value) > HENAN_LIMIT_PEROSN_MAX) {
+                        $("#limitPerson").val(HENAN_LIMIT_PEROSN_MAX);
+                        return '拟授分人数不能超过'+HENAN_LIMIT_PEROSN_MAX+'人';
+                    }
+                    if(parseInt(value) == 0) {
+                        return '拟授分人数应大于0';
+                    }
+                }
+            }
+        });
+
+
+        window.showCourseModal = showCoureseModel;
+        window.refreshTable = refreshTable;
+        window.onlyRefreshTable = onlyRefreshTable;
+        window.refreshCycle = refreshCycle;
+
+        function refreshTable() {
+            layer.closeAll();
+            loaderTable();
+        }
+        function onlyRefreshTable() {
+            loaderTable();
+        }
+
+        function refreshCycle() {
+            layer.closeAll();
+            showCycleModal(gOpenedProjId, gOpenedProjPeriod, gCmeYear);
+        }
+
+
+        /* 获取配置 */
+        window.getConfig = function (config_name) {
+            $.ajax({
+                async: false,
+                type: 'post',
+                url: huayi_sjwh_url + 'cmeCommonConfig/getConfigByUnitFromRedis',
+                data: {
+                    unitId: localStorage.getItem('unit-id'),
+                    configNames: config_name
+                },
+                success: function (res) {
+                    if (res.success == true) {
+                        window[config_name] = res.data[config_name];
+                    } else {
+                        layer.msg('获取配置失败');
+                    }
+                },
+                error: function () {
+                    layer.msg('获取配置失败');
+                }
+            });
+        }
+
+        function renderScoreLevel(slId, hyId) {
+            if (isNeimengSpecial()) $('#' + slId).append('<option value="6926b861-5d4a-44af-8ca3-9f0a01000b93">自治区级继续医学教育项目</option>');
+            else getScoreLevel(slId, hyId);
+        }
+
+        window.specialConfig = function() {
+            if(_isHenan || _isHainan || _isZheJiang || _isNingxia) {
+                $("#score").prop("disabled",'disabled').addClass("layui-disabled");
+            }
+            if(_isFuJian) {
+                let $scoreSel = $("<select>",{id:'score',name:'score','lay-verify':"required"});
+                let options = [{text:''},{value:0.2,text:0.2},{value:0.5,text:0.5},{value:1,text:1}];
+                $.each(options,(i,e) => {
+                    let $option = $("<option>",{value:e.value,text:e.text});
+                    $scoreSel.append($option);
+                })
+                $("#score").replaceWith($scoreSel);
+                form.render();
+            }
+        }
+
+
+        let htmlInit = function () {
+            
+            getConfig("fun_dept_agent_groupproj");
+            getConfig("range_dept_agent_groupproj_func_cols");
+            getConfig('value_forbid_some_operate_on_last_year_data');
+            //院内活动开启举办前申请举办后反馈功能的学分分类集合
+            getConfig('json_score_level_ids_open_apply_and_feedback');
+            getConfig("special_cme_groupuproj_score_level");
+           
+            tool.renderCheckType('#checkTypeSelector');
+            dateInit();
+            getTwoKnowledge();
+            getHoldType();
+            renderScoreLevel('scoreLevelSearch','holdTypeSearch');
+            element.tabChange("tabarea", "tab_1");
+            loaderTable();
+            bindToolbar();
+            specialConfig();
+
+            if(!_isFuJian) {
+                $("#tab_2").show();
+                $("#tab_3").show();
+            } 
+            if(_isNeiMeng) {
+                $("#tab_2").hide();
+                $("#tab_3").show();
+            }
+            if(_isjilin) {
+                $("#tab_2").hide();
+            }
+            if(_isGanSu || _isQingHai || _isSiChuan) {
+                $("#tab_2").hide();
+                $("#tab_3").hide();
+            }
+            if(_isZheJiang) {
+                $("#tab_1_3").hide();
+                $(".zhejiang_show").show();
+            }
+            if(_isHainan) {
+
+                // 海南套：筛选框三级学科不可选
+                $("#knowledgeThreeSearch").val("").attr("disabled", "disabled");
+
+                $("#tab_2").hide();
+                $("#tab_3_1").hide();
+                $("#tab_3_2").hide();
+                $("#tab_3_3").hide();
+                $("#tab_3_4").hide();
+                $("#tab_3_5").hide();
+                $("#tab_3_6").hide();
+                $("#tab_3_7").show();
+                $("#tab_3_8").show();
+            }
+            if(_isGuangxi) {
+                $("#tab_2").hide();
+                $("#tab_3").show();
+            }
+
+        }
+
+        $(function() {
+            htmlInit();
+        })
+
+       
+
+        
+        window.ableOperateLastYearData = function(dataYear) {
+            let cgv = window["value_forbid_some_operate_on_last_year_data"];
+            if(cgv == null || cgv == "") {
+                return true;
+            }
+           
+            let able = true;
+            let deadline = new Date(cgv);
+            let now = new Date();
+            if(parseInt(dataYear) < now.getFullYear()){
+                if(deadline < now) {
+                    able = false;
+                }
+            }
+            return able;
+        }
+
+    });
+</script>
+
+</html>

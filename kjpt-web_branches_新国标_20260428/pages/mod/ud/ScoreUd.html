@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no, viewport-fit=cover"/>
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/bslayout.css"/>
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+</head>
+<body>
+<div class="layui_cont">
+    <div class="p_tit">
+        <h1>——选择学分删除或修改方式——</h1>
+    </div>
+    <div class="del_list">
+        <ul>
+            <li class="cur">
+                <img src="/pages/mod/ud/img/a_img.png">
+                <span>以人员为主删除或修改学分</span>
+            </li>
+            <li>
+                <img src="/pages/mod/ud/img/b_img.png">
+                <span>以项目为主删除或修改学员学分</span>
+            </li>
+            <li>
+                <img src="/pages/mod/ud/img/c_img.png">
+                <span>批量删除或修改个人活动学分</span>
+            </li>
+            <li>
+                <img src="/pages/mod/ud/img/d_img.png">
+                <span>以项目为主删除或修改主讲人学分</span>
+            </li>
+        </ul>
+    </div>
+    <div class="btn_box">
+        <button id="next">下一步</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+        let id = 'udby-person';
+        let title = '以人员为主删除或修改学分';
+        let target = 'pages/mod/ud/udby-person.html';
+
+        $("li").on('click', function () {
+            let index = $(this).index();
+            $(this).addClass("cur").siblings().removeClass("cur");
+            if (0 === index) {
+                id = 'udby-person';
+                title = '以人员为主删除或修改学分';
+                target = 'pages/mod/ud/udby-person.html';
+            } else if (1 === index) {
+                id = 'udby-proj';
+                title = '以项目为主删除或修改学员学分';
+                target = 'pages/mod/ud/udby-proj.html';
+            } else if (2 === index) {
+                id = 'udby-batch';
+                title = '批量删除或修改个人活动学分';
+                target = 'pages/mod/ud/udby-batch.html';
+            } else if (3 === index) {
+                id = 'udby-down';
+                title = '以项目为主删除或修改主讲人学分';
+                target = 'pages/mod/ud/udby-down.html';
+            }
+        });
+
+        $('#next').on('click', function () {
+            parent.addNewTab('layadmin-layout-tabs', {
+                id: id,
+                title: title,
+                attr: target,
+                content: target,
+            });
+        });
+    });
+
+
+</script>
+</body>
+<style>
+    body, html {
+        width: 100%;
+        background: #f2f2f2;
+    }
+
+    body {
+        position: relative;
+    }
+
+    img {
+        border: none;
+    }
+
+    a, input, span, label, li, button, dl, div, table {
+        -webkit-tap-highlight-color: transparent;
+        /*-webkit-appearance: none;*/
+    }
+
+    textarea, button, input, select {
+        outline: none;
+        border: none;
+        background: none;
+        padding: 0;
+    }
+
+
+    .layui_cont {
+        padding: 20px;
+    }
+
+    .p_tit {
+        width: 100%;
+        text-align: center;
+
+    }
+
+    .p_tit h1 {
+        color: #333;
+        font-size: 20px;
+        padding: 20px 0;
+    }
+
+    .del_list {
+        padding: 20px;
+    }
+
+    .del_list ul {
+        display: flex;
+        justify-content: center;
+    }
+
+    .del_list ul li {
+        flex: 1;
+        border: 1px solid #fff;
+        background: #fff;
+        padding: 20px 0;
+        text-align: center;
+        margin: 0 15px;
+        cursor: pointer;
+        border-radius: 14px;
+        height: 200px;
+    }
+
+    .del_list ul li img {
+        margin: 30px 0 20px 0;
+    }
+
+    .del_list ul li span {
+        width: 100%;
+        display: block;
+        color: #333;
+    }
+
+    .del_list ul li.cur {
+        border: 1px solid #009788;
+    }
+
+    .btn_box {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        padding: 30px 0;
+    }
+
+    .btn_box button {
+        width: 140px;
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        font-size: 16px;
+        border-radius: 40px;
+        background: #009788;
+        color: #fff;
+        margin: 0 10px;
+        cursor: pointer;
+    }
+</style>
+</html>

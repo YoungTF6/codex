@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>项目评价</title>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no, viewport-fit=cover"/>
+
+    <link rel="stylesheet" href="css/style.css">
+    <!-- <link rel="stylesheet" href="css/reset.css"> -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <!-- <script src="../js/jquery-migrate-3.4.0.js"></script> -->
+    <!-- <script src="../js/tool.js"></script> -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script src="/js/common.js"></script>
+
+    <style>
+        .layui-inline{
+            display: inline-block;
+            min-width: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="head_box">
+    <!-- <a href="#" class="return js_return_btn"></a> -->
+    项目评价
+</div>
+<div class="placeholder"></div>
+
+<div class="assess_container">
+    <!--考试是否通过提示-->
+    <div class="adopt_box hidden_elem" id="passBox">
+        <div class="adopt_sub">
+            <!-- <img src="../images/adopt_icon.png" alt="" class="adopt_icon"> -->
+            <span class="adopt_tit">感谢您的评价!
+                <br>
+				<!-- <span class="js-time">3</span> -->
+            </span>
+            <!--完成并返回-按钮-->
+            <!-- <input type="button" value="确定" class="return_btn js_pass_btn"> -->
+        </div>
+    </div>
+    <div class="cont_cent">
+        <form id="evaForm">
+            <ul class="ass_ul js-evaluation"></ul>
+        </form>
+        
+        <div class="proposal_box">
+            <span class="proposal_tit js_rate_title"></span>
+            <div class="center_text">
+                <span id="reteBox"></span>
+            </div>
+        </div>
+    </div>
+
+    <!--提交-按钮-->
+    <input type="button" value="提交" class="submit_btn hidden_elem js-submit-btn">
+</div>
+</body>
+</html>
+<script>
+    function bakUrl() {
+        var u = navigator.userAgent, app = navigator.appVersion;
+        var isAndroid = u.indexOf('Android_HuaYi') > -1; //g
+        var isIOS = u.indexOf('iOS_HuaYi') > -1; //ios终端
+        if (isAndroid) {
+            //安卓   参数如果c为1则app关闭当前页,参数如果为2则app刷新当前页
+            MoblieScriptImpl.flush(1);
+        }
+        if (isIOS) {
+            //IOS
+            window.webkit.messageHandlers.flush.postMessage(1);
+        }
+    }
+
+    function changeTime(){
+        var time;
+        time = $(".js-time").text();  
+        time = parseInt(time);
+        if (time <= 0) {
+            bakUrl();
+        } else {
+            time--;
+            $(".js-time").text(time);
+        }
+    }
+
+     // 全局配置及引入相关的模块
+     layui.config({
+        base : '/js/layui/ext/'
+    }).extend({
+        tool        :   'tool'
+    });
+    layui.use(['table', 'form','rate','tool'], function () {
+        var rate = layui.rate,layer = layui.layer,tool=layui.tool;
+        let nowProjectId="",nowPersonId="",nowProjectType="",nowData=null,rateValue=0;
+        let itemArr = ["item1","item2","item3","item4","item5","item6"];
+        //得到评价题
+        let getEvaQuestion = function(projectId,projectType){
+            $.ajax({
+                url: huayi_projectscore_url + "cmeProjEvaluation/getEvaluationQuestion/browser",
+                type:'post',
+                data:{
+                    projectId   :   projectId,
+                    projectType :   projectType,
+                },
+                success:function(res){
+                    createQuestions(0, res.status , res.data , res.msg);
+                },
+                error:function(res){
+                    createQuestions(0);
+                }
+            });
+        }
+
+        //创建评价题，type：0未评价，1已评价
+        let createQuestions = function(type=0,status=301,data,msg="系统错误"){
+            if(status!=200){
+                $(".js-submit-btn").addClass("hidden_elem");
+                $(".js-evaluation").html(`<div class='error_text'>${msg}</div>`);
+                return;
+            }
+            if(data==null || data.length == 0){
+                $(".js-submit-btn").addClass("hidden_elem");
+                $(".js-evaluation").html("<div class='error_text'>无数据</div>");
+                return;
+            }
+            nowData = data;
+            if(type == 1){
+                $(".js-submit-btn").addClass("hidden_elem");
+            }else{
+                $(".js-submit-btn").removeClass("hidden_elem");
+            }
+            let htmlText = "";
+            let index = 1;
+            for(let obj of data){
+                if(obj.title == 0||obj.evaType == 3) continue;
+                if(obj.evaType==1){
+                    htmlText += radioEva(obj,index++);
+                    continue;
+                }
+                if(obj.evaType == 2 || obj.evaType == 22){
+                    htmlText += checkboxEva(obj,index++);
+                    continue;
+                }
+                htmlText += teacherEva(obj,index++);
+            }
+            for(let obj of data){
+                if(obj.evaType != 3) continue;
+                htmlText += writeEva(obj,index++);
+            }
+            for(let obj of data){
+                obj.title == 0 && rateEva(obj,data.length);
+            }
+            $(".js-evaluation").html(htmlText);
+            controllCheckbox();
+        }
+
+        //监控限制最多选择的按钮
+        let controllCheckbox  = function() {
+            //限制最多两个
+            $(".max-check-two").click(function(elem){
+                if(elem.target.tagName != "INPUT") return;
+                const name = elem.target.name;
+                //限制不可点击
+                let allInputElems = $(`input[name="${name}"]`);
+                if($(`input[name="${name}"]:checked`).length >= 2){
+                    for(let inputElem of allInputElems) {
+                        if(!inputElem.checked) inputElem.disabled = true;
+                    }
+                }
+                else {
+                    for(let inputElem of allInputElems) {
+                        if(!inputElem.checked) inputElem.disabled = false;
+                    }
+                }
+            });
+        }
+
+        //填空题
+        let writeEva = function(data,index){
+            let htmlText = "";
+            if(tool.isEmpty(data.title)){
+                return htmlText;
+            }
+            htmlText += `<li class="ass_lis"><div class="proposal_box">`;
+            htmlText += `<span class="proposal_tit">${index}、${data.title}(选填)</span>`;
+            htmlText += `<textarea name="${data.dicType}" cols="30" rows="10"  class="exam_inp"></textarea>`;
+            htmlText += `</div></li>`;
+            return htmlText;
+        }
+
+        //单选
+        let radioEva = function(data,index){
+            let htmlText = "";
+            if(tool.isEmpty(data.title) || tool.isEmpty(data.evaType) || tool.isEmpty(data.dicType)){
+                return htmlText;
+            }
+            htmlText += `<li class="ass_lis"><p class="ass_tit">${index}、${data.title}</p><div class="ass_cent">`;
+            const answerArr = (tool.isEmpty(data.answer)) ? ['0'] : data.answer.split(",");
+            for(let i=0 ; i<itemArr.length ; i++){
+                const isCheck = (answerArr.includes(i+1)|| answerArr.includes(i+1+"")) ? " checked " : "";
+                if(data.hasOwnProperty(itemArr[i]) && !tool.isEmpty(data[itemArr[i]])){
+                    htmlText += `<label class="ass_label">`;
+                    htmlText += `<input type="radio" name="${data.dicType}" class="a-radio" value="${i+1}" ${isCheck}>`;
+                    htmlText += `<span class="b-radio"></span>`;
+                    htmlText += `<span class="radio_span">${data[itemArr[i]]}</span>`;
+                    htmlText += `</label>`;
+                }
+            }
+            htmlText += `</div></li>`;
+            return htmlText;
+        }
+
+        //多选
+        let checkboxEva = function(data,index){
+            let htmlText = "";
+            if(tool.isEmpty(data.title) || tool.isEmpty(data.evaType) || tool.isEmpty(data.dicType)){
+                return htmlText;
+            }
+            const answerArr = (tool.isEmpty(data.answer))? [] : data.answer.split(",");
+            const rangeNumClass = tool.isEmpty(data.answer) && data.evaType ==22 ? "max-check-two" : "";
+            const evaTitle = data.evaType == 22 ? data.title + "(只许选两项)" : data.title;
+            htmlText += `<li class="ass_lis"><p class="ass_tit">${index}、${evaTitle}</p><div class="ass_cent">`;
+            for(let i=0 ; i<itemArr.length ; i++){
+                const isCheck = (answerArr.includes(i+1)||answerArr.includes(i+1+"")) ? " checked " : "";
+                if(data.hasOwnProperty(itemArr[i]) && !tool.isEmpty(data[itemArr[i]])){
+                    htmlText += `<label class="ass_label">`;
+                    htmlText += `<input type="checkbox" name="${data.dicType}" class="a-radio ${rangeNumClass}" value="${i+1}" ${isCheck}>`;
+                    htmlText += `<span class="c-radio"></span>`;
+                    htmlText += `<span class="radio_span">${data[itemArr[i]]}</span>`;
+                    htmlText += `</label>`;
+                }
+            }
+            htmlText += `</div></li>`;
+            return htmlText;
+        }
+
+        //老师
+        let teacherEva = function(data,index){
+            let htmlText = "";
+            if(!isNaN("data.title")){
+                return htmlText;
+            }
+            htmlText += `<li class="ass_lis"><p class="ass_tit">${index}、${data.title}</p><div class="ass_cent">`;
+            for (let i = 1; i <= 2; i++) {
+                const itemText = (i == 1) ? "满意" : "不满意";
+                const isCheck = (data.answer == i) ? " checked " : "";
+                htmlText += `<label class="ass_label">`;
+                htmlText +=     `<input type="radio" name="${data.title}" class="a-radio" value="${i}" ${isCheck}>`;
+                htmlText +=     `<span class="b-radio"></span>`;
+                htmlText +=     `<span class="radio_span">${itemText}</span>`;
+                htmlText += `</label>`;
+            }
+            return htmlText;
+        }
+
+        //星级评价
+        let rateEva = function(data,index){
+            !tool.isEmpty(index) && $(".js_rate_title").html(`${index}、项目评分`);
+            rate.render({
+                elem: '#reteBox',
+                value: data.answer/2,
+                half: true,
+                text: true,
+                readonly: false,
+                setText: function(value){
+                    this.span.text(value*2);
+                    rateValue = value*2;
+                }
+            })
+        }
+
+        //监听按钮
+        let bindBtn = function(projectId,personId){
+            $(".js_return_btn").click(function(){
+                window.location.href  = `joinProject.html`;
+            });
+
+            $(".js_pass_btn").click(function(){
+                bakUrl();
+            });
+
+            $(".js-submit-btn").click(function(){
+                submitEva();
+            });
+        }
+
+        let submitEva = function(){
+            const evaData = [];
+            for(let obj of nowData){
+                if(obj.title == 0){
+                    evaData.push({projId:nowProjectId,title:"0",answer:rateValue});
+                    continue;
+                }
+                if(obj.evaType == 3){
+                    let evaAnswer = $(`#evaForm textarea[name='${obj.dicType}']`).val();
+                    evaData.push({projId:nowProjectId,title:obj.dicType,answer:evaAnswer});
+                    continue;
+                }
+                const key = (tool.isEmpty(obj.dicType)) ? obj.title : obj.dicType;
+                let elems = $(`#evaForm input[name="${key}"]:checked`);
+                let answer = [];
+                for (let i = 0; i < elems.length; i++) {
+                    answer.push(elems[i].value);
+                }
+                if(answer.length == 0){
+                    layer.msg("请全部填写选择题");
+                    return;
+                }
+                evaData.push({projId:nowProjectId,title:key,answer:answer.toString()});
+            }
+            $.ajax({
+                url: huayi_projectscore_url + "cmeProjEvaluation/saveEva/browser",
+                type:'post',
+                data:JSON.stringify(evaData),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success:function(res){
+                    if(res.status == 200){
+                        $(".js-submit-btn").addClass("hidden_elem");
+                        $("#passBox").removeClass("hidden_elem");
+                        scroll(0,0);
+                        setInterval("changeTime()", 1000);
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                },
+                error:function(res){
+                    layer.msg("保存失败");
+                }
+            });
+        }
+
+        let htmlInit = function(){
+            nowProjectId = getUrlParam("proj_id");
+            nowProjectType = getUrlParam("QRType");
+            if(tool.isEmpty(nowProjectId) || tool.isEmpty(nowProjectType)){
+                layer.msg("缺少必要参数");
+                return;
+            }
+            getEvaQuestion(nowProjectId,nowProjectType);
+            bindBtn();
+        }
+        htmlInit();
+    })
+</script>

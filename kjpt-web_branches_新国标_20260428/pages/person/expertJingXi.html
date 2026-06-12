@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>江西专家库</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <style>
+        #addExpertJx .layui-inline {
+            width: 80%;
+        }
+
+        #addBatchExpertJx .layui-inline {
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!--        搜索框区域-->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <blockquote class="layui-form layui-form-item layui-elem-quote one-btn" lay-filter="query-form">
+                <div class="layui-inline">
+                    <label class="layui-form-label">专家姓名</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="expertName" id="expertNameSearch" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">专业</label>
+                    <div class="layui-input-block">
+                        <select name="expertJxId" id="expertJxSpecSearch" lay-search>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <a class="layui-btn layui-btn-sm btn-search" id="searchBtn" onclick="loaderTable()" lay-filter="table-search" data-type="reload">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </a>
+                </div>
+            </blockquote>
+        </div>
+
+        <!--表格区域-->
+        <div class="layui-card-body layui_body_box">
+            <table class="layui-table" id="expertJxTable" lay-filter="expertJxTable" style="margin: 0px 0px;"></table>
+        </div>
+
+        <!-- 添加弹窗-->
+        <div id="addExpertJx" style=" display:none;text-align: center">
+            <form class="layui-form" style="padding: 30px;" id="expertJxForm" lay-filter="add-filter">
+                <input type="hidden" name="expertId" autocomplete="off" class="layui-input">
+              
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>姓名</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="name" placeholder="请填写姓名" autocomplete="off" class="layui-input" lay-verify="expertName">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>单位</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="unit" placeholder="请填写单位" autocomplete="off" class="layui-input" lay-verify="unit">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>专业</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="spec" placeholder="请填写专业" autocomplete="off" class="layui-input" lay-verify="spec">
+                            <!-- <select name="spec" id="expertJxSpecForm" lay-verify="expertJxSpecVerify" lay-search > -->
+                            <!-- </select> -->
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>电话</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="phone" placeholder="请填写电话" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-sm" lay-submit lay-filter="submit">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- 抽取专业 -->
+        <div id="addBatchExpertJx" style=" display:none;text-align: center">
+            <form class="layui-form" style="padding: 30px;" id="specForm" lay-filter="batch-filter">
+                
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>专业</label>
+                        <div class="layui-input-block">
+                            <select name="specs" id="specs">
+                                <option value="">请选择</option>
+                                <option value="0">全部</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>数量</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="sums" placeholder="请填写数量" autocomplete="off" class="layui-input" lay-verify="sums">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-sm" lay-submit lay-filter="submitBatch">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+    </div>
+</div>
+
+<!--表格内数据编辑、删除按钮-->
+<script type="text/html" id="rowBar">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row js-bar-btn" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger btn-danger-row js-bar-btn" lay-event="del">删除</a>
+</script>
+<script type="text/html" id="bar">
+    <a class="layui-btn layui-btn-sm layui-btn-radius js-bar-btn" lay-event="add">添加</a>
+    <a class="layui-btn layui-btn-sm layui-btn-radius js-bar-btn" lay-event="addBatch">抽取专业</a>
+</script>
+<script>
+    // 全局配置及引入相关的模块
+    layui.config({
+        base : '/js/layui/ext/'
+    }).extend({
+        tool        :   'tool'
+    });
+
+    layui.use(['table', 'form','upload','tool'], function () {
+        var table = layui.table,form = layui.form,$ = layui.jquery;
+        var layer = layui.layer,tool=layui.tool;
+        let expertJxObj = {};
+        let ajaxNum =0,loading=null;
+
+        // 表格配置
+        window.loaderTable = function () {
+            table.render({
+                elem: '#expertJxTable',
+                url: huayi_personorg_url + 'expertJx/list',
+                title: '专家库',
+                defaultToolbar: [],
+                where: {
+                    name: $('#expertNameSearch').val(),
+                    spec: $('#expertJxSpecSearch').val()
+                },
+                cols: [[
+                    {align: 'center',width: 120,toolbar: '#rowBar', title: '操作', fixed: 'left'},
+                    {field: 'name', title: '姓名',align: 'center'},
+                    {field: 'unit', title: '单位',align: 'center'}, 
+                    {field: 'spec', title: '专业',align: 'center'},
+                    {field: 'phone', title: '电话',align: 'center'},
+                    {field: 'addTime', title: '添加时间',align: 'center'},
+                ]],
+                toolbar: '#bar',
+                id: "expertJxTable",
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    if(res.status!=200) {
+                        layer.msg(res.msg);
+                        return;
+                    }
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "count": res.data.recordsTotal, //解析数据长度
+                        "data": res.data.records, //解析数据列表
+                        "page": res.data.pageNum, //当前页
+                        "limit": res.data.pageSize, //每页条数
+                    }
+                },
+                request: {
+                    pageName: 'pageNum', //页码的参数名称，默认：page
+                    limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                },
+                done:function(res,curr,count){
+                    curr > 1 && res.data.length === 0 && loaderTable();
+                }
+            });
+        };
+
+        // 监听头部新增按钮
+        table.on('toolbar(expertJxTable)', function (obj) {
+            if(obj.event == "add") {
+                openFormWindow();
+            } else if(obj.event == "addBatch") {
+                layer.open({
+                    type: 1,
+                    title: "抽取专业",
+                    content: $('#addBatchExpertJx'),
+                    area: ['600px', '450px'],
+                    cancel: function(index, layero){ $("#specForm")[0].reset(); }
+                })
+            }
+            
+        });
+
+        // 监听行内按钮
+        table.on('tool(expertJxTable)', function (obj) {
+            obj.event == "edit" && openFormWindow(obj.data);
+            obj.event == "del" && deleteExpertJx(obj.data.expertId);
+        });
+
+        //新增，编辑时打开弹窗
+        let openFormWindow = function(data=""){
+            const title = (data=="") ? "新增":"修改";
+            if(data=="") $("#addExpertJx input[name='expertId']").val('');
+            form.val("add-filter",data);
+            layer.open({
+                type: 1,
+                title: title,
+                content: $('#addExpertJx'),
+                area: ['600px', '450px'],
+                cancel: function(index, layero){ $("#expertJxForm")[0].reset(); }
+            })
+        }
+
+        let deleteExpertJx = function(expertId){
+            layer.confirm('确认删除', {icon: 3, title: '提示'}, function () {
+                $.ajax({
+                    type: 'get',
+                    url: huayi_personorg_url + 'expertJx/deleted',
+                    data: { expertId: expertId },
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.status === 200) {
+                            layer.msg("删除成功");
+                            loaderTable();
+                        }else{
+                            layer.msg(res.msg);
+                        }
+                    }
+                });
+            })
+        }
+
+        // form表单相关操作
+        // 新增/修改表单提交
+        form.on('submit(submit)', function (data) {
+            var expertId = $("#expertJxForm input[name='expertId']").val();
+            let URL = huayi_personorg_url + 'expertJx/update';
+            if(expertId=="" || expertId==null) {
+                URL = huayi_personorg_url + 'expertJx/save';
+            }
+            $.ajax({
+                type: 'post',
+                url: URL,
+                data:JSON.stringify(data.field),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    if(res.status == 200){
+                        layer.closeAll();
+                        loaderTable();
+                        $("#expertJxForm")[0].reset()
+                        layer.msg("保存成功");
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                },
+                error: function () {
+                    layer.msg("发送请求失败");
+                }
+            })
+            return false;
+        });
+
+         //关闭closeLoading的判断
+         let closeLoading = function(){
+            ajaxNum--;
+            if(ajaxNum<=0 && loading) layer.close(loading);
+        }
+        //打开加载
+        let openLoading = function(){
+            if(ajaxNum == 0) loading = layer.msg('加载中', {icon: 16, shade: 0.3, time:0});
+            ajaxNum ++;
+        }
+             //公共ajax
+             let commonAjax = function(type="get",url,data,failFun,successFun){
+            openLoading();
+            $.ajax({
+                type    :   type,
+                url     :   url,
+                data    :   data,
+                success :   function (res) {
+                    closeLoading();
+                    if(res.status != 200) {
+                        layer.msg(res.msg);
+                        return;
+                    }
+                    successFun(res);
+                },
+                error    :   function(res){
+                    closeLoading();
+                    failFun();
+                }
+            });
+        }
+          //获取专业
+          let expertJxInit = function(){
+            debugger
+            commonAjax('get',huayi_personorg_url +"expertJx/spec",{},
+                function(){layer.msg("专业加载失败");},
+                function(res){
+                    debugger
+                    for(let tempObj of res.data){
+                        expertJxObj[tempObj.keyId] = tempObj; 
+                        $('#specs').append(new Option(tempObj.spec,tempObj.spec));
+                    }
+                    tool.appendSelect("#expertJxSpecSearch",res.data,"spec","spec");
+                    tool.appendSelect("#expertJxSpecForm",res.data,"spec","spec");
+                });
+        }
+        expertJxInit();
+
+        //自定义验证规则
+        form.verify({
+            expertJxType : function(value){
+                if(value.length == 0) return '配置类型不能为空';
+            },
+            expertName: function(value){
+                if(value.length == 0) return '配置编码不能为空';
+                if(value.length > 80) return '配置编码最长不超过80个字符';
+            },
+            expertJxName: function(value){
+                if(value.length == 0) return '配置名称不能为空';
+                if(value.length > 80) return '配置名称最长不超过80个字符';
+            },
+            remark: function(value){
+                if(value.length == 0) return '备注不能为空';
+                if(value.length > 300) return '答案最长不超过300个字符';
+            }
+        });
+
+        //页面初始化，通过查看参数是否都在来进行是否加载页面ed646370-a5f3-4f88-a640-d62fda36c4b8
+        let htmlInit = function(){
+            loaderTable();
+        }
+
+        htmlInit();
+
+        form.on('submit(submitBatch)', function (data) {
+            if(data.field.spec == "" || data.field.sums == "") {
+                layer.msg("请填写专业和数量");
+                return false;
+            }
+            //判断data.field.sums正整数
+            if(!/^[1-9]\d*$/.test(data.field.sums)){
+                layer.msg("数量必须为正整数");
+                return false;
+            }
+            index = layer.open({
+                title: '专家',
+                type: 2,
+                area: ['80%', '80%'],
+                maxmin: true,
+                content: 'expertJxRandom.html?spec=' + encodeURIComponent(data.field.specs) + '&sums=' + data.field.sums,
+                scrollbar: false
+            });
+            return false;
+        });
+
+    });
+
+</script>
+</body>
+</html>
