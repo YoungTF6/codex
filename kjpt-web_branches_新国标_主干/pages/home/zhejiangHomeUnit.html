@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>首页</title>
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no, viewport-fit=cover" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+	<link rel="stylesheet" href="/front/css/reset.css" />
+	<link rel="stylesheet" href="/front/css/layout.css" />
+	<link rel="stylesheet" type="text/css" href="/front/css/default.css">
+    <link rel="stylesheet" type="text/css" href="/js/disk/gridstack.css">
+    <link rel="stylesheet" type="text/css" href="/css/fontPage.css">
+
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+	<script src="/front/js/jquery-ui.min.js"></script>
+	<script src="/front/js/lodash.min.js"></script>
+	<script src="/front/js/echarts.js"></script>
+    <script src="/js/disk/gridstack.js"></script>
+    <!-- 添加首页悬浮框 -->
+    <script src="/js/tools/dict_tool.js"></script>
+	<!--    ajax全局配置-->
+	<script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+	<script type="text/javascript" src="/js/constant.js"></script>
+	<link rel="stylesheet" href="/css/home/bslayout.css">
+    <link rel="stylesheet" href="/css/home/unit/bslayout.css">
+    <link rel="stylesheet" href="/css/home/unit/reset.css">
+    <link rel="stylesheet" href="/css/home/zjHome.css">
+
+</head>
+<script type="text/javascript">
+	let reg = new RegExp('(^|&)rand=([^&]*)(&|$)', 'i');    // 匹配目标参数
+	let result = window.location.search.substr(1).match(reg); // 对querystring匹配目标参数
+	if(result == null){
+		let url = window.location.href;
+		let ch = (url.indexOf('?')>0)?'&':'?';
+		window.location.href = url+ch+"rand="+(new Date()).getTime();
+	}
+ </script>
+<body style="overflow: auto;">
+
+    <div>
+        <div  id="peoplePop" style="display: none;">
+                <div class="modal">
+                    <h2>请选择</h2>
+                        <div class="option-container">
+                            <div class="option" data-title="个人注册信息审核" data-url="pages/person/personRegisterInfoCheck.html">个人注册信息审核</div>
+                            <div class="option" data-title="人员基本信息查看维护" data-url="pages/person/baseInfoManage.html">人员基本信息查看维护</div>
+                            <div class="option" data-title="人员状态/职称变更" data-url="pages/person/cmeChange.html">人员状态/职称变更</div>
+                            <div class="option" data-title="人员调动管理" data-url="pages/person/personTransfer.html">人员调动管理</div>
+                            <!-- <div class="option" data-title="人员信息变动日志" data-url="pages/person/personOperateLog.html">人员信息变动日志</div> -->
+                        </div>
+                </div>
+        </div>
+
+        <!-- 科室、单位信息管理 -->
+        <div id="deptPop" style="display: none;">
+                <div class="modal">
+                    <h2>请选择</h2>
+                    <div class="option-container">
+                        <div class="option" data-title="科室管理" data-url="pages/dept/comDept.html">科室管理</div>
+                        <div class="option" data-title="管理员信息维护" data-url="pages/unit/comUnitAdminDetail.html">管理员信息维护</div>
+                        <div class="option" data-title="联合体申请" data-url="pages/unit/comUnitUnited.html">联合体申请</div>
+                    </div>
+                </div>
+        </div>
+
+        <!-- 继续医学教育项目 -->
+        <div id="projectPop" style="display: none;">
+                <div class="modal">
+                    <h2>请选择</h2>
+                    <div class="option-container">
+                        <div class="option" data-title="新项目申报" data-url="pages/project/Project.html">新项目申报</div>
+                        <div class="option" data-title="项目审核" data-url="pages/project/ProjectOrgCheck.html">项目审核</div>
+                        <div class="option" data-title="项目申报汇总" data-url="pages/project/ProjectSummary.html">项目申报汇总</div>
+                        <div class="option" data-title="已公布项目管理" data-url="pages/project/CmeCmeProjList.html">已公布项目管理</div>
+                        <div class="option" data-title="已举办项目查看统计" data-url="pages/score/proj_statistics/cmeProjScoreStatistics.html">已举办项目查看统计</div>
+                    </div>
+                </div>
+        </div>
+
+        <!-- 非项目类继教活动管理 -->
+        <div id="notProjectPop" style="display: none;">
+                <div class="modal">
+                    <h2>请选择</h2>
+                    <div class="option-container">
+                        <div class="option group" data-title="内部培训举办前自动审核" data-url="pages/project/groupproj/unitCheck/groupProjAutoAuditConfig.html">内部培训举办前自动审核</div>
+                        <div class="option group" data-title="内部培训" data-url="pages/project/internalHospitalActivities/CmeGroupproj.html">内部培训</div>
+                        <div class="option group" data-title="内部培训查看统计" data-url="pages/score/proj_statistics/groupProjScoreStatistics.html">内部培训查看统计</div>
+                        <!-- <div class="option" data-title="审核科室举办活动" data-url="pages\project\groupproj\unitCheck\internalHospitalActivitiesCheckIndex.html">审核科室举办活动</div> -->
+                        <div class="option" data-title="外出进修（任务）审核" data-url="pages/score/cme_individual_score/unit_score_approval.html?scoreLevel=68015778-3b87-4adb-8c97-6a4e5c220d7e">外出进修（任务）审核</div>
+                        <div class="option" data-title="在职学历（学位）教育审核" data-url="pages/score/cme_individual_score/unit_score_approval.html?scoreLevel=5904b52c-100e-47fe-a3bd-b6ba8f131729">在职学历（学位）教育审核</div>
+                        <div class="option" data-title="可验证自学评估" data-url="pages/mod/zixue/listz.html">可验证自学评估</div>
+                        <div class="option" data-title="其他类审核" data-url="pages/score/cme_individual_score/unit_score_approval.html?scoreLevel=802e5814-8aba-40eb-886e-71b2fc7de391">其他类审核</div>
+                    </div>
+                </div>
+        </div>
+
+        <!-- 项目报备 -->
+        <div id="projectReportPop" style="display: none;">
+                <div class="modal">
+                    <h2>请选择</h2>
+                    <div class="option-container">
+                        <div class="option" data-title="异地继教项目" data-url="pages/project/projectRecord/zhejiang/diffPlaceRecord.html">异地继教项目</div>
+                        <div class="option" data-title="继教（学术会议）申请" data-url="pages/project/projectRecord/zhejiang/meetingRecord.html">继教（学术会议）申请</div>
+                        <div class="option" data-title="高级研修项目" data-url="pages/project/projectRecord/zhejiang/studyRecord.html">高级研修项目</div>
+                    </div>
+                </div>
+        </div>
+
+        <!-- 学分授予要求查看 -->
+        <div id="scoreRequirePop" style="display: none;">
+                <div class="modal">
+                    <h2>请选择</h2>
+                    <div class="option-container">
+                        <div class="option" data-title="达标标准浏览" data-url="../pages/passStandard/cme_pass_standard.html">达标标准浏览</div>
+                        <div class="option" data-title="学分分类浏览" data-url="pages/mod/ScoreLevelGlance.html">学分分类浏览</div>
+                    </div>
+                </div>
+        </div>
+
+        <!-- 系统设置 -->
+        <div id="systemSettingPop" style="display: none;">
+                <div class="modal">
+                    <h2>请选择</h2>
+                    <div class="option-container">
+                        <div class="option" data-title="修改密码" data-url="pages/ChangeThePassword.html">修改密码</div>
+                    </div>
+                </div>
+        </div>
+
+        <div id="scoreManagePop" style="display: none;">
+          <div class="modal">
+              <h2>请选择</h2>
+              <div class="option-container">
+                  <div class="option" data-title="个人学分录入" data-url="pages/score/cme_singleproj_score/grant_score_manage.html">个人学分录入</div>
+                  <div class="option" data-title="可验证自学评估" data-url="pages/mod/zixue/listz.html">可验证自学评估</div>
+                  <div class="option" data-title="审核科室/学员录入学分" data-url="pages/score/cme_individual_score/unit_score_approval.html">审核科室/学员录入学分</div>
+                  <div class="option" data-title="补学申请审核" data-url="pages/person/cmePersonMiddleInfo.html">补学申请审核</div>
+                  <div class="option" data-title="外省人员学分查看" data-url="pages/score/cme_province_proj_score.html">外省人员学分查看</div>
+                  <div class="option" data-title="学分综合查询" data-url="pages/mod/check/ScoreCheckInfoGlance.html">学分综合查询</div>
+                  <div class="option" data-title="学分删除修改" data-url="pages/mod/ud/ScoreUd.html">学分删除修改</div>
+                  <div class="option" data-title="人员学分情况查询" data-url="pages/score/creditstatus/personCreditStatus.html">人员学分情况查询</div>
+                  <div class="option" data-title="人员达标情况查询" data-url="pages/score/creditstatus/searchPeoplePass.html">人员达标情况查询</div>
+                  <div class="option" data-title="单位达标情况查询" data-url="pages/statistical/compliance_unit.html">单位达标情况查询</div>
+                  <div class="option" data-title="学分完成情况统计" data-url="pages/statistical/score_completion.html">学分完成情况统计</div>
+                  <div class="option" data-title="多年度学分审验" data-url="pages/mod/audit/zhejiang2.html">多年度学分审验</div>
+                  <div class="option" data-title="年度学分审验" data-url="pages/mod/audit/zhejiang1.html">年度学分审验</div>
+              </div>
+          </div>
+        </div>
+
+        <!-- 科室相关菜单 -->
+        <div  id="peoplePopDept" style="display: none;">
+            <div class="modal">
+                <h2>请选择</h2>
+                <div class="option-container">
+                    <div class="option" data-title="人员基本信息查看维护" data-url="pages/person/baseInfoManage.html">人员基本信息查看维护</div>
+                    <div class="option" data-title="人员状态/职称变更" data-url="pages/person/cmeChange.html">人员状态/职称变更</div>
+                    <!-- <div class="option" data-title="人员信息变动日志" data-url="pages/person/personOperateLog.html">人员信息变动日志</div> -->
+                </div>
+            </div>
+        </div>
+        <div id="projectPopDept" style="display: none;">
+            <div class="modal">
+                <h2>请选择</h2>
+                <div class="option-container">
+                    <div class="option" data-title="新项目申报" data-url="pages/project/ProjectPersonDept.html?v=101">新项目申报</div>
+                    <!-- <div class="option" data-title="已公布项目浏览" data-url="pages/project/CmeCmeProjListUD.html">已公布项目浏览</div> -->
+                    <div class="option" data-title="代办项目管理" data-url="pages/project/CmeCmeProjListDept.html">代办项目管理</div>
+                </div>
+            </div>
+        </div>
+        <div id="notProjectPopDept" style="display: none;">
+            <div class="modal">
+                <h2>请选择</h2>
+                <div class="option-container">
+                    <div class="option" data-title="内部培训" data-url="pages/project/groupproj/dept/deptGroupproj.html">内部培训</div>
+                    <div class="option" data-title="已举办内部培训查看统计" data-url="pages/score/proj_statistics/groupProjScoreStatistics.html">已举办内部培训查看统计</div>
+                </div>
+            </div>
+        </div>
+        <div id="scoreManagePopDept" style="display: none;">
+            <div class="modal">
+                <h2>请选择</h2>
+                <div class="option-container">
+                    <div class="option" data-title="个人学分录入管理" data-url="pages/score/cme_dept_score/dept_score_manage.html">个人学分录入管理</div>
+                    <div class="option" data-title="审核学员录入学分" data-url="pages/score/cme_individual_score/dept_score_approval.html">审核学员录入学分</div>
+                    <div class="option" data-title="学分删除修改器" data-url="pages/mod/ud/ScoreUd.html">学分删除修改器</div>
+                </div>
+            </div>
+        </div>
+        <div id="statisticsQueryPopDept" style="display: none;">
+            <div class="modal">
+                <h2>请选择</h2>
+                <div class="option-container">
+                    <div class="option" data-title="人员学分情况查询" data-url="pages/score/creditstatus/personCreditStatus.html">人员学分情况查询</div>
+                    <div class="option" data-title="人员达标情况查询" data-url="pages/score/creditstatus/searchPeoplePass.html">人员达标情况查询</div>
+                    <div class="option" data-title="学分完成情况统计" data-url="pages/statistical/score_completion.html">学分完成情况统计</div>
+                </div>
+            </div>
+        </div>
+        <div id="infoBrowsePopDept" style="display: none;">
+            <div class="modal">
+                <h2>请选择</h2>
+                <div class="option-container">
+                    <div class="option" data-title="达标标准浏览" data-url="../pages/passStandard/cme_pass_standard.html">达标标准浏览</div>
+                </div>
+            </div>
+        </div>
+        <div id="scorePrintPopDept" style="display: none;">
+            <div class="modal">
+                <h2>请选择</h2>
+                <div class="option-container">
+                    <div class="option" data-title="多年度学分验证表" data-url="pages/mod/audit/zhejiang2.html">多年度学分验证表</div>
+                    <div class="option" data-title="学分登记表" data-url="pages/mod/audit/zhejiang1.html">学分登记表</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- 一级菜单 -->
+    <div class="home-box">
+        <div class="top-buttons">
+            <div class="button2 cUnit"  id="peopleManage">
+                <img src="/img/home/unit/danweirenyuan.png">
+                <span class="text_box">单位人员管理</span>
+            </div>
+            <div class="button2 cUnit" id="deptManage">
+                <img src="/img/home/unit/keshidanwei.png">
+                <span class="text_box">科室、单位信息<br>管理</span>
+            </div>
+            <div class="button2 cUnit" id="projectManage">
+                <img src="/img/home/unit/jijiao.png">
+                <span class="text_box">继教项目管理</span>
+            </div>
+            <div class="button2 cUnit" id="notProjectManage">
+                <img src="/img/home/unit/feijijiao.png">
+                <span class="text_box">非项目类继教<br>
+                    活动管理</span>
+            </div>
+            <div class="button2 cUnit" id="projectReportManage">
+                <img src="/img/home/unit/baobei-icon.png">
+                <span class="text_box">项目登记<br>
+                    (外省、高级研修等)</span>
+            </div>
+            <div class="button2 cUnit" id="scoreManage">
+                <img src="/img/home/unit/xuefen.png">
+                <span class="text_box">学分管理</span>
+            </div>
+            <div class="button2 cUnit" id="scoreRequireManage">
+                <img src="/img/home/unit/search.png">
+                <span class="text_box">学分授予要求查看</span>
+            </div>
+            <div class="button2 cUnit" id="systemSettingManage">
+                <img src="/img/home/unit/shezhi.png">
+                <span class="text_box">系统设置</span>
+            </div>
+
+            <!-- 科室菜单 -->
+            <div class="button2 cDept"  id="peopleManageDept">
+                <img src="/img/home/unit/danweirenyuan.png">
+                <span class="text_box">人员管理</span>
+            </div>
+            <div class="button2 cDept" id="projectManageDept">
+                <img src="/img/home/unit/jijiao.png">
+                <span class="text_box">项目管理</span>
+            </div>
+            <div class="button2 cDept" id="notProjectManageDept">
+                <img src="/img/home/unit/feijijiao.png">
+                <span class="text_box">内部培训管理</span>
+            </div>
+            <div class="button2 cDept" id="scoreManageDept">
+                <img src="/img/home/unit/xuefen.png">
+                <span class="text_box">学分管理</span>
+            </div>
+            <div class="button2 cDept" id="statisticsQueryDept">
+                <img src="/img/home/unit/search.png">
+                <span class="text_box">统计查询</span>
+            </div>
+            <div class="button2 cDept" id="infoBrowseDept">
+                <img src="/img/home/unit/baobei-icon.png">
+                <span class="text_box">信息浏览</span>
+            </div>
+            <div class="button2 cDept" id="scorePrintDept">
+                <img src="/img/home/unit/keshidanwei.png">
+                <span class="text_box">学分打印</span>
+            </div>
+            <div class="button2 cDept" id="systemSettingManageDept">
+                <img src="/img/home/unit/shezhi.png">
+                <span class="text_box">系统设置</span>
+                </img>
+            </div>
+        </div>
+
+        <div class="bottom-content" style="padding-top: 0;">
+            <div class="left-bottom-box">
+                <div class="home-show-box js-grid-box" >
+                    <div class="grid-box">
+                        <div class="grid-stack"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-bottom-box cUnit" style="display: none;">
+                <div class="section-size-box" id="checkingPeopleItem">
+                    <div class="botton-real-box">
+                        <div class="bottom-right-box">
+                            人员注册待审核
+                            <div id="checkingPeopleNum">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="section-size-box" id="cycleApplicationItem">
+                    <div class="botton-real-box">
+                        <div class="bottom-right-box">
+                            项目举办审核
+                            <div id="cycleApplicationBtn">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="section-size-box" id="groupCycleApplicationItem">
+                    <div class="botton-real-box">
+                        <div class="bottom-right-box">
+                            内部培训举办审核
+                            <div id="groupCycleApplicationBtn">0</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+<script>
+    var options = {
+        float: true,
+        animate: true,
+        cell_height: 70,
+        vertical_margin: 15
+    };
+
+    $('.grid-stack').gridstack(options);
+    let homeGridSets = $('.grid-stack').data('gridstack');
+    let echartSets = echarts;
+
+    // 全局配置及引入相关的模块
+    layui.config({
+        base : '/js/layui/ext/'
+    }).extend({
+        tool    :   'tool',
+        homeTool:   'homeTool'
+    });
+
+    layui.use(['table', 'form','treeSelect','tool','homeTool'], function () {
+        let table = layui.table,form = layui.form,$ = layui.jquery;
+        let layer = layui.layer,tool = layui.tool,homeTool = layui.homeTool;
+        //创建首页悬浮框
+        // homeTool.createFloatingBox();
+        let ajaxNum =0,loading=null;
+        const userType  = parseInt(localStorage.getItem("user-type"));
+        const unitId = localStorage.getItem("unit-id");
+        const unitUserType = localStorage.getItem("unit-user-type");
+        const standardId = localStorage.getItem("standardkind-id");
+        let menuListObj = {},showModulesArr=[],personData = null,projStatisData = {},projCheckData = {};
+        let scoreObj = {};
+        let titleObj={"初级":0,"中级":0,"副高":0,"正高":0};
+        const moduleFunObj = {"person_num":"handlerPersonNum(0)",
+                "professional_num":"handlerProfessionalNum(0)",
+                "person_join_rate":"handlerPersonJoinRate(1)",
+                "profession_compliance_rate":"professionComplianceRate(1)",
+                "person_compliance_rate":"personComplianceRate(1)",
+                "profession_join_compliance_num":"professionJoinComplianceNum(1)",
+                "person_profession_statistics":"personProfessionStatistics(1)",
+                "proj_checking_score":"projCheckingScore(1)",
+                "group_checking_score":"groupCheckingScore(1)",
+                "single_checking_score":"singleCheckingScore(1)",
+                "dept_single_checking_score":"deptSingleCheckingScore(1)",
+                "proj_apply_before_checking":"projApplyBeforeChecking(1)",
+                "feedback_checking":"feedbackChecking(1)",
+                "checking_register_person":"personRegisterChecking(1)",
+                "final_checking_proj":"finalProjCheck(1)",
+                "pro_checking_proj":"proProjCheck(1)",
+                "checking_proj":"checkingProj(1)",
+                "unit_checking_proj":"checkingProj(1)"};
+
+        if(userType == 12){
+            // 显示cUnit，隐藏cDept
+            $('.cDept').hide();
+            $('.cUnit').show();
+        }else if(userType == 13){
+            // 显示cDept，隐藏cUnit
+            $('.cDept').show();
+            $('.cUnit').hide();
+        }
+
+        beOpenGroupproj();
+
+        //关闭closeLoading的判断
+        let closeLoading = function(){
+            ajaxNum--;
+            if(ajaxNum<=0 && loading) layer.close(loading);
+        }
+        //打开加载
+        let openLoading = function(){
+            if(ajaxNum == 0) loading = layer.msg('加载中', {icon: 16, shade: 0.3, time:0});
+            ajaxNum ++;
+        }
+        //公共ajax
+        let commonAjax = function(type="get",url,data,failFun,successFun){
+            openLoading();
+            $.ajax({
+                type    :   type,
+                url     :   url,
+                data    :   data,
+                success :   function (res) {
+                    closeLoading();
+                    successFun(res);
+                },
+                error    :   function(res){
+                    closeLoading();
+                    failFun();
+                }
+            });
+        }
+
+
+        $('#peopleManage').click(function(){
+            openPop("peoplePop");
+        })
+        $('#deptManage').click(function(){
+            openPop("deptPop");
+        })
+        $('#projectManage').click(function(){
+            openPop("projectPop");
+        })
+        $('#notProjectManage').click(function(){
+            openPop("notProjectPop");
+        })
+        $('#projectReportManage').click(function(){
+            openPop("projectReportPop");
+        })
+        $('#scoreManage').click(function(){
+            openPop("scoreManagePop");
+        })
+        $('#scoreRequireManage').click(function(){
+            openPop("scoreRequirePop");
+        })
+        $('#systemSettingManage').click(function(){
+            openPop("systemSettingPop");
+        })
+
+        $('#peopleManageDept').click(function(){
+            openPop("peoplePopDept");
+        })
+        $('#projectManageDept').click(function(){
+            openPop("projectPopDept");
+        })
+        $('#notProjectManageDept').click(function(){
+            openPop("notProjectPopDept");
+        })
+        $('#scoreManageDept').click(function(){
+            openPop("scoreManagePopDept");
+        })
+        $('#statisticsQueryDept').click(function(){
+            openPop("statisticsQueryPopDept");
+        })
+        $('#infoBrowseDept').click(function(){
+            openPop("infoBrowsePopDept");
+        })
+        $('#scorePrintDept').click(function(){
+            openPop("scorePrintPopDept");
+        })
+        $('#systemSettingManageDept').click(function(){
+            openPop("systemSettingPop");
+        })
+
+
+        $(".modal_box").click(function(e) {
+            $(e.currentTarget.parentElement).hide();
+        })
+
+        function openPop(popId){
+            layer.open({
+                type: 1,
+                area: ['820px', '550px'], // 宽高
+                title: false, // 不显示标题栏
+                // closeBtn: 0,
+                shadeClose: true, // 点击遮罩关闭层
+                shade:0.3,
+                content: $("#"+popId)
+            });
+        }
+
+        $(".option").click(function(e){
+            let tempTitle = e.target.getAttribute("data-title");
+            let tempUrl = e.target.getAttribute("data-url");
+            if(tempTitle && tempUrl && tempTitle!= "" && tempUrl != "") {
+                // let tempId =  tempUrl.split("?")[0];
+                let tempId =  tempUrl;
+                debugger
+                layer.closeAll();
+                $(e.currentTarget.parentElement.parentElement.parentElement.parentElement).hide();
+
+                window.parent.addNewTab('layadmin-layout-tabs', {id:tempId,title: tempTitle,attr: tempUrl,content: tempUrl});
+
+            } else {
+                layer.msg("正在开发中",{time:1000})
+            }
+        })
+
+        $("#checkingPeopleItem").click(function(e){
+            let tempTitle = "个人信息注册审核";
+            let tempUrl = "pages/person/personRegisterInfoCheck.html";
+            window.parent.addNewTab('layadmin-layout-tabs', {id:tempUrl,title: tempTitle,attr: tempUrl,content: tempUrl});
+        })
+        $("#cycleApplicationItem").click(function(e){
+            let tempTitle = "已公布项目管理";
+            let tempUrl = "pages/project/CmeCmeProjList.html?tabareaId=tabarea_2&tabId=tab_2_2";
+            window.parent.addNewTab('layadmin-layout-tabs', {id:tempUrl,title: tempTitle,attr: tempUrl,content: tempUrl});
+        })
+        $("#groupCycleApplicationItem").click(function(e){
+            let tempTitle = "内部培训";
+            let tempUrl = "pages/project/internalHospitalActivities/CmeGroupproj.html?tabareaId=tabarea_2&tabId=tab_2_2";
+            window.parent.addNewTab('layadmin-layout-tabs', {id:tempUrl,title: tempTitle,attr: tempUrl,content: tempUrl});
+        })
+
+
+
+        let getFeedbackAndCycleApplication = function() {
+            $.ajax({
+                type    :   "get",
+                url     :   huayi_projectscore_url + "sumJjpersonStateTotal/getProvinceStatistics",
+                data    :   {
+                    unitId: unitId,
+                    unitUserType: unitUserType
+                },
+                success :   function (res) {
+                    if(res && res.status == 200) {
+                        $("#checkingPeopleNum").html(res.data.checkingPeopleNum);
+                        $("#cycleApplicationBtn").html(res.data.cycleApplicationNum);
+                        $("#groupCycleApplicationBtn").html(res.data.groupCycleApplicationNum);
+                    } else {
+                        layer.msg(res.msg)
+                    }
+                },
+                error    :   function(res){
+                    layer.msg("加载失败");
+                }
+            });
+        }
+
+         //页面加载入口
+         let homeInit = function(){
+            getFeedbackAndCycleApplication();
+        }
+
+        homeInit();
+
+        //获取右侧展示的内容
+        let getShowMenuList = function(){
+            if(tool.isEmpty(standardId) || (userType != 11 && userType != 12)) return;
+            const roleType = (userType == 11) ? userType*10 + unitUserType*1 : userType;
+            //ajax获取到接口，开始构建右侧列表
+            commonAjax("post",huayi_sjwh_url + "boardModuleRole/getBoardMenuListByRole",
+                {standardId:standardId,roleType:roleType},
+                function(){layer.msg("加载失败");},
+                function(res){
+                    if(res.status != 200) return;
+                    if(res.data == null) return;
+                    createMenuList(res.data);
+                    moduleInit(res.data);
+                });
+        }
+
+        //创建右侧列表
+        let createMenuList =  function(data){
+            let menuContext = ``;
+            for(let obj of data){
+                menuListObj[obj.moduleCode] = obj;
+                if(obj.showModule == 1) showModulesArr.push(obj);
+                const className  = (obj.showModule == 1) ? "jy_sty" : "";
+                menuContext += `<li class="${className}">
+                    <div class="add-module" module-width="${obj.moduleWidth}" module-height="${obj.moduleHeight}"
+                        module-x="${obj.locationx}" module-y="${obj.locationy}" module-name="${obj.moduleName}"
+                        module-id="${obj.moduleId}" module-image-url="" module-code="${obj.moduleCode}"
+                        module-type="${obj.moduleType}" module-title="${obj.moduleTitle}">
+                        <i class="rig"></i><span>${obj.moduleName}</span>
+                    </div>
+                </li>`;
+            }
+            $("#menuUl").html(menuContext);
+            createAllModule();
+            bindMenuNav();
+            bindAddModel();
+        }
+
+        //监听右侧编辑标签
+        let bindMenuNav = function(){
+            $('.js-menu-nav').on('click', function () {
+                //编辑按钮关闭
+                if($(this).hasClass("curen-active")){
+                    $(this).css({ 'right': '0px' })
+                    $('.js-menu-box').css({ 'right': '-220px' });
+                    $(this).removeClass('curen-active');
+                    $('.js-grid-box').css({ 'margin-right': '0px' });
+                    $(".js-grid-box").removeClass("edit-grid-model");
+                    saveModuleInfo();
+                    _.map($('.grid-stack > .grid-stack-item:visible'), function (el) {
+                        homeGridSets.movable(el, false)
+                    });
+                }else{
+                    //编辑按钮打开
+                    $(this).css({ 'right': '220px' })
+                    $('.js-menu-box').css({ 'right': '0' });
+                    $(this).addClass('curen-active');
+                    $('.js-grid-box').css({ 'margin-right': '220px' });
+                    $(".js-grid-box").addClass("edit-grid-model");
+                    _.map($('.grid-stack > .grid-stack-item:visible'), function (el) {
+                        homeGridSets.movable(el, true)
+                    });
+                }
+            })
+        }
+
+        //监听添加模块
+        let bindAddModel = function(){
+            $('.add-module').click(function(){
+                const tempModule = {
+                    moduleWidth: $(this).attr('module-width'),moduleHeight: $(this).attr('module-height'),
+                    moduleId:$(this).attr('module-id'),moduleCode:$(this).attr('module-code'),
+                    moduleType:$(this).attr('module-type'),moduleTitle:$(this).attr('module-title'),
+                    locationx: $(this).attr('module-x'),locationy: $(this).attr('module-y'),autoPosition: true
+                };
+                createModule(tempModule);
+                $(this.parentElement).attr('class', 'jy_sty');
+                if(moduleFunObj.hasOwnProperty(tempModule.moduleCode)) {
+                    eval(moduleFunObj[tempModule.moduleCode]);
+                }
+            });
+            $('.js-grid-box').height($(window).height());
+        }
+
+        //页面模块初始化
+        let moduleInit = function(data){
+            getPersonStatistics();//请求人员统计基础信息
+            getProjScoreStatistics();//省市机构获取
+            getProjCheckingStatistics();//获取待审核项目
+
+            let runModule = {"proj_checking_score":0,"group_checking_score":0};
+            for(let tempObj of data){
+                if(runModule.hasOwnProperty(tempObj["moduleCode"])) {
+                    runModule[tempObj["moduleCode"]] = 1;
+                }
+            }
+            //是否执行继教项目学分统计
+            if(runModule["proj_checking_score"] == 1) {
+                getCheckProjScoreStatistics();
+            }
+            //是否执行院内活动学分统计
+            if(runModule["group_checking_score"] == 1) {
+                getCheckGroupScoreStatistics();
+            }
+        }
+
+        //创建所有的模块
+        let createAllModule = function(){
+            for(let key in menuListObj){
+                menuListObj[key].autoPosition= false;
+                menuListObj[key].showModule == 1 && createModule(menuListObj[key]);
+            }
+            _.map($('.grid-stack > .grid-stack-item:visible'), function (el) {
+                homeGridSets.movable(el, false)
+            });
+        }
+
+        //创建要添加的模块,只创建模块，不创建里面的具体内容
+        let createModule = function(moduleObj){
+            let cardBoxHtml = `<div class="ren_box" id="${moduleObj.moduleCode}"></div>`;
+            let cardHeaderHtml = tool.isEmpty(moduleObj.moduleTitle) ? "" : `<div class="xf_tit">${moduleObj.moduleTitle}</div>`;
+            if(moduleObj.moduleType == 3 || moduleObj.moduleType == 5)  {
+                cardBoxHtml = `<div class="ren_box">
+                    <div class="card-header"><p>${moduleObj.moduleTitle}</p></div>
+                    <div id="${moduleObj.moduleCode}" class="model-context-box"></div>
+                </div>`;
+            } else if(moduleObj.moduleType == 4){
+                cardBoxHtml = `<div class="ren_box">
+                    <div class="card-header"><p>${moduleObj.moduleTitle}</p></div>
+                    <div class="model-context-box model-flex">
+                        <div class="four-box js-${moduleObj.moduleCode}"></div>
+                        <div class="four-box js-${moduleObj.moduleCode}"></div>
+                        <div class="four-box js-${moduleObj.moduleCode}"></div>
+                        <div class="four-box js-${moduleObj.moduleCode}"></div>
+                    </div>
+                </div>`;
+            } else if(moduleObj.moduleType == 2){
+                cardBoxHtml = `<div class="ren_box">
+                    ${cardHeaderHtml}
+                    <div id="${moduleObj.moduleCode}" class="full-box" ></div>
+                </div>`;
+            }
+            let tempModel = `<div class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide" data-gs-moduleid="${moduleObj.moduleId}">
+                <div class="grid-stack-item-content">
+                    <div class="clo" onclick="bindCloseModel(this)"></div>
+                    ${cardBoxHtml}
+                </div></div>`;
+            homeGridSets.add_widget(tempModel,moduleObj.locationx, moduleObj.locationy, moduleObj.moduleWidth, moduleObj.moduleHeight,moduleObj.autoPosition);
+        }
+
+        //各种人员统计,只依赖一个请求
+        let getPersonStatistics = function(){
+            commonAjax("GET",huayi_projectscore_url + "sumJjpersonStateTotal/getPersonStatusStatistics",
+                {unitId:unitId,userType:userType},
+                function(){layer.msg("加载失败");},
+                function(res){
+                    if(res.status != 200) return
+                    if(res.data == null) return;
+                    personData = res.data;
+                    personData.hasOwnProperty("personStatus") && handlerPersonNum();
+                    personData.hasOwnProperty("personTitleJoin") && professionComplianceRate();
+                    personData.hasOwnProperty("personTitleJoin") && professionJoinComplianceNum();
+
+                    personData.hasOwnProperty("personTitleJoin") && handlerProfessionalNum();
+                    personData.hasOwnProperty("personTitleJoin") && personProfessionStatistics();
+
+                    personData.hasOwnProperty("personTitleJoin") && personComplianceRate();
+                    personData.hasOwnProperty("personTitleJoin") && handlerPersonJoinRate();
+
+                });
+        }
+
+        //待审核机构，项目，学分，人员
+        let getProjScoreStatistics = function(){
+            if(userType !=11  && userType != 12) return;
+            commonAjax("get",huayi_projectscore_url + "sumJjpersonStateTotal/getProvinceStatistics",
+                {unitId	:unitId,unitUserType:unitUserType},
+                function(){layer.msg("加载失败");},
+                function(res){
+                    if(res.status !=200) return;
+                    projStatisData = res.data;
+                    // projCheckingScore();
+                    // groupCheckingScore();
+                    singleCheckingScore();
+                    projApplyBeforeChecking();
+                    feedbackChecking();
+                    deptSingleCheckingScore();
+                    personRegisterChecking();
+                });
+        }
+
+        let getCheckProjScoreStatistics = function() {
+            if(userType !=11  && userType != 12) return;
+            commonAjax("get",huayi_projectscore_url + "sumJjpersonStateTotal/getCheckProjScoreStatistics",
+                {unitId	:unitId,unitUserType:unitUserType},
+                function(){layer.msg("加载失败");},
+                function(res){
+                    if(res.status !=200) return;
+                    scoreObj["scoreNum"] = res.data;
+                    projCheckingScore();
+                });
+        }
+
+        let getCheckGroupScoreStatistics = function() {
+            if(userType !=11  && userType != 12) return;
+            commonAjax("get",huayi_projectscore_url + "sumJjpersonStateTotal/getCheckGroupScoreStatistics",
+                {unitId	:unitId,unitUserType:unitUserType},
+                function(){layer.msg("加载失败");},
+                function(res){
+                    if(res.status !=200) return;
+                    scoreObj["groupScoreNum"] = res.data;
+                    groupCheckingScore();
+                });
+        }
+
+        function beOpenGroupproj() {
+
+            if(userType != 13 && userType != 12) return;
+            $.ajax({
+                type: 'get',
+                async: false,
+                url: huayi_permission_url + "comMenuUser/beOpenGroupproj",
+                data: {unitId: unitId,cmeStandardKindId: standardId},
+                success: function(res) {
+                    if(res.success) {
+                        if(res.data) {
+                            $(".group").show();
+                            if(userType == 13)
+                                $("#notProjectManageDept").show();
+                        } else {
+                            $(".group").hide();
+                            if(userType == 13)
+                                $("#notProjectManageDept").hide();
+                        }
+                    }
+                }
+            })
+        }
+
+
+
+        //待审核项目预审，终审
+        let getProjCheckingStatistics = function(){
+            if(userType !=11  && userType != 12) return;
+            const holdYear = new Date().getFullYear();
+            commonAjax("get",huayi_projectscore_url + "sumJjpersonStateTotal/getProjCheck",
+                {unitId	:unitId,cmeStandardKindId:standardId,userType:userType,unitUserType:unitUserType,holdYear:holdYear},
+                function(){layer.msg("加载失败");},
+                function(res){
+                    if(res.status !=200) return;
+                    projCheckData = res.data;
+                    finalProjCheck();
+                    proProjCheck();
+                    checkingProj();
+                });
+        }
+
+        //人员总数
+        let handlerPersonNum = function(isShow=0){
+            const tempModuleCode = "person_num";
+            if(!menuListObj.hasOwnProperty(tempModuleCode)) return;
+            if(isShow==0 && menuListObj[tempModuleCode].showModule == 0) return;
+            if($(`#${tempModuleCode}`).length <= 0) return;
+            let statusArr = ["正常","不计达标","产假"];
+            let numObj = {},count = 0;
+            for(let title of statusArr){
+                let partNum = 0;
+                for(let obj of personData["personStatus"]){
+                    if(obj["person_state_name"] != title) continue;
+                    partNum = obj["number"];
+                    count += obj["number"];
+                }
+                numObj[title] = partNum;
+            }
+            let statusHtml = `<dl> <dt><img src="/front/img/xueyuan_img.png"></dt>
+                <dd><p>人员总数</p><h1>${count}</h1></dd>`;
+            for(let title of statusArr){
+                statusHtml += `<dd><p>${title}</p><h1>${numObj[title]}</h1></dd>`;
+            }
+            statusHtml += `</dl>`;
+            $(`#${tempModuleCode}`).html(statusHtml);
+        }
+
+        //人员职称分布情况汇总
+        let handlerProfessionalNum = function(isShow=0){
+            const tempModuleCode = "professional_num";
+            if(!menuListObj.hasOwnProperty(tempModuleCode)) return;
+            if(isShow==0 && menuListObj[tempModuleCode].showModule == 0) return;
+            if($(`#${tempModuleCode}`).length <= 0) return;
+            let titleHtml = `<dl> <dt><img src="/front/img/xueyuan_img.png"></dt>`;
+            for(let key in titleObj){
+                for(let obj of personData["personTitleJoin"]){
+                    if(obj["title_level_name"].indexOf(key) <0) continue
+                    titleObj[key] = obj["total_person_number"];
+                }
+                titleHtml += `<dd><p>${key}</p><h1>${titleObj[key]}</h1></dd>`;
+            }
+            titleHtml += `</dl>`;
+            $(`#${tempModuleCode}`).html(titleHtml);
+        }
+
+        //人员职称分布统计--环状图
+        let  personProfessionStatistics = function(isShow=0){
+            const tempModuleCode="person_profession_statistics";
+            if(!menuListObj.hasOwnProperty(tempModuleCode)) return;
+            if(isShow==0 && menuListObj[tempModuleCode].showModule == 0) return;
+            if(!document.getElementById(tempModuleCode)) return;
+            let dataArr = [];
+            for(const key in titleObj){
+                dataArr.push({value:titleObj[key],name:key});
+            }
+            let tempTitleOption = getEcharOption("人员职称分布统计",
+                [{orient: 'horizontal',bottom: '30px',data: ['初级', '中级']},
+                {orient: 'horizontal',bottom: '5px',data: ['副高', '正高']}],
+                dataArr,['#6f91ed', '#e0aa83', '#d06d7e', '#7db692']);
+            initEcharElem(tempTitleOption,document.getElementById(tempModuleCode));
+        }
+
+        //人员参与率
+        let handlerPersonJoinRate = function(isShow=0){
+            const tempModuleCode = "person_join_rate";
+            if(!menuListObj.hasOwnProperty(tempModuleCode)) return;
+            if(isShow==0 && menuListObj[tempModuleCode].showModule == 0) return;
+            if(!document.getElementById(tempModuleCode)) return;
+            let totalNumber = 0,joinNumber=0;
+            let personJoinTemp = {};
+            if(tool.isEmpty(personData["personTitleJoin"])) {
+                personJoinTemp = {"total_person_number":0,"proj_person_number":0};
+            } else {
+                let tempTotal=0,projPersonNum=0;
+                for(let temp of personData["personTitleJoin"]){
+                    tempTotal += temp["total_person_number"];
+                    projPersonNum += temp["proj_person_number"];
+                }
+                personJoinTemp = {"total_person_number":tempTotal,"proj_person_number":projPersonNum};
+            }
+
+            if(personJoinTemp.hasOwnProperty("total_person_number")) {
+                totalNumber = personJoinTemp["total_person_number"];
+            }
+            if(personJoinTemp.hasOwnProperty("proj_person_number")) {
+                joinNumber = personJoinTemp["proj_person_number"];
+            }
+            //参加率
+            let tempJoinOption = getEcharOption("人员参与率",
+                {orient: 'vertical',bottom: '5px',data: ['参与人数', '未参与人数']},
+                [{ value: joinNumber, name: '参与人数' },{ value: totalNumber-joinNumber, name: '未参与人数' }]);
+            initEcharElem(tempJoinOption,document.getElementById(tempModuleCode));
+        }
+
+        //按职称统计达标率
+        let  professionComplianceRate = function(isShow=0){
+            const tempModuleCode = "profession_compliance_rate";
+            if(!menuListObj.hasOwnProperty(tempModuleCode)) return;
+            if(isShow==0 && menuListObj[tempModuleCode].showModule == 0) return;
+            if(tool.isEmpty(personData["personTitleJoin"]) || personData["personTitleJoin"].length == 0) {
+                personData["personTitleJoin"] = [{pass_person_number: 0,
+                    proj_person_number: 0,total_person_number: 0,
+                    title_level_name: "初级职称"},
+                    {pass_person_number: 0,proj_person_number: 0,
+                    title_level_name: "中级职称", total_person_number: 0},
+                    {pass_person_number: 0, proj_person_number: 0,
+                    title_level_name: "副高级职称",total_person_number: 0},
+                    {pass_person_number: 0,proj_person_number: 0,
+                    title_level_name: "正高级职称",total_person_number: 0}];
+            }
+            const tempData = personData["personTitleJoin"];
+            let tempElems = document.getElementsByClassName(`js-${tempModuleCode}`);
+            if(tempElems.length != 4) return;
+            const tempObj = {"初级职称":"初级职称","中级职称":"中级职称",
+		        "副高级职称":"副高职称","正高级职称":"正高职称"};
+            const tempLegend = {orient: 'vertical',bottom: '5px',data: ['达标人数', '未达标人数']};
+            for (let i = 0; i < tempData.length; i++) {
+                const tempTitle = tempObj[tempData[i]["title_level_name"]];
+                const passNum = tempData[i]["pass_person_number"];
+                // const joinNum = tempData[i]["proj_person_number"];
+                const allNum = tempData[i]["total_person_number"];
+                let tempOption = getEcharOption(tempTitle,tempLegend,
+                    [{value: passNum, name: '达标人数' },{ value: allNum-passNum, name: '未达标人数'}]);
+                initEcharElem(tempOption,tempElems[i]);
+            }
+        }
+
+        //人员达标率
+        let personComplianceRate = function(isShow=0){
+            const tempModuleCode = "person_compliance_rate";
+            if(!menuListObj.hasOwnProperty(tempModuleCode)) return;
+            if(isShow==0 && menuListObj[tempModuleCode].showModule == 0) return;
+            if(!document.getElementById(tempModuleCode)) return;
+            let personJoinTemp = {};
+            if(tool.isEmpty(personData["personTitleJoin"])) {
+                personJoinTemp = {total_person_number:0,pass_person_number:0};
+            } else {
+                let tempTotal=0,passPersonNum=0;
+                for(let temp of personData["personTitleJoin"]){
+                    tempTotal += temp["total_person_number"];
+                    passPersonNum += temp["pass_person_number"];
+                }
+                personJoinTemp = {total_person_number:tempTotal,pass_person_number:passPersonNum};
+            }
+            // const tempData = personData["personJoin"];
+            let totalNumber = 0,passNumber=0;
+            if(personJoinTemp.hasOwnProperty("total_person_number")) {
+                totalNumber = personJoinTemp["total_person_number"];
+            }
+            if(personJoinTemp.hasOwnProperty("pass_person_number")) {
+                passNumber = personJoinTemp["pass_person_number"];
+            }
+            let tempPassOption = getEcharOption("人员达标率",
+                {orient: 'vertical',bottom: '5px',data: ['达标人数', '未达标人数']},
+                [{ value: passNumber, name: '达标人数' },{ value: totalNumber-passNumber, name: '未达标人数' }]);
+            initEcharElem(tempPassOption,document.getElementById(tempModuleCode));
+        }
+
+        //按职称统计参与及达标人数
+        let professionJoinComplianceNum = function(isShow=0){
+            const tempModuleCode = "profession_join_compliance_num";
+            if(!menuListObj.hasOwnProperty(tempModuleCode)) return;
+            if(isShow==0 && menuListObj[tempModuleCode].showModule == 0) return;
+            if(!document.getElementById(tempModuleCode)) return;
+            const tempData = personData["personTitleJoin"];
+            let tempObj = {"初级职称":{count:0,join:0,pass:0},
+                            "中级职称":{count:0,join:0,pass:0},
+                            "副高级职称":{count:0,join:0,pass:0},
+                            "正高级职称":{count:0,join:0,pass:0},
+                            "乡村医生":{count:0,join:0,pass:0},
+                            "其他":{count:0,join:0,pass:0}
+                        };
+            if(!tool.isEmpty(tempData) && tempData.length>=0) {
+                for(let obj of tempData){
+                    let tempTitle = obj["title_level_name"];
+                    let count = obj["number"];
+                    let passNum = obj["pass_person_number"];
+                    let joinNum = obj["proj_person_number"];
+                    tempObj[tempTitle].count = count;
+                    tempObj[tempTitle].pass = passNum;
+                    tempObj[tempTitle].join = joinNum;
+                }
+            }
+            let tableOption = getEcharTable([['product', '继教对象人数', '参与人数', '达标人数'],
+					['初级', tempObj["初级职称"].count, tempObj["初级职称"].join, tempObj["初级职称"].pass],
+					['中级', tempObj["中级职称"].count, tempObj["中级职称"].join, tempObj["中级职称"].pass],
+					['副高', tempObj["副高级职称"].count, tempObj["副高级职称"].join, tempObj["副高级职称"].pass],
+					['正高', tempObj["正高级职称"].count, tempObj["正高级职称"].join, tempObj["正高级职称"].pass],
+                    ['乡村医生', tempObj["乡村医生"].count, tempObj["乡村医生"].join, tempObj["乡村医生"].pass],
+                    ['其他', tempObj["其他"].count, tempObj["其他"].join, tempObj["其他"].pass]
+            ]);
+			initEcharElem(tableOption,document.getElementById(tempModuleCode));//省卫健委
+        }
+
+        //项目终审待审核
+        let finalProjCheck = function(isShow=0){
+            createCheckingModule("final_checking_proj",projCheckData,'finalProjCount',isShow);
+        }
+
+        //项目预审待审核
+        let proProjCheck  = function(isShow=0){
+            createCheckingModule("pro_checking_proj",projCheckData,'proProjCount',isShow);
+        }
+
+        //项目审核，机构，市区县卫健委该模块不一致
+        let checkingProj = function(isShow=0){
+            createCheckingModule("checking_proj",projCheckData,'checkProjCount',isShow);
+            createCheckingModule("unit_checking_proj",projCheckData,'checkProjCount',isShow);
+        }
+
+        //项目学分审核
+        let projCheckingScore = function(isShow=0){
+            createCheckingModule("proj_checking_score",scoreObj,'scoreNum',isShow);
+        }
+
+        //院内活动学分审核，市县卫健委
+        let groupCheckingScore = function(isShow=0){
+            createCheckingModule("group_checking_score",scoreObj,'groupScoreNum',isShow);
+        }
+
+        //个人活动学分审核，市县卫健委
+        let singleCheckingScore = function(isShow=0){
+            createCheckingModule("single_checking_score",projStatisData,'singleScoreNum',isShow);
+        }
+
+        //科室、个人录入学分审核，单位
+        let deptSingleCheckingScore = function(isShow=0){
+            createCheckingModule("dept_single_checking_score",projStatisData,'singleScoreNum',isShow);
+        }
+
+        //举办前申请审核，省市卫健委
+        let projApplyBeforeChecking =  function(isShow=0){
+            createCheckingModule("proj_apply_before_checking",projStatisData,'cycleApplicationNum',isShow);
+        }
+
+        //项目执行情况反馈审核，省市卫健委
+        let feedbackChecking = function(isShow=0){
+            createCheckingModule("feedback_checking",projStatisData,'feedbackNum',isShow);
+        }
+
+        //待审核注册人员，机构
+        let personRegisterChecking = function(isShow=0){
+            createCheckingModule("checking_register_person",projStatisData,'checkingPeopleNum',isShow);
+        }
+
+        //创建待审核的模块，moduleType类型是2
+        let createCheckingModule = function(moduleCode,data,key,isShow){
+            if(!menuListObj.hasOwnProperty(moduleCode)) return;
+            if(isShow==0 && menuListObj[moduleCode].showModule == 0) return;
+            if(!document.getElementById(moduleCode)) return;
+            if(!data.hasOwnProperty(key)) return;
+            const tempObj = menuListObj[moduleCode];
+            let subhead = tool.isEmpty(tempObj.moduleSubhead) ? "待审核" : tempObj.moduleSubhead;
+            const moduleUrl = tool.isEmpty(tempObj.moduleUrl) ? "" : tempObj.moduleUrl;
+            const tabTitle = tool.isEmpty(tempObj.tabTitle) ? "" : tempObj.tabTitle;
+            let htmlText = `<dl>
+                    <dt><img src="/front/img/shenhe_img.png"></dt>
+                    <dd><p>${subhead}</p>
+                        <h1>
+                            <span onclick="openIframeWindow(this)" url="${moduleUrl}" tab-title="${tabTitle}">${data[key]}</span>
+                        </h1>
+                    </dd>
+                </dl>`;
+            $(`#${moduleCode}`).html(htmlText);
+        }
+
+        window.openIframeWindow = function(elem){
+            if(!elem.getAttribute("url") || !elem.getAttribute("tab-title")) return;
+            let url = elem.getAttribute("url");
+            let title = elem.getAttribute("tab-title");
+            let id =  url.split("?")[0];
+            window.parent.addNewTab('layadmin-layout-tabs',
+                {   id: id,
+                    title: title,
+                    attr: url,
+                    content: url,});
+        }
+
+        //获取Echar需要的参数，扇形图
+        let getEcharOption = function(title,legend,dataObj,colorArr=['#6f91ed', '#e0aa83']){
+            return {
+                tooltip: {
+                    trigger: 'item',position: 'inside',
+                    formatter: '{a} <br/>{b} : {c} ({d}%)',
+                    textStyle: {fontSize: 8}
+                },
+                legend: legend,
+                series: [
+                    {
+                        name: title, type: 'pie',
+                        radius: ['40%', '55%'],
+                        center: ['50%', '30%'],
+                        color: colorArr,
+                        label: {formatter: '{d}%',color: 'inherit'},
+                        labelLine: { //label线的长度
+                            normal: {
+                                length: 0, // 改变标示线的长度
+                                length2: 0,
+                                maxSurfaceAngle: 0
+                            }
+                        },
+                        data: dataObj
+                    }
+                ]
+            };
+        }
+
+        //获取Echart参数，表格
+        let getEcharTable = function(dataArr){
+            return {
+                backgroundColor: '#ffffff',
+                legend: {
+                    orient: 'horizontal',
+                    x:'right',      //可设定图例在左、右、居中
+                    y:'top',     //可设定图例在上、下、居中
+                    padding:[0,100,0,0]   //可设定图例[距上方距离，距右方距离，距下方距离，距左方距离]
+                },
+                tooltip: {},
+                dataset: {source: dataArr},
+                xAxis: { type: 'category' },
+                yAxis: {},
+                series: [{ type: 'bar', color: '#6f91ed' ,barMaxWidth: '8%'},
+                    { type: 'bar', color: '#e0aa83',barMaxWidth: '8%'},
+                    { type: 'bar', color: '#d06d7e' ,barMaxWidth: '8%'}]
+		    };
+        }
+        //装配进入Echar
+        let initEcharElem = function(option,elem){
+            let tempMyChart = echartSets.init(elem);
+            tempMyChart.setOption(option);
+            window.addEventListener("resize", function(){
+                tempMyChart.resize();
+            });
+        }
+
+        //监听关闭模块
+        window.bindCloseModel = function(elem){
+            var module_1 = $(elem.parentElement.parentElement).data('_gridstack_node');
+            var module_2 = $(elem.parentElement.parentElement.parentElement).data('_gridstack_node');
+            if (module_1 != undefined) {
+                homeGridSets.remove_widget(elem.parentElement.parentElement, "undefined");
+                var moduleid = $(module_1.el).attr('data-gs-moduleid');
+                $('[module-id=' + moduleid + ']').parent().attr('class', '')
+            }
+            if (module_2 != undefined) {
+                homeGridSets.remove_widget(elem.parentElement.parentElement.parentElement, "undefined");
+                var moduleid = $(module_2.el).attr('data-gs-moduleid');
+                $('[module-id=' + moduleid + ']').parent().attr('class', '')
+            }
+        }
+
+        //是否改变了module定位,改变了就是true，没有改变就是false
+        let isChangeModule = function(data = []){
+            if(showModulesArr.length != data.length) return true;
+            //之前没有模块展示，现在data还是0表示没有模块展示
+            if(showModulesArr.length == 0) return false;
+            for(const showModule of showModulesArr) {
+                for(const obj of data) {
+                    if(showModule.moduleId!=obj.moduleId) continue;
+                    if(showModule.locationx != obj.locationx || showModule.locationy != obj.locationy) {
+                        return true;
+                    }
+                }
+            }
+            return  false;
+        }
+
+        //保存模块定位和展示信息
+        let saveModuleInfo = function(){
+            let moduleData = _.map($('.grid-stack > .grid-stack-item:visible'), function (el) {
+                homeGridSets.movable(el, false)
+                    el = $(el);
+                    var node = el.data('_gridstack_node');
+                    return {
+                        locationx: node.x,
+                        locationy: node.y,
+                        showModule: 1,
+                        moduleId: $(el).attr('data-gs-moduleid')
+                    };
+                }, this);
+            if(!isChangeModule(moduleData)) return;
+            $.ajax({
+                type: 'post',
+                url: huayi_sjwh_url + "boardModuleUser/changeModulesPosition",
+                data:JSON.stringify(moduleData),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    if(res.status == 200){
+                        layer.msg("保存成功");
+                    }else{
+                        layer.msg("保存失败");
+                    }
+                },
+                error: function () {
+                    layer.msg("保存失败");
+                }
+            })
+        }
+
+
+        //页面加载入口
+        let htmlInit = function(){
+            if(userType!=11 && userType != 12) return;
+            if(unitId == '630687' || unitId == '630620' || unitId == '638889') return;
+            getShowMenuList();
+        }
+
+        htmlInit();
+
+    });
+
+    $(window).resize(function () {
+        $('.js-grid-box').height($(window).height());
+    })
+
+</script>
+</body>
+
+</html>

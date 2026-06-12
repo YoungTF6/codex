@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>选择职称</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+	<link rel="stylesheet" href="/js/layui-v2.6.4/layui/css/layui.css" media="all">
+	<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+
+	<script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+	<script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+	<!-- layui-v2.4.5 -->
+	<script type="text/javascript" src="https://v8.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+	<script type="text/javascript" src="/js/axios.min.js"></script>
+
+	<!--<script src="/js/layui-v2.6.4/layui/layui.js"></script>-->
+	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+</head>
+
+<style>
+	.ul_box {
+		margin-top: 10px;
+	}
+
+	.ul_inner_box {
+		padding-left: 30px;
+	}
+</style>
+
+<body style="background-color: white;">
+
+	<div class="layui-form" lay-filter="layuiadmin-form-role" id="layuiadmin-form-role" style="padding: 20px 30px 0 0;">
+
+		<ul class="layui-input-block" style="margin-top: 10px ;">
+			<li>
+				<ul>
+					<input type="checkbox" name="limits[]" value="3d5f8e06-1274-454c-9c55-9b2f01271376"
+						lay-skin="primary" title="正高级职称" class="titleLevel">
+					<input type="checkbox" name="limits[]" value="6351aa8b-bba0-4805-99ca-9b2f01271376"
+						lay-skin="primary" title="副高级职称" class="titleLevel">
+					<input type="checkbox" name="limits[]" value="da42823c-796c-4377-a616-9b2f01271376"
+						lay-skin="primary" title="中级职称" class="titleLevel">
+					<input type="checkbox" name="limits[]" value="7acab84c-e870-4a4d-90ea-9b2f01271376"
+						lay-skin="primary" title="初级职称" class="titleLevel">
+				</ul>
+			</li>
+		</ul>
+
+		<div class="layui-form-item" id="title_box">
+
+		</div>
+		<div class="layui-form-item" style="padding-bottom: 20px; padding-left: 33%;">
+			<div class="layui-inline">
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="submit">确定</button>
+					<button id="closeBtn" type="close" class="layui-btn layui-btn-primary">关闭</button>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<script src="/js/constant.js"></script>
+	<script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+	<script>
+
+		layui.config({
+			base: '/js/layui/ext/'
+		}).extend({
+			eleTree: 'eleTree'
+		}).use(['table', 'form', 'eleTree'], function () {
+			var table = layui.table,
+				form = layui.form,
+				$ = layui.jquery,
+				layer = layui.layer;
+
+			var cmeStandardKindId = localStorage.getItem("choose-standard-id");
+
+			//解析url参数
+			let getParamFromUrl = function (paramName) {
+				let urlStr = location.search;
+				if (urlStr.indexOf(paramName) < 0 || urlStr.indexOf("?") < 0) return;
+				let paramKV = urlStr.substr(1).split("&");
+				for (let i = 0; i < paramKV.length; i++) {
+					if (paramKV[i].indexOf(paramName) >= 0) {
+						return paramKV[i].split("=")[1];
+					}
+				}
+			}
+			var titleIds = getParamFromUrl("titleIds");
+
+			// 获取职称数据
+			window.loadTitleList = () => {
+				$.ajax({
+					url: huayi_sjwh_url + 'comTitle/tree/' + cmeStandardKindId,
+					type: 'get',
+					success: function (res) {
+						console.log(res)
+						if (res && res.success) {
+
+							// 已选中的项
+							var titleIdaArr = titleIds ? titleIds.split(",") : [];
+
+							// 渲染职称选择框
+							$('#title_box').html('');
+							let data = res.data;
+							for (let i = 0; i < data.length; i++) {
+
+								//<ul class="layui-input-block" style="margin-top: 10px ;">
+								// 	<li>
+								// 		<input type="checkbox" value="A" class="parent" lay-skin="primary" title="人事模块">
+								// 		<ul>
+								// 			<input type="checkbox" name="limits[]" value="a" lay-skin="primary" title="社区系统">
+								// 			<input type="checkbox" name="limits[]" value="s" lay-skin="primary" title="用户">
+								// 			<input type="checkbox" name="limits[]" value="d" lay-skin="primary" title="角色">
+								// 			<input type="checkbox" name="limits[]" value="f" lay-skin="primary" title="评论审核">
+								// 		</ul>
+								// 	</li>
+								// </ul>
+
+								// 子元素列表
+								title_list = data[i].children;
+								let ul_box = $('<ul class="layui-input-block ul_box" >');
+								let li_box = $('<li><input type="checkbox" value="' + data[i].titleId
+									+ '" class="parent" lay-skin="primary" title="' + data[i].titleName + '"></li>');
+								let ul_inner_box = $('<ul class="ul_inner_box"></ul>');
+								let childChecked = false;
+								for (let j = 0; j < title_list.length; j++) {
+									let input;
+									// 子元素被选中
+									if (titleIdaArr.includes(title_list[j].titleId)) {
+										input = $('<input class="layui-form-checked" checked type="checkbox" name="limits[]" value="' + title_list[j].titleId
+											+ '" lay-skin="primary" title="' + title_list[j].titleName + '" title_Level="' + title_list[j].titleLevel + '">');
+										childChecked = true;
+									} else {
+										input = $('<input type="checkbox" name="limits[]" value="' + title_list[j].titleId
+											+ '" lay-skin="primary" title="' + title_list[j].titleName + '" title_Level="' + title_list[j].titleLevel + '">');
+									}
+									ul_inner_box.append(input);
+								}
+								if (childChecked) {
+									// 子元素有被选中的, 父元素也加上选中状态
+									li_box = $('<li><input checked type="checkbox" value="' + data[i].titleId
+										+ '" class="parent" lay-skin="primary" title="' + data[i].titleName + '"></li>');
+								}
+								li_box.append(ul_inner_box).append($('<hr class="layui-border-black">'));
+								ul_box.append(li_box);
+								$('#title_box').append(ul_box);
+							}
+							form.render();
+
+						} else {
+							layer.msg("获取职称信息失败")
+						}
+
+					}
+				});
+
+			}
+
+
+			form.on('checkbox()', function (data) {
+				var pc = data.elem.classList //获取选中的checkbox的class属性
+
+				/* checkbox处于选中状态  */
+				if (data.elem.checked == true) {//并且当前checkbox为选中状态
+					/*如果是parent节点 */
+					if (pc == "parent") {  //如果当前选中的checkbox class里面有parent
+						//获取当前checkbox的兄弟节点的孩子们是 input[type='checkbox']的元素
+						var c = $(data.elem).siblings().children("input[type='checkbox']");
+						c.each(function () {//遍历他们的孩子们
+							var e = $(this); //添加layui的选中的样式   控制台看元素
+							e.next().addClass("layui-form-checked");
+							e[0].checked = data.elem.checked;
+						});
+					} else if (pc == "titleLevel") {
+						// 选择职称级别
+						console.log(data.value);
+						const itemElems = $("#title_box input[type='checkbox']");
+						var hasChildChecked = false; // 子级是否被选中
+						var preParentElement; // 上一层父级(系列)元素
+						itemElems.each(function () {
+							var e = $(this); //添加layui的选中的样式   控制台看元素
+							let title_level = e[0].getAttribute("title_level");
+							if (title_level == data.value ){
+								e.next().addClass("layui-form-checked");
+								e[0].checked = data.elem.checked;
+								hasChildChecked = true;
+							}
+
+							// 判断父级是否需要选中
+							if(e[0].classList == "parent"){
+								if(hasChildChecked){
+									preParentElement.next().addClass("layui-form-checked");
+									preParentElement[0].checked = data.elem.checked;
+								}
+								preParentElement = e;
+								hasChildChecked = false;
+							}
+						});
+
+						// 处理最后一层父级
+						if(hasChildChecked){
+							preParentElement.next().addClass("layui-form-checked");
+							preParentElement[0].checked = data.elem.checked;
+						}
+					} else {/*如果不是parent*/
+						//选中子级选中父级
+						$(data.elem).parent().prev().addClass("layui-form-checked");
+						console.log($(data.elem))
+					}
+
+				} else {    /*checkbox处于 false状态*/
+
+					//父级没有选中 取消所有的子级选中
+					if (pc == "parent") {/*判断当前取消的是父级*/
+						var c = $(data.elem).siblings().children("input[type='checkbox']");
+						c.each(function () {
+							var e = $(this);
+							e.next().removeClass("layui-form-checked")
+							e[0].checked = data.elem.checked;
+						});
+					} else if (pc == "titleLevel") {
+						// 选择职称级别
+						console.log(data.value);
+						const itemElems = $("#title_box input[type='checkbox']");
+						itemElems.each(function () {
+							var e = $(this); //添加layui的选中的样式   控制台看元素
+							let title_level = e[0].getAttribute("title_level");
+							// 如果符合级别, 则选中子级
+							if (title_level == data.value){
+								e.next().removeClass("layui-form-checked")
+								e[0].checked = data.elem.checked;
+
+								var c = $(e[0]).siblings("div");
+								var count = 0;
+								c.each(function () {//遍历他们的孩子们
+									//如果有一个==3那么久说明是处于选中状态
+									var is = $(this).get(0).classList;
+									if (is.length == 3) {
+										count++;
+									}
+								});
+								//如果大于0说明还有子级处于选中状态
+								if (count > 0) {
+
+								} else {/*如果不大于那么就说明没有子级处于选中状态那么就移除父级的选中状态*/
+									$(e[0]).parent().prev().removeClass("layui-form-checked");
+								}
+							}
+
+							// 判断父级是否需要选中
+							if(e[0].classList == "parent"){
+								
+							}
+							
+						});
+					} else {/*不是父级*/
+
+						var c = $(data.elem).siblings("div");
+						var count = 0;
+						c.each(function () {//遍历他们的孩子们
+							//如果有一个==3那么久说明是处于选中状态
+							var is = $(this).get(0).classList;
+							if (is.length == 3) {
+								count++;
+							}
+						});
+						//如果大于0说明还有子级处于选中状态
+						if (count > 0) {
+
+						} else {/*如果不大于那么就说明没有子级处于选中状态那么就移除父级的选中状态*/
+							$(data.elem).parent().prev().removeClass("layui-form-checked");
+						}
+					}
+				}
+				// form.render('checkbox');
+			});
+
+			form.on('submit(submit)', function (data) {
+				//获取选中的checkbox的值
+				var titleIds = "", titleNames = "";
+				var e = $(":checkbox");
+				debugger
+				e.each(function () {
+					if ($(this).next().hasClass("layui-form-checked") && this.title.indexOf('职称') == -1 || this.title == '无职称') {
+						if (this.title.indexOf('系列') != -1) {
+							titleNames += '\n' + this.title + ": ";
+						} else {
+							titleIds += $(this).val() + ",";
+							titleNames += this.title + ",";
+						}
+					};
+				})
+				titleIds = titleIds.substring(0, titleIds.length - 1);
+				titleNames = titleNames.substring(1, titleNames.length - 1);
+				window.parent.getChildTitles(titleIds, titleNames);
+
+				closeThis();
+				return false;
+			});
+
+			$("#closeBtn").click(function () {
+				closeThis();
+			});
+
+			function closeThis() {
+				var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+				parent.layer.close(index); //再执行关闭 
+			}
+
+
+			layer.ready(function () {
+				loadTitleList();
+
+			})
+		});
+
+
+	</script>
+</body>
+
+</html>

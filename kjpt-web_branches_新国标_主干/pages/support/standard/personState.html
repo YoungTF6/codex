@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>人员状态管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <link rel="stylesheet" href="/js/layui-v2.6.4/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <!--<link rel="stylesheet" href="/css/layui/ext/eleTree.css">-->
+    <link rel="stylesheet" href="/css/communal.css">
+    <link rel="stylesheet" href="/css/icon.css">
+
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script src='/js/jquery-3.5.1.min.js'></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/tools/form_validation_tool.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+
+    <script src="/js/common.js"></script>
+</head>
+
+<style>
+    
+    .tips_inp {
+        color: red;
+    }
+</style>
+<body class="body-area">
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+
+            <!-- 表格区域-->
+            <div class="layui-card-body content-right">
+                <table class="layui-table" id="personState" lay-filter="personState" style="margin: 0px 0px;">
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!--        添加弹窗-->
+    <div id="addPersonState" style=" display:none;">
+        <form class="layui-form" style="padding: 30px;" id="form-addPersonState" lay-filter="add-filter">
+            <div class="layui-form-item" style="display: none;">
+                <div class="layui-inline">
+                    <label class="layui-form-label"></label>
+                    <div class="layui-input-block">
+                        <input type="text" name="personStateId" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-inline" style="display: block;">
+                    <label class="layui-form-label"><span class="tips_inp">*</span>人员状态套标准</label>
+                    <div class="layui-input-inline">
+                        <select name="personStateStandardId" id="personStateStandardSearch" lay-filter="personStateStandardSearch">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline" style="display: block;">
+                    <label class="layui-form-label"><span class="tips_inp">*</span>人员状态</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="personStateName" id="personStateName" autocomplete="off" class="layui-input" placeholder="请输入" lay-verify="required">
+                    </div>
+                </div>
+                <div class="layui-inline"  style="display: block;">
+                    <!-- <label class="layui-form-label"><span class="tips_inp">*</span>是否为项目负责人</label> -->
+                    <div class="layui-input-inline">
+                        <select id="personStateSelect" lay-filter="personStateSelect">
+                            <option value="">请选择</option>
+                            <option value="正常">正常</option>
+                            <option value="注销">注销</option>
+                            <option value="产假">产假</option>
+                            <option value="不计达标">不计达标</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline"  style="display: block;">
+                    <label class="layui-form-label"><span class="tips_inp">*</span>是否参与达标</label>
+                    <div class="layui-input-inline">
+                        <select name="kind" >
+                            <option value="">请选择</option>
+                            <option value="1">正常</option>
+                            <option value="2">此状态人员计算达标但不在百分比统计范围内</option>
+                            <option value="3">不计算达标</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="layui-form-item" id="submitAndResetTeach">
+                <div style="text-align: center;">
+                    <button class="layui-btn" lay-submit lay-filter="submitTeach">提交</button>
+                    <button id="resetBtn" type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- 头部工具 -->
+    <script type="text/html" id="addPersonStateBar">
+        <button class="layui-btn layui-btn-sm btnRounded" lay-event="addPersonState" type="button">添加</button>
+    </script>
+
+    <script type="text/html" id="rowBar">
+        <a class="layui-btn layui-btn-xs btn-row" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-xs btn-row" style="color:red;" lay-event="del">删除</a>
+    </script>
+
+    <script type="text/javascript">
+        let KindIdObj = {};
+        var unitMainId, userMobile, unitUserId, deptUnitId, deptId;
+
+        var unitId = localStorage.getItem("unit-id")
+            , standardkindId = localStorage.getItem("standardkind-id")
+            , userId = localStorage.getItem("user-id")
+            ;
+
+        layui.config({
+            base: '/js/layui/ext/'
+        }).extend({
+            eleTree: 'eleTree'
+        }).use(['table', 'form', 'eleTree'], function () {
+            var table = layui.table,
+                form = layui.form,
+                $ = layui.jquery,
+                layer = layui.layer,
+                eleTree = layui.eleTree;
+
+            var eleTreeDept = null,
+                unitId = CurrentUser.getUnitId(),
+                rootKey = ''; // 虚拟root节点deptId
+
+            /* 表格配置 */
+            window.loaderTable = function () {
+                var standardKindSearch = $('#standardKindSearch').val();
+                var searchValue = $("#keyword").val();
+                var fieldValue = $("#fieldValue").val();
+
+                var searchDatas = { unitId: unitId };
+
+                table.render({
+                    elem: '#personState',
+                    url: huayi_sjwh_url + 'cmePersonState/personStateStandardList',
+                    title: '用户表',
+                    where: {
+                        // keyword: $("#text_value").val(),
+                    },
+                    cols: [[
+                        { align: 'center', minWidth: 80,width: 130, toolbar: '#rowBar', title: '操作' },
+                        { field: 'personStateDescription', title: '人员状态套标准', minWidth: 100, align: 'center' },
+                        { field: 'personStateName', title: '人员状态', minWidth: 100 },
+                        {
+                            field: 'kind', title: '是否参与达标', minWidth: 180, align: 'center',
+                            templet: function (data) {
+                                let showText = '';
+                                if (data.kind == 1) {
+                                    showText = '正常';
+                                } else if (data.kind == 2) {
+                                    showText = '此状态人员计算达标但不在百分比统计范伟内(例如某省的注销或不计达标)';
+                                } else if (data.kind == 3) {
+                                    showText = '不计算达标';
+                                }
+                                return showText;
+                            }
+                        }
+                    ]],
+                    toolbar: "#addPersonStateBar",
+                    cellMinWidth: 100,
+                    id: "personState",
+                    height: 'full-55',
+                    page: false,
+                    limit: 10,
+                    limits: [10, 50, 100, 150, 200],
+                    parseData: function (res) {
+                        if (res.status == 200) {
+                            return {
+                                "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                                "msg": res.message, //解析提示文本
+                                "data": res.data, //解析数据列表
+                            }
+                        } else {
+                            layer.msg(res.msg);
+                            return false;
+                        }
+
+                    },
+                    request: {
+                        pageName: 'pageNum', //页码的参数名称，默认：page
+                        limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                    }
+                });
+            };
+
+            
+            // 监听头部新增按钮
+            table.on('toolbar(personState)', function (obj) {
+                document.getElementById("form-addPersonState").reset();
+                if (obj.event == "addPersonState") {
+                    addPersonStateIndex = layer.open({
+                        type: 1,
+                        title: '新增人员状态套标准',
+                        content: $('#addPersonState'),
+                        skin: '',
+                        area: ['710px', '80%'],
+                    });
+                }
+
+            });
+
+            
+            // 监听行内按钮
+            table.on('tool(personState)', function (obj) {
+                var datas = obj.data;
+
+                if (obj.event === 'edit') {
+                    form.val('add-filter', datas);
+
+                    layer.open({
+                        type: 1,
+                        title: '编辑',
+                        content: $('#addPersonState'),
+                        skin: '',
+                        area: ['710px', '80%'],
+                    });
+                }else if (obj.event === 'del') {
+                    layer.confirm('确认删除?', { icon: 3, title: '提示' }, function () {
+                        $.ajax({
+                            url: huayi_sjwh_url + 'cmePersonState/deleted?personStateId=' + datas.personStateId,
+                            type: 'get',
+                            dataType: 'json',
+                            contentType: 'application/json;charset=UTF-8',
+                            success: function (res) {
+                                if (res.status == 200) {
+                                    layui.layer.closeAll();
+                                    loaderTable();
+                                    layer.msg('删除成功')
+                                } else {
+                                    layui.layer.msg(res.msg || '系统繁忙，请稍后重试', {
+                                        time: 1000, //1s后自动关闭
+                                        end: function (o) {
+                                            layui.layer.closeAll();
+                                        }
+                                    });
+                                }
+                            },
+                            error: function (req, msg) {
+                                layui.layer.msg('系统繁忙，请稍后重试', {
+                                    time: 1000, //1s后自动关闭
+                                    end: function (o) {
+                                        layui.layer.closeAll();
+                                    }
+                                });
+                            }
+                        });
+                    })
+                }
+            });
+
+
+            // 提交人员状态套标准信息
+            form.on('submit(submitTeach)', function (data) {
+
+                // 用于判断是新增还是修改
+                var formTableId = $('#form-addPersonState input[name=\"personStateId\"]').val();
+                var URL = huayi_sjwh_url + 'cmePersonState/';
+                var datas = data.field;
+
+                var flag = formTableId === null || formTableId === '';
+                if (flag) {     // 走新增逻辑
+                    URL += 'save';
+                } else {        // 走修改逻辑
+                    URL += 'update';
+                }
+                axios({
+                    method: 'post',
+                    url: URL,
+                    data: JSON.stringify(datas),
+                    headers: { 'Content-Type': 'application/json;charset=UTF-8' }
+                }).then(response => {
+                    if (response.status == 200 && response.data.status == 200) {
+
+                        layer.closeAll();
+                        layer.msg('操作成功');
+
+                        loaderTable();
+                    } else {
+                        layer.msg(response.data.msg);
+                    }
+                }).catch(err => {
+                    layer.msg('网络异常，请稍后再试');
+                });
+                return false;
+
+            });
+
+             // 选择人员状态
+            form.on('select(personStateSelect)', function(data){
+                $("#personStateName").val(data.value);
+            });
+
+
+            //公共ajax
+            let commonAjax = function (type = "get", url, data, failFun, successFun) {
+                $.ajax({
+                    type: type,
+                    url: url,
+                    data: data,
+                    success: function (res) {
+                        if (res.status != 200) {
+                            layer.msg(res.msg);
+                            return;
+                        }
+                        successFun(res);
+                    },
+                    error: function (res) {
+                        failFun();
+                    }
+                });
+            }
+             //套
+        let personStateStandardInit = function () {
+            commonAjax('get', huayi_sjwh_url + "cmePersonStateStandard", {},
+                function () { layer.msg("人员状态套标准加载失败"); },
+                function (res) {
+                    let options = '<option value="" > 请选择人员状态套标准 </option>';
+                    for (let tempObj of res.data) {
+                        options += '<option value="' + tempObj.personStateStandardId + '">' + tempObj.description + '</option>';
+                    }
+                    $('#personStateStandardSearch').append(options);
+                    form.render('select');
+                });
+        }
+
+            // 初始化函数
+            layer.ready(function () {
+                personStateStandardInit();//套初始化
+                // TODO 默认查询, 开发时打开
+                loaderTable();
+                // layer.msg("提示")
+            })
+        });
+
+
+
+    </script>
+</body>
+
+</html>

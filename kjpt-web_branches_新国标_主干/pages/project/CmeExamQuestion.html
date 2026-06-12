@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>考试试题表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+
+    <style>
+        #form-CmeExamQuestion .layui-inline{
+            width: 65%;
+        }
+        .download-file-btn{
+            margin-left: 10px;
+        }
+        .input-box-display{
+            display: none;
+        }
+        .checkbox-form-left{
+            float: left;
+            display: block;
+            padding: 9px 15px;
+            width: 15%;
+            min-width: 80px;
+            max-width: 100px;
+            font-weight: 400;
+            line-height: 20px;
+            text-align: right;
+        }
+        .layui-btn-disabled{
+            pointer-events:none
+        }
+        /* 表格显示多行 */
+        .layui-table-cell {
+            height: auto;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!--        搜索框区域-->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <blockquote class="layui-form layui-form-item layui-elem-quote one-btn" lay-filter="query-form">
+                <div class="layui-inline">
+                    <label class="layui-form-label">试题类型</label>
+                    <div class="layui-input-block">
+                        <select name="questionType" id="questionTypeSearch" lay-filter = "layui-select-type">
+                            <option value="">请选择</option>
+                            <option value="1">单选</option>
+                            <option value="2">多选</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <a class="layui-btn layui-btn-sm btn-search" id="searchBtn" onclick="loaderTable()" lay-filter="table-search" data-type="reload">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </a>
+                </div>
+            </blockquote>
+        </div>
+
+        <!--        表格区域-->
+        <div class="layui-card-body layui_body_box">
+            <table class="layui-table" id="cmeExamQuestion" lay-filter="cmeExamQuestion" style="margin: 0px 0px;"></table>
+        </div>
+
+        <!--        添加弹窗-->
+        <div id="add-cmeExamQuestion" style=" display:none;text-align: center">
+            <form class="layui-form" style="padding: 30px;" id="form-CmeExamQuestion" lay-filter="add-filter">
+                <input type="hidden" name="questionId" autocomplete="off" class="layui-input">
+                <input type="hidden" name="paperId" placeholder="cme_exam_paper主键" autocomplete="off" class="layui-input">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">试题类型</label>
+                        <div class="layui-input-block">
+                            <select name="questionType" id="questionType" lay-filter = "layui-select-type" lay-verify="required">
+                                <option value="">请选择</option>
+                                <option value="1">单选</option>
+                                <option value="2">多选</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">试题编号</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="questionNo" readonly placeholder="试题编号" autocomplete="off"   class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">题干</label>
+                        <div class="layui-input-block">
+                            <textarea name="stem" placeholder="请输入题干" class="layui-textarea" autocomplete="off" lay-verify="stem"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline" style="margin-left: 115px;">
+                        <a class="layui-btn layui-btn-sm" id="addItem">添加选项</a>
+                        <a class="layui-btn layui-btn-sm" id="removeItem">移除选项</a>
+                    </div>
+                </div>
+                <div class="layui-form-item question-radio-items">
+                    <div class="layui-inline">
+                        <div class="checkbox-form-left">
+                            <input type="radio" name="item" value="A" title="A:" lay-verify="itemRadio">
+                        </div>
+                        <div class="layui-input-block">
+                            <textarea name="itemText" placeholder="" class="layui-textarea radio-item-text" autocomplete="off" lay-verify="itemRadioA"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <div class="checkbox-form-left">
+                            <input type="radio" name="item" value="B" title="B:" lay-verify="itemRadio">
+                        </div>
+                        <div class="layui-input-block">
+                            <textarea name="itemText" placeholder="" class="layui-textarea radio-item-text" autocomplete="off" lay-verify="itemRadioB"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <div class="checkbox-form-left">
+                            <input type="radio" name="item" value="C" title="C:" lay-verify="itemRadio">
+                        </div>
+                        <div class="layui-input-block">
+                            <textarea name="itemText" placeholder="" class="layui-textarea radio-item-text" autocomplete="off" lay-verify="itemRadioC"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <div class="checkbox-form-left">
+                            <input type="radio" name="item" value="D" title="D:" lay-verify="itemRadio">
+                        </div>
+                        <div class="layui-input-block">
+                            <textarea name="itemText" placeholder="" class="layui-textarea radio-item-text" autocomplete="off" lay-verify="itemRadioD"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="layui-form-item question-checkbox-items input-box-display">
+                    <div class="layui-inline">
+                        <div class="checkbox-form-left">
+                            <input type="checkbox" name="item[A]" lay-skin="primary" title="A:" value="A" lay-verify="itemCheckbox">
+                        </div>
+                        <div class="layui-input-block">
+                            <textarea name="itemText" placeholder="" class="layui-textarea checkbox-item-text" autocomplete="off" lay-verify="itemCheckboxA"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <div class="checkbox-form-left">
+                            <input type="checkbox" name="item[B]" value="B" title="B:" lay-skin="primary" lay-verify="itemCheckbox">
+                        </div>
+                        <div class="layui-input-block">
+                            <textarea name="itemText" placeholder="" class="layui-textarea checkbox-item-text" autocomplete="off" lay-verify="itemCheckboxB"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <div class="checkbox-form-left">
+                            <input type="checkbox" name="item[C]" value="C" title="C:" lay-skin="primary" lay-verify="itemCheckbox">
+                        </div>
+                        <div class="layui-input-block">
+                            <textarea name="itemText" placeholder="" class="layui-textarea checkbox-item-text" autocomplete="off" lay-verify="itemCheckboxC"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <div class="checkbox-form-left">
+                            <input type="checkbox" name="item[D]" value="D" title="D:" lay-skin="primary" lay-verify="itemCheckbox">
+                        </div>
+                        <div class="layui-input-block">
+                            <textarea name="itemText" placeholder="" class="layui-textarea checkbox-item-text" autocomplete="off" lay-verify="itemCheckboxD"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <div class="layui-inline" style="margin-left: 115px;">
+                        <button class="layui-btn layui-btn-sm" lay-submit lay-filter="submit">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+
+    </div>
+</div>
+
+<!--表格内数据编辑、删除按钮-->
+<script type="text/html" id="rowBar">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row js-bar-btn" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger btn-danger-row js-bar-btn" lay-event="del">删除</a>
+</script>
+<script type="text/html" id="bar">
+    <a class="layui-btn layui-btn-sm layui-btn-radius js-bar-btn" lay-event="add">添加</a>
+    <a class="layui-btn layui-btn-sm layui-btn-radius js-bar-btn" lay-event="upload"  id="uploadFile">模板导入试题</a>
+    <a class="layui-btn layui-btn-sm layui-btn-radius download-file-btn js-bar-btn" lay-event="download">下载试题模板</a>
+    <a class="layui-btn layui-btn-sm layui-btn-radius is-used-btn js-bar-btn" lay-event="used">启用</a>
+    <a class="layui-btn layui-btn-sm layui-btn-radius is-disabled-btn layui-btn-disabled" lay-event="disabled">不启用</a>
+    <!-- <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="goback">返回</a> -->
+</script>
+<script type="text/html" id="isOpenBar">
+    <span class="js-open-span"></span>
+</script>
+<script>
+    // 全局配置及引入相关的模块
+    layui.config({
+        base : '/js/layui/ext/'
+    }).extend({
+        tool        :   'tool'
+    });
+
+    layui.use(['table', 'form','upload','tool'], function () {
+        var table = layui.table,form = layui.form,$ = layui.jquery;
+        var layer = layui.layer,upload = layui.upload,tool=layui.tool;
+        var paperId = "";
+        var nowProjectId = "",nowProjectType = "";
+        var nowUnitId = localStorage.getItem("unit-id");
+        const otherItem = {5:["D"],6:["D","E"],7:["D","E","F"],8:["D","E","F","G"]}
+        const itemType = {"A":0,"B":1,"C":2,"D":3,"E":4,"F":5,"G":6,"H":7};
+        const itemAfter = {"D":"E","E":"F","F":"G","G":"H"};
+        const useText = "启用",noUseText = "未启用";
+        let nowIsOpen = 0;
+
+        // 表格配置
+        window.loaderTable = function () {
+            table.render({
+                elem: '#cmeExamQuestion',
+                url: huayi_projectscore_url + 'cmeExamQuestion/list',
+                title: '用户表',
+                defaultToolbar: [],
+                where: {
+                    questionType: $('#questionTypeSearch').val(),
+                    paperId: paperId
+                },
+                cols: [[
+                    {align: 'center', width: 170, toolbar: '#rowBar', title: '操作', fixed: 'left',hide:localStorage.getItem("user-type")=="11"?true:false},
+                    {field: 'questionNo', title: '试题编号',align: 'center'},
+                    {field: 'questionType', title: '试题类型',align: 'center',templet: function(data){
+                        if(data.questionType == 2||data.questionType == "2") return "多选";
+                        return "单选";
+                    }},
+                    {field: 'stem', title: '题干',align: 'center'},
+                    {field: 'items', title: '试题选项',align: 'center',templet: function(data){
+                        let html = '';
+                        let items = data.items;
+                        if(items != null && items != "") {
+                            let parts = items.toString().split('|').filter(function (p) {
+                                return p != null && p.trim() !== '';
+                            });
+                            parts.sort(function (a, b) {
+                                let ma = a.trim().match(/^([A-H])\./i);
+                                let mb = b.trim().match(/^([A-H])\./i);
+                                let ia = ma ? (itemType[ma[1].toUpperCase()] != null ? itemType[ma[1].toUpperCase()] : 99) : 99;
+                                let ib = mb ? (itemType[mb[1].toUpperCase()] != null ? itemType[mb[1].toUpperCase()] : 99) : 99;
+                                return ia - ib;
+                            });
+                            items = '<p>' + parts.join('</p><p>') + '</p>';
+                            html = items;
+                        }
+                        return html;
+                    }},
+                    {field: 'answer', title: '答案',align: 'center'},
+                    {field: 'addTime', title: '创建时间',align: 'center'},
+                    {field: 'isOpen', title: '是否已启用',align: 'center',toolbar:'#isOpenBar'},
+                ]],
+                toolbar: localStorage.getItem("user-type")=="11" ? false : '#bar',
+                cellMinWidth: 100,
+                id: "cmeExamQuestion",
+                height: localStorage.getItem("user-type")=="11"? 'full-65': 'full-155',
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "count": res.data.recordsTotal, //解析数据长度
+                        "data": res.data.records, //解析数据列表
+                        "page": res.data.pageNum, //当前页
+                        "limit": res.data.pageSize, //每页条数
+                    }
+                },
+                request: {
+                    pageName: 'pageNum', //页码的参数名称，默认：page
+                    limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                },
+                done:function(res,curr,count){
+                    fileUpload();
+                    changeSpanText(nowIsOpen);
+                    if(nowIsOpen == 1 || nowIsOpen == "1"){
+                        isOpenPaper("1");
+                    }else{
+                        isOpenPaper("0");
+                    }
+                    curr > 1 && res.data.length === 0 && loaderTable();
+                    // 表格显示多行时操作列调整
+                    $(".layui-table-main tr").each(function (index, val) {
+                        $($(".layui-table-fixed-l .layui-table-body tbody tr")[index]).height($(val).height());
+                        $($(".layui-table-fixed-r .layui-table-body tbody tr")[index]).height($(val).height());
+                    });
+                }
+            });
+        };
+
+        let changeSpanText = function(isOpen=0){
+            if(isOpen == 1){
+                $(".js-open-span").html(useText);
+            }else{
+                $(".js-open-span").html(noUseText);
+            }
+        }
+
+        //获取试卷数据，确认表格头部按钮是开启还是不开启
+        let getPaperDate = function(projectId,paperName,projectType){
+            $.ajax({
+                url: huayi_projectscore_url +"cmeExamPaper/getPaperOrCreate",
+                type:'post',
+                data:{
+                    projectId   :   projectId,
+                    paperName   :   paperName,
+                    projectType :   projectType
+                },
+                success:function(res){
+                    if(res.status == 200){
+                        paperId = res.data.paperId;
+                        nowIsOpen = res.data.isOpen;
+                        loaderTable();// 初始化表格
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                }
+            });
+        }
+
+        //ajax请求获取该数据的所有选项
+        let getQuestionItem = function(questionId,questionType,answer){
+            $.ajax({
+                url: huayi_projectscore_url +"cmeExamQuestionItem/getQuestionItem",
+                type:'post',
+                data:{questionId:questionId},
+                success:function(res){
+                    setFormValue(questionType,res.data,answer);
+                }
+            });
+        }
+
+        //编辑时的回显值
+        let setFormValue = function(questionType,items,answer){
+            showCheckboxOrRadio(questionType);
+            setCheckBoxOrRadio(questionType,answer,items.length);
+            setQuestionItemInput(questionType,items);
+            form.render();
+        }
+
+        //ajax 开启或者关闭
+        let updateOpenPaper = function(isOpen,paperId,projectId,projectType){
+            let loading = layer.msg('加载中', {icon: 16, shade: 0.3, time:0});
+            let url = (isOpen == 1)? huayi_projectscore_url + 'cmeExamPaper/openPaper' : huayi_projectscore_url + 'cmeExamPaper/closePaper';
+            $.ajax({
+                type: 'post',
+                url: url,
+                data: {
+                    paperId:paperId,
+                    projectId:projectId,
+                    projectType:projectType,
+                },
+                success: function (res) {
+                    layer.close(loading);
+                    if (res.status === 200) {
+                        const tempType = (res.data == 0) ? 0 : 1;
+                        nowIsOpen = tempType;
+                        changeSpanText(tempType);
+                        for (let i = 0; i < $(".js-bar-btn").length; i++) {
+                            if(tempType == 0) {
+                                $(".js-bar-btn")[i].classList.remove("layui-btn-disabled");
+                            } else {
+                                $(".js-bar-btn")[i].classList.add("layui-btn-disabled");
+                            }
+                            isOpenPaper(tempType);
+                        }
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                },
+                error:function(res){  layer.close(loading); }
+            });
+        }
+
+        //回显单选框和复选框,questionType是试题类型，1是单选，2是多选；answer是答案；num是试题的数量
+        let setCheckBoxOrRadio = function(questionType=1,answer="A",num=4){
+            const itemClass = (questionType == 2) ? ".question-checkbox-items":".question-radio-items";
+            //渲染试题，itemType可以看到是试题数量对应的选项关系，如果大于4的情况下就需要生成其他的选项
+            if(otherItem.hasOwnProperty(num)){
+                const itemArr = otherItem[num];//试题除了前四个的其他选项
+                for (let i = 0; i < itemArr.length; i++) {
+                    createQuestionItem(itemArr[i], questionType);//依次创建选项
+                }
+            }
+            //除了创建选项之外还需要进行选中
+            for(let i = 0 ; i < num ; i++){
+                let value = $(itemClass+" .layui-inline").eq(i).find("input").val();
+                for(let tempVal of answer){
+                    value == tempVal && $(itemClass+" .layui-inline").eq(i).find("input").prop("checked",true);
+                }
+            }
+            form.render();
+        }
+
+        //回显答案文本框
+        let setQuestionItemInput = function(questionType,items){
+            const itemClass = (questionType==2)? ".question-checkbox-items":".question-radio-items";
+            for (let obj of items) {
+                if(!itemType.hasOwnProperty(obj.item)) continue;
+                $(itemClass+" .layui-inline").eq(itemType[obj.item]).find("textarea").val(obj.itemText);
+            }
+        }
+
+        //关闭时需要去掉form里面的值
+        let removeFormValue = function(){
+            //默认开启单选框
+            showCheckboxOrRadio(1);
+            //去掉多余的框
+            let checkNum = $(".question-checkbox-items .layui-inline").length;
+            let radioNum = $(".question-radio-items .layui-inline").length;
+            const nowItemNum = (checkNum >radioNum)?checkNum:radioNum;
+            const itemClass = (checkNum >radioNum)?".question-checkbox-items":".question-radio-items";
+            for(let i=3;i<nowItemNum;i++){
+                if($(itemClass+" .layui-inline").length > 4){
+                    $(itemClass+" .layui-inline")[$(itemClass+" .layui-inline").length-1].remove();
+                }
+            }
+            $("#add-cmeExamQuestion input[name='questionId']").val('');
+            $("#form-CmeExamQuestion")[0].reset();
+        }
+
+        //开启或者不开启状态转换，0：就是要未启用；1：就是已启用
+        let isOpenPaper = function(isOpen){
+            if(isOpen == "1" || isOpen == 1){
+                for (let i = 0; i < $(".js-bar-btn").length; i++) {
+                    $(".js-bar-btn")[i].classList.add("layui-btn-disabled");
+                }
+                $(".is-used-btn").addClass("layui-btn-disabled");
+                $(".is-disabled-btn").removeClass("layui-btn-disabled");
+            }else{
+                $(".is-used-btn").removeClass("layui-btn-disabled");
+                $(".is-disabled-btn").addClass("layui-btn-disabled");
+            }
+        }
+
+        //随机数生成方法,生成之后放到input中
+        let getQueStr = function(){
+            let randomNum = Math.random();
+            while(randomNum < 0.1){
+                randomNum = Math.random();
+            }
+            let questionNo = "DX"+Math.floor(randomNum*1000+1);
+            questionNo += new Date().getTime();
+            $("#form-CmeExamQuestion input[name = 'questionNo']").val(questionNo);
+        }
+
+        //添加选项，移除选项按钮监听
+        let btnClinkBind = function(){
+            //添加选项按钮
+            $('#addItem').click(function(){
+                const itemClass = ($("#form-CmeExamQuestion select[name='questionType']").val() == '2'||$("#form-CmeExamQuestion select[name='type']").val() == 2) ? ".question-checkbox-items":".question-radio-items";
+                const itemType = ($("#form-CmeExamQuestion select[name='questionType']").val() == '2'||$("#form-CmeExamQuestion select[name='type']").val() == 2) ? 2:1;
+                let lastValue = $(itemClass+" .layui-inline").eq($(itemClass+" .layui-inline").length-1).find("input").val();
+                createQuestionItem(lastValue,itemType);
+                form.render();
+            })
+            //移除选项按钮
+            $('#removeItem').click(function(){
+                const itemClass = ($("#form-CmeExamQuestion select[name='questionType']").val() == '2'||$("#form-CmeExamQuestion select[name='type']").val() == 2) ? ".question-checkbox-items":".question-radio-items";
+                if($(itemClass+" .layui-inline").length > 4){
+                    $(itemClass+" .layui-inline")[$(itemClass+" .layui-inline").length-1].remove();
+                }
+            })
+        }
+
+        let createQuestionItem = function(lastValue,type){
+            if(itemAfter.hasOwnProperty(lastValue)){
+                const title = itemAfter[lastValue];
+                let classElem = (type == "2") ? "checkbox-item-text" : "radio-item-text";
+                let inputHtml = (type=="2") ? `<input type="checkbox" name="item[${title}]" value="${title}" title="${title}:" lay-skin="primary" lay-verify="itemCheckbox">` : `<input type="radio" name="item" value="${title}" title="${title}:" lay-verify="itemRadio">`;
+                let verifyText = (type == "2") ? "itemCheckbox"+title : "itemRadio"+title;
+                let txtHtml =   `<div class="layui-inline">`+
+                                    `<div class="checkbox-form-left">${inputHtml}</div>`+
+                                    `<div class="layui-input-block">`+
+                                        `<textarea name="itemText" placeholder="" class="layui-textarea ${classElem}" autocomplete="off" lay-verify="${verifyText}"></textarea>`+
+                                    `</div>`+
+                                `</div>`;
+                (type == 1)? $(".question-radio-items").append(txtHtml):$(".question-checkbox-items").append(txtHtml);
+            }
+        }
+
+        //展示单选框还是多选框
+        let showCheckboxOrRadio = function(type){
+            if(type ==2 || type == '2'){
+                $('.question-radio-items').addClass('input-box-display');
+                $('.question-checkbox-items').removeClass('input-box-display');
+            }else{
+                $('.question-radio-items').removeClass('input-box-display');
+                $('.question-checkbox-items').addClass('input-box-display');
+            }
+            form.render();
+        }
+
+        //模板文件上传
+        let fileUpload = function(){
+            let url = huayi_projectscore_url + 'cmeExamQuestion/upload/';
+            var loading;
+            //上传文件
+            upload.render({
+                elem: '#uploadFile',
+                url: url,
+                data:{
+                    paperId:paperId
+                },
+                exts: 'xls',
+                size: 10*1024,//大小小于10M
+                accept: 'file',
+                choose: function(obj){
+                    loading = layer.msg('加载中', {icon: 16, shade: 0.3, time:0});
+                },
+                done: function(res){
+                    layer.close(loading);
+                    layer.msg(res.msg);
+                    loaderTable();
+                }
+            })
+        }
+
+        //是否选项重复
+        let isSameItem = function(type="1",value,item){
+            const itemElems = (type == 1)? $(".radio-item-text") : $(".checkbox-item-text");
+            for(let i=0;i<itemElems.length;i++){
+                const elem = itemElems[i];
+                if(elem.getAttribute("lay-verify") == item) continue;
+                if(value == elem.value) return true;
+            }
+            return false;
+        }
+
+        //页面初始化，通过查看参数是否都在来进行是否加载页面ed646370-a5f3-4f88-a640-d62fda36c4b8
+        let htmlInit = function(){
+            //登录角色不同显示不同
+            displayRole();
+            nowProjectId = tool.getParamFromUrl("projectId");
+            let paperName = tool.getParamFromUrl("paperName");
+            let projectType = tool.getParamFromUrl("projectType");
+            nowProjectType = tool.isEmpty(nowProjectType) ? projectType: 1;
+            if(!tool.isEmpty(nowProjectId) && !tool.isEmpty(paperName)){
+                getPaperDate(nowProjectId,paperName,nowProjectType);//获取试卷数据
+                btnClinkBind();//监听添加选项按钮
+            }else{
+                layer.msg("缺少必要参数");
+            }
+           
+        }
+        let displayRole = function(){
+            let userType = localStorage.getItem("user-type");
+            //管理机构账号
+            if(userType == "11"){
+                $(".layui-card-header").hide();
+            }
+        }
+
+        htmlInit();
+
+
+        //监听select输入方式，如果是外部输入则需要输入框
+        form.on('select(layui-select-type)',function(data){ showCheckboxOrRadio(data.value); });
+
+        // 监听头部新增按钮
+        table.on('toolbar(cmeExamQuestion)', function (obj) {
+            var datas = obj.data;
+            document.getElementById("form-CmeExamQuestion").reset();
+            if (obj.event === 'add') {
+                layer.open({
+                    type: 1,
+                    title: '新增',
+                    content: $('#add-cmeExamQuestion'),
+                    area: ['800px', '95%'],
+                    success: function(){
+                        removeFormValue();
+                        getQueStr();
+                    },
+                    cancel: function(index, layero){
+                        removeFormValue();
+                    }
+                })
+            }
+            else if(obj.event === 'download'){
+                //下载模板
+                // let downloadUrl = huayi_projectscore_url + 'cmeExamQuestion/download/试题模板.xls';
+                let downloadUrl = "/file/试题模板.xls";
+                tool.downloadUseIfram(downloadUrl,false);
+            }
+            obj.event == 'used' && updateOpenPaper(1,paperId,nowProjectId,nowProjectType);
+            obj.event == 'disabled' && updateOpenPaper(0,paperId,nowProjectId,nowProjectType);
+            // else if(obj.event === 'goback'){
+            //     //返回的位置需要设置，这里设置的位置是错误的
+            //     window.location.href = "/pages/project/ProjectDicRegionYear.html";
+            // }
+        });
+
+        // 监听行内按钮
+        table.on('tool(cmeExamQuestion)', function (obj) {
+            var datas = obj.data;
+            if (obj.event === 'edit') {
+                form.val('add-filter', datas);
+                layer.open({
+                    type: 1,
+                    title: '修改',
+                    content: $('#add-cmeExamQuestion'),
+                    skin: '',
+                    area: ['800px', '80%'],
+                    success: function(){
+                        getQuestionItem(datas.questionId,datas.questionType,datas.answer);
+                    },
+                    cancel: function(index, layero){
+                        removeFormValue();
+                    }
+                })
+            } else if (obj.event === 'del') {
+                layer.confirm('确认删除', {icon: 3, title: '提示'}, function () {
+                    $.ajax({
+                        type: 'get',
+                        url: huayi_projectscore_url + 'cmeExamQuestion/deleted',
+                        data: {
+                            questionId: datas.questionId
+                        },
+                        contentType: 'application/json;charset=UTF-8',
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.status === 200) {
+                                layer.msg("删除成功");
+                                table.reload('cmeExamQuestion');
+                            }else{
+                                layer.msg(res.msg);
+                            }
+                        }
+                    });
+                })
+            }
+        });
+
+        // form表单相关操作
+        // 新增/修改表单提交
+        form.on('submit(submit)', function (data) {
+            let mapData = new Object();
+            // 用于判断是新增还是修改
+            var questionId = $("#add-cmeExamQuestion input[name='questionId']").val();
+            data.field["paperId"] = paperId;
+            if(data.field["questionType"] == ""){
+                layer.msg("试题类型不能为空",{time:2000,icon:5});
+                return false;
+            }
+            if(data.field["stem"] == ""){
+                layer.msg("题干不能为空",{time:2000,icon:5});
+                return false;
+            }
+            let answer = "";
+            let resultArr = new Array();
+            const itemClass = (data.field["questionType"] == 1)?".radio-item-text":".checkbox-item-text";
+            const questionType = (data.field["questionType"] == 1) ?"radio":"checkbox";
+            let textElems = $(itemClass);
+            let itemElems = $("#add-cmeExamQuestion input[type='"+questionType+"']");
+            for(let i=0;i<textElems.length;i++){
+                if(textElems[i].value == ""){
+                    layer.msg("选项内容不能为空",{time:2000,icon:5});
+                    return false;
+                }
+                if(itemElems[i].checked) answer += itemElems[i].value;
+                let item = {paperId:paperId,item:itemElems[i].value,itemText:textElems[i].value};
+                resultArr.push(item);
+            }
+            for(let i =0;i<resultArr.length;i++){
+                for(let j = i+1 ;j < resultArr.length; j++){
+                    if(resultArr[i].itemText == resultArr[j].itemText){
+                        layer.msg("选项内容不能重复",{time:2000,icon:5});
+                        return false;
+                    }
+                }
+            }
+            if(answer == ""){
+                layer.msg("请勾选一项作为答案",{time:2000,icon:5});
+                return false;
+            }
+            data.field["answer"] = answer;
+            mapData["question"] = data.field;
+            mapData["questionItems"] = resultArr;
+
+            var datas = JSON.stringify(mapData);
+            var URL;
+            if (questionId === '' || questionId === null) {
+                // 走新增逻辑
+                URL = huayi_projectscore_url + 'cmeExamQuestion/saveQuestion';
+            } else {
+                // 走修改逻辑
+                URL = huayi_projectscore_url + 'cmeExamQuestion/updateQuestion';
+            }
+            $.ajax({
+                type: 'post',
+                url: URL,
+                data: datas,
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    if(res.status == 200){
+                        layer.closeAll();
+                        //清空form表单
+                        removeFormValue();
+                        layer.msg("保存成功");
+                        loaderTable();
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                },
+                error: function () {
+                    layer.msg("发送请求失败");
+                }
+            })
+            return false;
+        });
+
+        //自定义验证规则
+        form.verify({
+            itemRadio: function(value,item){
+                if(document.getElementById("questionType").value != 1) return;
+                const itemElems = $("#add-cmeExamQuestion input[type='radio']");
+                for(let i=0;i<itemElems.length;i++){
+                    if(itemElems[i].checked) return;
+                }
+                return '请勾选一项作为答案';
+            },
+            itemCheckbox: function(value,item){
+                if(document.getElementById("questionType").value != 2) return;
+                const itemElems = $("#add-cmeExamQuestion input[type='checkbox']");
+                for(let i=0;i<itemElems.length;i++){
+                    if(itemElems[i].checked) return;
+                }
+                return '请勾选一项作为答案';
+            },
+            stem : function(value){
+                if(value.length == 0) return '题干不能为空';
+                if(value.length > 300) return '题干最长不超过300个字符';
+            },
+            itemRadioA: function(value){
+                if(document.getElementById("questionType").value != 1) return;
+                if(value.length == 0) return '答案不能为空';
+                if(value.length > 300) return '答案最长不超过300个字符';
+                if(isSameItem(1,value,"itemRadioA")) return '选项内容不能重复';
+            },
+            itemRadioB: function(value){
+                if(document.getElementById("questionType").value != 1) return;
+                if(value.length == 0) return '答案不能为空';
+                if(value.length > 300) return '答案最长不超过300个字符';
+                if(isSameItem(1,value,"itemRadioB")) return '选项内容不能重复';
+            },
+            itemRadioC: function(value){
+                if(document.getElementById("questionType").value != 1) return;
+                if(value.length == 0) return '答案不能为空';
+                if(value.length > 300) return '答案最长不超过300个字符';
+                if(isSameItem(1,value,"itemRadioC")) return '选项内容不能重复';
+            },
+            itemRadioD: function(value){
+                if(document.getElementById("questionType").value != 1) return;
+                if(value.length == 0) return '答案不能为空';
+                if(value.length > 300) return '答案最长不超过300个字符';
+                if(isSameItem(1,value,"itemRadioD")) return '选项内容不能重复';
+            },
+            itemRadioE: function(value){
+                if(document.getElementById("questionType").value != 1) return;
+                if(value.length == 0) return '答案不能为空';
+                if(value.length > 300) return '答案最长不超过300个字符';
+                if(isSameItem(1,value,"itemRadioE")) return '选项内容不能重复';
+            },
+            itemRadioF: function(value){
+                if(document.getElementById("questionType").value != 1) return;
+                if(value.length == 0) return '答案不能为空';
+                if(value.length > 300) return '答案最长不超过300个字符';
+                if(isSameItem(1,value,"itemRadioF")) return '选项内容不能重复';
+            },
+            itemRadioG: function(value){
+                if(document.getElementById("questionType").value != 1) return;
+                if(value.length == 0) return '答案不能为空';
+                if(value.length > 300) return '答案最长不超过300个字符';
+                if(isSameItem(1,value,"itemRadioG")) return '选项内容不能重复';
+            },
+            itemRadioH: function(value){
+                if(document.getElementById("questionType").value != 1) return;
+                if(value.length == 0) return '答案不能为空';
+                if(value.length > 300) return '答案最长不超过300个字符';
+                if(isSameItem(1,value,"itemRadioH")) return '选项内容不能重复';
+            },
+            itemCheckboxA: function(value){
+                if(document.getElementById("questionType").value != 2) return;
+                if(value.length == 0) return '答案不能为空';
+                if(value.length > 300) return '答案最长不超过300个字符';
+                if(isSameItem(2,value,"itemCheckboxA")) return '选项内容不能重复';
+            },
+            itemCheckboxB: function(value){
+                if(document.getElementById("questionType").value != 2) return;
+                if(value.length == 0) return '答案不能为空';
+                if(value.length > 300) return '答案最长不超过300个字符';
+                if(isSameItem(2,value,"itemCheckboxB")) return '选项内容不能重复';
+            },
+            itemCheckboxC: function(value){
+                if(document.getElementById("questionType").value != 2) return;
+                if(value.length == 0) return '答案不能为空';
+                if(value.length > 300) return '答案最长不超过300个字符';
+                if(isSameItem(2,value,"itemCheckboxC")) return '选项内容不能重复';
+            },
+            itemCheckboxD: function(value){
+                if(document.getElementById("questionType").value != 2) return;
+                if(value.length == 0) return '答案不能为空';
+                if(value.length > 300) return '答案最长不超过300个字符';
+                if(isSameItem(2,value,"itemCheckboxD")) return '选项内容不能重复';
+            },
+            itemCheckboxE: function(value){
+                if(document.getElementById("questionType").value != 2) return;
+                if(value.length == 0) return '答案不能为空';
+                if(value.length > 300) return '答案最长不超过300个字符';
+                if(isSameItem(21,value,"itemCheckboxE")) return '选项内容不能重复';
+            },
+            itemCheckboxF: function(value){
+                if(document.getElementById("questionType").value != 2) return;
+                if(value.length == 0) return '答案不能为空';
+                if(value.length > 300) return '答案最长不超过300个字符';
+                if(isSameItem(2,value,"itemCheckboxF")) return '选项内容不能重复';
+            },
+            itemCheckboxG: function(value){
+                if(document.getElementById("questionType").value != 2) return;
+                if(value.length == 0) return '答案不能为空';
+                if(value.length > 300) return '答案最长不超过300个字符';
+                if(isSameItem(2,value,"itemCheckboxG")) return '选项内容不能重复';
+            },
+            itemCheckboxH: function(value){
+                if(document.getElementById("questionType").value != 2) return;
+                if(value.length == 0) return '答案不能为空';
+                if(value.length > 300) return '答案最长不超过300个字符';
+                if(isSameItem(2,value,"itemCheckboxH")) return '选项内容不能重复';
+            }
+        });
+
+    });
+
+</script>
+</body>
+</html>

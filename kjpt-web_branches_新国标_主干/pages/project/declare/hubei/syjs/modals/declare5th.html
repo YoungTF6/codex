@@ -1,0 +1,286 @@
+<div id="projectDetailPage5">
+    <form class="page-form layui-form" action="" id="page5-form" lay-filter="page5-form">
+        <input type="hidden" name="pageNum" value=5>
+
+        <!-- row1 -->
+        <div class="layui-form-item">
+            <div class="layui-col-md3">
+                <label class="layui-form-label  font-blod"><span style="color:red">*&nbsp;</span>财政拨款总额(万元):   </label>
+                <div class="layui-input-block" style="padding-left: 50px;">
+                    <input type="text" name="totalFinancialAllocation" lay-verify="required|totalFinancialAllocation" autocomplete="off"
+                        class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-col-md1">
+                <label class="layui-form-label font-blod" >住宿费 </label>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>金额(万元):   </label>
+                <div class="layui-input-block" >    
+                    <input type="text" id="hotelFee" name="hotelFee" lay-verify="required|hotelFee" autocomplete="off"
+                        class="layui-input money-focus" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-md5">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>计算根据及理由:   </label>
+                <div class="layui-input-block"   style="padding-left: 30px;">
+                    <input type="text" id="hotelFeeReason" name="hotelFeeReason" lay-verify="required|hotelFeeReason" autocomplete="off"
+                        class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-col-md1">
+                <label class="layui-form-label  font-blod" >伙食费  </label>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>金额(万元):   </label>
+                <div class="layui-input-block" >
+                    <input type="text" id="mealFee" name="mealFee" lay-verify="required|mealFee" autocomplete="off"
+                        class="layui-input money-focus" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-md5">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>计算根据及理由:   </label>
+                <div class="layui-input-block"   style="padding-left: 30px;">
+                    <input type="text" id="mealFeeReason" name="mealFeeReason" lay-verify="required|mealFeeReason" autocomplete="off"
+                        class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-col-md1">
+                <label class="layui-form-label  font-blod">培训场地费  </label>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>金额(万元):   </label>
+                <div class="layui-input-block" >
+                    <input type="text" id="siteFee" name="siteFee" lay-verify="required|siteFee" autocomplete="off"
+                        class="layui-input money-focus" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-md5">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>计算根据及理由:</label>
+                <div class="layui-input-block"  style="padding-left: 30px;">
+                    <input type="text" id="siteFeeReason" name="siteFeeReason" lay-verify="required|siteFeeReason" autocomplete="off"
+                        class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-col-md1">
+                <label class="layui-form-label  font-blod">讲课费  </label>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>金额(万元):   </label>
+                <div class="layui-input-block" >
+                    <input type="text" id="teachFee" name="teachFee" lay-verify="required|teachFee" autocomplete="off"
+                        class="layui-input money-focus" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-md5">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>计算根据及理由:</label>
+                <div class="layui-input-block"  style="padding-left: 30px;">
+                    <input type="text" id="teachFeeReason" name="teachFeeReason" lay-verify="required|teachFeeReason" autocomplete="off"
+                        class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-col-md1">
+                <label class="layui-form-label  font-blod">培训资料费  </label>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>金额(万元):   </label>
+                <div class="layui-input-block" >
+                    <input type="text" id="dataFee" name="dataFee" lay-verify="required|dataFee" autocomplete="off"
+                        class="layui-input money-focus" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-md5">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>计算根据及理由:</label>
+                <div class="layui-input-block"  style="padding-left: 30px;">
+                    <input type="text" id="dataFeeReason" name="dataFeeReason" lay-verify="required|dataFeeReason" autocomplete="off"
+                        class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-col-md1">
+                <label class="layui-form-label  font-blod">材料费  </label>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>金额(万元):   </label>
+                <div class="layui-input-block" >
+                    <input type="text" id="materialFee" name="materialFee" lay-verify="required|materialFee" autocomplete="off"
+                        class="layui-input money-focus" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-md5">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>计算根据及理由:</label>
+                <div class="layui-input-block"  style="padding-left: 30px;">
+                    <input type="text" id="materialFeeReson" name="materialFeeReson" lay-verify="required|materialFeeReson" autocomplete="off"
+                        class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-col-md1">
+                <label class="layui-form-label  font-blod">交通费  </label>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>金额(万元):   </label>
+                <div class="layui-input-block" >
+                    <input type="text" id="trafficFee" name="trafficFee" lay-verify="required|trafficFee" autocomplete="off"
+                        class="layui-input money-focus" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-md5">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>计算根据及理由:</label>
+                <div class="layui-input-block"  style="padding-left: 30px;">
+                    <input type="text" id="trafficFeeReason" name="trafficFeeReason" lay-verify="required|trafficFeeReason" autocomplete="off"
+                        class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-col-md1">
+                <label class="layui-form-label  font-blod">人力资源费  </label>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>金额(万元):   </label>
+                <div class="layui-input-block" >
+                    <input type="text" id="humanResourcesCost" name="humanResourcesCost" lay-verify="required|humanResourcesCost" autocomplete="off"
+                        class="layui-input money-focus" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-md5">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>计算根据及理由:</label>
+                <div class="layui-input-block"  style="padding-left: 30px;">
+                    <input type="text" id="humanResourcesCostReason" name="humanResourcesCostReason" lay-verify="required|humanResourcesCostReason" autocomplete="off"
+                        class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-col-md1">
+                <label class="layui-form-label  font-blod">管理费  </label>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>金额(万元):   </label>
+                <div class="layui-input-block" >
+                    <input type="text" id="manageFee" name="manageFee" lay-verify="required|manageFee" autocomplete="off"
+                        class="layui-input money-focus" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-md5">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>计算根据及理由:</label>
+                <div class="layui-input-block"  style="padding-left: 30px;">
+                    <input type="text" id="manageFeeReason" name="manageFeeReason" lay-verify="required|manageFeeReason" autocomplete="off"
+                        class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-col-md1">
+                <label class="layui-form-label  font-blod">其他  </label>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>金额(万元):   </label>
+                <div class="layui-input-block" >
+                    <input type="text" id="otherFee" name="otherFee" lay-verify="required|otherFee" autocomplete="off"
+                        class="layui-input money-focus" placeholder="请输入">
+                </div>
+            </div>
+            <div class="layui-col-md5">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>计算根据及理由:</label>
+                <div class="layui-input-block"  style="padding-left: 30px;">
+                    <input type="text" id="otherReason" name="otherReason" lay-verify="required|otherReason" autocomplete="off"
+                        class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+        </div>
+
+
+        <!-- row1 -->
+        <div class="layui-form-item">
+            <div class="layui-col-md3">
+                <label class="layui-form-label font-blod"><span style="color:red">*&nbsp;</span>总计(万元):   </label>
+                <div class="layui-input-block">
+                    <input type="text" id="totalFee" name="totalFee" lay-verify="required|totalFee" autocomplete="off"
+                        class="layui-input layui-disabled" disabled placeholder="请输入">
+                </div>
+            </div>
+        </div>
+
+        <!-- <table class="layui-table" lay-data="" lay-filter="test3">
+            <thead>
+                <tr>
+                    <th lay-data="{field:'id', width:180}">支出项目</th>
+                    <th lay-data="{field:'username', width:150, edit: 'text'}">金额(万元)</th>
+                    <th lay-data="{field:'email', edit: 'text', minWidth: 150}">计算根据及理由</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>住宿费</td>
+                </tr>
+                <tr>
+                    <td>伙食费</td>
+                </tr>
+                <tr>
+                    <td>培训场地费</td>
+                </tr>
+                <tr>
+                    <td>讲课费</td>
+                </tr>
+                <tr>
+                    <td>培训资料费</td>
+                </tr>
+                <tr>
+                    <td>材料费</td>
+                </tr>
+                <tr>
+                    <td>交通费</td>
+                </tr>
+                <tr>
+                    <td>人力资源费</td>
+                </tr>
+                <tr>
+                    <td>管理费</td>
+                </tr>
+                <tr>
+                    <td>其 他</td>
+                </tr>
+                <tr>
+                    <td>总计</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="layui-form-item">
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>总计(万元):   </label>
+                <div class="layui-input-block">
+                    <input type="text" name="teachObject" lay-verify="required|teachObject" autocomplete="off"
+                        class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+        </div> -->
+
+
+        <!-- row9 -->
+        <div class="layui-form-item">
+            <div class="layui-col-sm12">
+                <div style="text-align: center;">
+                    <button class="layui-btn" type="submit" lay-submit lay-filter="save">保存</button>
+                    <button class="layui-btn" type="submit" lay-submit lay-filter="saveToNext">保存并进入下一页</button>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>

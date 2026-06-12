@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>录入个人学分-向导录入</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+<script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/pages/score/cme_singleproj_score/js/singleproj.js"></script>
+
+<style>
+    /* layui-table 表格内容允许换行 */
+    .layui-table-cell {
+        height: auto;
+    }
+
+    .myBoder {
+        border: 1.5px solid #999999;
+    }
+
+    html {
+        background-color: white;
+        color: #666;
+    }
+
+    /* 选项卡垂直排列 */
+    /* .layui-tab-title li{
+        display: block;
+    }
+    .layui-tab-title{
+        float: left;
+        width: 15%;
+    }
+    .layui-tab-content{
+        float: left;
+        width: 82%;
+    } */
+     /* 学分级别下拉框变形处理 */
+    .layui-treeSelect .ztree li{
+        line-height: normal !important;
+    }
+
+</style>
+</head>
+
+<body>
+
+    <!-- 筛选条件 -->
+    <div class="layui-form layui-card-header condition-area" lay-filter="div-search">
+        <form id="form-query">
+            <div class="layui-inline">
+                <label class="layui-form-label">举办年度</label>
+                <div class="layui-input-block">
+                    <select name="cmeYear" id="cmeYear" lay-filter="cmeYear"></select>
+                </div>
+            </div>
+            
+            <!-- 学分级别查询项 -->
+            <div class="layui-inline">
+                <label class="layui-form-label" name="lblScoreLevel"></label>
+                <div class="layui-input-block" style="width: 300px;">
+                    <input type="text" autocomplete="off" name="scoreLevel" class="layui-input"
+                         lay-filter="scoreLevel" id="scoreLevel" placeholder="请选择">
+                </div>
+            </div>
+
+            <!-- 查询按钮 -->
+            <div class="layui-inline">
+                <a class="layui-btn layui-btn-sm btn-search" id="searchBtn" onclick="loaderTable()"
+                    lay-filter="table-search" data-type="reload">
+                </a>
+            </div>
+        </form>
+    </div>
+     <!-- 10-继教项目, 20-科研、专利、论文、著作, 30-进修、培训、考试, 40-其他 -->
+    <div id="tabDiv" class="layui-tab layui-tab-brify layui-tab--hover" lay-filter="docDemoTabBrief" style="display: none;">
+        <ul class="layui-tab-title">
+            <li value="10" class="tab-default layui-this">继教项目</li>
+            <li value="20" class="tab-default">科研、专利、论文、著作</li>
+            <li value="30" class="tab-default">进修、培训、考试</li>
+            <li value="40" class="tab-default">其他</li>
+        </ul>
+    </div>
+
+    <!--        表格区域         -->
+    <div class="layui-tab-content">
+        <div class="layui-tab-item layui-show myBoder">
+            <table class="layui-table" id="cmeProjPosDownList" lay-filter="cmeProjPosDownList"
+                style="margin: 0px 0px;">
+            </table>
+        </div>
+    </div>
+
+    <!--表格内数据编辑、删除按钮-->
+    <script type="text/html" id="rowBar">
+        {{# if(d.kind == '01'){ }}
+            <a href="grant_score_research_paper.html?v={{today()}}&scoreLevel={{d.type}}&cmeYear={{d.cmeYear}}&grantscoreStandardId={{d.grantscoreStandardId}}&grantName={{d.name}}" class="layui-btn layui-btn-xs" lay-event="scoreInput" target="_blank"
+                style="color: #6086b5;background-color: transparent;">学分录入</a>
+        {{# }else{ }}
+            <!-- 如果套id是 广东套/深圳套 且 序号id为1/13 ,直接进入项目授分页面 -->
+            {{# if((d.cmeStandardKindId == '广东套' || d.cmeStandardKindId == '深圳套') && (d.id == 1 || d.id == 13)){ }}
+                <a href="grant_score_singleproj.html" class="layui-btn layui-btn-xs" lay-event="scoreInput" target="_blank"
+                style="color: #6086b5;background-color: transparent;">学分录入</a>
+            {{# }else{ }}
+                <a href="grant_score_singleproj_guid_middle.html?grantName={{d.name}}&unitName={{d.unitName}}&description={{d.description}}
+                &unitNum={{d.unitNum}}&unitScore={{d.unitScore}}&unitMaxscore={{d.unitMaxscore}}&scoreLevel={{d.type}}&cmeYear={{d.cmeYear}}" class="layui-btn layui-btn-xs" lay-event="scoreInput"
+                    style="color: #6086b5;background-color: transparent;">学分录入</a>
+            {{# } }}
+        {{# } }}
+
+
+    </script>
+
+    <!--增加序号列-->
+    <script type="text/html" id="rank">
+        {{d.LAY_TABLE_INDEX+1}}
+    </script>
+
+    <script>
+        layui.config({
+            base: '/js/layui/ext/'
+        }).extend({
+            eleTree: 'eleTree',
+            xmSelect: 'xm-select',
+            zTreeSelectM: 'zTreeSelectM'
+        });
+        // 全局配置及引入相关的模块
+        layui.use(['table', 'form', 'element', 'laydate', 'eleTree', 'xmSelect', 'zTreeSelectM'], function () {
+            var $ = layui.jquery
+                , table = layui.table
+                , element = layui.element
+                , form = layui.form
+                , laydate = layui.laydate
+                , xmSelect = layui.xmSelect
+                , eleTree = layui.eleTree
+                , zTreeSelectM = layui.zTreeSelectM
+                , layer = layui.layer;
+
+            var specArrs = [];
+            var unitId = localStorage.getItem("unit-id");
+            var userType = localStorage.getItem("user-type");
+            var cmeStandardKindId = localStorage.getItem("standardkind-id");
+            var hasGrantscoreType = false;
+            var grantscoreType = '';
+            const _isGuangdong = cmeStandardKindId === '289bf0ca-52cb-4b19-b737-9bd200a69ce1';
+            // window.disabledParent = false;
+
+            let getConfig = function(){
+                let configName1 = "fn_grantscore_type";
+                let configUrl = huayi_sjwh_url + `cmeCommonConfig/getConfigByUnitFromRedis?unitId=${unitId}&configNames=${configName1}`;
+                $.ajax({
+                    type    :   "post",
+                    url     :   configUrl,
+                    async   :   false,
+                    success :   function (res) {
+                        if(res.status == 200){
+                            if(res.data){
+                                if(res.data.hasOwnProperty(configName1) && res.data[configName1] == 1){
+                                    hasGrantscoreType = true;
+                                }
+                            }else{ layer.msg("配置加载失败"); }
+                        }else{ layer.msg("配置信息加载失败"); }
+                    }
+                });
+            }
+            getConfig();
+
+            // 隐藏授分标准分类选项卡
+            if(hasGrantscoreType){
+                $('#tabDiv').show();
+                grantscoreType = '10';
+            }else{
+                $('#tabDiv').hide();
+            }
+
+            // 鼠标悬浮切换选项卡
+            $(function () {
+                $('.layui-tab--hover .layui-tab-title li').mouseenter(function () {
+                    $(this).addClass('layui-this').siblings().removeClass('layui-this')
+                    const tabRoot = $(this).closest('.layui-tab--hover')
+                    const tabContent = tabRoot.find('.layui-tab-content')
+                    const index = $(this).index()
+                    tabContent.find('.layui-tab-item').eq(index).addClass('layui-show').siblings().removeClass('layui-show')
+                
+                    // 重新加载表格
+                    grantscoreType = this.getAttribute("value");
+                    loaderTable();
+                })
+            })
+           
+
+            // 表格配置
+            window.loaderTable = function () {
+                var colsArr;
+                if(hasGrantscoreType){
+                    colsArr = [[
+                        { field: 'xuhao', title: '序号', templet: '#rank',align: "center", width: 60 },
+                        { field: 'name', title: '具体名称', align: "center" },
+                        { title: '操作', toolbar: '#rowBar', align: "center", width: 120 },
+                        { field: 'description', title: '具体规定', align: "center" },
+                        { field: 'scoreLevelName', title: projectLabels.lblScoreLevel, align: "center" }
+                    ]];
+                }else{
+                    if(_isGuangdong){
+                        colsArr = [[
+                            { field: 'xuhao', title: '序号', templet: '#rank',align: "center", width: 60 },
+                            { title: '操作', toolbar: '#rowBar', align: "center", width: 120 },
+                            { field: 'scoreKindName', title: projectLabels.lblScoreLevel, align: "center"},
+                            { field: 'name', title: '具体名称', align: "center" },
+                            { field: 'description', title: '具体规定', align: "center" },
+                            { field: 'scoreLevelName', title: projectLabels.lblScoreLevelChild, align: "center" }
+                        ]];
+                    }else{ 
+                        colsArr = [[
+                            { field: 'xuhao', title: '序号', templet: '#rank',align: "center", width: 60 },
+                            { title: '操作', toolbar: '#rowBar', align: "center", width: 120 },
+                            { field: 'name', title: '具体名称', align: "center" },
+                            { field: 'description', title: '具体规定', align: "center" },
+                            { field: 'scoreLevelName', title: projectLabels.lblScoreLevel, align: "center" }
+                        ]];
+                    }
+                }
+                table.render({
+                    elem: '#cmeProjPosDownList',
+                    url: huayi_sjwh_url + 'cmegrantscorestandard/wizardEntryList',
+                    title: '向导录入',
+                    async:false,
+                    defaultToolbar: [],
+                    where: {
+                        cmeStandardKindId: cmeStandardKindId,
+                        cmeYear: $('#cmeYear').val(),
+                        unitId: unitId,
+                        userType: userType,
+                        projType: 3,
+                        type: $('#scoreLevel').val(),
+                        grantscoreType: grantscoreType,
+                        hasGrantscoreType: hasGrantscoreType
+                    },
+                    cols: colsArr,
+                    cellMinWidth: 100,
+                    id: "cmeProjPosDownList",
+                    // height: 'full-400',
+                    page: false,
+                    limit: 10,
+                    limits: [10, 50, 100, 150, 200],
+                    parseData: function (res) {
+                        // TODO: 临时限制 筛选数据, 上级单位是开封卫健委，则仅展示 授分标准名称包含“开封” 的数据
+                        // $.ajax({
+                        //     async:false,
+                        //     url: huayi_personorg_url + "comunit/parentUnits?unitId="+unitId,
+                        //     success: function(data){
+                        //         for (var i = 0; i < data.length; i++) {
+                        //             if(data[i].unitId=='160500'){
+                        //                 for (var j = 0; j < res.data.length; j++) {
+                        //                     if(res.data[j].name.indexOf("开封") == -1){
+                        //                         res.data.splice(j, 1);
+                        //                         j--;
+                        //                     }
+                        //                 }
+                        //                 break;
+                        //             }
+                        //         }
+                        //     }
+                        // })
+
+                        if (res.status != 200) {
+                            return {
+                                "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                                "msg": '获取数据失败', //解析提示文本
+                            }                        
+                        }
+                        res.data.forEach(function (item) {
+                            item.cmeYear = $('#cmeYear').val();
+                        });
+                        return {
+                            "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                            "msg": res.message, //解析提示文本
+                            "count": res.data.length, //解析数据长度
+                            "data": res.data, //解析数据列表
+                            "page": res.data.pageNum, //当前页
+                            "limit": res.data.pageSize, //每页条数
+                        }
+
+                    },
+                    done: function (res, curr, count) {
+                        if(hasGrantscoreType){
+                            // mergeRows(res);
+                        }
+                    }
+                });
+            };
+            // 初始化表格
+            loaderTable();
+
+            // 合并单元格
+            function mergeRows(res) {
+
+                var data = res.data;
+                var mergeIndex = 0;//定位需要添加合并属性的行数
+                var mark = 1; //这里涉及到简单的运算，mark是计算每次需要合并的格子数
+                var columsName = ['grantscoreType'];//需要合并的列名称
+                var columsIndex = [1];//需要合并的列索引值
+
+                for (var k = 0; k < columsName.length; k++) { //这里循环所有要合并的列
+                    var trArr = $(".layui-table-body>.layui-table").find("tr");//所有行
+                    for (var i = 1; i < res.data.length; i++) { //这里循环表格当前的数据
+                        var tdCurArr = trArr.eq(i).find("td").eq(columsIndex[k]);//获取当前行的当前列
+                        var tdPreArr = trArr.eq(mergeIndex).find("td").eq(columsIndex[k]);//获取相同列的第一列
+
+                        if (data[i][columsName[k]] === data[i-1][columsName[k]] && (k === 0 || (k != 0 && data[i][columsName[k-1]] === data[i-1][columsName[k-1]]))) { //后一行的值与前一行的值做比较，相同就需要合并
+                            mark += 1;
+                            tdPreArr.each(function () {//相同列的第一列增加rowspan属性
+                                $(this).attr("rowspan", mark);
+                            });
+                            tdCurArr.each(function () {//当前行隐藏
+                                $(this).css("display", "none");
+                            });
+                        }else {
+                            mergeIndex = i;
+                            mark = 1;//一旦前后两行的值不一样了，那么需要合并的格子数mark就需要重新计算
+                        }
+                    }
+                    mergeIndex = 0;
+                    mark = 1;
+                }
+            }
+            // 监听行内按钮
+            // table.on('tool(cmeProjPosDownList)', function (obj) {
+            //     var datas = obj.data;
+            //     if (obj.event === 'scoreInput') {
+
+            //     }
+            // });
+
+        });
+
+    </script>
+</body>
+
+</html>

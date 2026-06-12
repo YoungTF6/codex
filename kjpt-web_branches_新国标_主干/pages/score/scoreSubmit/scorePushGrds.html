@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>人社推送成果查询</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8">
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <style>
+        .pageContainer {
+            padding: 10px;
+            background-color: #fff;
+        }
+
+        .flowContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .searchSection {
+            background: #f5f5f5;
+            border: 1px solid #f0f0f0;
+            padding: 12px 15px 0;
+        }
+
+        .tableSection {
+            border: 1px solid #f0f0f0;
+        }
+
+        /* 近5年缺数据占位行样式 */
+        .zykPlaceholderRow td {
+            background-color: #fafafa !important;
+            color: #999;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layui-fluid pageContainer">
+        <div class="flowContainer">
+            <div class="searchSection">
+                <form class="layui-form" lay-filter="scorePushGrdsSearchForm">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">证件号</label>
+                            <div class="layui-input-inline" style="width: 260px;">
+                                <input id="idCardNo" name="idCardNo" type="text" autocomplete="off" placeholder="请输入证件号"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">医通卡号</label>
+                            <div class="layui-input-inline" style="width: 260px;">
+                                <input id="personNo" name="personNo" type="text" autocomplete="off" placeholder="请输入医通卡号"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layui-btn-sm" lay-submit lay-filter="searchScorePushGrds">
+                                <i class="layui-icon layui-icon-search"></i>查询
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="tableSection">
+                <table id="scorePushGrdsTable" lay-filter="scorePushGrdsTable"></table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        layui.config({
+            base: '/js/layui/ext/'
+        }).extend({
+            treeSelect: 'treeSelect',
+            lat: 'lat'
+        });
+        layui.use(['table', 'form', 'layer', 'lat', 'treeSelect'], function () {
+            var table = layui.table;
+            var form = layui.form;
+            var layer = layui.layer;
+            var lat = layui.lat;
+            var treeSelect = layui.treeSelect;
+
+            // 当前查询证件号，供推送接口与刷新表格使用
+            var lastQueryCertId = '';
+            // 最近一次解析到的人员ID，供占位行生成专业课使用
+            var lastComPersonId = '';
+            // 生成专业课接口地址
+            var createZykApiUrl = huayi_projectscore_url + 'pushZykAndXxk/createZyk';
+            // 选修课列表原始缓存（最近一次成功或清空后的结果）
+            var xxkListCache = [];
+            // 选修课按年度分组：键为 String(cmeYear)，值为该年度下的选修课对象数组（与后端 CmeGdrstScoreSubmitXxk 字段对齐，年度字段以 cmeYear 为准）
+            var xxkByYearMap = {};
+
+            // 从接口响应中解析选修课数组，兼容 JSONResult
+            function parseXxkListFromResponse(res) {
+                if (!res || typeof res !== 'object') {
+                    return [];
+                }
+                var raw = res.data;
+                if (Array.isArray(raw)) {
+                    return raw;
+                }
+                return [];
+            }
+
+            // 获取近5年年度列表（不含当年，基准年为去年）
+            function getRecentFiveYearList() {
+                var baseYear = new Date().getFullYear() - 1;
+                var years = [];
+                for (var i = 0; i < 5; i++) {
+                    years.push(String(baseYear - i));
+                }
+                return years;
+            }
+
+            // 从专业课查询响应中解析列表，兼容数组与 { zykList, personInfo } 结构
+            function parseZykListFromResponse(res) {
+                if (!res || typeof res !== 'object') {
+                    return [];
+                }
+                var raw = res.data;
+                if (Array.isArray(raw)) {
+                    return raw;
+                }
+                if (raw && Array.isArray(raw.zykList)) {
+                    return raw.zykList;
+                }
+                if (raw && Array.isArray(raw.list)) {
+                    return raw.list;
+                }
+                return [];
+            }
+
+            // 从专业课查询响应中解析人员基础信息（后端增强后可返回）
+            function parsePersonInfoFromResponse(res) {
+                if (!res || !res.data || Array.isArray(res.data)) {
+                    return null;
+                }
+                return res.data.personInfo || res.data.person || null;
+            }
+
+            // 解析 comPersonId：优先 personInfo，其次同次查询其他年度行
+            function resolveComPersonId(zykList, personInfo) {
+                if (personInfo && typeof personInfo === 'object') {
+                    var personId = personInfo.comPersonId || personInfo.personId || personInfo.id;
+                    if (personId !== undefined && personId !== null && personId !== '') {
+                        return String(personId);
+                    }
+                }
+                if (!zykList || !zykList.length) {
+                    return '';
+                }
+                for (var i = 0; i < zykList.length; i++) {
+                    var row = zykList[i];
+                    if (row && row.comPersonId !== undefined && row.comPersonId !== null && row.comPersonId !== '') {
+                        return String(row.comPersonId);
+                    }
+                }
+                return '';
+            }
+
+            // 构造缺年少记录占位行
+            function buildPlaceholderZykRow(cmeYear, comPersonId) {
+                return {
+                    isPlaceholder: true,
+                    cmeYear: String(cmeYear),
+                    comPersonId: comPersonId || '',
+                    totalScore: '',
+                    totalPeriod: '',
+                    state: '',
+                    gdrstSwapstate: '',
+                    logMessage: '',
+                    updateTime: ''
+                };
+            }
+
+            // 将接口数据合并：近5年固定占位 + 窗口外真实数据一并展示，按年度降序
+            function mergeZykDataWithRecentFiveYears(zykList, personInfo) {
+                var recentYears = getRecentFiveYearList();
+                var yearSet = {};
+                for (var i = 0; i < recentYears.length; i++) {
+                    yearSet[recentYears[i]] = true;
+                }
+                var comPersonId = resolveComPersonId(zykList, personInfo);
+                lastComPersonId = comPersonId;
+                if (!comPersonId) {
+                    return [];
+                }
+                var allRowMap = {};
+                if (zykList && zykList.length) {
+                    for (var j = 0; j < zykList.length; j++) {
+                        var item = zykList[j];
+                        if (!item) {
+                            continue;
+                        }
+                        var yearKey = normalizeYearValue(item.cmeYear || item.year || item.scoreYear);
+                        if (!yearKey) {
+                            continue;
+                        }
+                        item.isPlaceholder = false;
+                        allRowMap[yearKey] = item;
+                    }
+                }
+                var mergedRows = [];
+                for (var k = 0; k < recentYears.length; k++) {
+                    var year = recentYears[k];
+                    if (allRowMap[year]) {
+                        mergedRows.push(allRowMap[year]);
+                    } else {
+                        mergedRows.push(buildPlaceholderZykRow(year, comPersonId));
+                    }
+                }
+                var extraYearKeys = [];
+                for (var mapKey in allRowMap) {
+                    if (!allRowMap.hasOwnProperty(mapKey)) {
+                        continue;
+                    }
+                    if (!yearSet[mapKey]) {
+                        extraYearKeys.push(mapKey);
+                    }
+                }
+                extraYearKeys.sort(function (a, b) {
+                    return Number(b) - Number(a);
+                });
+                for (var m = 0; m < extraYearKeys.length; m++) {
+                    mergedRows.push(allRowMap[extraYearKeys[m]]);
+                }
+                mergedRows.sort(function (a, b) {
+                    return Number(normalizeYearValue(b.cmeYear)) - Number(normalizeYearValue(a.cmeYear));
+                });
+                return mergedRows;
+            }
+
+            // 判断是否为近5年占位行
+            function isPlaceholderRow(rowData) {
+                return !!(rowData && rowData.isPlaceholder);
+            }
+
+            // 占位行空态单元格展示
+            function renderEmptyCellText() {
+                return '<span style="color:#999;">暂无数据</span>';
+            }
+
+            // 统一年度值，兼容 2024、'2024'、'2024年度' 等格式
+            function normalizeYearValue(year) {
+                if (year === undefined || year === null || year === '') {
+                    return '';
+                }
+                var text = String(year).trim();
+                if (!text) {
+                    return '';
+                }
+                var match = text.match(/\d{4}/);
+                return match ? match[0] : text;
+            }
+
+            // 从选修课对象中获取年度，兼容不同后端字段命名
+            function getXxkYearValue(item) {
+                if (!item || typeof item !== 'object') {
+                    return '';
+                }
+                return item.cmeYear || item.year || item.scoreYear || item.cmeyear || item.cme_year || '';
+            }
+
+            // 将选修课列表按年度分组为 Map（键统一为字符串，便于与表格行年度匹配）
+            function buildXxkByYearMap(xxkList) {
+                var map = {};
+                if (!xxkList || !xxkList.length) {
+                    return map;
+                }
+                for (var i = 0; i < xxkList.length; i++) {
+                    var item = xxkList[i];
+                    if (!item) {
+                        continue;
+                    }
+                    var year = normalizeYearValue(getXxkYearValue(item));
+                    if (!year) {
+                        continue;
+                    }
+                    var key = year;
+                    if (!map[key]) {
+                        map[key] = [];
+                    }
+                    map[key].push(item);
+                }
+                return map;
+            }
+
+            // 获取选修课推送状态，兼容不同字段命名
+            function getXxkPushState(item) {
+                if (!item || typeof item !== 'object') {
+                    return null;
+                }
+                return item.gdrstSwapstate !== undefined ? item.gdrstSwapstate :
+                    (item.swapState !== undefined ? item.swapState :
+                    (item.submitState !== undefined ? item.submitState :
+                    (item.pushState !== undefined ? item.pushState :
+                    (item.gdrst_swapstate !== undefined ? item.gdrst_swapstate : null))));
+            }
+
+            // 判断单条选修课是否属于「未提交」或「提交失败」，需显示选修课推送入口
+            function isXxkRecordNeedPush(item) {
+                if (!item) {
+                    return false;
+                }
+                var s = getXxkPushState(item);
+                if (s === 4 || s === '4') {
+                    return true;
+                }
+                if (s === null || s === undefined || s === '') {
+                    return true;
+                }
+                if (s === 0 || s === '0') {
+                    return true;
+                }
+                return false;
+            }
+
+            // 判断指定年度下是否需展示选修课推送：存在选修课且并非全部为申报成功（2）
+            function hasXxkNeedPushByYear(cmeYear) {
+                var yearKey = normalizeYearValue(cmeYear);
+                if (!yearKey) {
+                    return false;
+                }
+                var list = xxkByYearMap[yearKey];
+                if (!list || !list.length) {
+                    return false;
+                }
+                for (var i = 0; i < list.length; i++) {
+                    var pushState = getXxkPushState(list[i]);
+                    if (pushState !== 2 && pushState !== '2') {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            // 先拉取选修课再渲染专业课表格，失败则清空索引仍渲染专业课，避免沿用过期选修课数据
+            function loadXxkThenRenderTable(queryParams) {
+                lastQueryCertId = (queryParams && queryParams.idCardNo) ? String(queryParams.idCardNo).trim() : '';
+                $.ajax({
+                    url: huayi_projectscore_url + 'pushZykAndXxk/getXxkByParam',
+                    type: 'get',
+                    data: {
+                        certId: lastQueryCertId,
+                        personNo: (queryParams && queryParams.personNo) ? String(queryParams.personNo).trim() : ''
+                    },
+                    success: function (res) {
+                        if (res && res.status !== undefined && res.status !== null && res.status !== 200) {
+                            layer.msg((res.msg || '') || '选修课数据查询异常');
+                            xxkListCache = [];
+                            xxkByYearMap = {};
+                            renderScorePushGrdsTable(queryParams);
+                            return;
+                        }
+                        var list = parseXxkListFromResponse(res);
+                        xxkListCache = list;
+                        xxkByYearMap = buildXxkByYearMap(list);
+                        renderScorePushGrdsTable(queryParams);
+                    },
+                    error: function () {
+                        layer.msg('选修课数据加载失败，请稍后重试');
+                        xxkListCache = [];
+                        xxkByYearMap = {};
+                        renderScorePushGrdsTable(queryParams);
+                    }
+                });
+            }
+
+            // 调用人社推送接口 pushGuangDong（专业课 zyk / 选修课 xxk），完成后由回调决定是否刷新表格
+            function requestPushGuangDong(personId, cmeYear, scoreType, afterFinish) {
+                if (!personId || (cmeYear === undefined || cmeYear === null || cmeYear === '')) {
+                    layer.msg('缺少证件号或年度，无法推送');
+                    if (typeof afterFinish === 'function') {
+                        afterFinish(false);
+                    }
+                    return;
+                }
+                var loadIdx = layer.load(1, { shade: [0.2, '#000'] });
+                $.ajax({
+                    url: huayi_projectscore_url + 'pushZykAndXxk/pushGuangDong',
+                    type: 'get',
+                    data: {
+                        personId: personId,
+                        cmeYear: String(cmeYear),
+                        scoreType: scoreType
+                    },
+                    success: function (res) {
+                        layer.close(loadIdx);
+                        if (res && res.status !== undefined && res.status !== null && res.status !== 200) {
+                            layer.msg((res.msg || '') || '推送失败');
+                            return;
+                        }
+                        layer.msg((res && res.msg) ? res.msg : '执行完成');
+                        if (typeof afterFinish === 'function') {
+                            afterFinish(true);
+                        }
+                    },
+                    error: function () {
+                        layer.close(loadIdx);
+                        layer.msg('推送请求失败，请稍后重试');
+                    }
+                });
+            }
+
+            // 推送成功后重新拉选修课并渲染专业课表格，保持与查询按钮一致的数据链路
+            function refreshScorePushGrdsAfterPush() {
+                var queryParams = {idCardNo:$("#idCardNo").val(), personNo:$("#personNo").val()};
+                var idCardNo = queryParams.idCardNo ? String(queryParams.idCardNo).trim() : '';
+                var personNo = queryParams.personNo ? String(queryParams.personNo).trim() : '';
+                queryParams.idCardNo = idCardNo;
+                queryParams.personNo = personNo;
+                if (!idCardNo && !personNo) {
+                    layer.msg('证件号和医通卡号请至少输入一个');
+                    return false;
+                }
+                
+                loadXxkThenRenderTable(queryParams);
+            }
+
+            // 渲染选修课详情弹窗表格的推送状态文本
+            function renderXxkPushStateText(state) {
+                if (state === 0 || state === '0') return '未发送';
+                if (state === 1 || state === '1') return '提交中';
+                if (state === 2 || state === '2') return '申报成功';
+                if (state === 4 || state === '4') return '推送失败';
+                return state || '';
+            }
+
+            // 将选修课数据映射为弹窗展示行，字段尽量对齐专业课列表
+            function mapXxkDetailRows(xxkList) {
+                var rows = [];
+                for (var i = 0; i < xxkList.length; i++) {
+                    var item = xxkList[i] || {};
+                    rows.push({
+                        cmeYear: normalizeYearValue(getXxkYearValue(item)),
+                        totalScore: item.totalScore !== undefined ? item.totalScore : (item.score || item.xxkScore || ''),
+                        totalPeriod: item.totalPeriod !== undefined ? item.totalPeriod : (item.period || item.xxkPeriod || ''),
+                        state: item.state,
+                        gdrstSwapstate: getXxkPushState(item),
+                        logMessage: item.logMessage || item.msg || item.remark || '',
+                        updateTime: item.updateTime || item.createTime || ''
+                    });
+                }
+                return rows;
+            }
+
+            // 打开选修课详情弹窗，并展示当前年度的选修课数据
+            function openXxkInfoDialog(rowData) {
+                var yearKey = normalizeYearValue(rowData && rowData.cmeYear);
+                if (!yearKey) {
+                    layer.msg('缺少年度，无法查看选修课详情');
+                    return;
+                }
+                var list = xxkByYearMap[yearKey] || [];
+                var detailRows = mapXxkDetailRows(list);
+                var tableElemId = 'xxkInfoTable_' + yearKey + '_' + Date.now();
+                var contentHtml = '<div style="padding:10px;"><table id="' + tableElemId + '" lay-filter="' + tableElemId + '"></table></div>';
+                layer.open({
+                    type: 1,
+                    title: '选修课详情（' + yearKey + '）',
+                    area: ['90%', '500px'],
+                    shadeClose: true,
+                    content: contentHtml,
+                    success: function () {
+                        table.render({
+                            elem: '#' + tableElemId,
+                            data: detailRows,
+                            text: { none: '该年度暂无选修课数据' },
+                            page: false,
+                            cols: [[
+                                { field: 'cmeYear', title: '年度', align: 'center', minWidth: 100 },
+                                { field: 'totalScore', title: '总学分', align: 'center', minWidth: 100 },
+                                { field: 'totalPeriod', title: '总学时', align: 'center', minWidth: 100 },
+                                {
+                                    field: 'state', title: '审核状态', align: 'center', minWidth: 120,
+                                    templet: function (d) {
+                                        var state = d.state;
+                                        if (state === 0 || state === '0') return '默认';
+                                        if (state === 1 || state === '1') return '待审核';
+                                        if (state === 2 || state === '2') return '审核通过';
+                                        if (state === 3 || state === '3') return '不需要审核';
+                                        if (state === 4 || state === '4') return '审核不通过';
+                                        return state || '';
+                                    }
+                                },
+                                {
+                                    field: 'gdrstSwapstate', title: '推送状态', align: 'center', minWidth: 100,
+                                    templet: function (d) {
+                                        return renderXxkPushStateText(d.gdrstSwapstate);
+                                    }
+                                },
+                                { field: 'logMessage', title: '推送信息', align: 'center', minWidth: 200 },
+                                { field: 'updateTime', title: '更新时间', align: 'center', minWidth: 160 }
+                            ]]
+                        });
+                    }
+                });
+            }
+
+            // 打开修改职称弹窗，使用树形选择器加载职称数据
+            function openEditTitleDialog(rowData) {
+                
+                var defaultTitleId = rowData && (rowData.titleId || rowData.title) ? String(rowData.titleId || rowData.title) : '';
+                var defaultTitleName = rowData ? String(rowData.titleName || rowData.title || rowData.titleText || rowData.comTitleName || '') : '';
+                var uniqueId = Date.now();
+                var treeElemId = 'editTitleTreeSelect_' + uniqueId;
+                var treeFilter = treeElemId;
+                var hiddenInputId = 'editTitleHidden_' + uniqueId;
+                var titleNameId = 'editTitleName_' + uniqueId;
+                // 回填树形选择器展示文本，避免仅 checkNode 时输入框未刷新
+                function echoTreeSelectText() {
+                    if (!defaultTitleName) {
+                        return;
+                    }
+                    var inputElem = $('#' + treeElemId).find('.layui-select-title input');
+                    if (inputElem.length) {
+                        inputElem.val(defaultTitleName);
+                    }
+                }
+                var contentHtml = ''
+                    + '<div style="padding:20px 20px 0 20px;">'
+                    + '  <div class="layui-form-item">'
+                    + '    <label class="layui-form-label">职称</label>'
+                    + '    <div class="layui-input-block">'
+                    + '      <div id="' + treeElemId + '" lay-filter="' + treeFilter + '"></div>'
+                    + '      <input type="hidden" id="' + hiddenInputId + '" />'
+                    + '      <input type="hidden" id="' + titleNameId + '" />'
+                    + '    </div>'
+                    + '  </div>'
+                    + '</div>';
+                layer.open({
+                    type: 1,
+                    title: '修改职称',
+                    area: ['520px', '220px'],
+                    shadeClose: false,
+                    btn: ['确定', '取消'],
+                    content: contentHtml,
+                    success: function (layero) {
+                        // 允许树形下拉内容超出弹窗范围显示，避免被弹窗内容区域裁剪
+                        layero.find('.layui-layer-content').css('overflow', 'visible');
+                        layero.css('overflow', 'visible');
+                        if (defaultTitleId) {
+                            $('#' + hiddenInputId).val(defaultTitleId);
+                        }
+                        if (defaultTitleName) {
+                            $('#' + titleNameId).val(defaultTitleName);
+                        }
+                        initTitleTree(defaultTitleId, treeElemId, hiddenInputId, titleNameId, defaultTitleName);
+                    },
+                    yes: function (index) {
+                        submitZykTitle(rowData, hiddenInputId, titleNameId, index);
+                    }
+                });
+            }
+
+
+            // 确定保存职称：校验后 POST 更新专业课（RequestBody：CmeGdrstScoreSubmitZyk，与表格行字段对齐）
+            function submitZykTitle(rowData, hiddenInputId, titleNameId, layerIndex) {
+                var titleId = $('#' + hiddenInputId).val();
+                var titleName = $('#' + titleNameId).val();
+                if (!titleId) {
+                    layer.msg('请选择职称');
+                    return;
+                }
+                if (!titleName) {
+                    layer.msg('请选择职称');
+                    return;
+                }
+                // 深拷贝行数据，避免污染表格缓存，并去掉 Layui 表格内部字段
+                var payload = JSON.parse(JSON.stringify(rowData || {}));
+                delete payload.LAY_TABLE_INDEX;
+                payload.titleId = titleId;
+                payload.titleName = titleName;
+                payload.gdrstSwapstate = 0;
+                payload.checkTime = null;
+                payload.addTime = null;
+                payload.updateTime = null;
+                var loadIdx = layer.load(1, { shade: [0.2, '#000'] });
+                $.ajax({
+                    url: huayi_projectscore_url + 'pushZykAndXxk/updateZyk',
+                    type: 'post',
+                    data: JSON.stringify(payload),
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        layer.close(loadIdx);
+                        if (res && res.status !== undefined && res.status !== null && res.status !== 200) {
+                            layer.msg((res.msg || '') || '保存失败');
+                            return;
+                        }
+                        
+                        layer.msg((res && res.msg) ? res.msg : '保存成功');
+                        if (typeof layerIndex === 'number') {
+                            layer.close(layerIndex);
+                        }
+                        refreshScorePushGrdsAfterPush();
+                        
+                    },
+                    error: function () {
+                        layer.close(loadIdx);
+                        layer.msg('保存请求失败，请稍后重试');
+                    }
+                });
+            }
+
+            function initTitleTree(defaultTitleId, treeElemId, hiddenInputId, titleNameId, defaultTitleName) {
+                lat.renderTreeSelect('#' + treeElemId, huayi_sjwh_url + 'option/title/treeData/289bf0ca-52cb-4b19-b737-9bd200a69ce1', {
+                    preprocessResponse: lat.adaptApiTitleTreeForTreeSelect,
+                    click: function (data) {
+                        var currentNode = data && data.current ? data.current : {};
+                        if (hiddenInputId) {
+                            $('#' + hiddenInputId).val(currentNode.id || '');
+                        }
+                        if (titleNameId) {
+                            $('#' + titleNameId).val(currentNode.name || '');
+                        }
+                    },
+                    success: function () { }
+                });
+            }
+
+            // 生成该年专业课，成功后由回调决定是否刷新表格
+            function requestGenerateZyk(comPersonId, cmeYear, afterFinish) {
+                if (!comPersonId || (cmeYear === undefined || cmeYear === null || cmeYear === '')) {
+                    layer.msg('缺少人员或年度，无法生成专业课');
+                    if (typeof afterFinish === 'function') {
+                        afterFinish(false);
+                    }
+                    return;
+                }
+                var loadIdx = layer.load(1, { shade: [0.2, '#000'] });
+                $.ajax({
+                    url: createZykApiUrl,
+                    type: 'get',
+                    data: {
+                        comPersonId: comPersonId,
+                        cmeYear: String(cmeYear)
+                    },
+                    success: function (res) {
+                        layer.close(loadIdx);
+                        if (res && res.status !== undefined && res.status !== null && res.status !== 200) {
+                            layer.msg((res.msg || '') || '生成专业课失败');
+                            if (typeof afterFinish === 'function') {
+                                afterFinish(false);
+                            }
+                            return;
+                        }
+                        var count = 0;
+                        if (typeof res === 'number') {
+                            count = res;
+                        } else if (typeof res === 'string' && res !== '') {
+                            count = Number(res) || 0;
+                        } else if (res && typeof res === 'object') {
+                            count = Number(res.data) || Number(res.count) || 0;
+                        }
+                        if (count > 0) {
+                            layer.msg('生成专业课 ' + count + ' 条');
+                        } else {
+                            layer.msg((res && res.msg) ? res.msg : '生成专业课成功');
+                        }
+                        if (typeof afterFinish === 'function') {
+                            afterFinish(true);
+                        }
+                    },
+                    error: function () {
+                        layer.close(loadIdx);
+                        layer.msg('生成专业课请求失败，请稍后重试');
+                        if (typeof afterFinish === 'function') {
+                            afterFinish(false);
+                        }
+                    }
+                });
+            }
+
+            // 按行数据构造操作列按钮：占位行仅展示「生成该年专业课」
+            function renderOperateButtons(rowData) {
+                if (isPlaceholderRow(rowData)) {
+                    if (rowData.comPersonId) {
+                        return '<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="generateZyk">生成该年专业课</a>';
+                    }
+                    return '<span style="color:#999;">—</span>';
+                }
+                var buttonHtml = [];
+                // 推送状态为申报成功（2）时不展示专业课推送
+                if (rowData.gdrstSwapstate != 2) {
+                    buttonHtml.push('<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="pushZykRow">专业课推送</a>');
+                }
+                if (hasXxkNeedPushByYear(rowData.cmeYear)) {
+                    buttonHtml.push('<a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="pushXxkRow">选修课推送</a>');
+                }
+                // 推送状态为申报成功（2）时才展示生成选修课
+                if (rowData.gdrstSwapstate == 2) {
+                    buttonHtml.push('<a class="layui-btn layui-btn-xs" lay-event="generateElective">生成选修课</a>');
+                }
+                return buttonHtml.join('');
+            }
+
+            // 渲染推送成果表格（接入后端接口）
+            function renderScorePushGrdsTable(queryParams) {
+                table.render({
+                    elem: '#scorePushGrdsTable',
+                    title: '人社推送成果查询表',
+                    defaultToolbar: [],
+                    url: huayi_projectscore_url + 'pushZykAndXxk/getZykByParam',
+                    method: 'get',
+                    where: {
+                        // 证件号查询条件，后端按实际字段名接收（如 certId）
+                        certId: queryParams.idCardNo,
+                        // 医通卡号查询条件，对应后端字段 personNo
+                        personNo: queryParams.personNo
+                    },
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    parseData: function (res) {
+                        var zykList = parseZykListFromResponse(res);
+                        var personInfo = parsePersonInfoFromResponse(res);
+                        var tableRows = mergeZykDataWithRecentFiveYears(zykList, personInfo);
+                        return {
+                            code: res.status === 200 ? 0 : res.status,
+                            msg: res.msg || '',
+                            count: tableRows.length,
+                            data: tableRows
+                        };
+                    },
+                    done: function (res) {
+                        var tableView = $('#scorePushGrdsTable').next('.layui-table-view');
+                        if (!tableView.length || !res || !res.data) {
+                            return;
+                        }
+                        for (var i = 0; i < res.data.length; i++) {
+                            if (isPlaceholderRow(res.data[i])) {
+                                tableView.find('tr[data-index="' + i + '"]').addClass('zykPlaceholderRow');
+                            }
+                        }
+                    },
+                    cols: [[
+                        {
+                            fixed: 'left', title: '操作', align: 'center', minWidth: 300,
+                            templet: function (d) {
+                                return renderOperateButtons(d);
+                            }
+                        },
+                        {
+                            fixed: 'left', title: '详情', align: 'center', minWidth: 180, templet: function (d) {
+                                if (isPlaceholderRow(d)) {
+                                    return '<span style="color:#999;">—</span>';
+                                }
+                                return '<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="xxkInfo">选修课详情</a>'
+                                    + '<a class="layui-btn layui-btn-xs" lay-event="editTitle">修改职称</a>';
+                            }
+                        },
+                        { field: 'cmeYear', title: '年度', align: 'center', minWidth: 100 },
+                        {
+                            field: 'totalScore', title: '总学分', align: 'center', minWidth: 100,
+                            templet: function (d) {
+                                if (isPlaceholderRow(d)) {
+                                    return renderEmptyCellText();
+                                }
+                                return d.totalScore !== undefined && d.totalScore !== null ? d.totalScore : '';
+                            }
+                        },
+                        {
+                            field: 'totalPeriod', title: '总学时', align: 'center', minWidth: 100,
+                            templet: function (d) {
+                                if (isPlaceholderRow(d)) {
+                                    return renderEmptyCellText();
+                                }
+                                return d.totalPeriod !== undefined && d.totalPeriod !== null ? d.totalPeriod : '';
+                            }
+                        },
+                        {
+                            field: 'state', title: '审核状态', align: 'center', minWidth: 120,
+                            templet: function (d) {
+                                if (isPlaceholderRow(d)) {
+                                    return renderEmptyCellText();
+                                }
+                                let state = d.state;
+                                if (state === 0) return '默认';
+                                if (state === 1) return '待审核';
+                                if (state === 2) return '审核通过';
+                                if (state === 3) return '不需要审核';
+                                if (state === 4) return '审核不通过';
+                                return state || '';
+                            }
+                        },
+                        {
+                            field: 'gdrstSwapstate', title: '推送状态', align: 'center', minWidth: 100,
+                            templet: function (d) {
+                                if (isPlaceholderRow(d)) {
+                                    return renderEmptyCellText();
+                                }
+                                let gdrstSwapstate = d.gdrstSwapstate;
+                                if (gdrstSwapstate === 0) return '未发送';
+                                if (gdrstSwapstate === 1) return '提交中';
+                                if (gdrstSwapstate === 2) return '申报成功';
+                                if (gdrstSwapstate === 4) return '推送失败';
+                                return gdrstSwapstate || '';
+                            }
+                        },
+                        {
+                            field: 'logMessage', title: '推送信息', align: 'center', minWidth: 200,
+                            templet: function (d) {
+                                if (isPlaceholderRow(d)) {
+                                    return renderEmptyCellText();
+                                }
+                                return d.logMessage || '';
+                            }
+                        },
+                        {
+                            field: 'updateTime', title: '更新时间', align: 'center', minWidth: 160,
+                            templet: function (d) {
+                                if (isPlaceholderRow(d)) {
+                                    return renderEmptyCellText();
+                                }
+                                return d.updateTime || '';
+                            }
+                        }
+                    ]],
+                    text: { none: '未找到该人员专业课数据，无法展示近5年' },
+                    page: false
+                });
+            }
+
+            // 表格行内按钮事件：专业课/选修课推送走 pushGuangDong，成功后刷新表格
+            table.on('tool(scorePushGrdsTable)', function (obj) {
+                var rowData = obj.data || {};
+                if (obj.event === 'pushZykRow' || obj.event === 'pushXxkRow') {
+                    var scoreType = obj.event === 'pushZykRow' ? 'zyk' : 'xxk';
+                    requestPushGuangDong(rowData.comPersonId, rowData.cmeYear, scoreType, function (ok) {
+                        if (ok) {
+                            refreshScorePushGrdsAfterPush();
+                        }
+                    });
+                    return;
+                }
+                if (obj.event === 'generateZyk') {
+                    var zykPersonId = rowData.comPersonId || lastComPersonId;
+                    requestGenerateZyk(zykPersonId, rowData.cmeYear, function (ok) {
+                        if (ok) {
+                            refreshScorePushGrdsAfterPush();
+                        }
+                    });
+                    return;
+                }
+                if (obj.event === 'generateElective') {
+                    if (!rowData.cmeYear || !rowData.comPersonId) {
+                        layer.msg('缺少生成选修课参数');
+                        return;
+                    }
+                    $.ajax({
+                        url: huayi_projectscore_url + 'pushZykAndXxk/createXxk',
+                        type: 'get',
+                        data: {
+                            cmeYear: rowData.cmeYear,
+                            comPersonId: rowData.comPersonId
+                        },
+                        success: function (res) {
+                            var count = 0;
+                            if (typeof res === 'number') {
+                                count = res;
+                            } else if (typeof res === 'string' && res !== '') {
+                                count = Number(res) || 0;
+                            } else if (res && typeof res === 'object') {
+                                count = Number(res.data) || Number(res.count) || 0;
+                            }
+                            layer.msg('生成选修课 ' + count + ' 条');
+                            if(count > 0) {
+                                refreshScorePushGrdsAfterPush();
+                            }
+                        },
+                        error: function () {
+                            layer.msg('生成选修课失败，请稍后重试');
+                        }
+                    });
+                    return;
+                }
+                if (obj.event === 'xxkInfo') {
+                    openXxkInfoDialog(rowData);
+                    return;
+                }
+                if (obj.event === 'editTitle') {
+                    openEditTitleDialog(rowData);
+                }
+            });
+
+
+            // 查询事件：校验条件后刷新表格，接口位置已预留
+            form.on('submit(searchScorePushGrds)', function (data) {
+                var queryParams = data.field || {};
+                var idCardNo = queryParams.idCardNo ? String(queryParams.idCardNo).trim() : '';
+                var personNo = queryParams.personNo ? String(queryParams.personNo).trim() : '';
+                queryParams.idCardNo = idCardNo;
+                queryParams.personNo = personNo;
+                if (!idCardNo && !personNo) {
+                    layer.msg('证件号和医通卡号请至少输入一个');
+                    return false;
+                }
+                loadXxkThenRenderTable(queryParams);
+                return false;
+            });
+
+
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>请选择单位信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+        media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- 工具 -->
+    <script type="text/javascript" src="/js/tools/urlTools.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+<script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <style>
+        .demo-side {
+            position: relative;
+            transition: all .3s;
+        }
+
+        .demo-side.show {
+            padding-left: 120px;
+            position: relative;
+        }
+
+        .demo-side:before {
+            content: "假设这是侧边栏, treeTable使用了与layui数据表格完全不同的列宽分配方式, 由浏览器来分配, 所以当容器宽度变化后会自动适应, 对单页面系统非常友好";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            margin-top: -90px;
+            width: 105px;
+            visibility: hidden;
+            line-height: 1.5;
+        }
+
+        .demo-side.show:before {
+            visibility: visible;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="layui-form">
+                    <div class="layui-form-item" style="margin-bottom: 0px;">
+                        <label class="layui-form-label">关键字:</label>
+                        <div class="layui-input-inline" style="width: 40%;">
+                            <input type="text" id="text_fieldValue" lay-verify="text_fieldValue" autocomplete="off"
+                                placeholder="请输入科室编号,科室名称" class="layui-input">
+                        </div>
+                        <button type="button" class="layui-btn" id="btn_find">查找</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-card">
+            <div class="layui-card-body demo-side">
+                <table class="layui-table" id="com_dept" lay-filter="com_dept" style="margin: 0px 0px;">
+                </table>
+            </div>
+        </div>
+
+        <div class="layui-btn-container" style="text-align: center;">
+            <button class="layui-btn" id="btn_confirm">确 定</button>
+            <button class="layui-btn layui-btn-primary layui-border-green" id="btn_close" style="margin-left: 40px;">关
+                闭</button>
+        </div>
+
+
+
+    </div>
+</body>
+
+<script>
+
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        treeTable: 'treeTable'
+    });
+
+    layui.use(['table', 'form', 'jquery', 'layer', "treeTable"], function () {
+        var table = layui.table,
+            form = layui.form,
+            $ = layui.jquery,
+            treeTable = layui.treeTable,
+            layer = layui.layer;
+            
+        var username = localStorage.getItem('user-name');
+
+        //解析url参数
+        let getParamFromUrl = function (paramName) {
+            let urlStr = location.search;
+            if (urlStr.indexOf(paramName) < 0 || urlStr.indexOf("?") < 0) return;
+            let paramKV = urlStr.substr(1).split("&");
+            for (let i = 0; i < paramKV.length; i++) {
+                if (paramKV[i].indexOf(paramName) >= 0) {
+                    return paramKV[i].split("=")[1];
+                }
+            }
+        }
+        var comPersonId = getParamFromUrl("comPersonId");
+        comPersonId = decodeURI(comPersonId);
+        var srcStandardKindId = getParamFromUrl("srcStandardKindId");
+        srcStandardKindId = decodeURI(srcStandardKindId);
+        var desStandardKindId = getParamFromUrl("desStandardKindId");
+        desStandardKindId = decodeURI(desStandardKindId);
+        var srcUnitId = getParamFromUrl("srcUnitId");
+        srcUnitId = decodeURI(srcUnitId);
+        var desUnitId = getParamFromUrl("desUnitId");
+        desUnitId = decodeURI(desUnitId);
+        var unitName = getParamFromUrl("unitName");
+        unitName = decodeURI(unitName);
+        var personName = getParamFromUrl("personName");
+        personName = decodeURI(personName);
+
+
+        var insTb = null;
+        window.initTable = function () {
+            insTb = treeTable.render({
+                elem: '#com_dept',
+                type: "post",
+                url: huayi_personorg_url + 'comdept/getDeptListBySearch',
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                height: "full-160",
+                tree: {
+                    iconIndex: 2,
+                    isPidData: true,
+                    idName: 'deptId',
+                    pidName: 'parentId'
+                },
+                title: '科室表',
+                defaultToolbar: [],
+                where: {
+                    unitId: desUnitId,
+                    search: $("#text_fieldValue").val()
+                },
+                cols: [[
+                    { type: 'numbers', align: "center", minWidth: 200 },
+                    { type: 'radio', align: "center" },
+                    { field: 'deptName', title: '科室名称', minWidth: 165, align: "left" },
+                    { field: 'deptId', title: '科室编号', align: "center" }
+                ]],
+                cellMinWidth: 100,
+                id: 'comPerson',
+                page: true,
+                parseData: function (res) {
+                    return {
+                        'code': res.status === 200 ? 0 : res.status,  // 解析接口状态
+                        'count': res.data.length,              // 解析数据长度
+                        "data": res.data
+                    }
+                },
+                request: {
+                    pageName: 'pageNum',  // 页码的参数名称，默认：page
+                    limitName: 'pageSize'  // 每页数据量的参数名，默认：limit
+                }
+            });
+        };
+
+
+        $(function () {
+            let deptName= getQueryString("deptName");
+            if (deptName != null && deptName != undefined && deptName != '' && deptName!="null" && deptName!="undefined" ) {
+                $("#text_fieldValue").val(deptName);
+            }
+            window.initTable();
+        });
+
+        $("#btn_find").click(function () {
+            window.initTable();
+        });
+
+        $("#btn_confirm").click(function () {
+            console.log(insTb.checkStatus());
+            let selObj = insTb.checkStatus();
+            if (selObj.length == 0) {
+                layer.msg("请选择科室");
+            } else {
+                let desDeptName = selObj[0].deptName;
+                let desDeptId = selObj[0].deptId;
+                let desUnitId = selObj[0].unitId;
+                let msg = '确认将 <span style="font-weight: bold">' + personName + '</span> ' +
+                    '调入此单位 <span style="font-weight: bold">' + desDeptName + '</span> 吗？'
+                layer.confirm(msg, function () {
+                    var index = layer.load(2, {
+                        shade: [0.3, '#000000']
+                    });
+                    axios({
+                        method: 'post',
+                        url: huayi_personorg_url + 'comperson/transferForSupport',
+                        responseType: 'json',
+                        data: {
+                            comPersonId: comPersonId,
+                            transferState: 'TRANS_IN',
+                            srcUnitId: srcUnitId,
+                            desUnitId: desUnitId,
+                            srcStandardKindId: srcStandardKindId,
+                            desStandardKindId: desStandardKindId,
+                            desDeptId: desDeptId,
+                            desUnitName: unitName,
+                            desDeptName: desDeptName,
+                            operateUsername: username
+                        }
+                    }).then(response => {
+                        layer.close(index);
+                        if (response.status == 200 && response.data.status == 200) {
+                            loaderTable();
+                            layer.closeAll();
+                            layer.msg('调入成功', {
+                                icon: 1
+                            });
+                        } else {
+                            layer.msg('调入失败', {
+                                icon: 2
+                            });
+                        }
+                    }).catch(error => {
+                        layer.close(index);
+                        layer.msg('网络异常，请稍后再试', {
+                            icon: 7
+                        });
+                        console.log(error);
+                    });
+                });
+                // parent.layer.close(parent.layer.index)
+            }
+        });
+
+        $("#btn_close").click(function () {
+            window.layClose();
+        });
+
+        window.layClose = function () {
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //再执行关闭
+        }
+
+    });
+
+</script>

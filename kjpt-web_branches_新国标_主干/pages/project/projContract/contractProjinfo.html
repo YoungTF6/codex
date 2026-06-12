@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+
+    <link rel="stylesheet" href="../../../css/person/reset.css" />
+    <link rel="stylesheet" href="../../../css/person/style.css" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <!-- <script type="text/javascript" src="../../js/global_ajax_setting.js"></script> -->
+
+
+
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+
+    <style>
+        .ztree li span.button {
+            vertical-align: inherit !important;
+        }
+
+        .layui-form-label-my {
+            width: 100px;
+        }
+
+        .layui-inline-my {
+            width: 350px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body" style="margin:0 auto;">
+                <div class="layui-form" lay-filter="projInfoForm">
+
+                    <input type="hidden" id="projContractProjInfoId" name="projContractProjInfoId" />
+                    <input type="hidden" id="projContractId" name="projContractId" />
+                    <fieldset class="layui-elem-field" style="margin-top: 10px; padding: 30px;">
+                        <legend style="color:rgba(235, 39, 39, 0.514);text-align: left;font-weight: bold; font-size: 18px;;">
+                            项目信息</legend>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-form-label-my">项目申请单位:</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="applyUnitName" name="applyUnitName" autocomplete="off" class="layui-input" lay-verify="required" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-form-label-my">项目名称:</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="projName" name="projName" autocomplete="off" class="layui-input" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline layui-inline-my">
+                                <label class="layui-form-label layui-form-label-my">项目类型:</label>
+                                <div class="layui-input-block">
+                                    <input type="radio" name="projType" lay-filter="projType" value="面授项目" title="面授项目" lay-verify="radioChecked" > 
+                                    <input type="radio" name="projType" lay-filter="projType" value="远程项目" title="远程项目" lay-verify="radioChecked" >
+                                </div>
+                            </div>
+                            <div class="layui-inline layui-inline-my" id="copperDiv" style="display: none;">
+                                <label class="layui-form-label layui-form-label-my">项目合作方:</label>
+                                <div class="layui-input-inline">
+                                    <select name="projTypeCooperation" id="projTypeCooperation">
+                                        <option value="">请选择</option>
+                                        <option value="北京华医网科技股份有限公司">北京华医网科技股份有限公司</option>
+                                        <option value="北京大学医学网络教育学院">北京大学医学网络教育学院</option>
+                                        <option value="北京健康在线信息技术有限公司">北京健康在线信息技术有限公司</option>
+                                        <option value="北京双卫医学技术培训中心">北京双卫医学技术培训中心 </option>
+                                        <option value="复旦大学附属中山医院">复旦大学附属中山医院</option>
+                                        <option value="国家卫生计生委能力建设和继续教育中心">国家卫生计生委能力建设和继续教育中心</option>
+                                        <option value="杭州健康在线信息技术有限公司">杭州健康在线信息技术有限公司</option>
+                                        <option value="杭州中广信息网络有限公司">杭州中广信息网络有限公司</option>
+                                        <option value="杭州卓健信息科技有限公司">杭州卓健信息科技有限公司</option>
+                                        <option value="四川大学华西医院">四川大学华西医院</option>
+                                        <option value="中华医学会">中华医学会</option>
+                                        <option value="项目申办单位现有网站">项目申办单位现有网站</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline layui-inline-my">
+                                <label class="layui-form-label  layui-form-label-my">二级学科:</label>
+                                <div class="layui-input-inline">
+                                    <select name="knowledgeId2" id="knowledgeId2" lay-filter="knowledgeId2">
+
+                                    </select>
+                                </div>
+                                <input type="hidden" name="knowledgeName2" />
+                            </div>
+                            <div class="layui-inline layui-inline-my">
+                                <label class="layui-form-label layui-form-label-my">三级学科:</label>
+                                <div class="layui-input-inline">
+                                    <select name="knowledgeId3" id="knowledgeId3" lay-filter="knowledgeId3">
+
+                                    </select>
+                                </div>
+                                <input type="hidden" name="knowledgeName3" />
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+
+                            <label class="layui-form-label layui-form-label-my">项目性质:</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="projNature" value="新立项" title="新立项"  lay-verify="radioChecked">
+                                <input type="radio" name="projNature" value="备案项目" title="备案项目"  lay-verify="radioChecked">
+                                <input type="radio" name="projNature" value="基地项目" title="基地项目"  lay-verify="radioChecked">
+                                <input type="radio" name="projNature" value="异地项目" title="异地项目" lay-verify="radioChecked">
+                            </div>
+
+                        </div>
+
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline layui-inline-my">
+                                <label class="layui-form-label layui-form-label-my">立项学分数:</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="scorePlan" name="scorePlan" autocomplete="off" class="layui-input" />
+                                </div>
+                            </div>
+                            <div class="layui-inline layui-inline-my">
+                                <label class="layui-form-label layui-form-label-my" style="width:120px;padding:9px 9px;">实际授予学分数:</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="scoreFact" name="scoreFact" autocomplete="off" class="layui-input" lay-verify="required|number|scoreFactPositive" placeholder="须大于0，最多1位小数，0.5的倍数" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label layui-form-label-my">说明理由:</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="scoreReason" name="scoreReason" autocomplete="off" class="layui-input" style="width:40%" placeholder="(如申请减少学分数的，请说明理由)"
+                                />
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="layui-elem-field" style="margin-top: 10px; padding: 30px;">
+                        <legend style="color:rgba(235, 39, 39, 0.514);text-align: left;font-weight: bold; font-size: 18px;;">
+                            项目负责人</legend>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline layui-inline-my">
+                                <label class="layui-form-label layui-form-label-my">姓名:</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="projManagerName" name="projManagerName" autocomplete="off" class="layui-input" lay-verify="required"
+                                    />
+                                </div>
+                            </div>
+                            <div class="layui-inline  layui-inline-my">
+                                <label class="layui-form-label layui-form-label-my">性别:</label>
+                                <div class="layui-input-inline">
+                                    <select id="projManagerGender" name="projManagerGender">
+                                        <option value="1">男</option>
+                                        <option value="0">女</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline  layui-inline-my">
+                                <label class="layui-form-label layui-form-label-my">出生年月:</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="projManagerBirthday" name="projManagerBirthday" autocomplete="off" class="layui-input" lay-verify="required|date"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline layui-inline-my">
+                                <label class="layui-form-label layui-form-label-my">从事专业:</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="projManagerMajor" name="projManagerMajor" autocomplete="off" class="layui-input" lay-verify="required"
+                                    />
+                                </div>
+                            </div>
+                            <div class="layui-inline layui-inline-my">
+                                <label class="layui-form-label layui-form-label-my">专业技术职务:</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="projManagerPost" name="projManagerPost" autocomplete="off" class="layui-input" lay-verify="required"
+                                    />
+                                </div>
+                            </div>
+                            <div class="layui-inline layui-inline-my">
+                                <label class="layui-form-label layui-form-label-my">学历:</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="projManagerEducation" name="projManagerEducation" autocomplete="off" class="layui-input" lay-verify="required"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+
+                            <div class="layui-inline layui-inline-my">
+                                <label class="layui-form-label layui-form-label-my">联系电话:</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="projManagerPhone" name="projManagerPhone" autocomplete="off" class="layui-input" lay-verify="required"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="layui-inline layui-inline-my">
+                                <label class="layui-form-label layui-form-label-my">联系地址:</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="projManagerAddress" name="projManagerAddress" autocomplete="off" class="layui-input" lay-verify="required"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+
+                    <fieldset class="layui-elem-field" style="margin-top: 10px; padding: 30px;">
+                        <legend style="color:rgba(235, 39, 39, 0.514);text-align: left;font-weight: bold; font-size: 18px;">
+                            培训内容：（简要介绍项目培训内容）</legend>
+
+                        <div class="layui-form-item">
+
+                            <label class="layui-form-label">培训内容:</label>
+                            <div class="layui-input-block">
+                                <textarea id="trainContent" name="trainContent" autocomplete="off" class="layui-textarea" rows="4" style="width: 50%" lay-verify="required"></textarea>
+                            </div>
+
+                        </div>
+
+                    </fieldset>
+
+
+                    <div class="layui-btn-container" style="text-align: center">
+                        <button class="layui-btn layui-btn-primary" id="btnCancel">返回列表</button>
+                        <button type="submit" class="layui-btn" lay-submit="" lay-filter="btnSave" id="btnSave">保存本页</button>
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
+
+
+<script>
+
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+
+    });
+
+    layui.use(['form', 'jquery', 'layer', "laydate"], function () {
+        var $ = layui.jquery;
+        var form = layui.form;
+        var layer = layui.layer;
+        var laydate = layui.laydate;
+
+        var projId = parent.window["projId"];
+        var downId = parent.window["downId"];
+        window.getProjContractId = function() {
+            return parent.window["projContractId"];
+        }
+        var projContractId = getProjContractId();
+        var oper = parent.window["oper"];
+        var main = layui.sessionData("projContract")["main"];
+
+        var commonObj = {
+            get projContractId() { return getProjContractId(); },
+            projId: projId,
+            downId: downId,
+            userCreate: localStorage.getItem("user-name"),
+            userUpdate: localStorage.getItem("user-name")
+        }
+
+
+        window.getUnitId = function () {
+            return localStorage.getItem("unit-id");
+        }
+        window.getCmeStandardKindId = function () {
+            return localStorage.getItem("standardkind-id");
+        }
+
+        window.initAll = function () {
+
+            if (oper == "details") {
+                $(".layui-form").find("input").prop("disabled", "disabled").addClass("layui-disabled");
+                $(".layui-form").find("checkbox").prop("disabled", "disabled").addClass("layui-disabled");
+                $(".layui-form").find("select").prop("disabled", "disabled").addClass("layui-disabled");
+                $(".layui-form").find("textArea").prop("disabled", "disabled").addClass("layui-disabled");
+                $("#btnSave").hide();
+            }
+
+
+            laydate.render({
+                elem: '#projManagerBirthday'
+                , trigger: 'click'
+            });
+            $("#applyUnitName").val(localStorage.getItem("realname"));
+            $("#projName").val(main.projName).addClass("layui-disabled");
+            $("#knowledgeId2").append(`<option value='${main.knowledgeTwoId}' selected>${main.knowledgeTwoName}</option>`).prop("disabled", 'disabled').addClass("layui-disabled");
+            $("#knowledgeName2").val($("#knowledgeId2").find("option:selected").text());
+            $("#knowledgeId3").append(`<option value='${main.knowledgeId}' selected>${main.knowledgeName}</option>`).prop("disabled", 'disabled').addClass("layui-disabled");
+            $("#knowledgeName3").val($("#knowledgeId3").find("option:selected").text());
+            $("#scorePlan").val(main.score).prop("disabled", 'disabled').addClass("layui-disabled");
+            $("#scoreFact").val(main.score);
+            if (main.projManagerName != null && main.projManagerName != "") {
+                $("#projManagerName").val(main.projManagerName).prop("disabled", 'disabled').addClass("layui-disabled");
+            }
+            if (main.projManagerTelephone != null && main.projManagerTelephone != "") {
+                $("#projManagerPhone").val(main.projManagerTelephone);
+            }
+        }
+
+        window.getProjInfoData = function () {
+            if (projContractId != null && projContractId != "") {
+                let url = huayi_projectscore_url + `cmeProjContract/projContractPartInfo/${getProjContractId()}/CmeProjContractProjInfo`;
+                $.ajax({
+                    url: url,
+                    type: "get",
+                    success: function (res) {
+                        if (res.success) {
+                            let cmeProjContractProjInfo = res.data.cmeProjContractProjInfo;
+                            if (cmeProjContractProjInfo != null) {
+                                delete cmeProjContractProjInfo.projName;
+                                delete cmeProjContractProjInfo.knowledgeId2;
+                                delete cmeProjContractProjInfo.knowledgeName2;
+                                delete cmeProjContractProjInfo.knowledgeId3;
+                                delete cmeProjContractProjInfo.knowledgeName3;
+                                delete cmeProjContractProjInfo.scorePlan;
+                                delete cmeProjContractProjInfo.projManagerName;
+                                //delete cmeProjContractProjInfo.projManagerPhone;
+                                if (cmeProjContractProjInfo.projType == "远程项目") $("#copperDiv").show();
+                                form.val("projInfoForm", cmeProjContractProjInfo);
+                            }
+                        } else {
+                            layer.msg(res.msg, { icon: 2 });
+                        }
+                    },
+                    error: function (res) {
+                        layer.msg("发送数据失败", { icon: 2 });
+                    }
+                });
+            }
+        }
+
+
+        $("#btnCancel").click(function () {
+            parent.closeLayer();
+        });
+
+        form.on('submit(btnSave)', function (data) {
+
+            let url = huayi_projectscore_url + `cmeProjContract/projContractPartInfo/${getProjContractId()}/CmeProjContractProjInfo`;
+
+            data.field.knowledgeName2 = $("#knowledgeId2").find("option:selected").text();
+            data.field.knowledgeName3 = $("#knowledgeId3").find("option:selected").text();
+            let projinfoData = { ...data.field, ...commonObj };
+            let submitData = { "cmeProjContractProjInfo": projinfoData };
+
+            $.ajax({
+                url: url,
+                data: JSON.stringify(submitData),
+                type: "post",
+                contentType: "application/json",
+                dataType: "json",
+                success: function (res) {
+                    if (res.success) {
+
+                        layer.msg("保存成功", { icon: 1 });
+                        parent.getFullFlag('CmeProjContractProjInfo');
+                        parent.disableOtherByMain(false);
+                    } else {
+                        layer.msg(res.msg, { icon: 2 });
+                    }
+                },
+                error: function () {
+                    layer.msg("发送数据失败", { icon: 2 });
+                }
+            });
+            return false;
+        });
+
+
+
+
+        form.on('radio(projType)', function (data) {
+            if (data.value == "远程项目") {
+                $("#copperDiv").show();
+            } else {
+                $("#copperDiv").hide();
+                $("#projTypeCooperation").val('');
+            }
+            form.render();
+
+        });
+
+        form.verify({
+
+            // 实际授予学分数：>0，最多1位小数，且为0.5的倍数
+            scoreFactPositive: function (value) {
+                if (value === '' || value == null) {
+                    return;
+                }
+                var str = String(value).trim();
+                var score = parseFloat(str);
+                if (isNaN(score) || score < 1) {
+                    return '实际授予学分数必须大于等于1';
+                }
+                if (!/^\d+(\.\d)?$/.test(str)) {
+                    return '实际授予学分数最多保留1位小数';
+                }
+                if (Math.abs(Math.round(score * 2) / 2 - score) > 1e-6) {
+                    return '实际授予学分数须为0.5的倍数';
+                }
+                if($("#scorePlan").val() != null && $("#scorePlan").val() != '') {
+                    let scorePlan = parseFloat($("#scorePlan").val());
+                    if(score > scorePlan ) {
+                        return '实际授予学分数不应该大于立项学分数';
+                    }
+                }
+               
+            },
+
+            radioChecked: function (value, item) {
+                var $ = layui.$;
+                var verifyName = $(item).attr('name')
+                    , verifyType = $(item).attr('type')
+                    , formElem = $(item).parents('.layui-form')//获取当前所在的form元素，如果存在的话
+                    //,verifyElem=formElem.find('input[name='+verifyName+']')//获取需要校验的元素
+                    , verifyElem = formElem.find("input[name='" + verifyName + "']")//获取需要校验的元素
+                    , isTrue = verifyElem.is(':checked')//是否命中校验
+                    , focusElem = verifyElem.next().find('i.layui-icon');//焦点元素
+                if (!isTrue || !value) {
+                    //定位焦点
+                    focusElem.css(verifyType == 'radio' ? { "color": "#FF5722" } : { "border-color": "#FF5722" });
+                    //对非输入框设置焦点
+                    focusElem.first().attr("tabIndex", "1").css("outline", "0").blur(function () {
+                        focusElem.css(verifyType == 'radio' ? { "color": "" } : { "border-color": "" });
+                    }).focus();
+                    return '必填项不能为空';
+                }
+            }
+
+        });
+
+
+        $(function () {
+            window.initAll();
+            getProjInfoData();
+            form.render();
+        });
+    });
+
+</script>

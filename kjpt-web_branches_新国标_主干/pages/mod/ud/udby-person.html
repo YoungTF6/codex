@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ud-person</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <!-- 请求路径配置-->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <!-- ajax全局配置-->
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/api/base64.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/iife.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+    <style>
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+        .layui-input-inline {
+            vertical-align: baseline;
+        }
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+    </style>
+</head>
+<body style="background-color: white; overflow-x: hidden;">
+<div>
+    <!-- left -->
+    <div class="left-side">
+        <div class="search_box">
+            <input type="text" name="personFilter" autocomplete="off" placeholder="输入关键字">
+            <i class="layui-icon layui-icon-search"></i>
+        </div>
+        <div class="side-scroll">
+            <!-- 左侧子菜单 -->
+            <ul id="side-ul">
+                <!--<li class="scroll-item">-->
+                <!--    <a class="scroll-title" onclick="setPerson(0)"-->
+                <!--       onmouseover="this.style.cursor='hand';this.style.cursor='pointer'">hehe</a>-->
+                <!--</li>-->
+                <!--<li class="scroll-item">-->
+                <!--    <a class="scroll-title" onclick="setPerson(1)"-->
+                <!--       onmouseover="this.style.cursor='hand';this.style.cursor='pointer'">haha</a>-->
+                <!--</li>-->
+            </ul>
+        </div>
+    </div>
+    <!-- right -->
+    <div class="layui-fluid right-content">
+        <div class="layui-card" style="margin-bottom:0;">
+            <!-- query form -->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="background-color: #f5f5f5;">
+                <div class="layui_mess">
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><span data-id="lblYear" data-name="">年度</span></label>
+                            <div class="layui-input-block"></div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><span data-id="lblScoreLevel" data-name="" data-check-parent="1">学分级别</span></label>
+                            <div class="layui-input-block"></div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><span data-id="lblKnowledge" data-name="" data-check-parent="1">学科</span></label>
+                            <div class="layui-input-block"></div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><span data-id="lblActivityForm" data-name="holdType">活动形式</span></label>
+                            <div class="layui-input-block"></div>
+                        </div>
+                        <!--<div class="layui-inline">-->
+                        <!--    <label class="layui-form-label">学分类型</label>-->
+                        <!--    <div class="layui-input-inline">-->
+                        <!--        <select name="scoreTypeVal" id="scoreTypeValSelector" lay-filter="">-->
+                        <!--            <option value="7">全部</option>-->
+                        <!--            <option value="4">继续教育活动学分</option>-->
+                        <!--            <option value="2">院内活动学分</option>-->
+                        <!--            <option value="1">个人活动学分</option>-->
+                        <!--        </select>-->
+                        <!--    </div>-->
+                        <!--</div>-->
+                        <div class="layui-inline">
+                            <label class="layui-form-label">科室</label>
+                            <div class="layui-input-block" style="width: 168px;">
+                                <div id="deptIdSelector" data-name="" style="height: 38px"></div>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">人员编号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="personNo" id="personNoInput" placeholder=""
+                                       autocomplete="off"
+                                       class="layui-input"/>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">姓名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="personName" id="personNameInput" placeholder=""
+                                       autocomplete="off"
+                                       class="layui-input"/>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">证件号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="certId" id="certIdInput" placeholder=""
+                                       autocomplete="off"
+                                       class="layui-input"/>
+                            </div>
+                        </div>
+                        <!--<div class="layui-inline">-->
+                        <!--    <label class="layui-form-label">查询项</label>-->
+                        <!--    <div class="layui-input-inline">-->
+                        <!--        <div style="width: 105px; display: inline-block;">-->
+                        <!--            <select id="queryOption" lay-filter="queryOption">-->
+                        <!--                <option value="scoreLevel">学分级别</option>-->
+                        <!--                <option value="knowledgeId">学科</option>-->
+                        <!--                <option value="holdType">举办方式</option>-->
+                        <!--            </select>-->
+                        <!--        </div>-->
+                        <!--        <div style="width:140px; display: inline-block;">-->
+                        <!--            <select id="queryKeyword">-->
+                        <!--                <option value=""></option>-->
+                        <!--            </select>-->
+                        <!--        </div>-->
+                        <!--    </div>-->
+                        <!--</div>-->
+                        <div class="layui-inline">
+                            <label class="layui-form-label">审核状态</label>
+                            <div class="layui-input-block">
+                                <select name="checkStates">
+                                    <option></option>
+                                    <option value="0,4">未审核</option>
+                                    <option value="1">退回修改</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">活动日期</label>
+                            <div class="layui-input-inline" style="width: 28%;">
+                                <input type="text" name="startDate" class="layui-input" id="startDateSelector"
+                                       autocomplete="off"
+                                       placeholder="选择开始日期">
+                            </div>
+                            <div class="layui-input-inline">-</div>
+                            <div class="layui-input-inline" style="width: 28%;">
+                                <input type="text" name="endDate" class="layui-input" id="endDateSelector"
+                                       autocomplete="off"
+                                       placeholder="选择结束日期">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <button class="layui-btn layui-btn-sm btnRounded" lay-submit
+                                    onclick="queryScoredPerson()" style="margin:auto 0">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-card">
+            <div class="layui-container" style="margin-left: 16px">
+                <div class="layui-row" style="width: 100%">
+                    <div class="layui-input-inline" style="margin-right:10px;">
+                        <span id="pNoSpan">人员编号：</span>
+                    </div>
+                    <div class="layui-input-inline" style="margin-right:10px;">
+                        <span id="pNameSpan">人员姓名：</span>
+                    </div>
+                    <div class="layui-input-inline">
+                        <span id="dNameSpan">科室名称：</span>
+                    </div>
+                </div>
+            </div>
+            <!-- 数据表格 -->
+            <div class="layui-card-body layui_body_box" style="padding-top: 0">
+                <table class="layui-table" id="byPersonTable" lay-filter="byPersonTable"
+                       style="margin: 0"></table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- radio modal -->
+<div id="radioModal" style="display: none">
+    <form class="layui-form" lay-filter="radioForm">
+        <div class="layui-form-item">
+            <input type="radio" name="radioItem" lay-filter="radioItem" value="123" title="又是张三">
+            <input type="radio" name="radioItem" lay-filter="radioItem" value="456" title="还是张三">
+            <input type="radio" name="radioItem" lay-filter="radioItem" value="789" title="除了张三没别的了">
+            <input type="radio" name="radioItem" lay-filter="radioItem" value="10" title="实在想不出来了">
+            <input type="radio" name="radioItem" lay-filter="radioItem" value="11" title="还是张三吧">
+            <input type="radio" name="radioItem" lay-filter="radioItem" value="11" title="另一个张三">
+            <input type="radio" name="radioItem" lay-filter="radioItem" value="12" title="张三的姐姐">
+            <input type="radio" name="radioItem" lay-filter="radioItem" value="13" title="张三的妹妹">
+            <input type="radio" name="radioItem" lay-filter="radioItem" value="14" title="张三的弟弟">
+            <input type="radio" name="radioItem" lay-filter="radioItem" value="15" title="张三的哥哥">
+        </div>
+    </form>
+</div>
+</body>
+<!-- checkbox Cell -->
+<script type="text/html" id="checkboxTpl">
+    <input type="checkbox" name="select_one" lay-filter="select_one" title="" lay-skin="primary"
+           data-id="{{ d.projId }}">
+</script>
+<script type="text/javascript" src="/js/constantPage/projectConstant.js"></script>
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        lat: 'lat'
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'flow', 'xmSelect', 'lat'], function () {
+        let table = layui.table;
+        let layer = layui.layer;
+        let form = layui.form;
+        let laydate = layui.laydate;
+        let dropdown = layui.dropdown;
+        let element = layui.element;
+        let $ = layui.jquery;
+        let xmSelect = layui.xmSelect;
+        let lat = layui.lat;
+        let flow = layui.flow;
+        let gDeptTreeSelector;
+        let gPersonList = [];
+        let gUniquePerson;
+        let gLayerIndex = -1;
+        let gUlContent;
+        let gAllSideAElement;
+        let gComPersonId = PseudoNull.UUID;
+        let gCriteriaScoredPersonArr;
+        window.setPerson = setPerson;
+        window.queryScoredPerson = queryScoredPerson;
+        window.loadByPersonTable = loadByPersonTable;
+        window.refreshTable = refreshTable;
+        // form.on('select(queryOption)', function (data) {
+        //     let queryKeyword = $('#queryKeyword');
+        //     $(queryKeyword).find("option").remove();
+        //     $(queryKeyword).append('<option value=""></option>');
+        //     if (data.value === 'scoreLevel') {
+        //         lat.renderScoreLevel('#queryKeyword', _cur_year, '___');
+        //     } else if (data.value === 'knowledgeId') {
+        //         lat.render2ndKnowledge('#queryKeyword', _cur_year);
+        //     } else if (data.value === 'holdType') {
+        //         lat.renderHoldType('#queryKeyword', '___');
+        //     }
+        // });
+        form.on('radio(radioItem)', function (data) {
+            let idx = data.value;
+            console.info('click radio: ', idx);
+            gUniquePerson = gCriteriaScoredPersonArr[idx];
+            setPerson_();
+        });
+        table.on('tool(byPersonTable)', function (obj) {
+            let rowData = obj.data;
+            if (obj.event === 'modifyScoreBtn') {
+                showModifyScoreModal(rowData);
+            } else if (obj.event === 'delScoreBtn') {
+                gLayerIndex = layer.confirm('确定删除' + rowData.personName + '的《' + rowData.projName + '》学分吗？', {
+                    title: '提示',
+                    btn: ['删除', '取消']
+                }, function () {
+                    // confirm
+                    let params = {
+                        'msiList': getMsiList(Array.of(rowData), {}),
+                        'action': 'remove',
+                        'fp': fp,
+                        'userId': _userId,
+                    };
+                    // remove
+                    removeScoreAction(params).then((response) => {
+                        let responseData = response.data;
+                        if (responseData.success) {
+                            layui.layer.msg('删除学分完成');
+                            // parent.layer.close(gLayerIndex);
+                            table.reload('byPersonTable');
+                        } else {
+                            layer.msg(responseData.msg);
+                        }
+                    }).catch((error) => {
+                        layer.msg('error:删除学分');
+                    }).finally(() => {
+                    });
+                }, function () {
+                    // cancel
+                    // parent.layer.close(gLayerIndex);
+                });
+            }
+        });
+        flow.load({
+            elem: '#side-ul',
+            done: function (page, next) {
+                let visit = huayi_personorg_url + 'omme/person/page/last/lite';
+                let params = {
+                    scoreTypeVal: 7,
+                    unitId: _unitId,
+                    depth: 1,
+                    pageNum: 1,
+                    pageSize: 9999,
+                    deptIds: localStorage.getItem('kk_deptids'),
+                };
+                let liArr = [];
+                postAction(visit, params).then(response => {
+                    let jsonRes = response.data;
+                    if (jsonRes.success && jsonRes.data.records.length > 0) {
+                        gPersonList = jsonRes.data.records;
+                        layui.each(gPersonList, function (index, personItem) {
+                            liArr.push('<li class="scroll-item">' +
+                                '<a class="scroll-title" onclick="setPerson(' + index + ')">' +
+                                personItem.personName + ' (' + personItem.certId.substr(personItem.certId.length - 4, personItem.certId.length) + ')' +
+                                '</a>' +
+                                '</li>');
+                        });
+                        next(liArr.join(''), page < jsonRes.data.pageTotal);
+                    }
+                }).catch(error => {
+                    layer.msg('error:加载人员列表');
+                }).finally(() => {
+                    gUlContent = $('#side-ul').html();
+                    gAllSideAElement = $("#side-ul a");
+                });
+            }
+        });
+        $(function () {
+            lat.renderScoreLevel('#queryKeyword', _cur_year, '___');
+            _lbl_inst.sdysel = lat.renderDaySelector('#startDateSelector', yearFirstDay(), {min: `${_cur_year}-01-01`, max: `${_cur_year}-12-31`});
+            _lbl_inst.edysel = lat.renderDaySelector('#endDateSelector', today(), {min: `${_cur_year}-01-01`, max: `${_cur_year}-12-31`});
+            gDeptTreeSelector = lat.renderDeptTreeSelector('#deptIdSelector', JSON.parse(localStorage.getItem('kk_depttree') || '[]'));
+            // initSideUl();
+            loadByPersonTable();
+            $('input[name="personFilter"]').on('change', function () {
+                let val = this.value;
+                let ule = $('#side-ul');
+                if (val) {
+                    $(ule).find('li').each(function (index, lie) {
+                        if ($(lie).text().indexOf(val) !== -1) {
+                            $(lie).show();
+                        } else {
+                            $(lie).hide();
+                        }
+                    });
+                } else {
+                    $(ule).empty();
+                    $(ule).html(gUlContent);
+                    gAllSideAElement = $("#side-ul a");
+                }
+            });
+        });
+        function loadByPersonTable() {
+            table.render({
+                id: 'byPersonTable',
+                elem: '#byPersonTable',
+                url: huayi_projectscore_url + 'pgsi/score/page/byperson', // byPerson
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                method: 'post',
+                contentType: 'application/json',
+                where: getSifterScore(),
+                page: true,
+                height: 'full-182',
+                parseData: function (res) {
+                    return {
+                        'code': res.status === 200 ? 0 : res.status, // 解析接口状态
+                        'msg': res.message, // 解析提示文本
+                        'count': res.data.recordsTotal, // 解析数据长度
+                        'data': res.data.records, // 解析数据列表
+                        'page': res.data.pageNum, // 当前页
+                        'limit': res.data.pageSize // 每页条数
+                    }
+                },
+                request: {
+                    pageName: 'pageNum',  // 页码的参数名称，默认：page
+                    limitName: 'pageSize'  // 每页数据量的参数名，默认：limit
+                },
+                cols: [[
+                    // {
+                    //     width: 60,
+                    //     align: 'center',
+                    //     fixed: 'left',
+                    //     templet: '#checkboxTpl',
+                    //     // title: '<input type="checkbox" name="select_all" lay-skin="primary" lay-filter="select_all">'
+                    //     title: '选择'
+                    // },
+                    {
+                        title: '选择',
+                        width: 60,
+                        align: 'center',
+                        fixed: 'left',
+                        templet: function (data) {
+                            let m = _tips.canUd(data);
+                            if (m) return `<img src="/pages/mod/img/disableIcon.png" style="width:24px;" alt="${m}" onmouseenter="showTips(this)" onmouseleave="closeTips()"/>`;
+                            return '<input type="checkbox" name="layTableCheckbox" lay-skin="primary">';
+                        }
+                    },
+                    {
+                        align: 'center', title: '操作', minWidth: 120, fixed: 'left', templet: data => {
+                            if (_tips.canUd(data))
+                                return `<a class="layui-btn layui-btn-xs layui-btn-disabled btn-row btn-disabled-row">修改</a>
+                                        <a class="layui-btn layui-btn-xs layui-btn-disabled btn-row btn-disabled-row">删除</a>`;
+                            else
+                                return `<a class="layui-btn layui-btn-xs btn-row" lay-event="modifyScoreBtn">修改</a>
+                                        <a class="layui-btn layui-btn-xs layui-btn-danger btn-danger-row" lay-event="delScoreBtn">删除</a>`
+                        }
+                    },
+                    {field: 'projName', minWidth: 200, align: 'center', title: '项目名称', sort: true},
+                    {field: 'extdata', minWidth: 200, align: 'center', title: '详细信息', sort: true, templet: data => _txt.ext__data(data)},
+                    {field: 'studyDate', minWidth: 104, align: 'center', title: '日期', sort: true},
+                    {field: 'projName', minWidth: 120, align: 'center', title: '内容', sort: true},
+                    {field: 'scoreLevelName', minWidth: 120, align: 'center', title: projectLabels.lblScoreLevel, sort: true},
+                    {field: 'knowledgeName', minWidth: 120, align: 'center', title: '学科', sort: true},
+                    {field: 'holdTypeName', minWidth: 105, align: 'center', title: projectLabels.lblActivityForm, sort: true},
+                    {field: 'score', minWidth: 80, align: 'center', title: '学分', sort: true},
+                    {field: 'period', minWidth: 80, align: 'center', title: '学时', sort: true},
+                    {field: 'teachUnitText', minWidth: 180, align: 'center', title: '发证机构', sort: true, templet: (data) => _txt.fazhengUnit(data)},
+                    {field: 'checkState', minWidth: 120, align: 'center', title: '审核状态', sort: true, templet: (data) => _txt.checkState(data)},
+                    {field: 'checkMemo', minWidth: 120, align: 'center', title: '审核意见', sort: true},
+                    {field: 'checkUnitName', minWidth: 160, align: 'center', title: '审核单位', sort: true},
+                    {field: 'remark', minWidth: 120, align: 'center', title: '备注', sort: true}
+                ]],
+                done: function (res, curr, count) {
+                    gComPersonId = PseudoNull.UUID;
+                    form.on("checkbox(select_all)", function () {
+                        let isChecked = $(this).prop("checked");
+                        $.each($("input[name=select_one]"), function (i, value) {
+                            if ($(this).prop('disabled') === false) {
+                                $(this).prop("checked", isChecked);
+                            }
+                        });
+                        $.each($("input[name=selectFlag]:first"), function (i, value) {
+                            if ($(this).prop('disabled') === false) {
+                                $(this).prop("checked", isChecked);
+                            }
+                        });
+                        form.render();
+                    });
+                }
+            });
+        }
+        function refreshTable() {
+            table.reload('byPersonTable');
+        }
+        function getSifterPerson() {
+            let queryOption = $('#queryOption');
+            let queryKeyword = $('#queryKeyword');
+            return {
+                scoreTypeVal: 7, // getOrDefault($('#scoreTypeValSelector').val(), 7),
+                unitId: _unitId,
+                depth: 1,
+                pageNum: 1,
+                pageSize: 9999,
+                deptId: gDeptTreeSelector.getValue('valueStr'),
+                deptIds: localStorage.getItem('kk_deptids'),
+                personNo: $('#personNoInput').val(),
+                personName: $('#personNameInput').val(),
+                certId: $('#certIdInput').val(),
+                scoreLevelIds: _lbl_inst.getVal('lblScoreLevel_ids'), // $(queryOption).val() === 'scoreLevel' ? $(queryKeyword).val() : '',
+                knowledgeIds: _lbl_inst.getVal('lblKnowledge_id'), //$(queryOption).val() === 'knowledgeId' ? $(queryKeyword).val() : '',
+                holdType: _lbl_inst.getVal('lblActivityForm_id'), //$(queryOption).val() === 'holdType' ? $(queryKeyword).val() : '',
+                startDate: toDayHeader($('input[name="startDate"]').val()),
+                endDate: toDayTail($('input[name="endDate"]').val()),
+            };
+        }
+        function getSifterScore() {
+            let queryOption = $('#queryOption');
+            let queryKeyword = $('#queryKeyword');
+            return {
+                scoreTypeVal: 7, // getOrDefault($('#scoreTypeValSelector').val(), 7),
+                comPersonId: gComPersonId,
+                // deptId: gDeptTreeSelector.getValue('valueStr'),
+                // personNo: $('#personNoInput').val(),
+                // personName: $('#personNameInput').val(),
+                scoreLevelIds: _lbl_inst.getVal('lblScoreLevel_ids'), // $(queryOption).val() === 'scoreLevel' ? $(queryKeyword).val() : '',
+                knowledgeIds: _lbl_inst.getVal('lblKnowledge_ids'), //$(queryOption).val() === 'knowledgeId' ? $(queryKeyword).val() : '',
+                holdType: _lbl_inst.getVal('lblActivityForm_id'), //$(queryOption).val() === 'holdType' ? $(queryKeyword).val() : '',
+                startDate: toDayHeader($('input[name="startDate"]').val()),
+                endDate: toDayTail($('input[name="endDate"]').val()),
+                // showReScore: true,
+                checkStates: $('select[name=checkStates]').val(),
+            };
+        }
+        function showModifyScoreModal(rowData) {
+            localStorage.setItem('tmp_modify_score', JSON.stringify(rowData));
+            layer.open({
+                type: 2,
+                shade: 0.4,
+                shadeClose: true,
+                title: '修改学分',
+                content: './modals/ModifyScoreModal.html',
+                area: ['80%', '486px'],
+                success: function (layerDom, index) {
+                    //
+                },
+                end: function () {
+                    localStorage.removeItem('tmp_modify_score');
+                }
+            });
+        }
+        function showRadioModal() {
+            let $radioContainer = $('#radioModal .layui-form-item');
+            $radioContainer.empty();
+            gCriteriaScoredPersonArr.forEach((criteriaScoredPerson, index) => {
+                let personName = criteriaScoredPerson.personName;
+                let cert = criteriaScoredPerson.certId;
+                cert = cert.substr(cert.length - 4, cert.length);
+                let text = personName + " (" + cert + ")";
+                let radio = '<input type="radio" name="radioItem" lay-filter="radioItem" value="' + index + '" title="' + text + '">';
+                $radioContainer.append(radio);
+            });
+            form.render('radio');
+            gLayerIndex = layer.open({
+                type: 1,
+                shade: 0.4,
+                shadeClose: true,
+                title: '选择查询到的人员',
+                content: $('#radioModal'),
+                area: '60%',
+                success: function (layerDom, index) {
+                }
+            });
+        }
+        function initSideUl() {
+            let visit = huayi_personorg_url + 'omme/person/page/last/lite';
+            let params = {
+                scoreTypeVal: 7,
+                unitId: _unitId,
+                depth: 1,
+                pageNum: 1,
+                pageSize: 9999
+            };
+            let sb = new Date().getTime();
+            postAction(visit, params).then(response => {
+                let jsonRes = response.data;
+                if (jsonRes.success && jsonRes.data.records.length > 0) {
+                    gPersonList = jsonRes.data.records;
+                    let ul = $('#side-ul');
+                    let hr = '<hr>';
+                    let span = '<span class="layui-nav-bar" style="top: 231px; height: 0; opacity: 0;"></span>';
+                    // M1
+                    // $(ul).empty();
+                    // let start0 = new Date().getTime();
+                    // jsonRes.data.records.forEach((personItem, index) => {
+                    //     let name = personItem.personName;
+                    //     let cert = personItem.certId;
+                    //     cert = cert.substr(cert.length - 4, cert.length);
+                    //     let text = name + " (" + cert + ")";
+                    //     let liEle = '<li class="scroll-item">' +
+                    //         '<a class="scroll-title" onclick="setPerson(' + index + ')">' + text + '</a>' +
+                    //         '</li>';
+                    //     $(ul).append(liEle);
+                    //     if (index !== 0 && index % 10 === 0) {
+                    //         // $(ul).append(hr);
+                    //     }
+                    // });
+                    // $(ul).append(span);
+                    // let end0 = new Date().getTime();
+                    // M2
+                    $(ul).empty();
+                    let start = new Date().getTime();
+                    let lis = jsonRes.data.records.map((personItem, index) =>
+                        '<li class="scroll-item">' +
+                        '<a class="scroll-title" onclick="setPerson(' + index + ')">' +
+                        personItem.personName + ' (' + personItem.certId.substr(personItem.certId.length - 4, personItem.certId.length) + ')' +
+                        '</a>' +
+                        '</li>'
+                    ).join('');
+                    $(ul).append(lis);
+                    $(ul).append(span);
+                    let end = new Date().getTime();
+                }
+            }).catch(error => {
+                layer.msg('error:加载人员列表');
+            }).finally(() => {
+                gUlContent = $('#side-ul').html();
+                gAllSideAElement = $("#side-ul a");
+            });
+        }
+        function setPerson(index) {
+            gAllSideAElement.removeClass("a-checked");
+            gAllSideAElement.eq(index).addClass('a-checked');
+            gUniquePerson = gPersonList[index];
+            setPerson_();
+        }
+        function setPerson_() {
+            if (gUniquePerson) {
+                gComPersonId = gUniquePerson.comPersonId;
+                $('#pNoSpan').html('人员编号：' + gUniquePerson.personNo);
+                $('#pNameSpan').html('人员姓名：' + gUniquePerson.personName);
+                $('#dNameSpan').html('科室名称：' + gUniquePerson.deptName);
+                $('#personNoInput').val(gUniquePerson.personNo);
+                $('#personNameInput').val(gUniquePerson.personName);
+                $('#certIdInput').val(gUniquePerson.certId);
+                gDeptTreeSelector.setValue([gUniquePerson.deptId]);
+                let queryOption = $('#queryOption');
+                let queryKeyword = $('#queryKeyword');
+                table.reload('byPersonTable', {
+                    where: getSifterScore()
+                });
+                layer.closeAll();
+                $('#radioModal').hide();
+            }
+        }
+        function queryScoredPerson() {
+            // show loading
+            gLayerIndex = layer.load(1, {
+                shade: [0.1, '#fff']
+            });
+            let visit = huayi_personorg_url + 'omme/person/scored/page';
+            gCriteriaScoredPersonArr = [];
+            postAction(visit, getSifterPerson()).then(response => {
+                let jsonRes = response.data;
+                if (jsonRes.success && jsonRes.data.records.length > 0) {
+                    gCriteriaScoredPersonArr = jsonRes.data.records;
+                } else {
+                    layer.msg('根据查询条件未找到已授分人员');
+                }
+            }).catch(error => {
+                layer.msg('error:查询已授分人员');
+            }).finally(() => {
+                // close loading
+                layer.close(gLayerIndex);
+                if (gCriteriaScoredPersonArr && gCriteriaScoredPersonArr.length > 0) {
+                    if (gCriteriaScoredPersonArr.length > 1) {
+                        showRadioModal();
+                    } else {
+                        gUniquePerson = gCriteriaScoredPersonArr[0];
+                        setPerson_();
+                    }
+                }
+            });
+        }
+        window.viewfile = function (url){
+            lat.previewThumb(url);
+        }
+    });
+</script>
+<script type="text/javascript" src="/pages/mod/js/label_data.js"></script>
+<script type="text/javascript" src="/pages/mod/libs/vendor.gq12mdzl.d3ec9qak.js"></script>
+<style>
+    /* left */
+    /* 1-outer */
+    .left-side {
+        top: 1px;
+        bottom: 0 !important;
+        border-right: 1px solid #eee;
+        background-color: #fff;
+        width: 160px;
+        overflow-x: hidden;
+        position: fixed;
+        z-index: 999;
+        display: block;
+        float: left;
+    }
+    /* 2.1-搜索框 */
+    .search_box {
+        display: flex;
+        border: 1px solid #D2D2D2 !important;
+        background-color: #fff;
+        height: 38px;
+        line-height: 38px;
+        padding: 0 19px;
+        border-radius: 19px;
+        width: 120px;
+        margin-top: 4px;
+    }
+    .search_box input {
+        border-style: none;
+        width: 100%;
+        text-align: center;
+    }
+    /* 2.2-inner */
+    .side-scroll {
+        width: 170px;
+        position: relative;
+        height: calc(100% - 46px);
+        overflow-x: hidden;
+    }
+    /* 3-ul */
+    #side-ul {
+        border-radius: 0;
+        background: none;
+        position: relative;
+        color: #fff;
+        font-size: 14px;
+        box-sizing: border-box;
+        display: block;
+        list-style-type: disc;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+    }
+    #side-ul::-webkit-scrollbar {
+        display: none;
+    }
+    /* 4-li */
+    .scroll-item {
+        display: block;
+        width: 100%;
+        line-height: 40px;
+        position: relative;
+        vertical-align: middle;
+        list-style: none;
+    }
+    .scroll-item a {
+        /*cursor: hand;*/
+        cursor: pointer;
+    }
+    .scroll-item a:hover {
+        background: #F6F6F6 !important;
+        color: #b1dfbb !important;
+    }
+    .a-checked {
+        background: #F6F6F6 !important;
+        color: #b1dfbb !important;
+    }
+    .a-checked:after {
+        position: absolute;
+        right: 10px;
+        top: 0;
+        bottom: 0;
+        border-right: 3px solid #5FB878;
+        content: "";
+    }
+    .scroll-title {
+        display: block;
+        padding-inline-start: 30px;
+    }
+    /* right */
+    .right-content {
+        display: block;
+        width: calc(100% - 160px);
+        float: right;
+        padding: 0;
+    }
+    .layui-layer-btn .layui-layer-btn0 {
+        border-color: indianred;
+        background-color: indianred;
+        color: #fff;
+    }
+    .layui-container .layui-row span {
+        line-height: 40px;
+        text-align: center;
+        color: indianred;
+        font-weight: bold;
+    }
+    /**/
+    #radioModal .layui-form-radio {
+        width: 150px;
+    }
+    #radioModal .layui-form-item {
+        margin-left: 40px;
+    }
+</style>
+</html>

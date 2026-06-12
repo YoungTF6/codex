@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>项目评审</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="../../js/api/cpt.js"></script>
+    <script type="text/javascript" src="../../js/tools/form_validation_tool.js"></script>
+    <script type="text/javascript" src="../../js/tools/dict_tool.js"></script>
+    <script type="text/javascript" src="../../js/tools/urlTools.js"></script>
+    <script type="text/javascript" src="../../js/constantPage/projectConstant.js"></script>
+    <script type="text/javascript" src="../../js/constantPage/projectPageUrl.js"></script>
+    <script type="text/javascript" src="../mod/js/options.js"></script>
+    <script type="text/javascript" src="../../js/tools/dateTools.js"></script>
+    <script type="text/javascript" src="../mod/libs/signature_pad.umd.min.js"></script>
+    <style>
+        body {
+            background: #fff;
+        }
+        .layui-card-body.layui_body_box, .layui-tab-content {
+            padding: 0;
+        }
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+        .layui-table-header th .layui-table-cell {
+            text-align: center;
+        }   
+        .condition-area .layui_display:nth-child(1)  {
+            margin-right: 15px;
+        }
+        .layui-card-body .layui-table {
+            margin: 0;
+        }
+        #countForPerson {
+            cursor: default;
+        }
+
+        /* 专家承诺书蒙层 */
+        #expertPromiseMask {
+            position: fixed;
+            inset: 0;
+            background: rgba(255,255,255,.98);
+            z-index: 99999;
+            display: flex;               /* 新增 */
+            justify-content: center;     /* 水平居中 */
+            overflow: auto;
+        }
+        #expertPromiseMask .promise-mask-inner { max-width: 680px; margin: 30px auto; padding: 32px 24px; }
+        #expertPromiseMask .promise-title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 24px
+        }
+
+
+        #expertPromiseMask .promise-body { margin-bottom: 24px; line-height: 2; font-size: 16px; color: #333; }
+        #expertPromiseMask .promise-body p { margin-bottom: 12px; }
+        #expertPromiseMask .promise-body > p {
+            margin-bottom: 12px;
+            text-indent: 2em;
+        }
+
+        #expertPromiseMask .promise-section-title { font-size: 14px; font-weight: bold; margin: 20px 0 12px; color: #333; }
+        #expertPromiseMask .promise-form .layui-form-item { margin-bottom: 12px; display: flex; align-items: center; }
+        #expertPromiseMask .promise-form .layui-form-label {  width: 90px;  text-align: right; padding: 9px 12px 9px 0; min-width: 0; color: #333; }
+        #expertPromiseMask .promise-form .layui-form-item > .layui-input-block { margin-left: 0; flex: 1; } #expertPromiseMask .promise-form .layui-form-item > .layui-input-block:not(.promise-submit-wrap) { min-width: 0; max-width: 280px; }
+        #expertPromiseMask .promise-form .layui-input { border: none; border-bottom: 1px solid #ddd; }
+
+        #expertPromiseMask .sign-trigger-wrap { display: flex; align-items: center; margin: 8px 0 4px; }
+        #expertPromiseMask .sign-trigger-box { width: 200px; height: 80px; border: 1px solid #ddd; background: #fafafa; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #999; font-size: 14px; }
+        #expertPromiseMask .sign-trigger-box:hover { border-color: #1E9FFF; color: #1E9FFF; } #expertPromiseMask .sign-trigger-box img { max-width: 190px; max-height: 70px; object-fit: contain; }
+        #expertPromiseMask .sign-update-link { color: #1E9FFF; cursor: pointer; text-decoration: underline; font-size: 14px; margin-left: 12px; } #expertPromiseMask .sign-update-link:hover { color: #0C7DE8; }
+
+        #expertPromiseMask .promise-submit-wrap {
+            margin-top: 28px;
+            margin-left: 0;
+            text-align: center;
+        }
+        #expertPromiseMask .promise-submit-wrap { margin-top: 28px; margin-left: 0 !important; }
+        #expertPromiseMask .promise-submit-wrap .layui-btn { background: #1E9FFF; border: none; padding: 0 36px; height: 38px; line-height: 38px; border-radius: 4px; } #expertPromiseMask .promise-submit-wrap .layui-btn:hover { background: #0C7DE8; }
+
+    </style>
+</head>
+<body>
+    <!-- 专家承诺书蒙层：甘肃套专家进页先检查，未签则在蒙层内签署 -->
+    <div id="expertPromiseMask">
+        <div id="promiseMaskLoading" style="text-align:center; padding: 80px 20px;">
+            <div class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" style="font-size: 48px; color: #009688;"></div>
+            <p style="margin-top: 16px;">正在加载…</p>
+        </div>
+        <div id="promiseMaskForm" class="promise-mask-inner" style="display: none;">
+            <div class="promise-title">省级继续医学教育项目评审专家诚信承诺书</div>
+            <div class="promise-body" id="promiseContentBody"></div>
+            <form class="layui-form promise-form" lay-filter="promiseFormMask">
+                <div class="promise-section-title">承诺人信息</div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span class="x-red">*</span>姓名</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="name" required lay-verify="required" placeholder="请输入姓名" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span class="x-red">*</span>身份证号</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="certId" required lay-verify="required" placeholder="请输入身份证号" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span class="x-red">*</span>工作单位</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="workUnit" required lay-verify="required" placeholder="请输入工作单位" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span class="x-red">*</span>联系电话</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="mobile" required lay-verify="required" placeholder="请输入联系电话" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label"></label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="isAgreed" lay-skin="primary" title="我已阅读并同意以上承诺。" value="1">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span class="x-red">*</span>签名</label>
+                    <div class="layui-input-block">
+                        <div class="sign-trigger-wrap">
+                            <div class="sign-trigger-box" id="promiseSignTriggerBox"><span>点击签名</span></div>
+                            <span class="sign-update-link" id="btnClearPromiseSign">更新签名</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block promise-submit-wrap">
+                        <button type="button" class="layui-btn" id="btnSubmitPromise">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="mainContentWrapper" class="layui-fluid">
+        <div class="layui-card">
+            <!-- 搜索 -->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area">
+                <div class="layui_mess" id="conditions">
+                    <div class="layui_display">
+                        <form id="form-query">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">申报年度</label>
+                                <div class="layui-input-block">
+                                    <select name="holdYear" id="holdYear" lay-filter="holdYear"></select>
+                                </div>
+                            </div>
+                            <div class="layui-inline tree-select">
+                                <label class="layui-form-label" name="lblProjectLevel"></label>
+                                <div class="layui-input-block">
+                                    <input type="text" autocomplete="off" class="layui-input" 
+                                        lay-filter="CmeComScoreLevel" id="CmeComScoreLevel" name="CmeComScoreLevel" placeholder="请选择">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">二级学科</label>
+                                <div class="layui-input-block">
+                                    <select name="knowledge2Id" id="knowledge2Id" lay-filter="knowledge2Id">
+                                        <option value="">请选择</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">三级学科</label>
+                                <div class="layui-input-block">
+                                    <select name="knowledgeId" id="knowledgeId" lay-filter="knowledgeId" lay-search>
+                                        <option value="">请选择</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">评审状态</label>
+                                <div class="layui-input-block">
+                                    <select type="text" name="reviewResult" id="reviewResult" lay-filter="reviewResult" lay-search>
+                                        <option value="0">全部</option>
+                                        <optgroup label="未评审">
+                                            <option value="3">未评审</option>
+                                        </optgroup>
+                                        <optgroup label="已评审">
+                                            <option value="4">全部已评审</option>
+                                            <option value="1">通过</option>
+                                            <option value="2">不通过</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline" id="divExpertReviewTopUnit">
+                                <label class="layui-form-label">主管单位</label>
+                                <div class="layui-input-block" >
+                                    <select name="cityname" id="cityname">
+                                        <option value="">全部</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline hide" id="divExpertReviewHoldTypeZj">
+                                <label class="layui-form-label" name="lblActivityForm"></label>
+                                <div class="layui-input-block">
+                                    <select name="holdTypeId" id="holdTypeFilterZj" lay-filter="holdTypeFilterZj">
+                                        <option value="">全部</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">项目名称</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="projectName" id="projectName" lay-filter="projectName" 
+                                        placeholder="请输入" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">申请代码</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="projectCode" id="projectCode" lay-filter="projectCode" 
+                                        placeholder="请输入" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline hide" id="divProjectNature">
+                                <label class="layui-form-label">项目性质</label>
+                                <div class="layui-input-block">
+                                    <select name="projectNature" id="projectNature">
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <button class="layui-btn layui-btn-sm layuiadmin-btn-order btnRounded" onclick="tableOp.init()">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- 表格 -->
+            <div class="layui-card-body layui_body_box">
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <table class="layui-table" id="table-review" lay-filter="table-review"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- 表操作 -->
+    <script type="text/html" id="tableBar">
+        <a class="layui-btn layui-btn-sm layui-btn-primary layui-btn-radius" id="countForPerson"></a>
+        {{# if (fun_expert_review_submit && 't' == fun_expert_review_submit) { }}
+            <a class="layui-btn layui-btn-sm layui-btn-warm layui-btn-radius" style="margin-left: 10px;" lay-event="submit">总提交</a>
+        {{# } }}
+        <a class="layui-btn layui-btn-sm layui-btn-normal layui-btn-radius" style="margin-left: 10px;" lay-event="exportExcel">导出Excel</a>
+    </script>
+    <!-- 行操作 -->
+    <script type="text/html" id="rowBar">
+        {{# if (fun_expert_review_submit && 't' == fun_expert_review_submit) { 
+                if (true != d.submitState) { }}
+                    <a class="layui-btn layui-btn-xs btn-warm-row" lay-event="reviewForProject">评审</a>
+        {{#     } else { }}
+                    <a class="layui-btn layui-btn-xs btn-disabled-row disabled-item">已提交</a>
+        {{#     } 
+            } else {
+                if (d.reviewStatus === '未评审') { }}
+                    <a class="layui-btn layui-btn-xs btn-warm-row" lay-event="reviewForProject">评审</a>
+        {{#     } else { }}
+                    <a class="layui-btn layui-btn-xs btn-row disabled-item">已评审</a>
+        {{#     } 
+            } }}
+        {{# if (d.previousId != null && d.previousId != '') { }}
+            <a class="layui-btn layui-btn-xs btn-normal-row" lay-event="viewProjFeedback">查看反馈</a>
+        {{# } }}
+    </script>
+    <script type="text/html" id="viewProjInfo">
+        <a class="layui-table-link orderNumber pointer" lay-event="view" title="点击查看项目详情">{{d.projectCode}}</a>
+    </script>
+    <script type="text/html" id="viewProjInfo2">
+        <a class="layui-table-link orderNumber" lay-event="viewShenbao" title="点击查看项目详情">{{d.projectName}}</a>
+    </script>
+    <script>
+        const   standardKindId  = dictTool.getStandardKindId(),
+                userType        = dictTool.getUnitUserType(),
+                unitId          = dictTool.getUnitId(),
+                unitName        = localStorage.getItem('unit-name');
+                
+        let     yearCur         = new Date().getFullYear(),
+                years           = yearCur;
+
+        const   GANSU_STANDARD_KIND_ID = '7068a5c0-2cd3-471a-90b9-9bf100aec95a',
+                needPromiseCheck       = (standardKindId === GANSU_STANDARD_KIND_ID && userType === '15'),
+                isZheJiangExpertReview = typeof StandardKind !== 'undefined' && standardKindId === StandardKind.ZHE_JIANG;
+
+        /** 浙江套列表/导出：字典「面授」「远程」展示为「线下」「线上」 */
+        function formatZjHoldTypeDisplay(raw) {
+            if (raw == null || raw === '') return '';
+            var s = String(raw).replace(/\s/g, '');
+            if (s === '面授') return '线下';
+            if (s === '远程') return '线上';
+            return String(raw).trim();
+        }
+
+        if (standardKindId !== GANSU_STANDARD_KIND_ID) {
+            $('#expertPromiseMask').hide();
+            $('#mainContentWrapper').show();
+        }
+
+        layui.config({
+            base        : '../../js/layui/ext/'
+        }).extend({
+            treeSelect  : 'treeSelect',
+            excel       : 'excel'
+        }).use([ 'table', 'form', 'element', 'laytpl', 'laydate', 'treeSelect', 'excel' ], () => {
+            let { table, form, layer, laydate, treeSelect, excel } = layui;
+
+            if (isZheJiangExpertReview) {
+                $('#divExpertReviewTopUnit').addClass('hide');
+                $('#divExpertReviewHoldTypeZj').removeClass('hide');
+            }
+
+            if(standardKindId === '4a6d91fb-8ba4-4560-a801-9c6f00e6d999'){
+                $("#divProjectNature").removeClass("hide");
+                $('#projectNature').append(new Option("全部",0));
+                $('#projectNature').append(new Option("新申报项目",1));
+                $('#projectNature').append(new Option("备案项目",2));
+                form.render('select');
+            }
+
+            function runPageInit() {
+                $('.condition-area .layui-form-label').each((i, d) => {
+                    let name = $(d).attr('name');
+                    if (name) $(d).text(projectLabels[name] || '');
+                });
+
+                dictTool.getConfigByStandardKind(userType, 'fun_expert_review_default_year', 'fun_expert_review_entry');
+                dictTool.getConfigByStandardKind(null, 'fun_expert_review_submit');
+
+                initYearSel();
+                initScoreLevelSel();
+                initKnowledgeSelBatch();
+                if (!isZheJiangExpertReview) initUnitSel();
+                else initHoldTypeSelForZj();
+                tableOp.init();
+                form.render();
+                if (isZheJiangExpertReview) {
+                    form.on('select(holdTypeFilterZj)', () => tableOp.reload());
+                }
+            }
+            
+            window.initYearSel = () => {
+                if (fun_expert_review_default_year && 'CUR' == fun_expert_review_default_year) years;
+                else if (fun_expert_review_default_year && 'PRE' == fun_expert_review_default_year) --years;
+                else ++years;
+                for (let i = yearCur + 1; i > yearCur - 6; i--) {
+                    $('#holdYear').append($('<option value="' + i + '" ' + (i == years ? 'selected' : '') + '>' + i + '</option>'));
+                }
+                form.on('select(holdYear)', data => (years = data.value, initScoreLevelSel(), initKnowledgeSelBatch(), tableOp.reload()));
+            }
+
+            /** 浙江套活动形式：与 project.hold_type_id 一致，选项来自 pages/mod/js/options.js 的 holdType3 */
+            window.initHoldTypeSelForZj = () => {
+                if (!isZheJiangExpertReview) return;
+                var $sel = $('#holdTypeFilterZj');
+                if (typeof _options === 'undefined' || !_options.holdType3) {
+                    layer.msg((projectLabels.lblActivityForm || '活动形式') + '配置缺失', { icon: 7, time: 1500 });
+                    return;
+                }
+                var sid = dictTool.getStandardKindId();
+                var list = _options.holdType3.filter(function (x) { return x.standardKindId === sid; });
+                $sel.find('option:gt(0)').remove();
+                $.each(list, function (i, d) {
+                    $sel.append(new Option(d.name, d.value));
+                });
+                form.render('select');
+            };
+
+            window.initScoreLevelSel = () => {
+                window.scoreLevelSel && (treeSelect.destroy('CmeComScoreLevel'), $('#CmeComScoreLevel').val(''));
+                window.scoreLevelSel = treeSelect.render({
+                    elem    : '#CmeComScoreLevel',
+                    data    : huayi_sjwh_url + 'option/scoreLevel/tree/' + dictTool.getStandardKindId() + '/' + years + '/1__',
+                    type    : 'get',
+                    search  : true,
+                    style   : {
+                        folder  : { enable: false },
+                        line    : { enable: true}
+                    },
+                    click   : () => tableOp.reload(),
+                    success : () => tableOp.reload()
+                });
+    
+                form.render();
+            };
+
+            window.initKnowledgeSelBatch = () => {
+                dictTool.initKnowledgeSel('#knowledge2Id', '二级学科', { ...getVerParams(), knowledgeType: 2 });
+                $('#knowledgeId').find('option:gt(0)').remove();
+                let pId = $('#knowledge2Id').val();
+                if (pId) dictTool.initKnowledgeSel('#knowledgeId', '三级学科', { ...getVerParams(), knowledgeType: 3, knowledgeTwoId: pId });
+    
+                form.on('select(knowledge2Id)', data => {
+                    $('#knowledgeId').find('option:gt(0)').remove();
+                    let pId = data.value;
+                    if (pId) dictTool.initKnowledgeSel('#knowledgeId', '三级学科', { ...getVerParams(), knowledgeType: 3, knowledgeTwoId: pId });
+                    form.render();
+                });
+    
+                form.render('select');
+            };
+
+            window.initUnitSel = () => {
+                $('#cityname').find('option:gt(0)').remove();
+                $.ajax({
+                    type        : 'post',
+                    url         : huayi_projectscore_url +'projectDicRegionLevel/getLevelsByCmeStandardKindId',
+                    data        : {
+                        cmeStandardKindId   : dictTool.getStandardKindId(),
+                        userId              : localStorage.getItem('user-id')
+                    },
+                    dataType    : 'json',
+                    async       : false,
+                    success     : res => {
+                        if (res.success == true) {
+                            $.each(res.data, (index, item) => $('#cityname').append(new Option(item.topUnitName, item.topUnitId)));
+                            form.render('select');
+                        } else layer.msg('主管单位获取失败', { icon: 7, time: 1500 });
+
+                    },
+                    error       : () => layer.msg('主管单位获取失败', { icon: 7, time: 1500 })
+                });
+            }
+
+
+            /** 表格相关 */
+            window.tableOp = {
+
+                init: () => { 
+                    const flag_1 = fun_expert_review_entry && fun_expert_review_entry.split('、').includes('NO_SCORE');
+                    const colsMid = isZheJiangExpertReview
+                        ? [ {
+                            field   : 'holdTypeName',
+                            title   : projectLabels.lblActivityForm,
+                            minWidth: 130,
+                            align   : 'center',
+                            templet : function (d) {
+                                var t = formatZjHoldTypeDisplay(d.holdTypeName);
+                                return t || '—';
+                            }
+                        } ]
+                        : [ { field: 'topUnitName', title: '主管单位', minWidth: 150, align: 'center' } ];
+                    table.render({
+                        elem            : '#table-review',
+                        url             : huayi_projectscore_url + 'project/selectAllProjectForReview',
+                        defaultToolbar  : [ 'exports' ],
+                        where           : tableOp.getQueryParams(),
+                        cols            : [ [
+                            { fixed: 'left', type: 'checkbox', width: 40, title: '选择' },
+                            { fixed: 'left', toolbar: '#rowBar', title: '操作', width: 150, align: 'center' },
+                            { fixed: 'left', field: 'projectId', title: '项目id', hide: true },
+                            { fixed: 'left', field: 'projectCode', title: '申请代码', templet: '#viewProjInfo', minWidth: 190, align: 'center', sort: true },
+                            { field: 'projectName', title: '项目名称', minWidth: 200 , templet: standardKindId === '4a6d91fb-8ba4-4560-a801-9c6f00e6d999'?'#viewProjInfo2':''},
+                            { field: 'unitName', title: '主办单位', minWidth: 200 },
+                            { field: 'knowledgeName', title: '所属学科', minWidth: 150 },
+                            { field: 'personName', title: '项目负责人', minWidth: 100, align: 'center' },
+                            { field: 'grade', title: '评分', minWidth: 60, align: 'center', hide: flag_1 },
+                            { field: 'cmeComScoreLevel', title: projectLabels.lblProjectLevel, minWidth: 150, align: 'center'},
+                            ...colsMid,
+                            { fixed: 'right', field: 'reviewStatus', title: '评审状态', minWidth: 90, align: 'center' },
+                            { fixed: 'right', field: 'explanation', title: '评审意见', minWidth: 200 },
+                            { fixed: 'right', field: 'provincialRemark', title: '备注', minWidth: 150 }
+                        ] ],
+                        toolbar         : '',
+                        cellMinWidth    : 100,
+                        id              : 'table-review',
+                        height          : tableOp.computeHeight(),
+                        page            : false,
+                        toolbar         : '#tableBar',
+                        parseData       : res => {
+                            return {
+                                'code'  : res.status === 200 ? 0 : res.status,
+                                'msg'   : res.msg,
+                                'data'  : res.data,
+                            }
+                        },
+                        done            : (res, curr, count) => $('#countForPerson').text('共 ' + res.data.length + ' 条')
+                    });
+
+                    tableOp.initListener();
+                },
+
+                initListener: () => {
+                    table.on('toolbar(table-review)', obj => {
+                        let datas = obj.data,
+                            event = obj.event;
+
+                        if ('submit' == event) {
+                            const holdYear = $('#holdYear').val();
+                            layer.confirm('总提交后将不可对评审结果进行修改，<br>确认提交 ' + holdYear + ' 申报年度的评审结果吗？', 
+                                { title: '提示', btnAlign: 'c', btn: [ '确认', '取消' ] },
+                                index => {
+                                    $.ajax({
+                                        type     : 'POST',
+                                        url      : huayi_projectscore_url + 'project/review/submit',
+                                        data     : { holdYear: holdYear },
+                                        async    : false,
+                                        dataType : 'json',
+                                        success  : res => {
+                                            if (res && '200' == res.status) {
+                                                layer.msg('提交成功，本次共提交 ' + res.data + ' 个项目的评审结果', { icon: 1, time: 3000 });
+                                                tableOp.init();
+                                            } else layer.msg(res.msg, { icon: 7, time: 3000 });
+                                        },
+                                        error    : () => layer.msg('提交失败', { icon: 7, time: 1500 })
+                                    });
+                                    layer.close(index);
+                                });
+                        } else if ('exportPdf' == event) {
+                            var data = table.checkStatus('table-review').data;
+                            if (data.length <= 0) {
+                                layer.msg("请选择要导出的评审结果");
+                                return;
+                            }
+                            var expertIds = '';
+                            for (var i = 0; i < data.length; i++) {
+                                expertIds = data[i].expertId + ',' + expertIds;
+                            }
+                            const holdYear = $('#holdYear').val();
+                            layer.confirm('确认导出 ' + holdYear + ' 申报年度的评审结果吗？', 
+                                { title: '提示', btnAlign: 'c', btn: [ '确认', '取消' ] },
+                                (index) => {
+                                    layer.close(index);
+                                });
+                        } else if ('exportExcel' == event) {
+                            var picked = table.checkStatus('table-review').data || [],
+                                rows = [];
+                            if (picked.length === 0) {
+                                layer.msg('请先勾选要导出的项目', { icon: 0 });
+                                return;
+                            }
+                            layui.each(picked, function (i, item) {
+                                rows.push(table.clearCacheKey($.extend({}, item)));
+                            });
+                            if (isZheJiangExpertReview) {
+                                layui.each(rows, function (i, row) {
+                                    row.holdTypeName = formatZjHoldTypeDisplay(row.holdTypeName);
+                                });
+                            }
+                            var hideGrade = fun_expert_review_entry && fun_expert_review_entry.split('、').includes('NO_SCORE'),
+                                origCols = [ 'projectCode', 'projectName', 'unitName', 'knowledgeName', 'personName' ];
+                            if (!hideGrade) origCols.push('grade');
+                            origCols.push('cmeComScoreLevel');
+                            if (isZheJiangExpertReview) origCols.push('holdTypeName');
+                            else origCols.push('topUnitName');
+                            origCols.push('reviewStatus', 'explanation', 'provincialRemark');
+                            /* 表头对象键顺序须与 origCols 一致，否则 layui.excel + json_to_sheet 列错位（活动形式会挤到评审状态等列） */
+                            var lblLevel = (typeof projectLabels !== 'undefined' && projectLabels.lblProjectLevel) ? projectLabels.lblProjectLevel : '评分级别',
+                                lblActivity = (typeof projectLabels !== 'undefined' && projectLabels.lblActivityForm) ? projectLabels.lblActivityForm : '活动形式',
+                                titleByField = {
+                                    projectCode       : '申请代码',
+                                    projectName       : '项目名称',
+                                    unitName          : '主办单位',
+                                    knowledgeName     : '所属学科',
+                                    personName        : '项目负责人',
+                                    grade             : '评分',
+                                    cmeComScoreLevel  : lblLevel,
+                                    holdTypeName      : lblActivity,
+                                    topUnitName       : '主管单位',
+                                    reviewStatus      : '评审状态',
+                                    explanation       : '评审意见',
+                                    provincialRemark  : '备注'
+                                },
+                                transCols = {};
+                            for (var ti = 0; ti < origCols.length; ti++) {
+                                var fk = origCols[ti];
+                                transCols[fk] = titleByField[fk] || fk;
+                            }
+                            var data = excel.filterExportData(rows, origCols);
+                            data.unshift(transCols);
+                            var colCount = origCols.length,
+                                rowCount = data.length,
+                                lastCol = excel.numToTitle(colCount),
+                                fullRange = 'A1:' + lastCol + rowCount,
+                                thinLine = { style: 'thin', color: { rgb: 'FF000000' } },
+                                allSides = { top: thinLine, bottom: thinLine, left: thinLine, right: thinLine };
+                            excel.setExportCellStyle(data, fullRange, { s: { border: allSides } });
+                            excel.setExportCellStyle(data, 'A1:' + lastCol + '1', {
+                                s: {
+                                    font: { bold: true },
+                                    alignment: { horizontal: 'center', vertical: 'center' },
+                                    border: allSides
+                                }
+                            });
+                            var defaultColWpx = 130,
+                                colWMap = {};
+                            for (var ci = 0; ci < origCols.length; ci++) {
+                                colWMap[excel.numToTitle(ci + 1)] = defaultColWpx;
+                            }
+                            var holdYearForName = $('#holdYear').val() || years;
+                            excel.exportExcel(data, '项目评审_' + holdYearForName + '年度.xlsx', 'xlsx', {
+                                writeOpt : { cellStyles: true },
+                                extend   : { '!cols': excel.makeColConfig(colWMap, defaultColWpx) }
+                            });
+                        }
+                    });
+
+                    table.on('tool(table-review)', obj => {
+                        let datas   = obj.data,
+                            event   = obj.event,
+                            projId  = datas.projectId;
+                            
+
+                        if (event === 'reviewForProject') {
+                            $.ajax({
+                                type     : 'POST',
+                                url      : huayi_projectscore_url + 'projectApplyDate/isDelay',
+                                data     : { 
+                                    unitId          : datas.unitId, 
+                                    year            : datas.holdYear, 
+                                    scoreLevelId    : datas.scoreLevelId, 
+                                    type            : 3,
+                                    regionLevelId   : datas.regionLevelId
+                                },
+                                dataType : 'json',
+                                success  : res => {
+                                    let data = res.data;
+                                    if (data && data.status == '5') review(projId, datas.reviewId, datas.reviewTmplPath); 
+                                    else if (data && (data.status == '3' || data.status == '4')) layer.msg('不在评审周期内，无法审核', { icon: 7, time: 1500 });
+                                    else layer.msg('未设置评审周期，无法审核', { icon: 7, time: 1500 });
+                                },
+                                error    : () => layer.msg('发送请求失败', { icon: 7, time: 1500 })
+                            });
+                        } 
+                        else if (event === 'view') {
+                            if (datas.previousId != null && datas.previousId != '') {
+                                layer.open({
+                                    type: 2,
+                                    title: '浏览',
+                                    content: '../project/projectRecord/fujian/record.html?projectId=' + datas.previousId  + '&projectBeiAnId=' + datas.projectId + '&type=view',
+                                    skin: '',
+                                    area: ['90%', '90%'],
+                                })
+                            } else {
+                                layer.open({
+                                    type    : 2,
+                                    title   : '浏览',
+                                    content : getProjectPageUrl(datas.holdYear, datas.scoreLevelId, projId, 'unit', 1),
+                                    skin    : '',
+                                    area    : [ '100%', '100%' ],
+                                });
+                            }
+                        }
+                        else if (event === 'viewShenbao') {
+                            if (datas.previousId != null && datas.previousId != '') {
+                                layer.open({
+                                    type    : 2,
+                                    title   : '浏览',
+                                    content : getProjectPageUrl(datas.holdYear, datas.scoreLevelId, datas.previousId, 'unit', 1),
+                                    skin    : '',
+                                    area    : [ '100%', '100%' ],
+                                });
+                            } else {
+                                layer.open({
+                                    type    : 2,
+                                    title   : '浏览',
+                                    content : getProjectPageUrl(datas.holdYear, datas.scoreLevelId, projId, 'unit', 1),
+                                    skin    : '',
+                                    area    : [ '100%', '100%' ],
+                                });
+                            }
+                        }
+                        else if (event === 'viewProjFeedback') {
+                            var unitUpward = datas.unitUpward;
+                            var unitIdValue = unitUpward.split(",")[unitUpward.split(",").length - 1];
+                            layer.open({
+                                title: '执行情况反馈',
+                                type: 2,
+                                area: ['100%', '100%'],
+                                maxmin: true,
+                                content: '../project/CmeProjFeedbackView.html?projectId=' + datas.cmeProjId + '&unitIdValue=' + unitIdValue,
+                                scrollbar: false
+                            });
+                        }
+
+                    });
+                },
+
+                computeHeight: () => {
+                    let windowHeight    = $(window).height(),
+                        divTop          = $('#table-review').offset().top,
+                        divHeight       = windowHeight - divTop;
+                    return  'full-' + Math.floor(divTop + 16);
+                },
+
+                getQueryParams: data => {
+                    var q = { ...$('#form-query').serializeObject(), holdYear: years, ...data };
+                    if (isZheJiangExpertReview) {
+                        delete q.cityname;
+                    } else {
+                        delete q.holdTypeId;
+                    }
+                    return q;
+                },
+
+                reload: config => {
+                    table.reload('table-review', {
+                        height  : tableOp.computeHeight(),
+                        where   : tableOp.getQueryParams(),
+                        ...config
+                    });
+                }
+            
+            };
+
+
+            window.review = (projId, reviewId, reviewTmplPath) => {
+                layer.open({
+                    type    : 2,
+                    title   : '专家评审',
+                    content : '../../pages/projectexpert/review' + (reviewTmplPath || '/nationwideReview.html') + 
+                                '?projectId=' + projId + '&reviewId=' + reviewId + '&allowFill=t',
+                    area    : [ '100%', '100%' ],
+                });
+            }
+            
+
+            window.getVerParams = () => {
+                return {
+                    cmeStandardKindId   : dictTool.getStandardKindId(),
+                    versionYear         : years
+                };
+            };
+    
+    
+            window.pageNum = 1;
+            $(window).resize(() => {
+                let pageNumCur = $('.layui-laypage-curr > em:nth-child(2)').text();
+                pageNum = pageNumCur || pageNum;
+                tableOp.reload({ page: { curr: pageNum } });
+            });
+
+            window.closeAll = msg => {
+                layer.closeAll();
+                layer.msg(msg);
+            }
+
+
+            /* 甘肃套承诺书检查逻辑 */
+            if (needPromiseCheck) {
+                $('#mainContentWrapper').hide();
+                $('#expertPromiseMask').show();
+                var promiseYear = new Date().getFullYear().toString();
+                $.ajax({
+                    type: 'GET',
+                    url: huayi_projectscore_url + 'projectExpertPromise/check',
+                    data: { year: promiseYear, standardKindId: standardKindId },
+                    headers: { 'Authorization': localStorage.getItem('token'), 'KJPT-USER-ID': localStorage.getItem('user-id') },
+                    success: function (res) {
+                        if (res && res.status === 500) {
+                            layer.msg('检查签署状态失败，请联系管理员', { icon: 7, time: 3000 });
+                            $('#promiseMaskLoading').hide();
+                            $('#promiseMaskForm').show();
+                            return;
+                        }
+                        if (res && res.status === 200 && res.data && res.data.signed) {
+                            $('#expertPromiseMask').hide();
+                            $('#mainContentWrapper').show();
+                            runPageInit();
+                        } else {
+                            $('#promiseMaskLoading').hide();
+                            $('#promiseMaskForm').show();
+                            form.render('checkbox', 'promiseFormMask');
+                            $.ajax({
+                                type: 'GET',
+                                url: huayi_projectscore_url + 'projectExpertPromise/content',
+                                data: { year: promiseYear, standardKindId: standardKindId },
+                                headers: { 'Authorization': localStorage.getItem('token'), 'KJPT-USER-ID': localStorage.getItem('user-id') },
+                                success: function (cr) {
+                                    $('#promiseContentBody').html((cr && cr.status === 200 && cr.data && cr.data.contentBody) ? cr.data.contentBody : '（暂无承诺书正文）');
+                                },
+                                error: function () { $('#promiseContentBody').text('（加载失败）'); }
+                            });
+                            var promiseSignBase64 = null;
+                            function updatePromiseSignPreview(base64) {
+                                promiseSignBase64 = base64;
+                                var $box = $('#promiseSignTriggerBox');
+                                if (base64) {
+                                    $box.empty().append($('<img>').attr('src', base64));
+                                } else {
+                                    $box.empty().append($('<span>').text('点击签名'));
+                                }
+                            }
+                            function openPromiseSignModal() {
+                                layer.open({
+                                    type: 2,
+                                    title: '签名',
+                                    content: '../mod/declare25/modals/sign.html',
+                                    area: [ '520px', '420px' ],
+                                    end: function () {
+                                        var dataUrl = localStorage.getItem('tmp_declare_sign');
+                                        if (dataUrl) {
+                                            updatePromiseSignPreview(dataUrl);
+                                            localStorage.removeItem('tmp_declare_sign');
+                                        }
+                                    }
+                                });
+                            }
+                            $('#promiseSignTriggerBox').on('click', openPromiseSignModal);
+                            $('#btnClearPromiseSign').on('click', openPromiseSignModal);
+                            $('#btnSubmitPromise').on('click', function () {
+                                var name = $('input[name="name"]', '#promiseMaskForm').val();
+                                var certId = $('input[name="certId"]', '#promiseMaskForm').val();
+                                var workUnit = $('input[name="workUnit"]', '#promiseMaskForm').val();
+                                var mobile = $('input[name="mobile"]', '#promiseMaskForm').val();
+                                var isAgreed = $('input[name="isAgreed"]', '#promiseMaskForm').prop('checked');
+                                if (!name || !certId) { layer.msg('请填写姓名和身份证号'); return; }
+                                if (!$.trim(workUnit)) { layer.msg('请填写工作单位'); return; }
+                                if (!$.trim(mobile)) { layer.msg('请填写联系电话'); return; }
+                                if (!isAgreed) { layer.msg('请勾选"我已阅读并同意以上承诺"'); return; }
+                                if (!promiseSignBase64) { layer.msg('请完成电子签名'); return; }
+                                var loadingIdx = layer.load(1, { shade: 0.3 });
+                                $.ajax({
+                                    url: huayi_projectscore_url + 'projectExpertPromise/submit',
+                                    type: 'POST',
+                                    contentType: 'application/json',
+                                    data: JSON.stringify({
+                                        standardKindId: standardKindId,
+                                        year: promiseYear,
+                                        name: name,
+                                        certId: certId,
+                                        workUnit: workUnit || '',
+                                        mobile: mobile || '',
+                                        isAgreed: true,
+                                        signImageBase64: promiseSignBase64
+                                    }),
+                                    headers: { 'Authorization': localStorage.getItem('token'), 'KJPT-USER-ID': localStorage.getItem('user-id') },
+                                    success: function (res) {
+                                        layer.close(loadingIdx);
+                                        if (res && res.status === 200) {
+                                            layer.msg('提交成功');
+                                            $('#expertPromiseMask').hide();
+                                            $('#mainContentWrapper').show();
+                                            runPageInit();
+                                        } else {
+                                            layer.msg(res.msg || '提交失败');
+                                        }
+                                    },
+                                    error: function (xhr) {
+                                        layer.close(loadingIdx);
+                                        layer.msg((xhr.responseJSON && xhr.responseJSON.msg) ? xhr.responseJSON.msg : '提交失败');
+                                    }
+                                });
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        var errMsg = (xhr && xhr.status === 500) ? '服务异常，请刷新或联系管理员' : '检查签署状态失败，请刷新或联系管理员';
+                        layer.msg(errMsg, { icon: 7, time: 3000 });
+                        $('#promiseMaskLoading').hide();
+                        $('#promiseMaskForm').show();
+                    }
+                });
+            } else {
+                layer.ready(() => runPageInit());
+            }
+
+        });
+    </script>
+</body>
+</html>

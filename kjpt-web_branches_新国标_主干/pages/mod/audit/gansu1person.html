@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>甘肃个人学分</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <!-- base -->
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <!-- xgb -->
+    <!-- <script type="text/javascript" src="https://kjpt.wsglw.net/pages/mod/js/mng.js"></script> -->
+    <!--<script type="text/javascript" src="https://staticlibs.oss-cn-beijing.aliyuncs.com/js/netflix.mng.min.js"></script>-->
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/vendor.gdcb47af.s51f94bf.js"></script>
+</head>
+<body style="background-color: white;">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!-- 数据表格 -->
+        <div class="layui-card-body layui_body_box" style="padding-left: 0;padding-right: 0">
+            <table class="layui-table" id="table_id" lay-filter="table_id"
+                   style="margin: 0;"></table>
+        </div>
+    </div>
+</div>
+<div style="display: none" id="dldp">
+    <div class="layui-progress layui-progress-big" lay-showpercent="true" lay-filter="dldp">
+        <div class="layui-progress-bar" lay-percent="0%"></div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    layui.config({
+        base: '/js/layui/ext/',
+    }).extend({
+        xmSelect: 'xm-select',
+        lat: 'lat'
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'xmSelect', 'lat'], function () {
+        let table = layui.table, layer = layui.layer, form = layui.form, laydate = layui.laydate, dropdown = layui.dropdown, element = layui.element, $ = layui.jquery, xmSelect = layui.xmSelect, lat = layui.lat;
+        let gLayerIndex = -1, gPageNum = 1, gComPersonId = '2f6fe129-92ce-4f52-abda-1fa1e12167b4';
+        $(function () {
+            let visit = huayi_projectscore_url + 'ps/person/info';
+            postAction(visit, {userId: _userId}).then(response => {
+                let jsonRes = response.data;
+                if (jsonRes.success) {
+                    gComPersonId = jsonRes.data.comPersonId ?? gComPersonId;
+                }
+            }).catch(error => {
+                layer.msg('error:加载comPersonId');
+            }).finally(() => {
+                renderTable();
+            });
+        });
+        table.on('tool(table_id)', function (obj) {
+            let rowData = obj.data;
+            if ('step' === obj.event) {
+                dostep(rowData);
+            }
+            if ('detail' === obj.event) {
+                gLayerIndex = layer.open({
+                    type: 2,
+                    shade: 0.4,
+                    shadeClose: true,
+                    title: '学分明细',
+                    content: `/pages/score/proj_statistics/personScoreStatistics.html?personId=${gComPersonId}&cmeYear=${rowData.cmeYear}`,
+                    area: ['100%', '100%']
+                });
+            }
+            if ('downpdf' === obj.event) {
+                if (99 !== Number(rowData.state)) {
+                    lat.failMsg('终审通过才能打印审验证书');
+                } else {
+                    lat.downloadWithProgress(`${huayi_sjwh_url}audit/pdf/down`, {
+                        'standardKindId': _skId,
+                        'pdfType': 1,
+                        'comPersonIds': gComPersonId,
+                        'cmeYear': rowData.cmeYear,
+                    }, '年度学分审验.pdf');
+                }
+            }
+        });
+        function renderTable() {
+            table.render({
+                id: 'table_id',
+                elem: '#table_id',
+                height: 'full-100',
+                defaultToolbar: [],
+                url: `${huayi_sjwh_url}/audit/gansu/page/pid`,
+                method: 'POST',
+                contentType: 'application/json',
+                loading: true,
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                where: {
+                    'comPersonId': gComPersonId,
+                },
+                request: {
+                    pageName: 'pageNum', // 页码的参数名称，默认：page
+                    limitName: 'pageSize' // 每页数据量的参数名，默认：limit
+                },
+                parseData: function (res) {
+                    let page = res.data || {};
+                    gPageNum = page.pageNum;
+                    return {
+                        'code': 200 === res.status ? 0 : res.status, // 解析接口状态
+                        'msg': res.message || res.msg, // 解析提示文本
+                        'count': page.recordsTotal, // 解析数据长度
+                        'data': page.records, // 解析数据列表
+                        'page': page.pageNum, // 当前页
+                        'limit': page.pageSize // 每页条数
+                    }
+                },
+                done: function (res, curr, count) {
+                    gPageNum = curr;
+                },
+                error: function (error, msg) {
+                    let a = error.status, b = error.statusText, c = error.responseText;
+                    $('.layui-table-main').html(`<div class="layui-none">${a}-${b}</div>`);
+                },
+                cols: [[
+                    {field: 'cmeYear', title: '年度', minWidth: 120, align: 'center', sort: true},
+                    {field: '', title: '审核步骤', minWidth: 120, align: 'center', sort: true, templet: () => `<a class="layui-btn layui-btn-xs btn-row" lay-event="step">查看</a>`},
+                    {field: '', title: '学分明细', minWidth: 120, align: 'center', sort: true, templet: () => `<a class="layui-btn layui-btn-xs btn-row" lay-event="detail">明细</a>`},
+                    {field: 'totalScore', title: '总学分', minWidth: 120, align: 'center', sort: true},
+                    {field: 'totalPeriod', title: '总学时', minWidth: 120, align: 'center', sort: true},
+                    {field: 'passResult', title: '达标结果', minWidth: 120, align: 'center', sort: true, templet: (data) => PassResultEnum[data.passResult]},
+                    {field: 'titleName', title: '职称', minWidth: 120, align: 'center', sort: true},
+                    {field: 'personSpecName', title: '专业', minWidth: 120, align: 'center', sort: true},
+                    {
+                        field: '', title: '操作', minWidth: 120, align: 'center', sort: true, templet: data => {
+                            if (99 !== Number(data.state)) return `未终审通过`;
+                            return `<a class="layui-btn layui-btn-xs btn-row" lay-event="downpdf">下载</a>`;
+                        }
+                    },
+                ]],
+                data: [{
+                    personNo: "123"
+                }],
+            });
+        }
+        function dostep(rowData) {
+            let cmeYear = rowData.cmeYear;
+            let unitPc = localStorage.getItem('unit-pc'); // rowData.concatUnitPc;
+            let titleLevelId = rowData.titleLevelId;
+            let promote = rowData.promote;
+            let isph = '1' === unitPc.split('')[0];
+            let isch = '1' === unitPc.split('')[1];
+            let flow = _gansu.getFlow(isph, isch, titleLevelId, promote);
+            // &unitPc=${unitPc}&titleLevelId=${titleLevelId}&promote=${promote}
+            gLayerIndex = layer.open({
+                type: 2,
+                shade: 0.4,
+                shadeClose: true,
+                title: '审核步骤',
+                content: `./modals/gansuStep.html?cmeYear=${cmeYear}&comPersonId=${gComPersonId}&flow=${flow}`,
+                area: ['560px', '300px']
+            });
+        }
+    });
+</script>
+<style>
+</style>
+</html>

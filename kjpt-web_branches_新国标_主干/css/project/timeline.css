@@ -1,0 +1,113 @@
+.timeLine {margin: 20px auto 0;overflow: hidden;position: relative}
+
+.timeLine li { 
+    display: flex;
+} 
+
+.timeLineAuditP {width:168px;font-size: 16px;text-align:right;padding:0 20px 20px 0;color:#27b1a2;animation:fadenumleft 1s;}
+.timeLineAwaitP {width:168px;font-size: 16px;text-align:right;padding:0 20px 20px 0;color:#CCD5CC;animation:fadenumleft 1s;}
+
+.timeLineNoPass {width:168px;font-size: 16px;text-align:right;padding:0 20px 20px 0;color:#ee2a08;animation:fadenumleft 1s;}
+
+.audit {display: block;color: #27b1a2;font-size: 12px;}
+
+
+.await {display: block;color: #CCD5CC;font-size: 12px;}
+.noPass {display: block;color: #ee2a08;font-size: 12px;}
+
+.conaudit{ 
+    background: linear-gradient(to left, var(--default,#27b1a2),var(--default,#27b1a2)) 7.5px top no-repeat;
+    background-size: 1px 100%;
+    position: relative;
+    padding: 0 0px 0 30px;
+}
+
+
+.conaudit::after{
+    content: "";
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 1px solid var(--default,#27b1a2);
+    background: radial-gradient(var(--default,#27b1a2) 25%, transparent 30%) 50% 50% no-repeat, linear-gradient(to left, #fff,#fff) left top no-repeat;
+    background-size: 100% 100%, 100% 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.conawait{ 
+    background: linear-gradient(to left, var(--default,#CCD5CC),var(--default,#CCD5CC)) 7.5px top no-repeat;
+    background-size: 1px 100%;
+    position: relative;
+    padding: 0 0px 0 30px;
+}
+
+.conawait::after{
+    content: "";
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 1px solid var(--default,#CCD5CC);
+    background: radial-gradient(var(--default,#CCD5CC) 25%, transparent 30%) 50% 50% no-repeat, linear-gradient(to left, #fff,#fff) left top no-repeat;
+    background-size: 100% 100%, 100% 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+
+.conNoPass{ 
+    background: linear-gradient(to left, var(--default,#CCD5CC),var(--default,#CCD5CC)) 7.5px top no-repeat;
+    background-size: 1px 100%;
+    position: relative;
+    padding: 0 0px 0 30px;
+}
+
+
+.conNoPass::after{
+    content: "";
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 1px solid var(--default,#ee2a08);
+    background: radial-gradient(var(--default,#ee2a08) 25%, transparent 30%) 50% 50% no-repeat, linear-gradient(to left, #fff,#fff) left top no-repeat;
+    background-size: 100% 100%, 100% 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.conauditfont{ 
+    background-size: 1px 100%;
+    position: relative;
+    animation:fadenumright 1s;
+    color: #27b1a2;
+    
+}
+.conNoPassfont{ 
+    background-size: 1px 100%;
+    position: relative;
+    animation:fadenumright 1s;
+    color: #ee2a08;
+    
+}
+.conawaitfont{ 
+    background-size: 1px 100%;
+    position: relative;
+    animation:fadenumright 1s;
+    color: #CCD5CC;
+    
+}
+@keyframes fadenumleft{
+    0%{transform:translateX(-150px);}
+}
+@keyframes fadenumright{
+    0%{transform:translateX(150px);}
+}
+
+
+
+.timeLine li:last-child .conaudit{background:none !important;}
+.timeLine li:last-child .conawait{background:none !important;}
+.timeLine li:last-child .conNoPass{background:none !important;}

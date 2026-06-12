@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>udlog</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <!-- base -->
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/myo_aes_util.js"></script>
+</head>
+<body style="background-color: white;">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!-- 查询区域 -->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" id="queryArea"
+             style="background-color: #f5f5f5;">
+            <div class="layui_mess">
+                <div class="layui_display">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">人员编号</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="personNo" placeholder=""
+                                   autocomplete="off"
+                                   class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">姓名</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="personName" placeholder=""
+                                   autocomplete="off" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">项目编号</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="projNo" placeholder=""
+                                   autocomplete="off"
+                                   class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">项目名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="projName" placeholder=""
+                                   autocomplete="off" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">项目类型</label>
+                        <div class="layui-input-block">
+                            <select name="scoreTypeVal">
+                                <option></option>
+                                <option value="4">继教项目</option>
+                                <option value="2">院内活动</option>
+                                <option value="1">个人活动</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">操作类型</label>
+                        <div class="layui-input-block">
+                            <select name="action">
+                                <option></option>
+                                <option value="edit">修改</option>
+                                <option value="remove">删除</option>
+                                <option value="approve">审核通过</option>
+                                <option value="reject">审核不通过</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui_display">
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-sm btnRounded" lay-submit onclick="refreshTable({page:{curr:1}})">
+                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 数据表格 -->
+        <div class="layui-card-body layui_body_box" style="padding-left: 0;padding-right: 0">
+            <table class="layui-table" id="table_id" lay-filter="table_id"
+                   style="margin: 0;"></table>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        lat: 'lat'
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'xmSelect', 'lat'], function () {
+        let table = layui.table;
+        let layer = layui.layer;
+        let form = layui.form;
+        let laydate = layui.laydate;
+        let dropdown = layui.dropdown;
+        let element = layui.element;
+        let $ = layui.jquery;
+        let xmSelect = layui.xmSelect;
+        let lat = layui.lat;
+        let gLayerIndex = -1;
+        let gPageNum = 1;
+        window.refreshTable = refreshTable;
+        $(function () {
+            renderTable();
+        });
+        table.on('tool(table_id)', function (obj) {
+            let rowData = obj.data;
+            if ('logmsi' === obj.event) {
+                _test.test_udlog(rowData.scoreId);
+            }
+        });
+        table.on('toolbar(table_id)', function (obj) {
+            let checkStatus = table.checkStatus(obj.config.id);
+            let selectedRowArr = checkStatus.data;
+            if ('' === obj.event) {
+                //
+            }
+        });
+        function renderTable() {
+            table.render({
+                id: 'table_id',
+                elem: '#table_id',
+                height: 'full-160',
+                defaultToolbar: [],
+                url: `${huayi_sjwh_url}option/ud/log/page`,
+                method: 'POST',
+                contentType: 'application/json',
+                loading: true,
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                where: {},
+                request: {
+                    pageName: 'pageNum', // 页码的参数名称，默认：page
+                    limitName: 'pageSize' // 每页数据量的参数名，默认：limit
+                },
+                parseData: function (res) {
+                    let page = res.data || {};
+                    gPageNum = page.pageNum;
+                    return {
+                        'code': res.status === 200 ? 0 : res.status, // 解析接口状态
+                        'msg': res.message || res.msg, // 解析提示文本
+                        'count': page.recordsTotal, // 解析数据长度
+                        'data': page.records, // 解析数据列表
+                        'page': page.pageNum, // 当前页
+                        'limit': page.pageSize // 每页条数
+                    }
+                },
+                done: function (res, curr, count) {
+                    //
+                    gPageNum = curr;
+                },
+                error: function (error, msg) {
+                    $('.layui-table-main').html(`<div class="layui-none">${error.responseText}</div>`);
+                },
+                cols: [[
+                    {field: 'personNo', title: '人员编号', width: 110, align: 'center', sort: false,},
+                    {field: 'personName', title: '姓名', width: 80, align: 'center', sort: false,},
+                    {field: 'projNo', title: '项目编号', minWidth: 160, align: 'center', sort: false, templet: data => coalesce(data.projNo, data.groupProjNo, data.singleProjNo, '')},
+                    {field: 'projName', title: '项目名称', minWidth: 240, align: 'center', sort: false, templet: data => coalesce(data.projName, data.groupProjName, data.singleProjName, '')},
+                    {field: 'scoreTypeVal', title: '项目类型', width: 87, align: 'center', sort: false, templet: data => _txt.scoreTypeVal(data.scoreTypeVal)},
+                    {field: 'action', title: '操作类型', width: 140, align: 'center', sort: false, templet: data => action(data)},
+                    {field: 'action', title: '操作内容', minWidth: 240, align: 'center', sort: false, templet: data => actionDetail(data)},
+                    {field: 'ip', title: 'IP地址', width: 140, align: 'center', sort: false,},
+                    {field: 'userName', title: '登录帐号', width: 90, align: 'center', sort: false,},
+                    {field: 'realname', title: '帐号名称', width: 150, align: 'center', sort: false,},
+                    {field: 'createTime', title: '时间', width: 163, align: 'center', sort: false,},
+                ]],
+                data: [{
+                    personNo: "123"
+                }],
+            });
+        }
+        function refreshTable(ec) {
+            let c = {where: getSifter()};
+            ec ? $.extend(true, c, ec) : '';
+            table.reload('table_id', c);
+        }
+        function getSifter() {
+            return {
+                'projNo': $('input[name=projNo]').val(),
+                'projName': $('input[name=projName]').val(),
+                'scoreTypeVal': $('select[name=scoreTypeVal]').val(),
+                'personNo': $('input[name=personNo]').val(),
+                'personName': $('input[name=personName]').val(),
+                'createTime1': oneYearAgo() + ' 00:00:00',
+                'createTime2': today() + ' 23:59:59',
+                'action': $('select[name=action]').val(),
+            };
+        }
+        function action(data) {
+            let action = data.action, s = '';
+            if ('edit' === action) s = `<span style="color: #FFB800;">修改</span>`;
+            if ('remove' === action) s = `<span style="color: #f56c6c;">删除</span>`;
+            if (action.includes('approve')) s = `<a style="color: #009688; text-decoration: underline;" lay-event="logmsi">${action}</a>`;
+            if (action.includes('reject')) s = `<span style="color: #f56c6c;">${action}</span>`;
+            return s;
+        }
+        function actionDetail(data) {
+            let action = data.action;
+            let before = JSON.parse(data.before || '{}');
+            let msi = JSON.parse(data.msi || '{}');
+            let s = '';
+            if ('edit' === action) {
+                (undefined !== before.score) && (undefined !== msi.score) && (before.score !== msi.score) && (s += `<span>学分：由（${before.score}）修改为（${msi.score}）</span>`);
+                (undefined !== before.period) && (undefined !== msi.period) && (before.period !== msi.period) && (s += `<span>学时：由（${before.period}）修改为（${msi.period}）</span>`);
+            }
+            if ('remove' === action) {
+                s += `<span>学分：${before.score}</span>`;
+                s += `<span>学时：${before.period}</span>`;
+            }
+            if (action.includes('approve')) {
+                s += `<span>checkState: ${before.check_state} -> ?</span>`;
+                s += `<span>flowChainState: ${before.flow_chain_state} -> ?</span>`;
+            }
+            if (action.includes('reject')) {
+                s += `<span>checkState: ${before.check_state} -> ?</span>`;
+                s += `<span>flowChainState: ${before.flow_chain_state} -> ?</span>`;
+            }
+            return s;
+        }
+    });
+</script>
+<style>
+    .layui_mess {
+        display: flex;
+        justify-content: space-between;
+    }
+    .layui-form-select .layui-input {
+        padding-right: 0;
+    }
+    .layui-table-tool-temp {
+        padding-right: 0;
+    }
+    .layui-table-body div.layui-table-cell:has(span) {
+        display: flex;
+        flex-direction: column;
+        height: fit-content;
+    }
+</style>
+</html>

@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>内部培训自动审核设置</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../../../css/communal.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script type="text/javascript" src="../../../../js/constant.js"></script>
+    <script type="text/javascript" src="../../../../js/constantPage/projectConstant.js"></script>
+    <script type="text/javascript" src="../../../../js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="../../../../js/common.js"></script>
+    <script type="text/javascript" src="../../../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <style>
+        body {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .auto-audit-page {
+            padding: 15px;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .auto-audit-shell {
+            height: 100%;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .module-card {
+            background: #fff;
+            border: 1px solid #e6e6e6;
+            border-radius: 2px;
+            box-shadow: none;
+        }
+
+        .query-module,
+        .switch-module,
+        .table-module-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 18px;
+            background: #fff;
+        }
+
+        .query-module {
+            justify-content: space-between;
+        }
+
+        .table-module-head {
+            background: #f7f7f7;
+            border-bottom: 1px solid #e6e6e6;
+            border-radius: 2px 2px 0 0;
+        }
+
+        .config-card {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .config-card-body {
+            position: relative;
+            flex: 1 1 auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .save-state {
+            display: inline-block;
+            padding: 3px 8px;
+            line-height: 18px;
+            border: 1px solid #d2d2d2;
+            color: #666;
+            background: #fafafa;
+            border-radius: 2px;
+        }
+
+        .save-state.changed {
+            color: #ff8a00;
+            border-color: #ffb800;
+            background: #fff8e6;
+        }
+
+        .status-tag {
+            display: inline-block;
+            padding: 1px 6px;
+            line-height: 18px;
+            border: 1px solid #d2d2d2;
+            background: #fff;
+            color: #666;
+            border-radius: 2px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .status-tag.add {
+            color: #009688;
+            border-color: #009688;
+            background: #eefdfb;
+        }
+
+        .status-tag.remove {
+            color: #ff8a00;
+            border-color: #ff8a00;
+            background: #fff8e6;
+        }
+
+        .switch-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .switch-title {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .switch-left .layui-form-switch {
+            margin: 0;
+            height: 22px;
+            line-height: 22px;
+            vertical-align: middle;
+        }
+
+        .query-left,
+        .query-actions,
+        .head-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .query-left {
+            justify-content: flex-start;
+        }
+
+        .head-actions {
+            justify-content: flex-end;
+        }
+
+        .query-field {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .query-label {
+            color: #333;
+            white-space: nowrap;
+        }
+
+        .table-head-left,
+        .panel-title-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .query-module .layui-input-inline {
+            width: 210px;
+        }
+
+        .cancel-select-btn {
+            color: #ff5722;
+            border-color: #ff5722;
+        }
+
+        .config-area {
+            display: grid;
+            grid-template-columns: 420px minmax(0, 1fr);
+            flex: 1 1 auto;
+            min-height: 0;
+            background: #fff;
+        }
+
+        .config-card-body.disabled .table-module-head,
+        .config-area.disabled {
+            background: #f7f7f7;
+        }
+
+        .config-card-body.disabled .table-module-head,
+        .config-area.disabled .tree-panel,
+        .config-area.disabled .table-panel {
+            opacity: .58;
+        }
+
+        .config-disabled-mask {
+            display: none;
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: rgba(255, 255, 255, .62);
+            box-sizing: border-box;
+        }
+
+        .config-card-body.disabled .config-disabled-mask {
+            display: flex;
+        }
+
+        .config-disabled-box {
+            width: min(520px, 100%);
+            padding: 18px 22px;
+            border: 1px solid #d7e6f5;
+            border-left: 4px solid #1e9fff;
+            background: #fff;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
+            box-sizing: border-box;
+        }
+
+        .config-disabled-title {
+            margin-bottom: 8px;
+            color: #1f2937;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .config-disabled-desc {
+            color: #555;
+            line-height: 22px;
+        }
+
+        .tree-panel {
+            border-right: 1px solid #e6e6e6;
+            min-width: 0;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .table-panel {
+            min-width: 0;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 42px;
+            min-height: 42px;
+            flex: 0 0 42px;
+            padding: 0 14px;
+            border-bottom: 1px solid #e6e6e6;
+            background: #fff;
+            font-weight: 600;
+        }
+
+        .panel-title-actions {
+            min-width: 0;
+        }
+
+        .panel-count {
+            font-weight: 400;
+            color: #777;
+            font-size: 12px;
+        }
+
+        .selected-count {
+            display: inline-block;
+            min-width: 96px;
+            padding: 3px 12px;
+            line-height: 18px;
+            color: #1e9fff;
+            border: 1px solid #1e9fff;
+            background: #eaf6ff;
+            border-radius: 3px;
+            text-align: center;
+            font-weight: 400;
+            font-size: 12px;
+        }
+
+        .tree-list {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow: auto;
+            background: #fff;
+        }
+
+        .dept-tree-row {
+            display: flex;
+            align-items: center;
+            height: 34px;
+            border-bottom: 1px solid #f0f0f0;
+            box-sizing: border-box;
+            white-space: nowrap;
+            font-size: 13px;
+        }
+
+        .dept-tree-row:hover {
+            background: #f7fbff;
+        }
+
+        .tree-toggle {
+            width: 22px;
+            height: 22px;
+            line-height: 22px;
+            text-align: center;
+            color: #666;
+            cursor: pointer;
+            flex: 0 0 22px;
+        }
+
+        .tree-toggle.empty {
+            cursor: default;
+            color: transparent;
+        }
+
+        .dept-checkbox {
+            width: 14px;
+            height: 14px;
+            margin: 0 8px 0 2px;
+            flex: 0 0 auto;
+            cursor: pointer;
+        }
+
+        .dept-checkbox:disabled {
+            cursor: not-allowed;
+        }
+
+        .dept-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-right: 6px;
+            flex: 1 1 auto;
+        }
+
+        .dept-code {
+            color: #999;
+            margin-left: 4px;
+            font-size: 12px;
+        }
+
+        .dept-subtree-action {
+            flex: 0 0 auto;
+            height: 22px;
+            line-height: 20px;
+            padding: 0 8px;
+            margin-right: 8px;
+            border: 1px solid #d9e2ef;
+            border-radius: 3px;
+            background: #fff;
+            color: #3b6f9f;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .dept-subtree-action:hover {
+            border-color: #1e9fff;
+            color: #1e9fff;
+        }
+
+        .dept-subtree-action:disabled {
+            cursor: not-allowed;
+            color: #bfbfbf;
+            border-color: #e5e5e5;
+        }
+
+        .tree-status {
+            margin-right: 10px;
+            flex: 0 0 auto;
+        }
+
+        .summary-wrap {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 28px 36px;
+            box-sizing: border-box;
+            background: #fff;
+        }
+
+        .summary-section-title {
+            flex: 0 0 auto;
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .summary-top {
+            flex: 1 1 0;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .selected-tags {
+            flex: 1 1 auto;
+            display: flex;
+            align-items: flex-start;
+            align-content: flex-start;
+            flex-wrap: wrap;
+            gap: 10px 12px;
+            min-height: 48px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 10px 12px;
+            border: 1px solid #e6e6e6;
+            background: #fafafa;
+            border-radius: 2px;
+            box-sizing: border-box;
+            scrollbar-gutter: stable;
+        }
+
+        .selected-tag {
+            display: inline-flex;
+            align-items: center;
+            max-width: 180px;
+            height: 30px;
+            padding: 0 10px 0 12px;
+            border: 1px solid #d2dbe8;
+            background: #f8fbff;
+            color: #3b4a5a;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .selected-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .selected-remove {
+            margin-left: 8px;
+            color: #999;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .selected-remove:hover {
+            color: #ff5722;
+        }
+
+        .summary-divider {
+            flex: 0 0 auto;
+            margin: 16px 0;
+            height: 1px;
+            background: #e6e6e6;
+        }
+
+        .change-sections {
+            flex: 1 1 0;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 24px;
+        }
+
+        .change-sections.all-empty .change-list {
+            flex: 1 1 auto;
+            height: auto;
+        }
+
+        .change-section {
+            min-width: 0;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .change-section + .change-section {
+            padding-left: 24px;
+            border-left: 1px solid #e6e6e6;
+        }
+
+        .change-section-head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .change-section-count {
+            color: #777;
+            font-size: 12px;
+            font-weight: 400;
+        }
+
+        .change-list {
+            flex: 1 1 auto;
+            display: flex;
+            align-items: flex-start;
+            align-content: flex-start;
+            flex-wrap: wrap;
+            gap: 10px 12px;
+            min-height: 48px;
+            max-height: none;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 10px 12px;
+            border: 1px solid #e6e6e6;
+            background: #fafafa;
+            border-radius: 2px;
+            box-sizing: border-box;
+            scrollbar-gutter: stable;
+        }
+
+        .selected-tags::-webkit-scrollbar,
+        .change-list::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .selected-tags::-webkit-scrollbar-track,
+        .change-list::-webkit-scrollbar-track {
+            background: #f2f2f2;
+        }
+
+        .selected-tags::-webkit-scrollbar-thumb,
+        .change-list::-webkit-scrollbar-thumb {
+            background: #c9cdd4;
+            border-radius: 8px;
+        }
+
+        .selected-tags::-webkit-scrollbar-thumb:hover,
+        .change-list::-webkit-scrollbar-thumb:hover {
+            background: #aeb4bf;
+        }
+
+        .change-row {
+            display: inline-flex;
+            align-items: center;
+            max-width: 220px;
+            min-height: 28px;
+            padding: 0 10px;
+            border: 1px solid #d2dbe8;
+            background: #f8fbff;
+            border-radius: 4px;
+            color: #333;
+            box-sizing: border-box;
+        }
+
+        .change-row.add {
+            color: #009688;
+            border-color: #009688;
+            background: #eefdfb;
+        }
+
+        .change-row.remove {
+            color: #ff8a00;
+            border-color: #ff8a00;
+            background: #fff8e6;
+        }
+
+        .change-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .empty-block {
+            padding: 36px 20px;
+            color: #999;
+            text-align: center;
+        }
+
+        .empty-inline {
+            color: #999;
+            line-height: 30px;
+        }
+
+        .footer-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 12px 18px;
+            border-top: 1px solid #e6e6e6;
+            background: #fff;
+            flex: 0 0 auto;
+            z-index: 2;
+            border-radius: 0 0 2px 2px;
+        }
+
+        @media (max-width: 1100px) {
+            .config-area {
+                grid-template-columns: 360px minmax(0, 1fr);
+            }
+
+            .query-module,
+            .table-module-head {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .change-sections {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .change-section + .change-section {
+                padding-top: 18px;
+                padding-left: 0;
+                border-top: 1px solid #e6e6e6;
+                border-left: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="layui-fluid auto-audit-page">
+    <div class="auto-audit-shell">
+        <div class="module-card query-module layui-form" id="searchModule">
+            <div class="query-left">
+                <div class="query-field">
+                    <label class="query-label" for="deptNameKeyword">科室名称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="deptNameKeyword" class="layui-input" autocomplete="off" placeholder="请输入科室名称">
+                    </div>
+                </div>
+                <div class="query-field">
+                    <label class="query-label" for="deptIdKeyword">科室编号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="deptIdKeyword" class="layui-input" autocomplete="off" placeholder="请输入科室编号">
+                    </div>
+                </div>
+            </div>
+            <div class="query-actions">
+                <button type="button" id="searchBtn" class="layui-btn layui-btn-primary layui-btn-sm">
+                    <i class="layui-icon layui-icon-search"></i>查询
+                </button>
+                <button type="button" id="resetSearchBtn" class="layui-btn layui-btn-primary layui-btn-sm">
+                    <i class="layui-icon layui-icon-refresh"></i>重置
+                </button>
+            </div>
+        </div>
+
+        <div class="module-card switch-module">
+            <div class="switch-left layui-form">
+                <span class="switch-title">自动审核总开关</span>
+                <input type="checkbox" id="autoAuditSwitch" lay-filter="autoAuditSwitch" lay-skin="switch" lay-text="开启|关闭">
+            </div>
+            <div class="head-actions">
+                <span id="saveState" class="save-state">已保存</span>
+            </div>
+        </div>
+
+        <div class="module-card config-card">
+            <div id="configCardBody" class="config-card-body">
+                <div class="table-module-head" id="tableToolbar">
+                    <div class="table-head-left">
+                        <button type="button" id="expandAllBtn" class="layui-btn layui-btn-primary layui-btn-sm">展开树</button>
+                        <button type="button" id="collapseAllBtn" class="layui-btn layui-btn-primary layui-btn-sm">合并树</button>
+                        <button type="button" id="batchOpenBtn" class="layui-btn layui-btn-primary layui-btn-sm">全选科室</button>
+                        <button type="button" id="batchCloseBtn" class="layui-btn layui-btn-primary layui-btn-sm cancel-select-btn">取消全选</button>
+                    </div>
+                </div>
+
+                <div id="configArea" class="config-area">
+                    <div class="tree-panel">
+                        <div class="panel-head" id="treePanelHead">
+                            <div class="panel-title-actions">
+                                <span>科室树</span>
+                            </div>
+                            <span id="treeCount" class="panel-count">--</span>
+                        </div>
+                        <div id="deptTree" class="tree-list"></div>
+                    </div>
+                    <div class="table-panel">
+                        <div class="panel-head">
+                            <span>已开通自动审核科室</span>
+                            <span id="selectedDeptCount" class="selected-count">--</span>
+                        </div>
+                        <div class="summary-wrap">
+                            <div class="summary-top">
+                                <div class="summary-section-title">科室总汇总</div>
+                                <div id="selectedDeptTags" class="selected-tags"></div>
+                            </div>
+                            <div class="summary-divider"></div>
+                            <div id="changeSections" class="change-sections">
+                                <div class="change-section added-section">
+                                    <div class="change-section-head">
+                                        <span>本次新增</span>
+                                        <span id="addedDeptCount" class="change-section-count">0 个</span>
+                                    </div>
+                                    <div id="addedChangeList" class="change-list"></div>
+                                </div>
+                                <div class="change-section removed-section">
+                                    <div class="change-section-head">
+                                        <span>本次移除</span>
+                                        <span id="removedDeptCount" class="change-section-count">0 个</span>
+                                    </div>
+                                    <div id="removedChangeList" class="change-list"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="configDisabledMask" class="config-disabled-mask">
+                    <div class="config-disabled-box">
+                        <div class="config-disabled-title">自动审核总开关已关闭</div>
+                        <div class="config-disabled-desc">科室配置已保留，但暂不生效。开启总开关后可继续调整科室范围；点击保存配置后关闭状态才会生效。</div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-actions">
+                <button type="button" id="saveBtn" class="layui-btn layui-btn-sm">
+                    <i class="layui-icon layui-icon-ok"></i>保存配置
+                </button>
+                <button type="button" id="cancelBtn" class="layui-btn layui-btn-primary layui-btn-sm">
+                    <i class="layui-icon layui-icon-refresh"></i>重置修改
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+    layui.use(['form', 'layer'], function () {
+        var form = layui.form;
+        var layer = layui.layer;
+
+        var unitId = normalizeLocalValue(localStorage.getItem('unit-id'));
+        var cmeStandardKindId = normalizeLocalValue(localStorage.getItem('standardkind-id'));
+        var autoAuditSwitchTip = '关闭后，科室配置保留但不生效';
+        var treeExpandTip = '仅改变左侧科室树的展开状态，不会新增、移除科室。';
+        var saveStateTip = '这里显示当前页面中自动审核总开关和科室配置是否存在未保存修改；如页面长时间未刷新，期间可能有其他人调整配置，保存前建议刷新确认最新状态。';
+        var hoverTipIndex = null;
+
+        var state = {
+            config: {},
+            deptList: [],
+            rootNodes: [],
+            nodeMap: {},
+            selectedMap: {},
+            originalSelectedMap: {},
+            expandedMap: {},
+            masterEnabled: false,
+            originalMasterEnabled: false,
+            deptNameKeyword: '',
+            deptIdKeyword: '',
+            visibleTreeIds: [],
+            saveSubmitting: false
+        };
+
+        initEvents();
+        loadConfig();
+
+        function initEvents() {
+            bindStaticTips();
+
+            form.on('switch(autoAuditSwitch)', function (data) {
+                state.masterEnabled = data.elem.checked;
+                renderOperateState();
+                renderContent();
+                markDirty();
+            });
+
+            $('#deptNameKeyword, #deptIdKeyword').on('keydown', function (event) {
+                if (event.keyCode === 13) {
+                    applySearch();
+                }
+            });
+
+            $('#searchBtn').on('click', function () {
+                applySearch();
+            });
+
+            $('#resetSearchBtn').on('click', function () {
+                resetSearch();
+            });
+
+            $('#saveBtn').on('click', function () {
+                saveConfig();
+            });
+
+            $('#cancelBtn').on('click', function () {
+                layer.confirm('确定重置本次修改并恢复到上次保存状态？确认后页面将刷新，未保存的修改不会保留。', { icon: 3, title: '确认重置' }, function (index) {
+                    layer.close(index);
+                    window.location.reload();
+                });
+            });
+
+            $('#batchOpenBtn').on('click', function () {
+                batchSetVisible(true);
+            });
+
+            $('#batchCloseBtn').on('click', function () {
+                batchSetVisible(false);
+            });
+
+            $('#expandAllBtn').on('click', function () {
+                setAllExpanded(true);
+            });
+
+            $('#collapseAllBtn').on('click', function () {
+                setAllExpanded(false);
+            });
+
+            $('#deptTree').on('click', '.tree-toggle', function () {
+                if ($(this).hasClass('empty')) {
+                    return;
+                }
+                var deptId = String($(this).closest('.dept-tree-row').data('id'));
+                state.expandedMap[deptId] = !state.expandedMap[deptId];
+                renderTree();
+            });
+
+            $('#deptTree').on('click', '.dept-subtree-action', function () {
+                if (!state.masterEnabled || this.disabled) {
+                    return;
+                }
+                var deptId = String($(this).data('id'));
+                toggleSelectedWithChildren(deptId);
+                markDirty();
+                renderContent();
+            });
+
+            $('#deptTree').on('change', '.dept-checkbox', function () {
+                if (!state.masterEnabled) {
+                    return;
+                }
+                var deptId = String($(this).data('id'));
+                setSelectedOnly(deptId, this.checked);
+                markDirty();
+                renderContent();
+            });
+
+            $('#selectedDeptTags').on('click', '.selected-remove', function () {
+                if (!state.masterEnabled) {
+                    return;
+                }
+                var deptId = String($(this).data('id'));
+                setSelectedOnly(deptId, false);
+                markDirty();
+                renderContent();
+            });
+        }
+
+        function loadConfig() {
+            if (!unitId) {
+                layer.msg('未获取到单位信息', { icon: 7, time: 1800 });
+                return;
+            }
+            var loadingIndex = layer.load(2);
+            var query = { unitId: unitId };
+            if (cmeStandardKindId) {
+                query.cmeStandardKindId = cmeStandardKindId;
+            }
+            $.ajax({
+                url: huayi_projectscore_url + 'cmeGroupProjAutoAudit/config',
+                type: 'GET',
+                data: query,
+                success: function (res) {
+                    if (!isSuccess(res)) {
+                        layer.msg(getMsg(res, '获取配置失败'), { icon: 7, time: 1800 });
+                        return;
+                    }
+                    applyConfig(getPayload(res));
+                },
+                complete: function () {
+                    layer.close(loadingIndex);
+                }
+            });
+        }
+
+        function applyConfig(config) {
+            config = config || {};
+            if (config.cmeStandardKindId) {
+                cmeStandardKindId = config.cmeStandardKindId;
+            }
+            state.config = config;
+            state.deptList = $.isArray(config.deptList) ? config.deptList : [];
+            buildTree(state.deptList);
+
+            state.masterEnabled = Number(config.autoAuditEnabled) === 1;
+            state.originalMasterEnabled = state.masterEnabled;
+            state.selectedMap = {};
+            state.originalSelectedMap = {};
+            state.expandedMap = {};
+
+            $.each(state.deptList, function (_, dept) {
+                var deptId = normalizeId(dept.deptId);
+                if (!deptId) {
+                    return;
+                }
+                if (Number(dept.autoAuditEnabled) === 1) {
+                    state.selectedMap[deptId] = true;
+                    state.originalSelectedMap[deptId] = true;
+                }
+                if (!dept.parentId || getChildren(deptId).length > 0) {
+                    state.expandedMap[deptId] = true;
+                }
+            });
+
+            $('#autoAuditSwitch').prop('checked', state.masterEnabled);
+            form.render('checkbox');
+            bindAutoAuditSwitchTip();
+
+            markClean();
+            renderOperateState();
+            renderContent();
+        }
+
+        function bindStaticTips() {
+            bindHoverTip($('#expandAllBtn, #collapseAllBtn'), treeExpandTip);
+            bindHoverTip($('#saveState'), saveStateTip);
+        }
+
+        function bindAutoAuditSwitchTip() {
+            bindHoverTip($('#autoAuditSwitch').next('.layui-form-switch'), autoAuditSwitchTip);
+        }
+
+        function bindHoverTip($target, tipText) {
+            $target
+                .attr('aria-label', tipText)
+                .off('.hoverTip')
+                .on('mouseenter.hoverTip', function () {
+                    hoverTipIndex = layer.tips(tipText, this, {
+                        tips: [2, '#333'],
+                        time: 0
+                    });
+                })
+                .on('mouseleave.hoverTip', function () {
+                    if (hoverTipIndex !== null) {
+                        layer.close(hoverTipIndex);
+                        hoverTipIndex = null;
+                    }
+                });
+        }
+
+        function buildTree(deptList) {
+            state.nodeMap = {};
+            state.rootNodes = [];
+            $.each(deptList, function (_, dept) {
+                var deptId = normalizeId(dept.deptId);
+                if (!deptId) {
+                    return;
+                }
+                dept.deptId = deptId;
+                dept.parentId = normalizeId(dept.parentId);
+                dept.children = [];
+                state.nodeMap[deptId] = dept;
+            });
+            $.each(deptList, function (_, dept) {
+                var parent = state.nodeMap[normalizeId(dept.parentId)];
+                if (parent) {
+                    parent.children.push(dept);
+                } else {
+                    state.rootNodes.push(dept);
+                }
+            });
+            sortNodes(state.rootNodes);
+        }
+
+        function sortNodes(nodes) {
+            nodes.sort(function (a, b) {
+                var orderA = Number(a.listOrder || 0);
+                var orderB = Number(b.listOrder || 0);
+                if (orderA !== orderB) {
+                    return orderA - orderB;
+                }
+                return String(a.deptId).localeCompare(String(b.deptId));
+            });
+            $.each(nodes, function (_, node) {
+                sortNodes(node.children || []);
+            });
+        }
+
+        function renderOperateState() {
+            $('#configCardBody').toggleClass('disabled', !state.masterEnabled);
+            $('#configArea').toggleClass('disabled', !state.masterEnabled);
+            $('#searchModule input, #searchModule button, #tableToolbar button')
+                .prop('disabled', !state.masterEnabled)
+                .toggleClass('layui-disabled', !state.masterEnabled);
+        }
+
+        function renderContent() {
+            renderTree();
+            renderSummaryPanel();
+            renderCount();
+        }
+
+        function applySearch() {
+            state.deptNameKeyword = $.trim($('#deptNameKeyword').val());
+            state.deptIdKeyword = $.trim($('#deptIdKeyword').val());
+            applySearchExpandedState();
+            renderContent();
+        }
+
+        function resetSearch() {
+            $('#deptNameKeyword').val('');
+            $('#deptIdKeyword').val('');
+            state.deptNameKeyword = '';
+            state.deptIdKeyword = '';
+            renderContent();
+        }
+
+        function renderTree() {
+            var html = [];
+            state.visibleTreeIds = [];
+            $.each(state.rootNodes, function (_, node) {
+                renderTreeNode(node, 0, html, false);
+            });
+            if (html.length === 0) {
+                html.push('<div class="empty-block">暂无可配置科室</div>');
+            }
+            $('#deptTree').html(html.join(''));
+            syncCheckboxState();
+        }
+
+        function renderTreeNode(node, level, html, ancestorMatched) {
+            ancestorMatched = ancestorMatched === true;
+            var currentMatched = matchesKeyword(node);
+            if (!ancestorMatched && !currentMatched && !hasMatchedDescendant(node)) {
+                return;
+            }
+            var deptId = normalizeId(node.deptId);
+            var children = getChildren(deptId);
+            var hasChildren = children.length > 0;
+            var expanded = state.expandedMap[deptId] !== false;
+            var paddingLeft = 12 + level * 18;
+            var toggleIcon = hasChildren ? (expanded ? 'layui-icon-down' : 'layui-icon-right') : 'layui-icon-right';
+            var toggleClass = hasChildren ? 'tree-toggle' : 'tree-toggle empty';
+
+            state.visibleTreeIds.push(deptId);
+            html.push('<div class="dept-tree-row" data-id="' + escapeHtml(deptId) + '" style="padding-left:' + paddingLeft + 'px;">');
+            html.push('<i class="layui-icon ' + toggleClass + ' ' + toggleIcon + '"></i>');
+            html.push('<input type="checkbox" class="dept-checkbox" data-id="' + escapeHtml(deptId) + '"' + (state.masterEnabled ? '' : ' disabled') + '>');
+            html.push('<span class="dept-text" title="' + escapeHtml(node.deptName || '') + '">' + escapeHtml(node.deptName || '--'));
+            html.push('<span class="dept-code">' + escapeHtml(deptId) + '</span></span>');
+            if (hasChildren) {
+                html.push('<button type="button" class="dept-subtree-action" data-id="' + escapeHtml(deptId) + '" title="选择或取消当前科室及全部下级科室"' + (state.masterEnabled ? '' : ' disabled') + '>含下级</button>');
+            }
+            var changeTag = renderTreeChangeTag(deptId);
+            if (changeTag) {
+                html.push('<span class="tree-status">' + changeTag + '</span>');
+            }
+            html.push('</div>');
+
+            if (hasChildren && expanded) {
+                $.each(children, function (_, child) {
+                    renderTreeNode(child, level + 1, html, ancestorMatched || currentMatched);
+                });
+            }
+        }
+
+        function applySearchExpandedState() {
+            if (!hasSearchKeyword()) {
+                return;
+            }
+            $.each(state.rootNodes, function (_, node) {
+                expandSearchNode(node, false);
+            });
+        }
+
+        function expandSearchNode(node, ancestorMatched) {
+            ancestorMatched = ancestorMatched === true;
+            var currentMatched = matchesKeyword(node);
+            var visible = ancestorMatched || currentMatched || hasMatchedDescendant(node);
+            if (!visible) {
+                return;
+            }
+            var deptId = normalizeId(node.deptId);
+            var children = getChildren(deptId);
+            if (children.length === 0) {
+                return;
+            }
+            state.expandedMap[deptId] = true;
+            $.each(children, function (_, child) {
+                expandSearchNode(child, ancestorMatched || currentMatched);
+            });
+        }
+
+        function syncCheckboxState() {
+            $('#deptTree .dept-checkbox').each(function () {
+                var deptId = String($(this).data('id'));
+                var checked = state.selectedMap[deptId] === true;
+                this.checked = checked;
+                this.indeterminate = !checked && hasSelectedDescendant(state.nodeMap[deptId]);
+            });
+        }
+
+        function renderSummaryPanel() {
+            var selectedIds = getSelectedIds();
+            var addedIds = getAddedIds();
+            var removedIds = getRemovedIds(selectedIds);
+            $('#selectedDeptCount').text('已选择 ' + selectedIds.length + ' 个');
+            renderSelectedTags(selectedIds);
+            renderChangeList(addedIds, removedIds);
+        }
+
+        function renderSelectedTags(selectedIds) {
+            var html = [];
+            var displayLimit = 80;
+            $.each(selectedIds.slice(0, displayLimit), function (_, deptId) {
+                var dept = state.nodeMap[deptId] || {};
+                html.push('<span class="selected-tag" title="' + escapeHtml(getDeptLabel(deptId)) + '">');
+                html.push('<span class="selected-name">' + escapeHtml(dept.deptName || deptId) + '</span>');
+                html.push('<span class="selected-remove" data-id="' + escapeHtml(deptId) + '">×</span>');
+                html.push('</span>');
+            });
+            if (selectedIds.length > displayLimit) {
+                html.push('<span class="selected-tag"><span class="selected-name">+' + (selectedIds.length - displayLimit) + ' 个</span></span>');
+            }
+            if (html.length === 0) {
+                html.push('<span class="empty-inline">暂无已开通自动审核科室</span>');
+            }
+            $('#selectedDeptTags').html(html.join(''));
+        }
+
+        function renderChangeList(addedIds, removedIds) {
+            $('#changeSections')
+                .toggleClass('all-empty', addedIds.length === 0 && removedIds.length === 0);
+            $('#addedDeptCount').text(addedIds.length + ' 个');
+            $('#removedDeptCount').text(removedIds.length + ' 个');
+            $('#addedChangeList').html(renderChangeItems('add', addedIds, '暂无新增'));
+            $('#removedChangeList').html(renderChangeItems('remove', removedIds, '暂无移除'));
+        }
+
+        function renderChangeItems(type, deptIds, emptyText) {
+            var html = [];
+            $.each(deptIds, function (_, deptId) {
+                html.push(renderChangeRow(type, deptId));
+            });
+            if (html.length === 0) {
+                html.push('<div class="empty-inline">' + emptyText + '</div>');
+            }
+            return html.join('');
+        }
+
+        function renderChangeRow(type, deptId) {
+            var dept = state.nodeMap[deptId] || {};
+            return '<div class="change-row ' + type + '">'
+                + '<span class="change-name" title="' + escapeHtml(getDeptLabel(deptId)) + '">' + escapeHtml(dept.deptName || deptId) + '</span>'
+                + '</div>';
+        }
+
+        function getDeptLabel(deptId) {
+            var dept = state.nodeMap[deptId] || {};
+            return (dept.deptName || deptId) + (deptId ? ' ' + deptId : '');
+        }
+
+        function renderCount() {
+            var total = state.deptList.length;
+            var enabled = getSelectedIds().length;
+            $('#treeCount').text('已选择 ' + enabled + ' / 共 ' + total);
+        }
+
+        function renderTreeChangeTag(deptId) {
+            var changeType = getChangeType(deptId);
+            if (changeType === 'add') {
+                return '<span class="status-tag add">新增</span>';
+            }
+            if (changeType === 'remove') {
+                return '<span class="status-tag remove">移除</span>';
+            }
+            return '';
+        }
+
+        function getChangeType(deptId) {
+            deptId = normalizeId(deptId);
+            var currentChecked = state.selectedMap[deptId] === true;
+            var originalChecked = state.originalSelectedMap[deptId] === true;
+            if (currentChecked && !originalChecked) {
+                return 'add';
+            }
+            if (!currentChecked && originalChecked) {
+                return 'remove';
+            }
+            return '';
+        }
+
+        function matchesKeyword(dept) {
+            if (!state.deptNameKeyword && !state.deptIdKeyword) {
+                return true;
+            }
+            var deptNameKeyword = state.deptNameKeyword.toLowerCase();
+            var deptIdKeyword = state.deptIdKeyword.toLowerCase();
+            var nameMatched = !deptNameKeyword
+                || String(dept.deptName || '').toLowerCase().indexOf(deptNameKeyword) > -1;
+            var idMatched = !deptIdKeyword
+                || String(dept.deptId || '').toLowerCase().indexOf(deptIdKeyword) > -1;
+            return nameMatched && idMatched;
+        }
+
+        function hasMatchedDescendant(node) {
+            var children = getChildren(node.deptId);
+            for (var i = 0; i < children.length; i++) {
+                if (matchesKeyword(children[i]) || hasMatchedDescendant(children[i])) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function hasSearchKeyword() {
+            return !!state.deptNameKeyword || !!state.deptIdKeyword;
+        }
+
+        function hasSelectedDescendant(node) {
+            if (!node) {
+                return false;
+            }
+            var deptId = normalizeId(node.deptId);
+            var children = getChildren(deptId);
+            for (var i = 0; i < children.length; i++) {
+                var childId = normalizeId(children[i].deptId);
+                if (state.selectedMap[childId] === true || hasSelectedDescendant(children[i])) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function setSelectedWithChildren(deptId, checked) {
+            var node = state.nodeMap[normalizeId(deptId)];
+            if (!node) {
+                return;
+            }
+            setSelectedOnly(node.deptId, checked);
+            $.each(getChildren(node.deptId), function (_, child) {
+                setSelectedWithChildren(child.deptId, checked);
+            });
+        }
+
+        function toggleSelectedWithChildren(deptId) {
+            deptId = normalizeId(deptId);
+            if (!deptId) {
+                return;
+            }
+            setSelectedWithChildren(deptId, !isSubtreeFullySelected(deptId));
+        }
+
+        function isSubtreeFullySelected(deptId) {
+            var node = state.nodeMap[normalizeId(deptId)];
+            if (!node || state.selectedMap[normalizeId(node.deptId)] !== true) {
+                return false;
+            }
+            var children = getChildren(node.deptId);
+            for (var i = 0; i < children.length; i++) {
+                if (!isSubtreeFullySelected(children[i].deptId)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function setSelectedOnly(deptId, checked) {
+            deptId = normalizeId(deptId);
+            if (!deptId) {
+                return;
+            }
+            if (checked) {
+                state.selectedMap[deptId] = true;
+            } else {
+                delete state.selectedMap[deptId];
+            }
+        }
+
+        function batchSetVisible(checked) {
+            if (!state.masterEnabled || state.visibleTreeIds.length === 0) {
+                return;
+            }
+            $.each(state.visibleTreeIds, function (_, deptId) {
+                setSelectedWithChildren(deptId, checked);
+            });
+            markDirty();
+            renderContent();
+        }
+
+        function setAllExpanded(expanded) {
+            $.each(state.deptList, function (_, dept) {
+                if (getChildren(dept.deptId).length > 0) {
+                    state.expandedMap[dept.deptId] = expanded;
+                }
+            });
+            renderTree();
+        }
+
+        function saveConfig() {
+            if (state.saveSubmitting) {
+                return;
+            }
+            setSaveSubmitting(true);
+            var selectedIds = getSelectedIds();
+            var removedIds = getRemovedIds(selectedIds);
+            var payload = {
+                unitId: unitId,
+                cmeStandardKindId: cmeStandardKindId || state.config.cmeStandardKindId || '',
+                autoAuditEnabled: state.masterEnabled ? 1 : 0,
+                deptIds: selectedIds,
+                saveUserName: localStorage.getItem('realname') || localStorage.getItem('user-name') || ''
+            };
+
+            if (!state.masterEnabled) {
+                confirmSave('关闭总开关后，已保存的科室配置会保留，但自动审核不会生效，确定保存？', '确认保存', payload);
+                return;
+            }
+
+            if (removedIds.length > 0) {
+                confirmSave('取消自动审核的科室如已提交举办前申请，请手动完成审核。确定保存？', '确认关闭科室', payload);
+                return;
+            }
+
+            if (selectedIds.length === 0) {
+                confirmSave('未选择开通自动审核的科室，保存后不会自动审核任何科室，确定保存？', '确认保存', payload);
+                return;
+            }
+
+            confirmSave('保存配置后将统一生效，确定保存？', '确认保存', payload);
+        }
+
+        function confirmSave(message, title, payload) {
+            layer.confirm(message, {
+                icon: 3,
+                title: title,
+                btn2: function () {
+                    setSaveSubmitting(false);
+                },
+                cancel: function () {
+                    setSaveSubmitting(false);
+                }
+            }, function (index) {
+                layer.close(index);
+                doSave(payload);
+            });
+        }
+
+        function doSave(payload) {
+            var loadingIndex = layer.load(2);
+            $.ajax({
+                url: huayi_projectscore_url + 'cmeGroupProjAutoAudit/config/save',
+                type: 'POST',
+                contentType: 'application/json;charset=UTF-8',
+                data: JSON.stringify(payload),
+                success: function (res) {
+                    if (!isSuccess(res)) {
+                        layer.msg(getMsg(res, '保存失败'), { icon: 7, time: 1800 });
+                        return;
+                    }
+                    layer.msg('保存成功', { icon: 1, time: 1000 });
+                    applyConfig(getPayload(res));
+                },
+                complete: function () {
+                    layer.close(loadingIndex);
+                    setSaveSubmitting(false);
+                }
+            });
+        }
+
+        function setSaveSubmitting(submitting) {
+            state.saveSubmitting = submitting;
+            $('#saveBtn')
+                .prop('disabled', submitting)
+                .toggleClass('layui-btn-disabled layui-disabled', submitting);
+        }
+
+        function getSelectedIds() {
+            var ids = [];
+            $.each(state.selectedMap, function (deptId, checked) {
+                if (checked && state.nodeMap[deptId]) {
+                    ids.push(deptId);
+                }
+            });
+            ids.sort();
+            return ids;
+        }
+
+        function getRemovedIds(selectedIds) {
+            var current = {};
+            $.each(selectedIds, function (_, deptId) {
+                current[deptId] = true;
+            });
+            var removed = [];
+            $.each(state.originalSelectedMap, function (deptId, checked) {
+                if (checked && !current[deptId]) {
+                    removed.push(deptId);
+                }
+            });
+            return removed;
+        }
+
+        function getAddedIds() {
+            var added = [];
+            $.each(state.selectedMap, function (deptId, checked) {
+                if (checked && state.nodeMap[deptId] && !state.originalSelectedMap[deptId]) {
+                    added.push(deptId);
+                }
+            });
+            added.sort();
+            return added;
+        }
+
+        function markDirty() {
+            var changed = state.masterEnabled !== state.originalMasterEnabled
+                || !sameMap(state.selectedMap, state.originalSelectedMap);
+            $('#saveState').toggleClass('changed', changed).text(changed ? '未保存' : '已保存');
+        }
+
+        function markClean() {
+            $('#saveState').removeClass('changed').text('已保存');
+        }
+
+        function sameMap(left, right) {
+            var leftKeys = Object.keys(left).filter(function (key) { return left[key]; }).sort();
+            var rightKeys = Object.keys(right).filter(function (key) { return right[key]; }).sort();
+            if (leftKeys.length !== rightKeys.length) {
+                return false;
+            }
+            for (var i = 0; i < leftKeys.length; i++) {
+                if (leftKeys[i] !== rightKeys[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function cloneMap(map) {
+            var result = {};
+            $.each(map, function (key, value) {
+                if (value) {
+                    result[key] = true;
+                }
+            });
+            return result;
+        }
+
+        function getChildren(deptId) {
+            var node = state.nodeMap[normalizeId(deptId)];
+            return node && $.isArray(node.children) ? node.children : [];
+        }
+
+        function isSuccess(res) {
+            return res && (Number(res.status) === 200 || Number(res.code) === 200 || res.success === true);
+        }
+
+        function getPayload(res) {
+            if (!res) {
+                return {};
+            }
+            if (res.data && typeof res.data === 'object') {
+                return res.data;
+            }
+            if (res.result && typeof res.result === 'object') {
+                return res.result;
+            }
+            return res;
+        }
+
+        function getMsg(res, defaultMsg) {
+            return (res && (res.msg || res.message)) || defaultMsg;
+        }
+
+        function normalizeLocalValue(value) {
+            if (!value || value === '{}' || value === 'null' || value === 'undefined') {
+                return '';
+            }
+            return value;
+        }
+
+        function normalizeId(value) {
+            if (value === null || value === undefined || value === '{}' || value === 'null') {
+                return '';
+            }
+            return String(value);
+        }
+
+        function escapeHtml(value) {
+            return String(value === null || value === undefined ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+    });
+</script>
+
+</html>

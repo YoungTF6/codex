@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>评价字典配置</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <style>
+        #addConfigDict .layui-inline {
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!--        搜索框区域-->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <blockquote class="layui-form layui-form-item layui-elem-quote one-btn" lay-filter="query-form">
+                <div class="layui-inline">
+                    <label class="layui-form-label">评价内容</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="title" id="titleSearch" placeholder="请输入评价内容" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">评价编码</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="dictionaryType" id="dictionaryTypeSearch" placeholder="请输入评价编码" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">评价类型</label>
+                    <div class="layui-input-block">
+                        <select name="evaType" lay-filter = "layui-select-type" id="evaTypeSearch">
+                            <option value="">请选择</option>
+                            <option value="1">单选</option>
+                            <option value="2">多选</option>
+                            <option value="22">多选(最多选两项)</option>
+                            <option value="3">填写</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <a class="layui-btn layui-btn-sm btn-search" id="searchBtn" onclick="loaderTable()" lay-filter="table-search" data-type="reload">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </a>
+                </div>
+            </blockquote>
+        </div>
+
+        <!--表格区域-->
+        <div class="layui-card-body layui_body_box">
+            <table class="layui-table" id="cmeProjEvaDicTable" lay-filter="cmeProjEvaDicTable" style="margin: 0px 0px;"></table>
+        </div>
+
+        <!-- 添加弹窗-->
+        <div id="addConfigDict" style="display:none;text-align: center">
+            <form class="layui-form" style="padding: 10px;" id="configDictForm" lay-filter="add-filter">
+                <input type="hidden" name="id" autocomplete="off" class="layui-input">
+
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>字典编号(唯一数字)</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="dictionaryType" placeholder="请填写字典编号" autocomplete="off" class="layui-input" lay-verify="dictionaryType">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>评价类型</label>
+                        <div class="layui-input-block">
+                            <select name="evaType" lay-filter = "layui-select-type" id="evaTypeForm" lay-verify="evaType">
+                                <option value="">请选择</option>
+                                <option value="1">单选</option>
+                                <option value="2">多选</option>
+                                <option value="22">多选(最多选两项)</option>
+                                <option value="3">填写</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>评价问题</label>
+                        <div class="layui-input-block">
+                            <textarea name="title" placeholder="请填写评价问题" class="layui-textarea" autocomplete="off" lay-verify="title"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">选项1</label>
+                        <div class="layui-input-block">
+                            <textarea name="item1" placeholder="请填写选项1" class="layui-textarea" autocomplete="off" lay-verify="item1"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">选项2</label>
+                        <div class="layui-input-block">
+                            <textarea name="item2" placeholder="请填写选项2" class="layui-textarea" autocomplete="off" lay-verify="item2"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">选项3</label>
+                        <div class="layui-input-block">
+                            <textarea name="item3" placeholder="请填写选项3" class="layui-textarea" autocomplete="off" lay-verify="item3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">选项4</label>
+                        <div class="layui-input-block">
+                            <textarea name="item4" placeholder="请填写选项4" class="layui-textarea" autocomplete="off" lay-verify="item4"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">选项5</label>
+                        <div class="layui-input-block">
+                            <textarea name="item5" placeholder="请填写选项5" class="layui-textarea" autocomplete="off" lay-verify="item5"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">选项6</label>
+                        <div class="layui-input-block">
+                            <textarea name="item6" placeholder="请填写选项6" class="layui-textarea" autocomplete="off" lay-verify="item6"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-sm" lay-submit lay-filter="submit">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+    </div>
+</div>
+
+<!--表格内数据编辑、删除按钮-->
+<script type="text/html" id="rowBar">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row js-bar-btn" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger btn-danger-row js-bar-btn" lay-event="del">删除</a>
+</script>
+<script type="text/html" id="bar">
+    <a class="layui-btn layui-btn-sm layui-btn-radius js-bar-btn" lay-event="add">添加</a>
+</script>
+<script>
+    // 全局配置及引入相关的模块
+    layui.config({
+        base : '/js/layui/ext/'
+    }).extend({
+        tool        :   'tool'
+    });
+
+    layui.use(['table', 'form','upload','tool'], function () {
+        var table = layui.table,form = layui.form,$ = layui.jquery;
+        var layer = layui.layer,tool=layui.tool;
+
+        // 表格配置
+        window.loaderTable = function () {
+            table.render({
+                elem: '#cmeProjEvaDicTable',
+                url: huayi_sjwh_url + 'cmeProjEvaluationDic/list',
+                title: '配置评价字典表',
+                defaultToolbar: [],
+                where: {
+                    title           :   $("#titleSearch").val(),
+                    dictionaryType  :   $("#dictionaryTypeSearch").val(),
+                    evaType         :   $("#evaTypeSearch").val(),
+                },
+                cols: [[
+                    {align: 'center',width: 120,toolbar: '#rowBar', title: '操作', fixed: 'left'},
+                    {field: 'dictionaryType', title: '字典编码',align: 'center',width: 90},
+                    {field: 'evaType', title: '类型',align: 'center',templet:function(d){
+                        if(d.evaType==1) return "单选";
+                        if(d.evaType==2) return "多选";
+                        if(d.evaType==22) return "多选(最多选两项)";
+                        if(d.evaType==3) return "填写";
+                        return "";
+                    }},
+                    {field: 'title', title: '评价题',align: 'center'}, 
+                    {field: 'item1', title: '选项1',align: 'center'},
+                    {field: 'item2', title: '选项2',align: 'center'},
+                    {field: 'item3', title: '选项3',align: 'center'},
+                    {field: 'item4', title: '选项4',align: 'center'},
+                    {field: 'item5', title: '选项5',align: 'center'},
+                    {field: 'item6', title: '选项6',align: 'center'},
+                ]],
+                toolbar: '#bar',
+                id: "cmeProjEvaDict",
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "count": res.data.recordsTotal, //解析数据长度
+                        "data": res.data.records, //解析数据列表
+                        "page": res.data.pageNum, //当前页
+                        "limit": res.data.pageSize, //每页条数
+                    }
+                },
+                request: {
+                    pageName: 'pageNum', //页码的参数名称，默认：page
+                    limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                },
+                done:function(res,curr,count){
+                    curr > 1 && res.data.length === 0 && loaderTable();
+                }
+            });
+        };
+
+        // 监听头部新增按钮
+        table.on('toolbar(cmeProjEvaDicTable)', function (obj) {
+            if(obj.event != "add") return;
+            openFormWindow();
+        });
+
+        // 监听行内按钮
+        table.on('tool(cmeProjEvaDicTable)', function (obj) {
+            obj.event == "edit" && openFormWindow(obj.data);
+            obj.event == "del" && deleteConfigDict(obj.data.id);
+        });
+
+        //新增，编辑时打开弹窗
+        let openFormWindow = function(data=""){
+            const title = (data=="") ? "新增":"修改";
+            if(data=="") $("#addConfigDict input[name='id']").val('');
+            form.val("add-filter",data);
+            layer.open({
+                type: 1,
+                title: title,
+                content: $('#addConfigDict'),
+                area: ['600px', '450px'],
+                cancel: function(index, layero){ $("#configDictForm")[0].reset(); }
+            })
+        }
+
+        let deleteConfigDict = function(id){
+            layer.confirm('确认删除', {icon: 3, title: '提示'}, function () {
+                $.ajax({
+                    type: 'get',
+                    url: huayi_sjwh_url + 'cmeProjEvaluationDic/deleted',
+                    data: { id: id },
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.status === 200) {
+                            layer.msg("删除成功");
+                            loaderTable();
+                        }else{
+                            layer.msg(res.msg);
+                        }
+                    }
+                });
+            })
+        }
+
+        // form表单相关操作
+        // 新增/修改表单提交
+        form.on('submit(submit)', function (data) {
+            var id = $("#configDictForm input[name='id']").val();
+            let subUrl = huayi_sjwh_url + 'cmeProjEvaluationDic/update';
+            if(id=="" || id==null) {
+                subUrl = huayi_sjwh_url + 'cmeProjEvaluationDic/save';
+            }
+            $.ajax({
+                type: 'post',
+                url: subUrl,
+                data:JSON.stringify(data.field),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    if(res.status == 200){
+                        layer.closeAll();
+                        loaderTable();
+                        layer.msg("保存成功");
+                        $("#configDictForm")[0].reset();
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                },
+                error: function () {
+                    layer.msg("发送请求失败");
+                }
+            })
+            return false;
+        });
+
+        //自定义验证规则
+        form.verify({
+            dictionaryType : function(value){
+                if(value.length == 0) return '评价编号不能为空';
+            },
+            evaType : function(value){
+                //评价的题的类型 1:单选 2:多选 3:填写 0:评分
+                if(value.length == 0) return '评价类型不能为空';
+            },
+            title: function(value){
+                if(value.length == 0) return '评价题不能为空';
+                if(value.length > 200) return '评价题最长不超过200个字符';
+            },
+            item1: function(value){
+                let evaType = $("#evaTypeForm").val();
+                if(evaType == 0 || evaType == 3) {
+                    if(value.length > 0) return '选项必须为空';
+                    return;
+                }
+                if(value.length == 0) return '选择题至少配置一个选项';
+                if(value.length > 50) return '选项最长不超过50个字符';
+            },
+            item2: function(value){
+                let evaType = $("#evaTypeForm").val();
+                if(evaType == 0 || evaType == 3) {
+                    if(value.length > 0) return '选项必须为空';
+                    return;
+                }
+                if(value.length == 0) return '选择题至少配置一个选项';
+                if(value.length > 50) return '选项最长不超过50个字符';
+            },
+            item3: function(value){
+                let evaType = $("#evaTypeForm").val();
+                if(evaType == 0 || evaType == 3) {
+                    if(value.length > 0) return '选项必须为空';
+                    return;
+                }
+                if(value.length > 50) return '选项最长不超过50个字符';
+            },
+            item4: function(value){
+                let evaType = $("#evaTypeForm").val();
+                if(evaType == 0 || evaType == 3) {
+                    if(value.length > 0) return '选项必须为空';
+                    return;
+                }
+                if(value.length > 50) return '选项最长不超过50个字符';
+            },
+            item5: function(value){
+                let evaType = $("#evaTypeForm").val();
+                if(evaType == 0 || evaType == 3) {
+                    if(value.length > 0) return '选项必须为空';
+                    return;
+                }
+                if(value.length > 50) return '选项最长不超过50个字符';
+            },
+            item6: function(value){
+                let evaType = $("#evaTypeForm").val();
+                if(evaType == 0 || evaType == 3) {
+                    if(value.length > 0) return '选项必须为空';
+                    return;
+                }
+                if(value.length > 50) return '选项最长不超过50个字符';
+            }
+        });
+
+        //页面初始化，通过查看参数是否都在来进行是否加载页面ed646370-a5f3-4f88-a640-d62fda36c4b8
+        let htmlInit = function(){
+            loaderTable();
+        }
+
+        htmlInit();
+
+    });
+
+</script>
+</body>
+</html>

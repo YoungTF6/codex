@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>考勤详细信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="../../../js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="../../../js/layui-v2.6.8/layui/layui.js"></script>
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <script type="text/javascript" src="../../../js/constantPage/projectConstant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../../js/jquery-3.5.1.min.js"></script>
+    <script src="../../../js/common.js"></script>
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+</head>
+<body>
+<div class="layui-fluid">
+<!--    考勤详细信息弹出框-->
+    <div class="layui-card" id="attendanceTable">
+        <div class="layui-card">
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="attendanceInfo" lay-filter="attendanceInfo_filter" style="margin: 0px 0px;">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var downId=getUrlParam("downId");
+    var teachId=getUrlParam("projTeachId");
+    var comPersonId=getUrlParam("comPersonId");
+    var type = getUrlParam("type");
+    layui.use(['table', 'form','laydate'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var laydate=layui.laydate;
+        var _isGuangdong = localStorage.getItem('standardkind-id') == StandardKind.GUANG_DONG;
+        var _isHeNan = localStorage.getItem('standardkind-id') == StandardKind.HE_NAN;
+
+        // 考勤详细信息表格
+        window.attendanceInfo=function () {
+            table.render({
+                elem: '#attendanceInfo',
+                title: '考勤时间列表',
+                url: huayi_projectscore_url+'cmeProjAttendance/getAllAttendanceInfo',
+                where: {
+                    comPersonId: comPersonId,
+                    projTeachId: teachId,
+                    downId: downId,
+                    type: type
+                },
+                headers: {Authorization: localStorage.getItem("token"), 'KJPT-USER-ID': localStorage.getItem("user-id")},
+                defaultToolbar: [],
+                cols: [[
+                    {field: 'posTime', align: 'center', title: '考勤时间'},
+                    {field: 'appAddress', align: 'center', title: '考勤地址'},
+                    {
+                        field: 'signType',
+                        align: 'center',
+                        title: '签到类型',
+                        hide: !(_isGuangdong || _isHeNan),
+                        templet: function (d) {
+                            if (d.signType == 1) {
+                                return '签到考勤';
+                            } else if (d.signType == 2) {
+                                return '签退考勤';
+                            } else {
+                                return '普通考勤';
+                            }
+                        }
+                    }
+                ]],
+                cellMinWidth: 100,
+                id: "effectiveStaffTable",
+                height: 'full',
+                page: false,
+                parseData: function (res) {
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.msg, //解析提示文本
+                        "data": res.data, //解析数据列表
+                    }
+
+                },
+                request: {
+                    pageName: 'pageNum', //页码的参数名称，默认：page
+                    limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                },
+            })
+        }
+        attendanceInfo();
+    })
+</script>
+</body>
+</html>

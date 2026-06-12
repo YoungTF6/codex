@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>单位表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+<!--
+
+    <link rel="stylesheet" href="../../js/layui-v2.6.4/layui/css/layui.css" media="all">
+
+
+
+    <script src="../../js/layui-v2.6.4/layui/layui.js"/>
+-->
+
+
+
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+
+    <style>
+        xm-select > .xm-body .xm-search > i{
+            left: 10px;
+        }
+    </style>
+
+
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+
+
+        <!--        搜索框区域-->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <blockquote class="layui-form layui-form-item layui-elem-quote one-btn" lay-filter="query-form">
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">单位名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="unitName" id="unitName" placeholder="请输入单位名称" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+
+
+                <div class="layui-inline">
+                    <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="loaderTable()"
+                       lay-filter="table-search"
+                       data-type="reload">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                    </a>
+                </div>
+
+            </blockquote>
+        </div>
+
+
+        <!--        表格区域-->
+        <div class="layui-card-body layui_body_box">
+            <table class="layui-table" id="comUnit" lay-filter="comUnit" style="margin: 0px 0px;">
+            </table>
+        </div>
+
+<!--
+        &lt;!&ndash; 单位配置弹窗 &ndash;&gt;
+        <iframe src="comUnitConfig.html" onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);this.remove()"></iframe>
+-->
+        <!--       添加弹窗&ndash;&gt;-->
+        <iframe src="comUnitAdd.html" onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);this.remove()"></iframe>
+
+    </div>
+</div>
+
+<!--表格内数据编辑、删除按钮-->
+<script type="text/html" id="rowBar">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal" lay-event="edit"><i
+            class="layui-icon layui-icon-edit"></i>编辑</a>
+    <a class="layui-btn layui-btn-xs  layui-btn-normal" lay-event="config"><i
+            class="layui-icon layui-icon-set-sm"></i>开关</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del"><i
+            class="layui-icon layui-icon-delete"></i>删除</a>
+</script>
+
+<script type="text/html" id="bar">
+    <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="add"><i class="layui-icon">&#xe654;</i>新增</a>
+</script>
+<script>
+    // 全局配置及引入相关的模块
+    var format_url=/\\|\/$/gi;
+    // var domain =huayi_permission_url.replace(format_url,"");
+    var sjwhUrl  =huayi_sjwh_url.replace(format_url,"");
+    var personorgUrl = huayi_personorg_url.replace(format_url,"");
+    var unitTop10Url = personorgUrl + "/comunit/search/top10";
+
+    var unitListUrl = personorgUrl + '/comunit/list';
+    var standardKindListUrl = sjwhUrl +"/cmestandardkind/list/condition";
+
+    var unitGrantLevelListUrl = personorgUrl + "/comunit/grant/level/list";
+
+
+    var latestUnitStatus = {'unitUserType':11,'isRoot':0};
+
+    layui.config({
+        base:'../../js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select'
+    }).use(['xmSelect','form','table','layer'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+
+        //单位授分级别
+        var levelSelect = layui.xmSelect.render({
+            el: '#unit-form-select-level',
+            name:"hospitalLevel",
+            radio: true,
+            // filterable: true,
+            tips:"请选择单位级别",
+            searchTips:'请输入单位级别',
+            data(){
+                return [];
+            }
+        });
+
+        // 服务器搜索回显下拉框 套或者上级单位
+        var dySelect = layui.xmSelect.render({
+            el: '#unit-form-select-dy',
+            name:"parentUnit",
+            radio: true,
+            filterable: true,
+            remoteSearch: true,
+            tips:"请选择单位",
+            searchTips:'请输入单位名称',
+            on: function(data){
+
+                if(!data.isAdd){
+                    levelSelect.setValue([]);
+                    levelSelect.update({
+                        data:[]
+                    });
+                }
+
+                if(data.isAdd && data.change.length > 0){
+
+                    levelSelect.setValue([]);
+                    var param = {cmeStandardKindId:'',parentUnit:''};
+
+                    if(data.change[0].type == 'standard'){
+                        param.cmeStandardKindId = data.change[0].value;
+                    }else{
+                        param.parentUnit = data.change[0].value;
+                    }
+                    $.ajax({
+                        url:unitGrantLevelListUrl,
+                        type:'post',
+                        contentType: 'application/json;charset=UTF-8',
+                        data:JSON.stringify(param),
+                        success:function (res) {
+                            console.log(res);
+                            if(res.status == 200){
+
+                                levelSelect.update({
+                                    data(){
+                                        var dataList = [];
+                                        if(res.data!=null && res.data.length > 0){
+                                            for (var i = 0; i < res.data.length; i++) {
+                                                dataList.push({'name': res.data[i].unitLevelName,'value':res.data[i].unitLevelId});
+                                            }
+                                        }
+                                        console.log(dataList);
+                                        return dataList;
+                                    }
+                                });
+                            }
+                        },
+                        error:{}
+                    })
+                }
+            },
+            remoteMethod: function(val, reload, show){
+                if(!val ){
+                    return reload([]);
+                }
+                $.ajax({
+                    url:unitTop10Url+"?searchType=11&unitName="+val,
+                    type:'get',
+                    success:function (res) {
+                        if(res.status == 200){
+                            reload(res.data);
+                        }
+                    },
+                    error:reload([])
+                })
+            }
+        });
+
+        // 切换套选择框或上级选择框
+        window.updateDySelect = function(type){
+
+            if(type == 'unitParent'){
+                dySelect.setValue([]);
+                dySelect.update({
+                    radio: true,
+                    name:"parentUnit",
+                    filterable: true,
+                    remoteSearch: true,
+                    tips:"请选择单位",
+                    searchTips:'请输入单位名称',
+                    remoteMethod: function(val, reload, show){
+                        if(!val ){
+                            return reload([]);
+                        }
+                        $.ajax({
+                            url:unitTop10Url+"?searchType=11&unitName="+val,
+                            type:'get',
+                            success:function (res) {
+                                if(res.status == 200){
+                                    reload(res.data);
+                                }
+                            },
+                            error:reload([])
+                        })
+                    }
+                });
+            }else{
+                $.ajax({
+                    url:standardKindListUrl,
+                    type:'post',
+                    data:{topUnitNull:true},
+                    success:function (res) {
+                        if(res.status == 200){
+                            dySelect.setValue([]);
+                            dySelect.update({
+                                radio: true,
+                                filterable: true,
+                                remoteSearch: false,
+                                name:"cmeStandardKindId",
+                                tips:"请选择套",
+                                searchTips:'请输入套名称',
+                                data(){
+                                    var dataList = [];
+                                    if(res.data!=null && res.data.length > 0){
+                                        for (var i = 0; i < res.data.length; i++) {
+                                            dataList.push({'name': res.data[i].description,'value':res.data[i].cmeStandardKindId,'type':'standard'});
+                                        }
+                                    }
+                                    return dataList;
+                                }
+                            });
+                        }
+                    },
+                    error:function(e){
+
+                    }
+                })
+
+            }
+        }
+
+        // //初始化检索框
+        // $.ajax({
+        //     url:standardKindListUrl,
+        //     type:'get',
+        //     success:function(res){
+        //         var standards = res.data;
+        //         if(standards != null && standards.length > 0){
+        //             var options = '<option value="" > 请选择套标准 </option>';
+        //             for(var i =0; i< standards.length; i++){
+        //                 options += '<option value="' + standards[i].cmeStandardKindId + '">'+standards[i].description+'</option>';
+        //             }
+        //             $('#role-group-menu-standard').append(options);
+        //             layui.form.render('select','role-group-menu-form');
+        //         }else{
+        //             console.log('score kind is null!');
+        //         }
+        //     }
+        // });
+
+        // 表格相关操作
+        // 表格配置
+        window.loaderTable = function () {
+            table.render({
+                elem: '#comUnit',
+                url: unitListUrl,
+                title: '用户表',
+                defaultToolbar: [],
+                where: {
+                    unitName: $('#unitName').val(),
+                    urlSource: ""
+                },
+                cols: [[
+                    {type: 'numbers', title: '序号', width: 100, fixed: 'left'},
+                    {field: 'unitId', title: '单位编号',width: 120, sort: true},
+                    {field: 'unitCode', title: '单位机构号', width: 200, sort: true},
+                    {field: 'unitName', title: '单位名称',width: 200, sort: true},
+                    {field: 'shortName', title: '单位简称',width: 200, sort: true},
+                    {field: 'parentUnitName', title: '上级单位',width: 150, sort: true},
+                    {field: 'description', title: '套名称',width: 150, sort: true},
+                    {field: 'unitType', title: '单位类型', width: 200,sort: true, templet:
+                        function (d) {
+                            if (d.unitType == 0){
+                                return '中医和综合单位';
+                            }else if (d.unitType == 1){
+                                return '综合单位';
+                            }else if(d.unitType == 2){
+                                return '中医单位';
+                            }else{
+                                return '未定义';
+                            }
+                        }
+                    },
+
+                    {field: 'unitLevelName', title: '单位级别', sort: true},
+                    {field: 'unitAreaName', title: '区域级别', sort: true},
+                    {field: 'countyName', title: '区县', sort: true},
+                    {field: 'address', title: '详细地址', sort: true},
+                    {field: 'contact', title: '联系人姓名',width: 100, sort: true},
+                    {field: 'telephone', title: '电话',width: 150, sort: true},
+                    {field: 'postcode', title: '邮编',width: 100, sort: true},
+                    {field: 'addTime', title: '添加时间', width: 200,sort: true},
+                    {field: 'updateTime', title: '修改时间',width: 200, sort: true},
+                    {align: 'center', width: 250, toolbar: '#rowBar', title: '操作', fixed: 'right'}
+                ]],
+                toolbar: '#bar',
+                cellMinWidth: 100,
+                id: "comUnit",
+                height: 'full-155',
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "count": res.data.recordsTotal, //解析数据长度
+                        "data": res.data.records, //解析数据列表
+                        "page": res.data.pageNum, //当前页
+                        "limit": res.data.pageSize, //每页条数
+                    }
+                },
+                request: {
+                    pageName: 'pageNum', //页码的参数名称，默认：page
+                    limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                }
+            });
+        };
+
+        // 初始化表格
+        loaderTable();
+        // 监听头部新增按钮
+        table.on('toolbar(comUnit)', function (obj) {
+            var datas = obj.data;
+            document.getElementById("form-ComUnit").reset();
+            if (obj.event === 'add') {
+                layer.open({
+                    type: 1,
+                    title: '新增',
+                    content: $('#add-comUnit'),
+                    skin: '',
+                    area: ['600px', '650px'],
+                })
+            }
+        });
+
+        // 监听行内按钮
+        table.on('tool(comUnit)', function (obj) {
+            var datas = obj.data;
+            if (obj.event === 'edit') {
+                window.location.href = './comUnitDetail.html?unitId=' + obj.data.unitId ;
+            }else if(obj.event === 'config'){
+                window.location.href = './comUnitConfig.html?unitId=' + obj.data.unitId ;
+            }else if (obj.event === 'del') {
+                layer.confirm('确认删除', {icon: 3, title: '提示'}, function () {
+                    $.ajax({
+                        type: 'get',
+                        url: huayi_personorg_url + 'comunit/deleted',
+                        data: {
+                            unitMainId: datas.unitMainId
+                        },
+                        contentType: 'application/json;charset=UTF-8',
+                        dataType: 'json',
+                        success: function (res) {
+                            debugger
+                            if (res.status === 200) {
+                                layer.msg("删除成功");
+                                table.reload('comUnit');
+                            } else {
+                                layer.msg(res.msg);
+                            }
+                        }
+                    });
+                })
+            }
+        });
+
+        // form表单相关操作
+        //监听单选框相关，添加单位的类别 是否为顶级单位
+        //
+        form.on('select(unitUserTypeSelect)', function(data){
+            debugger
+            console.log(data.elem.name); //得到radio原始DOM对象
+            console.log(data.value); //被点击的radio的value值
+            latestUnitStatus[data.elem.name] = data.value;
+
+            /**
+             * 如果是单位版 则顶级选项不可选 必选上级单位
+             * 如果是政府版 选择顶级选项 则必选上级单位 套只读
+             * 如果是政府版 未选择上级选项 则必选套
+             */
+            if(latestUnitStatus.unitUserType == 2){//单位类型
+
+                //顶级按钮逻辑
+                $(".unit-add-root.unit-add-root-1").removeAttr("checked");
+                $(".unit-add-root.unit-add-root-0").prop("checked",true);
+                $(".unit-add-root").attr("disabled","disabled");
+                form.render();
+
+                //父级单位选择框 查询行政类别的单位 和 套
+                $('.unit-form-select-dy.unit-form-select-dy-label').html("上级单位");
+                // window.renderParentSelect();
+                window.updateDySelect("unitParent");
+
+
+            }else{//行政类型
+
+                //顶级按钮逻辑
+                $(".unit-add-root").removeAttr("disabled");
+                form.render();
+
+                //父级单位选择框 清空父级 置为disabled
+                if(latestUnitStatus.isRoot == 1){
+                    //当添加的单位为行政根节点时
+                    $('.unit-form-select-dy.unit-form-select-dy-label').html("选择套标准");
+                    window.updateDySelect("tao");
+
+                }else{
+                    //当添加的单位为行政普通节点
+                    $('.unit-form-select-dy.unit-form-select-dy-label').html("上级单位");
+                    window.updateDySelect("unitParent");
+                }
+            }
+        });
+
+
+        // 新增/修改表单提交
+        form.on('submit(submit)', function (data) {
+            // 用于判断是新增还是修改
+            var datas = JSON.stringify(data.field);
+            var URL = huayi_personorg_url + 'comunit/save';
+
+
+
+            $.ajax({
+                type: 'post',
+                url: URL,
+                data: datas,
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    if (res.status == 200) {
+                        layui.layer.msg('操作成功！', {
+                            time: 1000, //1s后自动关闭
+                            end: function (o) {
+                                layui.layer.closeAll();
+                                $('#searchBtn').click();
+                            }
+                        });
+                    } else {
+                        layui.layer.msg(res.msg || '系统繁忙，请稍后重试', {
+                            time: 1000, //1s后自动关闭
+                            end: function (o) {
+                                // layui.layer.closeAll();
+                            }
+                        });
+                    }
+                },
+                error: function () {
+                    layer.msg("添加失败，请稍后重试");
+                }
+            })
+            return false;
+        })
+
+        // 初始化函数
+        layer.ready(function () {
+
+            // layer.msg("提示")
+        })
+    });
+
+</script>
+</body>
+</html>
+

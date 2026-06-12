@@ -1,0 +1,61 @@
+@charset "utf-8";
+/* CSS Document */
+*{ margin:0; padding:0;}
+
+h2{ margin:0;}
+ol{ padding:0; margin:0;}
+.tab1{ width:400px; margin:80px auto 0; font-size:12px; color:#131313;}
+.tab1 h2{ width:100%; overflow:hidden; font-size:12px; font-weight:normal; }
+.tab1 h2 span,
+.tab1 h2 a{ float:left; width:120px; margin:0 40px;  font-size:16px;line-height:30px; color:#fff; text-align:center; cursor:pointer; text-decoration:none;}
+.tab1 h2 .current{  font-weight:bold; border-bottom:2px solid #fff;}
+.tab1 ol{ padding:25px;}
+
+#box{position: relative; }
+#hdiv{position:absolute;left:100px;top:-100px;width:173px;height:338px;
+}
+
+.all{ width:1002px; background: url(../images/bg_li.png) repeat-x; background-color:#fcfcfe; margin:0 auto;}
+.logo{ padding-top:30px;}
+.main_lef{ width:320px; float:left; margin-top:70px; margin-left:50px;}
+.main_lef h3{ font-size:15px; font-family:'宋体';  text-align:center; color:#323232;}
+.mid{ margin-top:40px; height:150px;}
+.l_pic{ float:left; margin-left:20px;}
+.mid ul{ float:left; margin-left:30px; line-height:38px;font-size:14px; font-family:'宋体'; color:#060606;}
+.las{ margin-top:40px; }
+.las h4{font-size:14px; font-family:'宋体'; font-weight:normal;}
+.las h5{ float:left;font-size:14px; font-family:'宋体'; font-weight:normal;line-height:56px;}
+.las p {  font-size:12px;line-height:28px; font-family:'宋体'; float:right; background:url(../images/arrow_2.png) no-repeat; background-position:left center; padding-left:26px;}
+.las span{ padding:0 5px;}
+.las p span img{ vertical-align: absmiddle;}
+
+.main_rig{ float:left; width:419px; margin-top:50px; background:url(../images/r-bg.png) no-repeat; height:351px; margin-left:80px;}
+.qh_ewm{width:98px; margin:0 auto; margin:10px auto 5px;} 
+.qh_p1, .qh_p2{ text-align:center;font-size:14px; font-family:'宋体'; font-weight:normal;line-height:30px; color:#fff;}
+.qh_p1 span{ font-weight:bolder;font-size:15px; margin:0 8px;}
+.qh_p1 a{ color:#fff;}
+.qh_p2 span{ font-size:16px; margin:0 5px; }
+.lef_u{ display:block; width:50px; float:left;line-height:40px; height:40px;}
+.fir, .sec, .thi{ margin-left:25px;}
+.thi span{ display:block; float:left; margin-left:8px; width:102px; height:30px; padding-top:6px;}
+.sec a, .thi a{ line-height:40px; margin-left:10px;}
+
+.copyright{ background:url(../images/line_10.png) repeat-x; margin: 0 auto;
+  width: 1002px; height: 49px; line-height: 20px; text-align: center; padding-top: 20px; font-size:12px; }
+.copyright span {
+  margin: 0 16px;}
+center{  display: block;
+  text-align: -webkit-center; padding-top:50px;}
+.login{ background-image:url(../images/login_11.png); width:116px; height:31px; border:0; margin-left:90px; margin-top:20px; outline:none; cursor:pointer;  }
+.login:hover{ background-image:url(../images/click_1.png);}
+.refresh{ background-image:url(../images/login_13.png); width:116px; height:31px; border:0; margin-left:10px; margin-top:20px;outline:none; cursor:pointer;   }
+.refresh:hover{ background-image:url(../images/click_2.png);}
+.user, .secret{ background-color:none;background-image:url(../images/login-bg.png); width:175px; height:29px; border:none; margin-left:16px; padding-left:5px; }
+.yzm{ background-image:url(../images/yzm.png); width:64px; height:29px; border:0; margin-left:16px; padding-left:5px; float:left; margin-top:5px;   }
+
+
+.shuaxin{ display:block; text-align:center;font-size:12px; line-height:30px; font-family:'宋体'; color:#fff; width:196px; height:30px; background-color:#2378a8; border-radius:20px; margin:0 auto; cursor:pointer;}
+
+
+
+

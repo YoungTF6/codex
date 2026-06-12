@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="../../../js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <!--    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">-->
+    <script src="../../../js/layui-v2.6.8/layui/layui.js"></script>
+    <!--    <link rel="stylesheet" href="https://unpkg.com/eletree@2.2.21/dist/css/icon.css">-->
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../../js/jquery-3.5.1.min.js"></script>
+    <script src="../../../js/common.js"></script>
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+    <style type="text/css">
+        div.aaa {
+            width: 70%;
+            height: 100%;
+            padding: 5px 30px;
+            margin-top: 50px;
+            margin-left: 150px;
+            border: 2px solid #CCCCCC;
+        }
+
+        span.title {
+            display: block;
+            width: 100px;
+            height: 30px;
+            position: relative;
+            top: -15px;
+            text-align: center;
+            background: white;
+        }
+
+        .myProperty {
+            text-align: right;
+            width: 20%;
+            color: #0a6aa1;
+        }
+
+        .myValue {
+            text-align: -webkit-left;
+
+        }
+    </style>
+</head>
+
+<body>
+    <!--项目信息-->
+    <div class="aaa" style="height: 100px">
+        <span class="title" style="color: #0a6aa1">项目信息</span>
+        <div>
+            <table width="100%" style="text-align: center">
+                <tr>
+                    <td class="myProperty">项目名称：</td>
+                    <td class="myValue" id="projectName"></td>
+                    <td class="myProperty">项目编号：</td>
+                    <td class="myValue" id="projectNo"></td>
+                </tr>
+                <tr>
+                    <td class="myProperty">开始日期：</td>
+                    <td class="myValue" id="startDate"></td>
+                    <td class="myProperty">截止日期：</td>
+                    <td class="myValue" id="endDate"></td>
+                </tr>
+                <tr>
+                    <td class="myProperty">学分：</td>
+                    <td class="myValue" id="score"></td>
+                    <td class="myProperty">学时：</td>
+                    <td class="myValue" id="period"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!--筛选授分人员-->
+    <div class="aaa">
+        <span class="title" style="color: #0a6aa1">筛选授分人员</span>
+        <div class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">证件号：</label>
+                <div class="layui-input-block">
+                    <input type="text" name="certId" placeholder="请输入证件号" autocomplete="off" class="layui-input" onfocus="searchInputFocus(this);">
+                </div>
+            </div>
+            <div class="layui-form-item"  id="personNameDiv">
+                <label class="layui-form-label">人员姓名：</label>
+                <div class="layui-input-block">
+                    <input type="text" name="personName" placeholder="请输入人员姓名" autocomplete="off" class="layui-input" onfocus="searchInputFocus(this);">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">人员编号：</label>
+                <div class="layui-input-block">
+                    <input type="text" name="personNo" placeholder="请输入人员编号" autocomplete="off" class="layui-input" onfocus="searchInputFocus(this);">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="search">查询</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 授分按钮及表单-->
+    <div class="layui-form" style="margin-top:50px;text-align: center;width:70%;margin-left:150px;">
+        <div class="layui-inline">
+            <label class="layui-form-label">学分</label>
+            <div class="layui-input-inline">
+                <input type="text" name="score" id="score_id" lay-verify="required|number|givingScore" placeholder="请输入学分" autocomplete="off"
+                    class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">授分日期</label>
+            <div class="layui-input-inline">
+                <input type="text" name="studyDate" id="studyDate_id" lay-verify="required|date" placeholder="请选择授分日期" autocomplete="off"
+                    class="layui-input" readonly="readonly" style="cursor:pointer;">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <div class="layui-inline">
+                <button class="layui-btn" lay-submit lay-filter="formDemo" id="btnSubmit">授分</button>
+            </div>
+        </div>
+    </div>
+
+    <!--选择授分人员-->
+    <div style="margin-top:50px;width:70%;margin-left:150px;height: 500px">
+        <div style="width: 28%;float: left;border: 1px solid #eee; height: 360px" id="keshi">
+            <div style="border-bottom: 1px solid #eee;text-align: center;height: 38px;color: #666;padding: 0 10px;overflow: auto">选择科室</div>
+            <div id="deptTreeList" style="height: 320px;width: 100%;overflow: auto"></div>
+        </div>
+        <div id="chuansuokuang" style="width: 70%;float: right"></div>
+    </div>
+</body>
+
+<script>
+   
+    var downId = getUrlParam("downId");
+    var projectType = getUrlParam("projectType");
+    var startDate = getUrlParam("startDate").substring(0, 10)
+    var endDate = getUrlParam("endDate").substring(0, 10)
+    var projectId = getUrlParam("projectId")
+    var period = 0, score = 0;
+    var el = null;
+    var personData = [];
+    var personValue = [];
+    layui.config({
+        base: '../../../js/layui/ext/'
+    }).extend({
+        eleTree: 'eleTree'
+    }).use(['table', 'form', 'laydate', 'transfer', 'eleTree'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var laydate = layui.laydate;
+        var transfer = layui.transfer;
+        var eleTree = layui.eleTree;
+        var _standardId = localStorage.getItem("standardkind-id");
+        const HUBEI = "73ba18db-33fd-4746-ab41-9beb009f69a1";
+        const ZHEJIANG = "190c480d-d43c-450b-8472-a6fd00a6729d";
+        const GANSU = "7068a5c0-2cd3-471a-90b9-9bf100aec95a";
+
+        $(function(){
+             if(_standardId == ZHEJIANG) {
+                $("#personNameDiv").hide();
+                $("#score_id").prop("disabled","disabled").addClass("layui-disabled");
+             }
+        });
+
+        //渲染
+        transfer.render({
+            elem: '#chuansuokuang',  //绑定元素
+            title: ['候选人员', '已选人员'],
+            width: '40%',
+            data: personData,
+            value: personValue,
+            id: 'demo1', //定义索引
+            showSearch: true,
+            parseData: function (res) {
+                return {
+                    "value": res.comPersonId // 数据值
+                    , "title": res.personName // 数据标题
+                }
+            }
+        });
+
+        function getDeptTreeConfig() {
+            return {
+                el: '#deptTreeList',
+                data: [],
+                highlightCurrent: true,
+                showRadio: false,
+                response: {
+                    statusName: 'status',
+                    statusCode: 200,
+                    dataName: 'data'
+                },
+                request: {          // 对于后台数据重新定义名字
+                    name: "deptName",
+                    key: "deptId",
+                    children: "children",
+                    pid: "parentId",
+                },
+            };
+        }
+
+        if ((_standardId || "").toLowerCase() === GANSU) {
+            el = eleTree(getDeptTreeConfig());
+            $.ajax({
+                type: 'get',
+                url: huayi_personorg_url + 'comdept/getDeptListByUnitId',
+                data: { unitId: localStorage.getItem('unit-id') },
+                success: function (res) {
+                    if (res.status === 200) {
+                        el.append([{
+                            deptId: "all",
+                            deptName: "全部",
+                            parentId: "",
+                            children: res.data || []
+                        }]);
+                        el.expandAll();
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                },
+                error: function () {
+                    layer.msg("请求失败");
+                }
+            });
+        } else {
+            el = eleTree($.extend(getDeptTreeConfig(), {
+                url: huayi_personorg_url + 'comdept/getDeptListByUnitId',
+                where: { unitId: localStorage.getItem('unit-id') },
+                headers: {
+                    Authorization: localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                }
+            }));
+        }
+
+        window.searchInputFocus = function (obj) {
+            let siblingItems = $(obj).parent().parent().siblings();
+            siblingItems.find("input").val("");
+        }
+
+        el.on("click", function (data) {
+            var deptId = data.data.deptId;
+            searchForData(deptId, null, null, null);
+        })
+        // 发送请求到后台，请求人员列表。
+        window.searchForData = function (deptId, personName, personNo, certId) {
+            personValue = []
+            // 获得右侧数据
+            var searchData = {};
+            var personDatas = transfer.getData('demo1');
+            if (personDatas.length > 0) {
+                for (var j = 0; j < personDatas.length; j++) {
+                    personValue.push(personDatas[j].value);
+                }
+            }
+
+            //保留右侧的数据。传到后台，后台再传回。并且reload的时候放置右侧
+            searchData.personIds = personValue;
+            // 获取其他搜索条件
+            searchData.unitId = localStorage.getItem("unit-id");
+            searchData.deptId = deptId;
+            searchData.personName = personName;
+            searchData.personNo = personNo;
+            searchData.certId = certId;
+            searchData.cmeStandardKindId = localStorage.getItem("standardkind-id");
+            searchData.projectId = projectId;
+            searchData.projectType = projectType;
+            //
+            $.ajax({
+                type: 'post',
+                url: huayi_personorg_url + 'comperson/getPersonListForGiving',
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                data: JSON.stringify(searchData),
+                success: function (res) {
+                    if (res.status === 200) {
+                        personData = res.data;
+                        //找到无法授分的人员；无法授分的人员包括：1人员信息有误的人员；2已授分的人员
+                        personScoredData = [];
+                        personNotScoredData = [];
+                        personNotFoundData = [];
+                        filterPersonData(searchData, personData, personNotFoundData, personNotScoredData, personScoredData);
+
+                        //如果是查询而不是点击左侧科室树
+                        if (searchData.deptId == null) {
+                            console.log("personScoredData");
+                            console.log(personScoredData);
+                            //提示
+                            let alterStr = "";
+                            if (personScoredData.length > 0) {
+                                alterStr = alterStr + "以下人员因已授分无法再次授分: " + personScoredData.toString() + "<br/>";
+                            }
+                            if (personNotFoundData.length > 0) {
+                                alterStr = alterStr + "以下人员信息有误: " + personNotFoundData.toString();
+                            }
+                            alterStr != "" && layer.alert(alterStr);
+                        }
+                        personData = personNotScoredData;
+
+                        transfer.reload('demo1', {
+                            data: personData,
+                            value: personValue
+                        });
+                    } else {
+                        if(res.status == 30001){
+                            layer.msg('请不要录入特殊字符');
+                        }else{
+                            layer.msg(res.msg);
+                        }
+                    }
+                },
+                error: function () {
+                    layer.msg("请求失败")
+                }
+            })
+            transfer.reload('demo1', {
+                data: personData,
+                value: personValue
+            });
+        }
+
+
+        function filterPersonData(searchData, personData, personNotFoundData, personNotScoredData, personScoredData) {
+
+            personData.forEach(item => {
+                if (item.hasScore == false) {
+                    personNotScoredData.push(item);
+                }
+            });
+
+            //如果不是科室查询,找到已授分和找不到人员信息的
+            if (searchData.deptId == null) {
+                if (searchData.certId != null && searchData.certId != "") {
+                    let certIds = searchData.certId.replace('，', ',');
+                    certIds = certIds.split(',');
+                    certIds.forEach(certId => {
+                        if (columnExistsValue(personData, "certId", certId) == false) {
+                            personNotFoundData.push(certId);
+                        }
+                    });
+                    personData.forEach(item => {
+                        if (item.hasScore == true) {
+                            personScoredData.push(item.certId);
+                        }
+                    });
+
+                }
+                if (searchData.personNo != null && searchData.personNo != "") {
+                    let personNos = searchData.personNo.replace('，', ',');
+                    personNos = personNos.split(',');
+                    personNos.forEach(personNo => {
+                        if (columnExistsValue(personData, "personNo", personNo) == false) {
+                            personNotFoundData.push(personNo);
+                        }
+                    });
+                    personData.forEach(item => {
+                        if (item.hasScore == true) {
+                            personScoredData.push(item.personNo);
+                        }
+                    });
+                }
+                if (searchData.personName != null && searchData.personName != "") {
+                    if (personData == null) {
+                        personNotFoundData.push(searchData.personName);
+                    }
+                }
+            }
+
+        }
+
+        function columnExistsValue(checkArr, column, value) {
+            let exists = false;
+            checkArr.forEach(item => {
+                if (item[column] == value) {
+                    exists = true;
+                    return false;
+                }
+            });
+            return exists;
+        }
+
+        // 查询按钮
+        form.on('submit(search)', function (data) {
+            if ((data.field.personName == null || data.field.personName == "" || data.field.personName == undefined)
+                && (data.field.personNo == null || data.field.personNo == "" || data.field.personNo == undefined)
+                && (data.field.certId == null || data.field.certId == "" || data.field.certId == undefined)) {
+                layer.msg("证件号、人员姓名、人员编号不能同时为空");
+                return false;
+            }
+            searchForData(null, data.field.personName, data.field.personNo, data.field.certId)
+            return false;
+        });
+
+        // $("#score_id").blur(function(){
+        //      let score = $("#score").text();
+        //      if(parseFloat($(this).val()) > parseFloat(score)){
+        //         $(this).val(score);
+        //      }
+        // });
+
+
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#studyDate_id', //指定元素
+            min: startDate,
+            max: endDate,
+            btns: ['clear', 'confirm']
+        });
+
+        layer.ready(function () {
+            $.ajax({
+                type: 'get',
+                url: huayi_projectscore_url + 'giving/getProjectInfo',
+                data: { downId: downId, projectType: projectType },
+                success: function (res) {
+                    if (res.status === 200) {
+                        console.log(res.data);
+                        document.getElementById('projectName').innerHTML = res.data.projectName;
+                        document.getElementById('projectNo').innerHTML = res.data.projectNo == null ? '' : res.data.projectNo;
+                        document.getElementById('startDate').innerHTML = res.data.startDate.substring(0, 10);
+                        document.getElementById('endDate').innerHTML = res.data.endDate.substring(0, 10);
+                        document.getElementById('score').innerHTML = res.data.score;
+                        document.getElementById('period').innerHTML = res.data.period;
+                        period = res.data.period;
+                        score = res.data.score;
+                        $('#score_id').val(res.data.score);
+                        //湖北的医院院内活动和科室院内活动，无法修改学分
+                        if (HUBEI === _standardId &&
+                            (res.data.scoreLevel === "f7db2c56-f498-11ed-8e50-005056a64c01" ||
+                                res.data.scoreLevel === "074bf5ee-f499-11ed-8e50-005056a64c01")) {
+                            $('#score_id').prop("disabled", "disabled").addClass("layui-disabled");
+                        }
+
+                    }
+
+                },
+                error: function () {
+                    layer.msg('获取项目信息失败');
+                }
+            })
+        })
+
+
+        // 授分按钮
+        form.on('submit(formDemo)', function f(data) {
+            // layer.msg(JSON.stringify(data.field))
+            //获得穿梭框右侧数据
+            $("#btnSubmit").addClass("layui-disabled").prop("disabled", "disabled");
+            var personIdsDTO = [];
+            var getData = transfer.getData('demo1');
+            if (getData.length > 0) {
+                for (var l = 0; l < getData.length; l++) {
+                    personIdsDTO.push(getData[l].value);
+                }
+            } else {
+                layer.msg('授分对象为空');
+                return;
+            }
+            var dataDTO = {
+                score: data.field.score,
+                studyDate: data.field.studyDate,
+                downId: downId,
+                period: period,
+                comPersonIds: personIdsDTO,
+                projectType: projectType,
+                projectId: projectId,
+                unitId: localStorage.getItem("unit-id"),
+                userType: localStorage.getItem('user-type'),
+                addUser: localStorage.getItem('user-name')
+            }
+            $.ajax({
+                type: 'post',
+                data: JSON.stringify(dataDTO),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                url: huayi_projectscore_url + 'giving/givingPoints',
+                success: function (res) {
+                    if (res.success == true) {
+                        layer.msg("授分成功");
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                },
+                error: function () {
+                    layer.msg("请求失败")
+                },
+                complete: function () {
+                    $("#btnSubmit").removeClass("layui-disabled").removeAttr("disabled");
+                }
+            })
+        })
+
+        form.verify({
+            givingScore: function (value, item) {
+                debugger
+                // 修改学分时不能大于申报学分
+                var msg = "";
+                if (value <= 0) {
+                    return msg = '授予学分需大于0';
+                }
+                if (value > score) {
+                    msg = ("授予学分不能大于此项目学分");
+                }
+                return msg;
+            }
+        });
+    })
+</script>
+
+</html>

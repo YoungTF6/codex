@@ -1,0 +1,73 @@
+body {font-size-adjust: none; font-stretch: normal;}
+body { margin: 0px; padding: 0px; font-family:"微软雅黑", sans-serif; }
+div { margin: 0px; padding: 0px; }
+dl { margin: 0px; padding: 0px; }
+dt { margin: 0px; padding: 0px; }
+dd { margin: 0px; padding: 0px; }
+ul { margin: 0px; padding: 0px; }
+ol { margin: 0px; padding: 0px; }
+li { margin: 0px; padding: 0px; }
+h1 { margin: 0px; padding: 0px; }
+h2 { margin: 0px; padding: 0px; }
+h3 { margin: 0px; padding: 0px; }
+h4 { margin: 0px; padding: 0px; }
+h5 { margin: 0px; padding: 0px; }
+h6 { margin: 0px; padding: 0px; }
+pre { margin: 0px; padding: 0px; }
+code { margin: 0px; padding: 0px; }
+form { margin: 0px; padding: 0px; }
+fieldset { margin: 0px; padding: 0px; }
+legend { margin: 0px; padding: 0px; }
+input { margin: 0px; padding: 0px; }
+textarea { margin: 0px; padding: 0px; }
+p { margin: 0px; padding: 0px; }
+blockquote { margin: 0px; padding: 0px; }
+th { margin: 0px; padding: 0px; }
+td { margin: 0px; padding: 0px; }
+hr { margin: 0px; padding: 0px; }
+button { margin: 0px; padding: 0px; }
+article { margin: 0px; padding: 0px; }
+aside { margin: 0px; padding: 0px; }
+details { margin: 0px; padding: 0px; }
+figcaption { margin: 0px; padding: 0px; }
+figure { margin: 0px; padding: 0px; }
+footer { margin: 0px; padding: 0px; }
+header { margin: 0px; padding: 0px; }
+hgroup { margin: 0px; padding: 0px; }
+menu { margin: 0px; padding: 0px; }
+nav { margin: 0px; padding: 0px; }
+section { margin: 0px; padding: 0px; }
+img { border: 0px currentColor; max-width: 100%; }/*width: auto; height: auto; -ms-interpolation-mode: bicubic;*/
+address { font-style: normal; font-weight: normal; }
+caption { font-style: normal; font-weight: normal; }
+cite { font-style: normal; font-weight: normal; }
+code { font-style: normal; font-weight: normal; }
+dfn { font-style: normal; font-weight: normal; }
+em { font-style: normal; font-weight: normal; }
+strong { font-style: normal; font-weight: normal; }
+th { font-style: normal; font-weight: normal; }
+var { font-style: normal; font-weight: normal; }
+table { border-collapse: collapse; border-spacing: 0; }
+input { font-size: 100%; }
+select { font-size: 100%; }
+textarea { font-size: 100%; }
+select { font-size: 100%; }
+ul { list-style: none; }
+ol { list-style: none; }
+li { list-style: none; }
+a { -webkit-tap-highlight-color: rgba(255, 0, 0, 0); -moz-tap-highlight-color: rgba(255, 0, 0, 0); tap-highlight-color: rgba(255, 0, 0, 0); }
+button { -webkit-tap-highlight-color: rgba(255, 0, 0, 0); -moz-tap-highlight-color: rgba(255, 0, 0, 0); tap-highlight-color: rgba(255, 0, 0, 0); }
+input { -webkit-tap-highlight-color: rgba(255, 0, 0, 0); -moz-tap-highlight-color: rgba(255, 0, 0, 0); tap-highlight-color: rgba(255, 0, 0, 0); }
+textarea { -webkit-tap-highlight-color: rgba(255, 0, 0, 0); -moz-tap-highlight-color: rgba(255, 0, 0, 0); tap-highlight-color: rgba(255, 0, 0, 0); }
+select { -webkit-tap-highlight-color: rgba(255, 0, 0, 0); -moz-tap-highlight-color: rgba(255, 0, 0, 0); tap-highlight-color: rgba(255, 0, 0, 0); }
+a { text-decoration: none; }
+a:hover { text-decoration: none; }
+.clear { line-height: 0; clear: both; font-size: 0px; }
+
+
+.marg20 { margin-top: 20px; }
+.marg10 { margin-top: 10px; }
+.padd10 { padding: 10px; }
+
+
+.red{color:#F00;}

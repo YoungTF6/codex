@@ -1,0 +1,262 @@
+/* body,html{
+	width:100%;
+	font-family: "宋体" !important;
+} */
+body{
+	position:relative;
+}
+img{
+	border:none;
+	}
+a,input,span,label,li,select,button,dl,div,table{
+	-webkit-tap-highlight-color:transparent;
+	-webkit-appearance: none;
+}
+textarea,button,input,select{
+	outline: none;
+	border:none;
+	background:none;
+	padding: 0;
+	margin: 0;
+}
+
+
+
+
+/*弹层*/
+.zhezhao{
+	width:100%;
+	height:100%;
+	overflow: auto;
+	background:#000;
+	opacity:0.3;
+	filter: alpha(opacity=57);   /*ie8透明度兼容*/
+	position:fixed;
+	top:0;
+	left:0;
+	z-index: 5;
+	display: none;
+}
+
+
+.container{
+	width: 800px;
+	margin: 0 auto;
+}
+.text_box{
+	padding: 30px 0;
+	margin-bottom: 130px;
+}
+.xmnum_box{
+	display: flex;
+	justify-content: flex-end;
+}
+.xmnum_box p{
+	width: 260px;
+	font-size: 16px;
+}
+.tit_box{
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 150px 0 200px 0;
+}
+.tit_box h1{
+	padding: 10px 0;
+	font-size: 28px;
+}
+.xmmess_box{
+	display: flex;
+	justify-content: center;
+}
+.xmmess_box ul li{
+	display: flex;
+	padding: 16px 0;
+}
+.xmmess_box ul li p{
+	flex: 1;
+	font-size: 16px;
+}
+.xmmess_box ul li span{
+	width: 470px;
+	border-bottom: 1px solid #333;
+	font-size: 16px;
+}
+.table_big{
+	margin-top: 130px;
+	padding-top: 30px;
+}
+.table_box1{
+	display: flex;
+	justify-content: center;
+}
+.table_box1 table{
+	width: 100%;
+}
+/*.table_box tr:not(:first-children):hover {
+	background: blue;
+}*/
+.table_box1 table tr td,caption{
+	border: 1px solid #333;
+	vertical-align: middle;
+	/* text-align: center; */
+	padding: 10px;
+	font-size: 16px;
+	color: #333;
+}
+.table_box1 table tr td textarea{
+	width: 100%;
+	font-size: 14px;
+	line-height: 22px;
+}
+.table_box1 table tr td label{
+	line-height: 22px;
+}
+.tex_item{
+	display: flex;
+	width: 100%;
+	disabled: true;
+}
+.tex_item textarea{
+	height:250px;
+}
+.tex_item2{
+	display: flex;
+	width: 100%;
+}
+.tex_item2 textarea{
+	height: 140px;
+}
+
+
+.btn_box{
+	display: flex;
+	justify-content: center;
+	padding: 20px 0;
+}
+.btn_box button{
+	width: 130px;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	color: #fff;
+	border-radius: 4px;
+	background: #1BA9EB;
+	cursor: pointer;
+	font-size: 14px;
+}
+
+
+/*弹框*/
+.tan_posit{
+	position: fixed;
+	display: none;
+	width: 100%;
+	height: 100%;
+	z-index: 10;
+	background: rgba(0,0,0,0.3);
+}
+.tk_box{
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.tk_item{
+	width: 680px;
+	display: flex;
+	justify-content: center;
+}
+.bore_box{
+	background: #fff;
+	width: 560px;
+}
+.clo_box{
+	margin-left: 5px;
+	cursor: pointer;
+}
+
+
+.ewmsp_box{
+	display: flex;
+	justify-content:space-around;
+	padding: 10px 0;
+}
+.ewm_box{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	cursor: pointer;
+}
+.ewm_box p{
+	color: #333;
+}
+.sp_box{
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+}
+.sp_box p{
+	margin-left: 10px;
+	color: #333;
+}
+/*二维码弹框*/
+.yq_box{
+	width: 400px;
+	background: #fff;
+	padding: 20px;
+}
+.ewmtk_item{
+	display: flex;
+	padding: 30px 0;
+	justify-content: center;
+}
+
+
+.fot_box{
+	display: flex;
+	justify-content: center;
+	font-weight: bold;
+	font-size: 16px;
+	padding-top: 50px;
+	padding-left: 100px;
+}
+.text_item{
+	width: 730px;
+	margin: 0 auto;
+}
+.text_item h1{
+	text-align: center;
+	font-size: 24px;
+	padding-bottom: 60px;
+}
+.text_item p{
+	font-size: 20px;
+	line-height: 34px;
+	color: #333;
+}
+
+
+.tab-tit{
+	font-size: 20px;
+}
+
+.table-head{
+	font-weight: bolder;
+}
+
+
+
+
+
+@media print {
+	.page{
+		 page-break-before: auto;
+		 page-break-after: always;
+	 }
+ }
+
+

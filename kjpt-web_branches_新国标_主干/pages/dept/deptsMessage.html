@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>请选择单位信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+        media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!-- 工具 -->
+    <script type="text/javascript" src="../../js/tools/urlTools.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="../../js/axios.min.js"></script>
+    <script type="text/javascript" src="../../js/auth.js"></script>
+    <style>
+        .demo-side {
+            position: relative;
+            transition: all .3s;
+            max-height: calc(100vh - 170px);
+            overflow: auto;
+        }
+
+        .dept-table tbody tr {
+            cursor: pointer;
+        }
+
+        .dept-table tbody tr.is-selected {
+            background-color: #f2f8f2;
+        }
+
+        .dept-name-cell {
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .dept-name-indent {
+            display: inline-block;
+            width: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="layui-form">
+                    <div class="layui-form-item" style="margin-bottom: 0px;">
+                        <label class="layui-form-label">关键字:</label>
+                        <div class="layui-input-inline" style="width: 40%;">
+                            <input type="text" id="text_fieldValue" lay-verify="text_fieldValue" autocomplete="off"
+                                placeholder="请输入科室编号,科室名称" class="layui-input">
+                        </div>
+                        <button type="button" class="layui-btn" id="btn_find">查找</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-card">
+            <div class="layui-card-body demo-side">
+                <table class="layui-table dept-table" id="com_dept" style="margin: 0px 0px;">
+                    <colgroup>
+                        <col width="80">
+                        <col width="80">
+                        <col>
+                        <col width="220">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th style="text-align: center;">序号</th>
+                            <th style="text-align: center;">选择</th>
+                            <th style="text-align: left;">科室名称</th>
+                            <th style="text-align: center;">科室编号</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dept_body">
+                        <tr>
+                            <td colspan="4" style="text-align: center;">正在加载...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="layui-btn-container" style="text-align: center;">
+            <button class="layui-btn" id="btn_confirm">确 定</button>
+            <button class="layui-btn layui-btn-primary layui-border-green" id="btn_close" style="margin-left: 40px;">关
+                闭</button>
+        </div>
+
+
+
+    </div>
+</body>
+
+<script>
+
+    layui.use(['jquery', 'layer'], function () {
+        var $ = layui.jquery,
+            layer = layui.layer;
+
+        window.getUnitId = function () {
+            return localStorage.getItem("unit-id");
+        }
+        window.getCmeStandardKindId = function () {
+            return localStorage.getItem("standardkind-id");
+        }
+        var allDeptList = [];
+        var selectedDept = null;
+
+        function getSearchKeyword() {
+            return $.trim($("#text_fieldValue").val());
+        }
+
+        function getExcludeDeptId() {
+            return getQueryString("excludeDeptId");
+        }
+
+        function getExcludedDeptMap(source) {
+            var excludeDeptId = getExcludeDeptId();
+            var excluded = {};
+            var changed = true;
+            if (!excludeDeptId) return excluded;
+
+            excluded[excludeDeptId] = true;
+            while (changed) {
+                changed = false;
+                $.each(source, function (_, item) {
+                    if (!excluded[item.deptId] && excluded[item.parentId]) {
+                        excluded[item.deptId] = true;
+                        changed = true;
+                    }
+                });
+            }
+            return excluded;
+        }
+
+        function escapeHtml(value) {
+            return String(value == null ? '' : value).replace(/[&<>"']/g, function (char) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[char];
+            });
+        }
+
+        function normalizeDeptList(list) {
+            var source = list || [];
+            var map = {};
+            var childrenMap = {};
+            var result = [];
+            var visited = {};
+            var excluded = getExcludedDeptMap(source);
+
+            $.each(source, function (_, item) {
+                if (excluded[item.deptId]) return;
+                map[item.deptId] = item;
+                childrenMap[item.deptId] = childrenMap[item.deptId] || [];
+            });
+
+            $.each(source, function (_, item) {
+                if (excluded[item.deptId]) return;
+                var parentId = item.parentId;
+                if (parentId && parentId !== item.deptId && map[parentId]) {
+                    childrenMap[parentId].push(item);
+                }
+            });
+
+            function pushNode(item, level) {
+                if (!item || visited[item.deptId]) return;
+                visited[item.deptId] = true;
+                item._level = level;
+                result.push(item);
+                $.each(childrenMap[item.deptId] || [], function (_, child) {
+                    pushNode(child, level + 1);
+                });
+            }
+
+            $.each(source, function (_, item) {
+                if (excluded[item.deptId]) return;
+                var parentId = item.parentId;
+                if (!parentId || parentId === item.deptId || !map[parentId]) {
+                    pushNode(item, 0);
+                }
+            });
+
+            $.each(source, function (_, item) {
+                if (excluded[item.deptId]) return;
+                pushNode(item, 0);
+            });
+
+            return result;
+        }
+
+        function getFilteredDeptList() {
+            var keyword = getSearchKeyword().toLowerCase();
+            if (!keyword) return allDeptList;
+
+            return $.grep(allDeptList, function (item) {
+                var deptName = String(item.deptName || '').toLowerCase();
+                var deptId = String(item.deptId || '').toLowerCase();
+                return deptName.indexOf(keyword) !== -1 || deptId.indexOf(keyword) !== -1;
+            });
+        }
+
+        function renderDeptList() {
+            var list = getFilteredDeptList();
+            var html = [];
+            selectedDept = null;
+
+            if (list.length === 0) {
+                $("#dept_body").html('<tr><td colspan="4" style="text-align: center;">无数据</td></tr>');
+                return;
+            }
+
+            $.each(list, function (index, item) {
+                var indent = '';
+                for (var i = 0; i < (item._level || 0); i++) {
+                    indent += '<span class="dept-name-indent"></span>';
+                }
+                html.push(
+                    '<tr data-index="' + index + '">' +
+                    '<td style="text-align: center;">' + (index + 1) + '</td>' +
+                    '<td style="text-align: center;"><input type="radio" name="dept_radio"></td>' +
+                    '<td class="dept-name-cell">' + indent + escapeHtml(item.deptName) + '</td>' +
+                    '<td style="text-align: center;">' + escapeHtml(item.deptId) + '</td>' +
+                    '</tr>'
+                );
+            });
+
+            $("#dept_body").html(html.join(''));
+        }
+
+        function loadDeptList() {
+            $("#dept_body").html('<tr><td colspan="4" style="text-align: center;">正在加载...</td></tr>');
+            $.ajax({
+                type: 'GET',
+                url: huayi_personorg_url + 'comdept/getDeptListBySearch',
+                dataType: 'json',
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                data: {
+                    unitId: window.getUnitId(),
+                    search: ''
+                },
+                success: function (res) {
+                    if (res.status === 200 && Array.isArray(res.data)) {
+                        allDeptList = normalizeDeptList(res.data);
+                        renderDeptList();
+                    } else {
+                        $("#dept_body").html('<tr><td colspan="4" style="text-align: center;">加载失败</td></tr>');
+                    }
+                },
+                error: function () {
+                    $("#dept_body").html('<tr><td colspan="4" style="text-align: center;">网络异常，请稍后再试</td></tr>');
+                }
+            });
+        }
+
+        function chooseDept($tr) {
+            var index = $tr.data('index');
+            var list = getFilteredDeptList();
+            selectedDept = list[index];
+            $("#dept_body tr").removeClass('is-selected');
+            $tr.addClass('is-selected');
+            $tr.find('input[type=radio]').prop('checked', true);
+        }
+
+        $("#dept_body").on('click', 'tr[data-index]', function () {
+            chooseDept($(this));
+        });
+
+        $("#text_fieldValue").on('keydown', function (event) {
+            if (event.keyCode === 13) {
+                renderDeptList();
+            }
+        });
+
+        window.initTable = function () {
+            loadDeptList();
+        };
+
+
+        $(function () {
+            let deptName= getQueryString("deptName");
+            if (deptName != null && deptName != undefined && deptName != '' && deptName!="null" && deptName!="undefined" ) {
+                $("#text_fieldValue").val(deptName);
+            }
+            window.initTable();
+        });
+
+        $("#btn_find").on('click', function () {
+            renderDeptList();
+        });
+
+        $("#btn_confirm").on('click', function () {
+            if (!selectedDept) {
+                layer.msg("请选择科室");
+            } else {
+                let callback = getQueryString("callback");
+                if (callback && parent[callback]) {
+                    parent[callback](selectedDept.deptId, selectedDept);
+                } else {
+                    let projId = getQueryString("projId");
+                    parent.getChooseDeptInfo(selectedDept.deptId, projId);
+                }
+                window.layClose();
+            }
+
+
+        });
+
+        $("#btn_close").on('click', function () {
+            window.layClose();
+        });
+
+        window.layClose = function () {
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //再执行关闭
+        }
+
+    });
+
+</script>

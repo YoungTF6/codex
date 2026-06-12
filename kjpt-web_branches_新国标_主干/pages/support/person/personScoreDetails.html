@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>人员学分详情</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <style>
+        .layui-table-tool-temp{
+            padding-right: 0;
+        }
+        .layui-table-cell .score-kind-cell,.layui-table-cell .score-level-cell{
+            display: inline-block;
+            width: 100%;
+            text-align: left;
+            padding-left: 5px;
+        }
+        .layui-table-cell .score-level-cell{
+            padding-left: 25px;
+        }
+    </style>
+</head>
+<!-- 单位版 -->
+<body class="body-area">
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body layui_body_box ">
+                <table class="layui-table" id="personScoreTable" lay-filter="personScoreTable">
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+<script type="text/html" id="scoreExcBar">
+    <button class="layui-btn layui-btn-sm" lay-event="excel" style="float: right;">导出Excel</button>
+</script>
+
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        tool    :   'tool',
+        excel   :   'excel'
+    });
+
+    // 全局配置及引入相关的模块
+    layui.use(['table','tool','excel'], function () {
+        let table = layui.table,$ = layui.jquery,layer = layui.layer;
+        let tool=layui.tool,excel=layui.excel;
+        let standardkindId , cmeYear, personId;
+        const colsArr = [[
+            {field: 'name', title: '名称',minWidth: 300,align: 'center',
+                templet:function(d){
+                    if(d.level == 2) {
+                        return `<div class="score-kind-cell">${d.name}</div>`;
+                    }else if(d.level == 3){
+                        return `<div class="score-level-cell">${d.name}</div>`;
+                    }
+                    return d.name;
+                }},
+            {field: 'score', title: '学分',align: 'center',width: 80},
+            {field: 'pass_score', title: '达标学分',align: 'center',width: 100},
+            {field: 'period', title: '学时',align: 'center',width: 80}
+        ]];
+
+        //获取学分审核情况数据 
+        let getPersonScoreDetails = function(personId,startDt,endDt,checkState,ifAvail){
+            const height = document.documentElement.clientHeight - 60;
+            const params = {comPersonId:personId,
+                cmeYear:cmeYear};
+
+            table.render({
+                elem    :   "#personScoreTable",
+                id      :   "scoreTable",
+                url     :   huayi_projectscore_url+'projectScoreStatistis/peopleScoreDetailsPassSummary',
+                // toolbar :   "#scoreExcBar",
+                defaultToolbar  :   [],
+                height  :   height,
+                page    :   false,
+                limit   :   10,
+                limits  :   [10, 50, 100, 150, 200],
+                where   :   params,
+                cols    :   colsArr,
+                parseData: function (res) {
+                    return {
+                        "code"  :   res.status === 200 ? 0 : res.status,
+                        "msg"   :   res.message,
+                        "data"  :   res.data
+                    };
+                }
+            });
+        }
+
+        //导出excel文件
+        // table.on('toolbar(personScoreTable)', function (obj) {
+        //     let exportArr = [];
+        //     let titleArr = [];
+        //     for (const tempObj of colsArr[0]) { titleArr.push(tempObj.title); }
+        //     exportArr.push(titleArr);
+        //     for (const objData of table.cache['scoreTable']) {
+        //         let tempDataArr = [];
+        //         for (const tempObj of colsArr[0]) { 
+        //             let tempValue = " "+objData[tempObj.field];
+        //             if(objData.level==1&&tempObj.title=="名称") tempValue = tempValue;
+        //             if(objData.level==2&&tempObj.title=="名称") tempValue = "  "+tempValue;
+        //             if(objData.level==3&&tempObj.title=="名称") tempValue = "    "+tempValue;
+        //             tempDataArr.push(tempValue);
+        //         }
+        //         exportArr.push(tempDataArr);
+        //     }
+        //     excel.exportExcel(exportArr, '个人各类学分汇总.xlsx', 'xlsx');
+        // });
+
+        //页面加载入口
+        let htmlInit = function(){
+            personId = tool.getParamFromUrl("personId");
+            const startDt = tool.getParamFromUrl("startDt");
+            const endDt = tool.getParamFromUrl("endDt");
+            const checkState = tool.getParamFromUrl("checkState");
+            const ifAvail = tool.getParamFromUrl("ifAvail");
+            standardkindId = tool.getParamFromUrl("standardkindId");
+            cmeYear = tool.getParamFromUrl("cmeYear");
+            if(tool.isEmpty(personId)) {
+                layer.msg("缺少必要参数");
+                return;
+            }
+            getPersonScoreDetails(personId,startDt,endDt,checkState,ifAvail);
+        }
+        htmlInit();
+           // Esc关闭弹窗
+        window.onkeyup = function (ev) {
+            var key = ev.keyCode || ev.which;
+            if (key == 27) {
+                parent.layer.close(parent.layer.index);
+                console.log('layer.index = ' + parent.layer.index)
+            }
+        }
+    });
+</script>

@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>院内活动举办前申请</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+        media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <link rel="stylesheet" href="/js/layui/ext/selectInput/selectInput.css" media="all">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/tools/verification.js"></script>
+    <script type="text/javascript" src="/js/tools/urlTools.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <style>
+        .btn-apply {
+            color: #70B603;
+        }
+
+        #implementationFeedback .layui-card {
+            margin-bottom: 0px;
+            width: 96%;
+            margin: auto;
+        }
+
+        #implementationFeedback .tab-default {
+            width: 55px;
+        }
+
+        #tabPage {
+            width: 96%;
+            margin: 0px auto 20px;
+            min-height: 380px;
+            border: 1px solid #e6e6e6;
+            border-top: 0px;
+            padding-top: 25px;
+        }
+
+        #implementationFeedback .project-form {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        #implementationFeedback .project-form .layui-form-item {
+            min-width: 300px;
+            max-width: 460px;
+            width: 45%;
+        }
+
+        #implementationFeedback .project-form .layui-form-item1 {
+            width: 88%;
+            margin-bottom: 15px;
+        }
+
+        #implementationFeedback .project-form .layui-input-block {
+            display: flex;
+            align-items: center;
+            text-align: left;
+        }
+
+        .js-project-image>div,
+        .js-project-textbook>div {
+            width: 90%;
+            margin: 0px auto 15px;
+            padding: 8px 0px;
+            border: 1px solid;
+            min-height: 70px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .js-project-textbook>div {
+            min-height: 350px;
+        }
+
+        .js-project-image span {
+            display: inline-block;
+            margin-right: 7px;
+        }
+
+        .meeting-notice>div,
+        .meeting-overrall-view>div,
+        .student-signin-table>div,
+        .exem-questions>div,
+        .feedback-table>div {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        #tabPage .meeting-notice::after {
+            content: "会议通知和议程";
+        }
+
+        #tabPage .meeting-overrall-view::after {
+            content: "会议全景照片";
+        }
+
+        #tabPage .student-signin-table::after {
+            content: "学员签到表";
+        }
+
+        #tabPage .exem-questions::after {
+            content: "考试考题";
+        }
+
+        #tabPage .feedback-table::after {
+            content: "执行情况反馈表";
+        }
+
+        .js-project-textbook>div::after {
+            content: "教材明细";
+        }
+
+        .js-project-image>div::after,
+        .js-project-textbook>div::after {
+            position: absolute;
+            padding: 0px 2px 0px 4px;
+            left: 0px;
+            top: -11px;
+            background: #FFF;
+        }
+
+        .meeting-notice>ul,
+        .meeting-overrall-view>ul,
+        .student-signin-table>ul,
+        .exem-questions>ul,
+        .feedback-table>ul {
+            margin: 0px auto;
+            width: 96%;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .meeting-notice>ul>li,
+        .meeting-overrall-view>ul>li,
+        .student-signin-table>ul>li,
+        .exem-questions>ul>li,
+        .feedback-table>ul>li {
+            width: 20%;
+            float: left;
+        }
+
+        .meeting-notice>ul>li>a:nth-child(1),
+        .meeting-overrall-view>ul>li>a:nth-child(1),
+        .student-signin-table>ul>li>a:nth-child(1),
+        .exem-questions>ul>li>a:nth-child(1),
+        .feedback-table>ul>li>a:nth-child(1) {
+            width: 150px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .meeting-notice>ul>li>a:nth-child(2),
+        .meeting-overrall-view>ul>li>a:nth-child(2),
+        .student-signin-table>ul>li>a:nth-child(2),
+        .exem-questions>ul>li>a:nth-child(2),
+        .feedback-table>ul>li>a:nth-child(2) {
+            margin-left: 0px;
+        }
+
+        .js-project-tab>div {
+            width: 90%;
+            margin: 0px auto;
+        }
+
+        .js-hidden,
+        .js-project-image>.js-hidden {
+            display: none;
+        }
+
+        .flow-detail-window {
+            padding: 10px;
+        }
+
+        .flow-detail-window>div {
+            font-weight: 900;
+            font-size: 20px;
+            text-align: center;
+            margin: 15px auto 35px;
+        }
+
+        .flow-detail-window>ul>li {
+            min-height: 60px;
+            position: relative;
+        }
+
+        .flow-detail-window>ul>li:not(:last-child)::before {
+            content: "";
+            border-left: 1px solid #3c3c3c;
+            position: absolute;
+            left: 105px;
+            height: 100%;
+        }
+
+        .flow-detail-window>ul>li::after {
+            content: "";
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1px solid #3c3c3c;
+            background: #FFF;
+            position: absolute;
+            left: 95px;
+        }
+
+        .flow-detail-window>ul>.approval-pass::after {
+            content: "";
+            border-radius: 50%;
+            border: 1px solid #70B603;
+            background: #70B603;
+            position: absolute;
+        }
+
+        .flow-detail-window>ul>.approval-pass:nth-child(n-1):before {
+            /* border-left: 1px solid #70B603; */
+            border-color: #70B603;
+        }
+
+        .flow-detail-window>ul>li>div {
+            display: block;
+            min-width: 65px;
+            max-width: 190px;
+            margin: 0px 20px;
+            float: left;
+            min-height: 10px;
+        }
+
+        div.modleBoder {
+            height: 100%;
+            padding: 5px 30px;
+            margin-bottom: 30px;
+            /* margin-top:50px; */
+            /* margin-left:150px; */
+            border: 2px solid #CCCCCC;
+            border-radius: 0.5em;
+        }
+
+        span.title {
+            display: block;
+            width: 150px;
+            /* height:50px; */
+            position: relative;
+            top: -15px;
+            text-align: center;
+            background: white;
+        }
+
+        span.title2 {
+            display: block;
+            width: 330px;
+            /* height:50px; */
+            position: relative;
+            top: -15px;
+            text-align: center;
+            background: white;
+        }
+
+        .file-title {
+            display: inline-block;
+            position: absolute;
+            padding: 0px 2px 0px 4px;
+            left: 30px;
+            top: -11px;
+            background: #FFF;
+        }
+
+        .js-upload-btn-box {
+            margin-left: 10px;
+        }
+
+        @media only screen and (max-width: 1200px) and (min-width:1000px) {
+
+            .meeting-notice>ul>li,
+            .meeting-overrall-view>ul>li,
+            .student-signin-table>ul>li,
+            .exem-questions>ul>li,
+            .feedback-table>ul>li {
+                width: 25%;
+            }
+        }
+
+        @media only screen and (max-width: 999px) and (min-width:650px) {
+
+            .meeting-notice>ul>li,
+            .meeting-overrall-view>ul>li,
+            .student-signin-table>ul>li,
+            .exem-questions>ul>li,
+            .feedback-table>ul>li {
+                width: 33%;
+            }
+        }
+
+        @media only screen and (max-width: 649px) {
+
+            .meeting-notice>ul>li,
+            .meeting-overrall-view>ul>li,
+            .student-signin-table>ul>li,
+            .exem-questions>ul>li,
+            .feedback-table>ul>li {
+                width: 50%;
+            }
+        }
+
+        #upload-tip {
+            padding-left: 10px;
+            font-style: normal;
+            font-size: 12px;
+            color: #f25643;
+        }
+
+        .tips_inp {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <!--        表格区域-->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="applyBeforeHold" lay-filter="applyBeforeHold" style="margin: 0px 0px;">
+                </table>
+            </div>
+            <!--        申请弹窗-->
+            <div id="add-applyBeforeHold" style=" display:none;">
+                <form class="layui-form" style="padding: 30px;" id="form-applyBeforeHold" lay-filter="add-filter">
+                    <input type="hidden" id="hdnDownId" />
+                    <input type="button" id="btnUploadTeach" style="display:none;" />
+                    <div class="modleBoder">
+                        <span class="title" id="projectInfo" style="font-size: 20px; color: #05ACAC;">项目基本信息</span>
+                        <div id="projInfo" class="row">
+                            <div class="layui-form-item" style="display: none">
+                                <div class="layui-inline layui-inline-660">
+                                    <label class="layui-form-label">主键</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="keyId" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline" id="projNameBlock" style="display: block;">
+                                    <label class="layui-form-label">活动名称</label>
+                                    <div class="layui-input-inline" style="width: 500px;">
+                                        <input type="text" name="projName" autocomplete="off" disabled="true"
+                                            class="layui-input layui-disabled">
+                                    </div>
+                                </div>
+                                <div class="layui-inline" id="projNameBlock" style="display: block;">
+                                    <label class="layui-form-label">学分分类</label>
+                                    <div class="layui-input-inline" >
+                                        <input type="text" name="scoreLevelName" autocomplete="off" disabled="true"
+                                            class="layui-input layui-disabled">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline" id="holdTypeBlock" style="display: block;">
+                                    <label class="layui-form-label">活动方式</label>
+                                    <div class="layui-input-inline" >
+                                        <input type="text" name="holdTypeName" autocomplete="off" disabled="true"
+                                            class="layui-input layui-disabled">
+                                    </div>
+                                </div>
+                                <div class="layui-inline" id="periodBlock" style="display: block;">
+                                    <label class="layui-form-label">学时</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" id="periodProj" name="period" autocomplete="off"
+                                            disabled="true" lay-verify="number|period"
+                                            class="layui-input layui-disabled">
+                                    </div>
+                                </div>
+                                <div class="layui-inline" id="scoreBlock" style="display: block;">
+                                    <label class="layui-form-label">学分</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" id="score" name="score" autocomplete="off"
+                                            disabled="true" lay-verify="number|applScore"
+                                            class="layui-input layui-disabled">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline" id="projManagerBlock" style="display: block;">
+                                    <label class="layui-form-label" id="projManagerLabel">活动负责人</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" id="projManager" name="projManager" autocomplete="off"
+                                            placeholder="请输入" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-inline" id="projManagerTelephoneBlock" style="display: block;">
+                                    <label class="layui-form-label">活动负责人联系电话</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" id="projManagerTelephone" name="projManagerTelephone" autocomplete="off"
+                                            placeholder="请输入联系电话" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-inline" id="limitPersonBlock" style="display: block;">
+                                    <label class="layui-form-label">拟授分人数</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="limitPerson" id="limitPerson" autocomplete="off"
+                                            disabled="true" placeholder="请输入拟授分人数" class="layui-input layui-disabled" lay-verify="number"
+                                            onkeyup="value=value.replace(/[^\d]/g,'')">
+                                        <!-- <span style="color: red;">设置为0，招收人数为无限制</span> -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item" id="holdPlaceBlock" style="display: none;">
+                                <div class="layui-inline"> <label class="layui-form-label">举办地点</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" id="holdPlace" name="holdPlace" autocomplete="off"
+                                            placeholder="请输入" class="layui-input">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 活动内容（仅浙江显示） -->
+                            <div class="layui-form-item zhejiang_show" id="scoreTypeNameBlock" style="display: none;">
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">活动内容</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="scoreTypeName" autocomplete="off" disabled="true"
+                                            class="layui-input layui-disabled">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- <div class="layui-form-item"> -->
+                            <!-- </div> -->
+                        </div>
+                    </div>
+                    <div class="modleBoder" id="batchInfo">
+                        <span class="title" style="font-size: 20px; color: #05ACAC;">批次信息</span>
+                        <div class="row">
+                            <div class="layui-form-item">
+                                <div class="layui-inline" style="display: block;">
+                                    <label class="layui-form-label" style="width: 120px;">活动举办开始日期</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="startDt" autocomplete="off"
+                                            class="layui-input layui-disabled" disabled="true">
+                                    </div>
+                                </div>
+                                <div class="layui-inline" style="display: block;">
+                                    <label class="layui-form-label" style="width: 120px;">活动举办结束日期</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="endDt" autocomplete="off"
+                                            class="layui-input layui-disabled" disabled="true">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modleBoder">
+                        <span class="title" id="teachInfo" style="font-size: 20px; color: #05ACAC;">课程信息</span>
+                        <div class="row">
+                            <div class="layui-card-body layui_body_box" style="padding:10px 10px;">
+                                <table class="layui-table cmeProjPosDownList" id="cmeProjPosDownList"
+                                    lay-filter="cmeProjPosDownList" style="margin: 0px 0px;">
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modleBoder" id="filesDiv" style="display: none;">
+                        <span class="title" id="filesTitle" style="font-size: 20px; color: #05ACAC;">会议通知及日程</span>
+                        <div class="row">
+                            <div class="js-project-image js-tab-page">
+                                <!-- <div class="meeting-notice js-hidden"> -->
+                                <!-- <div class="meeting-notice">
+                                    <div class="js-upload-btn-box">
+                                        <a class="layui-btn layui-btn-sm layui-btn-radius js-upload-btn" data-type="1">上传</a>
+                                        <span id="upload-tip">请上传 PDF 格式文件或 JPG、PNG 图片文件，且小于10M</span>
+                                    </div>
+                                    <ul class="js-meeting-notice"></ul>
+                                </div> -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item" id="submitAndResetApply" style="width: 100%;">
+                        <div style="text-align: center;">
+                            <button class="layui-btn" lay-submit lay-filter="saveInfo">保存并返回列表</button>
+                            <button class="layui-btn" lay-submit lay-filter="application" id="saveAndReport">保存并上报</button>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item" id="submitAndResetApproval" style="width: 100%;">
+                        <div class="layui-input-block" style="padding-left: 30%; padding-top: 10px;">
+                            <button class="layui-btn" lay-submit lay-filter="pass" type="button">审核通过</button>
+                            <button class="layui-btn" lay-submit lay-filter="back">退回修改</button>
+                            <button class="layui-btn" lay-submit lay-filter="notPass">审核不通过</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--        添加课程弹窗-->
+    <div id="addTeach" style=" display:none;">
+        <form class="layui-form" style="padding: 30px;" id="form-addTeach" lay-filter="add-teach">
+            <div class="layui-form-item" style="display: none">
+                <div class="layui-inline layui-inline-660">
+                    <label class="layui-form-label">主键</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="groupProjTeachId" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item" id="teachDateDiv">
+                <div class="layui-inline" style="display: block;">
+                    <label class="layui-form-label" style="padding: 9px 10px;width: 90px;">课程开始日期</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="startDate" id="startDate" autocomplete="off" class="layui-input"
+                            placeholder="请选择" lay-verify="required">
+                    </div>
+                </div>
+                <div class="layui-inline" style="display: block;">
+                    <label class="layui-form-label" style="padding: 9px 10px;width: 90px;">课程结束日期</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="endDate" id="endDate" autocomplete="off" class="layui-input"
+                            placeholder="请选择" lay-verify="required">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline" style="display: block;">
+                    <label class="layui-form-label">讲授题目</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="teachSubject" id="teachSubject" autocomplete="off" class="layui-input"
+                            placeholder="讲授题目" lay-verify="required">
+                    </div>
+                </div>
+                <div class="layui-inline" style="display: block;">
+                    <label class="layui-form-label" id="periodLabel">学时</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="period" id="period" autocomplete="off" class="layui-input"
+                            placeholder="" lay-verify="required">
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="layui-form-item">
+                <div class="layui-inline" style="display: block;">
+                    <label class="layui-form-label">教学方法</label>
+                    <div class="layui-input-inline" style="text-align: left;">
+                        <select name="teachingMethod" id="select_teaching_method">
+                            <option value="">请选择教学方法</option>
+                            <option value="理论">理论</option>
+                            <option value="实验（技术示范）">实验（技术示范）</option>
+                        </select>
+                    </div>
+                </div>
+            </div> -->
+            <div class="layui-form-item" id="submitAndResetTeach">
+                <div style="text-align: center;">
+                    <button class="layui-btn" lay-submit lay-filter="submitTeach">提交</button>
+                    <button id="resetBtn" type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <!--        添加教师弹窗-->
+    <div id="addTeacher" style=" display:none;">
+    <style>
+        #form-addTeacher .layui-inline {
+            width: 32.5%;
+            margin-right: 0%;
+            margin-bottom: 15px;
+            float: left;
+            display: block;
+        }
+        #form-addTeacher .layui-input-inline {
+            width: calc(100% - 120px) !important; 
+            margin-right: 0 !important;
+        }
+        #form-addTeacher .layui-form-label {
+            width: 90px;
+            padding: 9px 5px;
+        }
+        /* Fix the dropdown positioning for treeSelect / specSelect */
+        #form-addTeacher .layui-form-item {
+            clear: both;
+        }
+        #form-addTeacher .layui-form-item::after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+    </style>
+
+        <form style="padding: 30px;" id="form-addTeacher" class="layui-form" lay-filter="add-teacher">
+            <div class="layui-form-item" style="display: none">
+                <div class="layui-inline layui-inline-660">
+                    <label class="layui-form-label">主键</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="groupProjTeacherId" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline layui-inline-660">
+                    <label class="layui-form-label">课程id</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="groupProjTeachId" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" id="teacherRowOne">
+                <div class="layui-inline" style="display: block;" id="needScoreBlock">
+                    <label class="layui-form-label">是否主讲人授分</label>
+                    <div class="layui-input-inline">
+                        <select name="needScore" id="needScore" lay-filter="needScore">
+                            <option value="true" selected>是</option>
+                            <option value="false">否</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline" style="display: block;" id="teachNoBlock">
+                    <label class="layui-form-label"><span class="tips_inp" data-id="spanOnCert"
+                            id="spanOnTeachNo">*</span>证件号码</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="teachNo" id="teachNo" autocomplete="off" class="layui-input" placeholder="请输入身份证号">
+                    </div>
+                </div>
+                <div class="layui-inline" style="display: block;" id="teacherNameBlock">
+                    <label class="layui-form-label"><span class="tips_inp">*</span>授课教师</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="teacherName" id="teacherName" autocomplete="off" class="layui-input"
+                            placeholder="请输入授课教师姓名" lay-verify="required">
+                    </div>
+                </div>
+                <div class="layui-inline" style="display: none;" id="personNoBlock">
+                    <label class="layui-form-label">医通卡号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="personNo" id="personNo" autocomplete="off" class="layui-input"
+                            placeholder="请输入医通卡号">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" id="teacherRowTwo">
+                <div class="layui-inline" id="sexBlock" style="display: block;">
+                    <label class="layui-form-label"><span class="tips_inp">*</span>性别</label>
+                    <div class="layui-input-inline">
+                        <select name="sex" lay-verify="required" id="sex">
+                            <option value="">请选择性别</option>
+                            <option value="1">男</option>
+                            <option value="0">女</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline" style="display: block;" id="educationBlock">
+                    <label class="layui-form-label"><span class="tips_inp" id="spanOnEducation">*</span>学历</label>
+                    <div class="layui-input-inline" style="text-align: left;">
+                        <select name="education" id="select_education" lay-verify="required">
+                            <option value="">请选择学历</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" id="teacherRowThree">
+                <div class="layui-inline layui-form" lay-filter="specSelectArea" style="display: block;" id="specBlock">
+                    <label class="layui-form-label"><span class="tips_inp">*</span>专业</label>
+                    <div class="layui-input-inline">
+                        <input type="text" autocomplete="off" class="layui-input" lay-filter="specSelect"
+                            id="specSelect" placeholder="请选择专业" lay-verify="required">
+                    </div>
+                    <input type="hidden" id="hidden_spec" name="dept">
+                </div>
+                <div class="layui-inline" style="display: block;" id="titleBlock">
+                    <label class="layui-form-label"><span class="tips_inp">*</span>职称</label>
+                    <div class="layui-input-inline">
+                        <input id="text_title_name" autocomplete="off" class="layui-input" lay-verify="required"
+                            placeholder="请选择职称">
+                        <input type="hidden" name="title" id="hidden_title_id" />
+                    </div>
+                </div>
+                <div class="layui-inline" id="ifProjManagerBlock" style="display: block;">
+                    <label class="layui-form-label"><span class="tips_inp">*</span>是否为项目负责人</label>
+                    <div class="layui-input-inline">
+                        <select name="ifProjManager" lay-search lay-verify="required">
+                            <option value="">请选择</option>
+                            <option value="0">否</option>
+                            <option value="1">是</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" id="teacherRowFour">
+                <div class="layui-inline" style="display: block;" id="dutyBlock">
+                    <label class="layui-form-label">职务</label>
+                    <div class="layui-input-inline" style="text-align: left;">
+                        <select name="duty" id="select_hospital_duty">
+                            <option value="">请选择院内职务</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline" style="display: block;" id="unitBlock">
+                    <label class="layui-form-label"><span class="tips_inp">*</span>单位</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="unitName" id="unit" autocomplete="off" class="layui-input"
+                            placeholder="单位">
+                    </div>
+                </div>
+                <div class="layui-inline" style="display: block;" id="telephoneBlock">
+                    <label class="layui-form-label">联系方式</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="telephone" id="telephone" autocomplete="off" class="layui-input"
+                            placeholder="联系方式">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" id="teacherRowFive">
+                <div class="layui-inline" id="remarkBlock" style="display: block;">
+                    <label class="layui-form-label">备注</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="remark" placeholder="备注" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item" id="submitAndResetTeacher" style="margin-top:40px;">
+                <div style="text-align: center;">
+                    <button class="layui-btn" lay-submit lay-filter="submitTeacher">提交</button>
+                    <button id="resetBtn" type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <!--   添加课程    -->
+    <div class="layui-form" style="background-color: #f5f5f5;display: none; text-align: center; " id="div_addPos">
+        <input type="hidden" id="pop_operate" />
+        <input type="hidden" id="pop_downId" />
+        <div class="layui-inline" style="padding: 20px;">
+            <div class="layui-input-inline">
+                <input type="text" name="startDt" id="startDt" placeholder="举办开始日期" autocomplete="off"
+                    class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline" style="padding: 20px;">
+            <div class="layui-input-inline">
+                <input type="text" name="endDt" id="endDt" placeholder="举办结束日期" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <br />
+        <div class="layui-btn-container">
+            <button type="button" class="layui-btn" id='btnCmeProjPosSave'>保存</button>
+            <button type="button" class="layui-btn" id='btnCmeProjPosCancel'>取消</button>
+        </div>
+    </div>
+
+    <div id="uploadInfo" style="display: none;padding: 30px 20px 20px 20px;">
+        <div class="layui-inline" style="color:red; font-size:14px;">
+            如需导入，请先将周期下的课程和教师信息删除
+        </div>
+        <div class="layui-btn-container" style="margin-top:30px;text-align: center">
+            <button type="button" class="layui-btn" id='btnInfoConfirm'>确认</button>
+        </div>
+    </div>
+
+    <script>
+        const userType = localStorage.getItem("user-type");
+        const userName = localStorage.getItem("user-name");
+        const myUnitId = localStorage.getItem("unit-id");
+        const myDeptId = localStorage.getItem("dept-id");
+        const taoId = localStorage.getItem("standardkind-id");
+        const zhe_jiang_tao_id = '190c480d-d43c-450b-8472-a6fd00a6729d';
+        const guangdong_tao_id = '289bf0ca-52cb-4b19-b737-9bd200a69ce1';
+    </script>
+
+
+    <script type="text/html" id="viewBar">
+        {{# if(d.checkState !=null && d.checkState != 0) {  }}
+        <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="viewProgress">查看</a>
+        {{# } }}
+
+        <!-- {{# if(taoId == '73ba18db-33fd-4746-ab41-9beb009f69a1') {  }}
+            <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="viewProgressLog">日志</a>
+        {{# } }} -->
+    </script>
+
+    <script type="text/html" id="downloadBar">
+        {{# if(d.checkState == 3){ }}
+        <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="download">下载</a>
+        {{# }else{ }}
+        <a class="layui-btn layui-btn-xs layui-btn-disabled" disabled="true">下载</a>
+        {{# } }}
+    </script>
+
+
+
+    <!--添加课程按钮-->
+    <script type="text/html" id="addTeachBar">
+        <button class="layui-btn layui-btn-sm btnRounded" lay-event="addTeach" type="button">添加课程</button>
+        <button class="layui-btn layui-btn-sm btnRounded" lay-event="uploadTeach" id="uploadTeach" type="button">模板导入课程</button>
+        <button class="layui-btn layui-btn-sm btnRounded" lay-event="downloadExcel" type="button">下载课程模板</button>
+    </script>
+    <!--课程表格内数据编辑、删除按钮-->
+    <script type="text/html" id="cmeProjTeachRowBar">
+        <a class="layui-btn layui-btn-xs" lay-event="edit" style="color: #27b1a2;background-color: transparent;">编辑</a>
+        <a class="layui-btn layui-btn-xs" lay-event="del" style="color: #f25643;background-color: transparent;">删除</a>
+        <a class="layui-btn layui-btn-xs" lay-event="addTeacher" style="color: #ffb82e;background-color: transparent;">添加教师</a>
+    </script>
+    <!--教师表格内数据编辑、删除按钮-->
+    <script type="text/html" id="cmeProjTeacherRowBar">
+        <a class="layui-btn layui-btn-xs" lay-event="editTeacher" style="color: #27b1a2;background-color: transparent;">编辑</a>
+        <a class="layui-btn layui-btn-xs" lay-event="delTeacher" style="color: #f25643;background-color: transparent;">删除</a>
+    </script>
+
+    <script>
+        let script = document.createElement('script');
+        let tempDeptId = (userType == 13) ? myDeptId : "";
+        let tempUnitId = (userType == 12) ? myUnitId : "";
+        if(localStorage.getItem("standardkind-id") == guangdong_tao_id) {
+            //科室人员
+            if(userType == 13) {
+                script.src = '/pages/project/internalHospitalActivities/js/GroupProjApplyBeforeHold-GuangDongDept.js?v=20260529';
+            } else {
+                script.src = '/pages/project/internalHospitalActivities/js/GroupProjApplyBeforeHold-GuangDong.js?v=20260520';
+            }
+            
+
+        } else {
+            script.src = '/pages/project/internalHospitalActivities/js/GroupProjApplyBeforeHold-Default.js';
+        }
+        document.body.appendChild(script);
+    </script>
+</body>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>录入个人学分授分标准</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+
+    <style>
+        /* layui-table 表格内容允许换行 */
+        .layui-table-cell {
+            height: auto;
+        }
+        .myBoder {
+            border: 1.5px solid #6086b5;
+        }
+        .static-content-container {
+            width: 100%;
+            height: 100%;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layui-tab-content">
+        <div class="layui-tab-item layui-show">
+            <div class="layui-card-header myBoder">
+                <h3 style="font-weight: bold;">学分授予标准浏览</h3>
+            </div>
+            <div class="layui-card-body myBoder">
+                  
+                <!-- 筛选条件 -->
+                <div class="layui-form layui-card-header condition-area" lay-filter="div-search">
+                    <form id="form-query">
+                        <div class="layui-inline layui-col-xs6 layui-col-sm4 layui-col-md3">
+                            <label class="layui-form-label">举办年度</label>
+                            <div class="layui-input-block">
+                                <select name="cmeYear" id="cmeYear" lay-filter="cmeYear"></select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- 静态内容容器 (默认隐藏) -->
+                <div id="staticContentContainer" class="static-content-container hidden"></div>
+                
+                <!-- 表格内容 -->
+                <div id="tableContainer">
+                    <table class="layui-table" id="cmeProjPosDownList" lay-filter="cmeProjPosDownList" style="margin: 0px 0px;"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--增加序号列-->
+    <script type="text/html" id="rank">
+        {{d.LAY_TABLE_INDEX+1}}
+    </script>
+
+    <script>
+        // 全局配置及引入相关的模块
+        layui.use(['table', 'form'], function () {
+            let $ = layui.jquery, table = layui.table, form = layui.form, layer = layui.layer;
+            let cmeStandardKindId = localStorage.getItem("standardkind-id");
+            var unitId = localStorage.getItem("unit-id");
+            var userType = localStorage.getItem("user-type");
+            const _isZheJiang = '190c480d-d43c-450b-8472-a6fd00a6729d' === cmeStandardKindId;//浙江
+
+            // 表格配置
+            let loaderTable = function () {
+                table.render({
+                    elem: '#cmeProjPosDownList',
+                    url: huayi_sjwh_url + 'cmegrantscorestandard/wizardEntryList',
+                    title: '向导录入',
+                    defaultToolbar: [],
+                    where: {
+                        cmeStandardKindId: cmeStandardKindId,
+                        unitId: unitId,
+                        cmeYear: $('#cmeYear').val(),
+                        userType: userType,
+                        projType: 3,
+                        hasGrantscoreType: false
+                    },
+                    cols: [[
+                        { field: 'xuhao', title: '序号', templet: '#rank',align: "center", width: 60 },
+                        { field: 'name', title: '具体名称', align: "center" },
+                        { field: 'description', title: '具体规定', align: "center" },
+                        { field: 'scoreLevelName', title: '学分类别', align: "center" }
+                    ]],
+                    cellMinWidth: 100,
+                    id: "cmeProjPosDownList",
+                    parseData: function (res) {
+                        return {
+                            "code": res.status === 200 ? 0 : res.status,
+                            "msg": res.message,
+                            "count": res.data.length,
+                            "data": res.data,
+                            "page": res.data.pageNum,
+                            "limit": res.data.pageSize,
+                        }
+                    },
+                });
+            };
+
+            // 往年学分控制
+            let cmeYearInit = function() {
+                var currentYear = (new Date()).getFullYear();
+                $.ajax({
+                    url     : huayi_sjwh_url + 'cmeInputSingleprojscoreControlConfig/list',
+                    data    : { unitId: localStorage.getItem('unit-id'), validState: 1 },
+                    async   : false,
+                    success : re => {
+                        if (re.status == 200) {
+                            let $item = $('#cmeYear');
+                            $item.empty().append($('<option value="' + currentYear + '" selected>' + currentYear +'</option>'));
+                            for (let i = re.data.records.length - 1; i >= 0; i--) {
+                                let d = re.data.records[i];
+                                $item.append($('<option value="' + d.cmeYear + '">' + d.cmeYear + '</option>'));
+                            }
+                            form.render("select");
+                            
+                            // 初始化时检查当前年份
+                            toggleContent(currentYear);
+                        } else layer.msg('年份加载失败', { icon: 7 });
+                    },
+                    error   : () => layer.msg('年份加载失败', { icon: 7 })
+                });
+            }
+
+            // 加载静态页面内容
+            function loadStaticContent() {
+                $('#staticContentContainer').load('./CmeGrantscoreStandard_static.html', function(response, status, xhr) {
+                    if (status == "error") {
+                        $('#staticContentContainer').html('<p>内容加载失败，请稍后再试。</p>');
+                    }
+                });
+            }
+            
+            // 切换内容显示
+            function toggleContent(year) {
+                if (_isZheJiang && year == "2025") {
+                    $("#staticContentContainer").removeClass("hidden");
+                    $("#tableContainer").addClass("hidden");
+                    if ($("#staticContentContainer").is(":empty")) {
+                        loadStaticContent();
+                    }
+                } else {
+                    $("#staticContentContainer").addClass("hidden");
+                    $("#tableContainer").removeClass("hidden");
+                    htmlInite();
+                }
+            }
+            
+            // 初始化年份选择
+            cmeYearInit();
+            
+            // 年份选择变化事件
+            form.on('select(cmeYear)', function(data){
+                toggleContent(data.value);
+            });
+            
+            // 初始化表格
+            let htmlInite = function(){
+                if(cmeStandardKindId=="" || cmeStandardKindId ==null || cmeStandardKindId == "undefined"){
+                    layer.msg("缺少套信息");
+                    return;
+                }
+                loaderTable();
+            }
+
+            htmlInite();
+
+        });
+
+    </script>
+</body>
+
+</html>

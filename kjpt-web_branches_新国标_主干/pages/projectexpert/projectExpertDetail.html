@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <title>专家详情</title>
+    <link rel="stylesheet" href="../../js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../js/layui-v2.6.8/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script type="text/javascript" src="../../js/layui-v2.6.8/layui/layui.js"></script>
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="../../js/tools/form_validation_tool.js"></script>
+    <script type="text/javascript" src="../../js/tools/dict_tool.js"></script>
+    <script type="text/javascript" src="../../js/tools/urlTools.js"></script>
+    <style>
+        .layui-form-item .layui-inline {
+            margin-right: 0;
+        }
+        .layui-card {
+            max-width: 800px;
+            padding: 40px 40px 15px 10px;
+            margin: 0 auto;
+            margin-bottom: 70px !important;
+        }
+        .layui-card .layui-inline {
+            margin: 0 0 15px 0;
+        }
+        .layui-table-box, .layui-table-body {
+            overflow: visible !important;
+        }
+        .layui-table, .layui-table-view {
+            margin: 0;
+        }
+        .layui-table-header th .layui-table-cell {
+            text-align: center;
+        }
+        .layui-table-cell {
+            height: auto;
+            overflow: visible;
+            padding: 0;
+        }
+        .layui-table-cell .layui-form-select .layui-input {
+            border: none;
+            text-align: center;
+        }
+        .layui-form-danger + .layui-form-select .layui-input, .layui-form-danger:focus {
+            border: 1px solid;
+            border-color: #FF5722 !important;
+        }
+        /* .layui-table-cell input.layui-form-danger {
+
+        } */
+        .layui-anim.layui-anim-upbit {
+            max-height: 155px;
+        }
+        .footer {
+            text-align: center;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            margin-bottom: 0;
+            width: 100%;
+            background-color: #fff;
+            padding: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <form class="layui-form" id="form-ProjectExpert" lay-filter="add-filter" onreset="resetForm();" onsubmit="return false;">
+                <div class="layui-form-item">
+                    <div class="layui-inline layui-col-xs12 layui-col-sm6 layui-col-md6">
+                        <label class="layui-form-label"><i class="required-item"></i>证件号</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="cartId" id="cartId" placeholder="请输入" autocomplete="off" class="layui-input" 
+                                lay-verify="minChar" minChar="6">
+                        </div>
+                    </div>
+                    <div class="hide">
+                        <div class="layui-inline layui-col-xs12 layui-col-sm6 layui-col-md6" id="setUserName">
+                            <label class="layui-form-label">用户名</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="userName" placeholder="请输入" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-col-xs12 layui-col-sm6 layui-col-md6" id="setPassword">
+                            <label class="layui-form-label">密码</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="password" placeholder="请输入密码" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-xs12 layui-col-sm6 layui-col-md6">
+                        <label class="layui-form-label"><i class="required-item"></i>姓名</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="expertName" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-xs12 layui-col-sm6 layui-col-md6">
+                        <label class="layui-form-label"><i class="required-item"></i>性别</label>
+                        <div class="layui-input-block">
+                            <select name="expertGender" lay-filter="expertGender" lay-verify="required" lay-search>
+                                <option value="">请选择</option>
+                                <option value="1">男</option>
+                                <option value="2">女</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-xs12 layui-col-sm6 layui-col-md6">
+                        <label class="layui-form-label"><i class="required-item"></i>职称</label>
+                        <div class="layui-input-block">
+                            <select name="titleId" id="titleId" lay-filter="titleId" lay-verify="required" lay-search>
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-xs12 layui-col-sm12 layui-col-md12">
+                        <label class="layui-form-label">所在单位</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="unitName" placeholder="请输入" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-xs12 layui-col-sm6 layui-col-md6">
+                        <label class="layui-form-label"><i class="required-item"></i>手机号</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="expertMobile" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-xs12 layui-col-sm12 layui-col-md12">
+                        <label class="layui-form-label">联系地址</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="expertAddress" placeholder="请输入" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-xs12 layui-col-sm12 layui-col-md12">
+                        <label class="layui-form-label"><i class="required-item"></i>聘任年度</label>
+                        <div class="layui-input-block">
+                            <div id="appointYear" placeholder="请选择" data-name="appointYear"></div>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-xs12 layui-col-sm12 layui-col-md12">
+                        <label class="layui-form-label"><i class="required-item"></i>学科</label>
+                        <div class="layui-input-block">
+                            <table class="layui-table" id="table-knowledge" lay-filter="table-projectExpert"></table>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" name="userName" class="layui-input">
+                <input type="hidden" name="expertId" class="layui-input">
+
+                <div class="layui-form-item footer">
+                    <button class="layui-btn" lay-submit lay-filter="submit">保存</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        const   myConfig        = 1,
+                expertId        = getQueryString('expertId'),
+                expertInfoId    = getQueryString('expertInfoId'),
+                appointUnitId   = dictTool.getUnitId(),
+                date            = new Date(),
+                curYear         = date.getFullYear(),
+                startYear       = curYear - 6;
+        
+        let     certOri         = '';
+
+
+        /** 全局配置及引入相关的模块 */
+        layui.config({
+            base        : '/js/layui/ext/'
+        }).extend({
+            xmSelect    : 'xm-select'
+        }).use([ 'table', 'form', 'laydate', 'upload', 'xmSelect' ], () => {
+            let { table, form, layer, laydate, upload } = layui, xmSelectYear, layerIndex, loadIdx = layer.load(1, { shade: [ 0.3 ] });
+                 
+
+            /** 初始化页面 */
+            $(() => {
+                dictTool.getConfigByUnitFromRedis('fun_whether_need_user_when_add_expert');
+                if (window['fun_whether_need_user_when_add_expert'] == '0') $('#setPassword, #setUserName').hide();
+
+                $('#cartId').bind('blur', () => {
+                    let certId = $('#cartId').val();
+                    if (!certId || certId == certOri) return;
+                    if(hasExpertByCertId(certId)) {
+                        layer.msg('本地专家库内已存在此证件号', { icon: 7 });
+                        return;
+                    }
+                });
+
+                initTitleSel();
+                
+                initYearXmSel();
+
+                expertId && (getExpertInfo(expertId), knowledgeOp.getAppointmentList());
+                knowledgeOp.init()
+
+                form.render();
+                layer.close(loadIdx);
+            });
+
+
+            let hasExpertByCertId = function(certId) {
+                let flag = false;
+                $.ajax({
+                    url     : huayi_personorg_url + 'projectExpert/getExpertForInsertByTopUnit',
+                    data    : { cartId: certId, unitId: dictTool.getUnitId() },
+                    async   : false,
+                    success : res => {
+                        if (res.success == true) {
+                            let expert = res.data;
+                            if (expert && expert.cstate == 1) {
+                                flag =  true;
+                            };
+                        }
+                    }
+                });
+                return flag;
+            }
+
+            
+            window.initTitleSel = () => {
+                $('#titleId').find('option:gt(0)').remove();
+                $.ajax({
+                    type        : 'get',
+                    url         : huayi_sjwh_url + 'comTitle/list/all',
+                    contentType : 'application/json;charset=UTF-8',
+                    data        : { 'titleKind': 3 },
+                    dataType    : 'json',
+                    async       : false,
+                    success     : res => {
+                        if (res.data && res.data.length > 0) {
+                            $.each(res.data, (i, item) =>
+                                $('#titleId').append('<option value=\'' + item.titleId + '\'>' + item.titleName + '</option>'));
+                            layui.form.render('select');
+                        }
+                    },
+                    error       : () => layer.msg('职称加载失败', { icon: 7, time: 1500 })
+                });
+            };
+
+            window.initYearXmSel = () => {
+                xmSelectYear = xmSelect.render({
+                    el          : '#appointYear',
+                    name        : 'appointYear',
+                    height      : '170px',
+                    layVerify   : 'required',
+                    layVerType  : 'msg',
+                    theme       : { color: '#5FB878' },
+                    autoRow     : true,
+                    data        : () => {
+                        let yearArr = new Array();
+                        for (let year = curYear + 1; year > curYear - 6; year--) yearArr.push({ 'name': year, 'value': year });
+                        return yearArr;
+                    },
+                    on          : data => {
+                        let changeVal = data.change[0].value;
+                        if (data.isAdd) {
+                            knowledgeOp.dataSet.push({ appointYear: changeVal, appointUnitId: appointUnitId, expertId: expertId });
+                            knowledgeOp.init(knowledgeOp.dataSet);
+                            knowledgeOp.dataSet = knowledgeOp.dataSet.sort((a, b) => b.appointYear - a.appointYear);
+                        } else knowledgeOp.dataSet = knowledgeOp.dataSet.filter(item => item.appointYear != changeVal);
+                        knowledgeOp.init();
+                    }   
+                });
+            };
+            
+
+            window.knowledgeOp = {
+                
+                dataSet : [],
+
+                getAppointmentList: () => {
+                    $.ajax({
+                        type        : 'get',
+                        url         : huayi_personorg_url + 'projectExpert/getExpertAppointmentList',
+                        async       : false,
+                        data        : {
+                            expertId        : expertId,
+                            appointUnitId   : appointUnitId
+                        },
+                        contentType : 'application/json;charset=UTF-8',
+                        dataType    : 'json',
+                        success     : res => {
+                            if (res.success == true) knowledgeOp.dataSet = res.data;
+                            else layer.msg('获取专家聘任信息失败', { icon: 7, time: 1500 });
+                        },
+                        error       : () => layer.msg('获取专家聘任信息失败', { icon: 7, time: 1500 })
+                    });
+                },
+
+                init : dataSet => {
+                    let data = dataSet || knowledgeOp.dataSet;
+                    data = data.filter(item => startYear && item.appointYear && startYear < item.appointYear);
+                    table.render({
+                        id          : 'table-knowledge',
+                        elem        : '#table-knowledge',
+                        page        : false, // 分页
+                        loading     : true,
+                        data        : data,
+                        cols        : [ [
+                            { field: 'appointYear', title: '聘任年度', width: 90, align: 'center' },
+                            { field: 'knowledge2', title: '二级学科', align: 'center', style: 'padding: 0;', templet: d => {
+                                return `<select name="knowledge2" id="knowledge2_${d.appointYear}" lay-filter="knowledge2_${d.appointYear}"` + 
+                                    ` lay-verify="required" lay-search><option value="">请选择</option></select>`;
+                            } },
+                            { field: 'knowledge3', title: '三级学科', align: 'center', style: 'padding: 0;', templet: d => {
+                                return `<select name="knowledge3" id="knowledge3_${d.appointYear}" lay-filter="knowledge3_${d.appointYear}"'` + 
+                                    ` lay-verify="required" lay-search><option value="">请选择</option></select>`;
+                            } }
+                        ] ],
+                        done        : res => {
+                            $.each(knowledgeOp.dataSet, (i, item) => {
+                                let appointYear = item.appointYear,
+                                    sel_2       = 'knowledge2_' + appointYear,
+                                    sel_3       = 'knowledge3_' + appointYear; 
+                                if (startYear >= appointYear) return true;
+                                dictTool.initKnowledgeSel('#' + sel_2, '二级学科', { knowledgeType: 2, versionYear: appointYear }, () => {
+                                    let knowledgeTwoId = item.knowledgeTwoId;
+                                    if (knowledgeTwoId) {
+                                        $('#' + sel_2).val(knowledgeTwoId);
+                                        dictTool.initKnowledgeSel('#' + sel_3, '三级学科', { knowledgeType: 3, versionYear: appointYear, knowledgeTwoId }, 
+                                            () => $('#' + sel_3).val(item.knowledgeId));
+                                    }
+                                });    
+                                form.on('select(' + sel_2 + ')', data => {
+                                    $.each(knowledgeOp.dataSet, (i, item) => {
+                                        if (item.appointYear == appointYear) {
+                                            knowledgeOp.dataSet[i].knowledgeTwoId = data.value;
+                                            delete knowledgeOp.dataSet[i].knowledgeId;
+                                        }
+                                    });
+                                    dictTool.initKnowledgeSel('#' + sel_3, '三级学科', { knowledgeType: 3, versionYear: appointYear, knowledgeTwoId: data.value });
+                                });
+                                form.on('select(' + sel_3 + ')', data => {
+                                    $.each(knowledgeOp.dataSet, (i, item) => {
+                                        if (item.appointYear == appointYear) knowledgeOp.dataSet[i].knowledgeId = data.value;
+                                    });
+                                });
+                            });
+
+                            form.render();
+                        }
+                    });
+                }
+
+            };
+
+            
+            /** 获取专家信息 */
+            window.getExpertInfo = expertId => {
+                $.ajax({
+                    type        : 'get',
+                    url         : huayi_personorg_url + 'projectExpert/getExpertForUpdate',
+                    async       : false,
+                    data        : {
+                        expertId        : expertId,
+                        appointUnitId   : dictTool.getUnitId()
+                    },
+                    contentType : 'application/json;charset=UTF-8',
+                    dataType    : 'json',
+                    success     : res => {
+                        if (res.success == true) renderForm(res.data, 'update');
+                        else layer.msg('获取专家信息失败', { icon: 7, time: 1500 });
+                    },
+                    error       : () => layer.msg('获取专家信息失败', { icon: 7, time: 1500 })
+                });
+            };
+            window.renderForm = (data, type) => {
+                form.val('add-filter', data);
+                if (data) certOri = data.cartId;
+                if (type == 'update') xmSelectYear.setValue(data.appointYear.split(','));
+                form.render();
+            };
+            window.resetForm = () => (knowledgeOp.dataSet = [], knowledgeOp.init(), xmSelectYear.setValue([]));
+
+            
+            form.verify(layuiVerify);
+
+            form.on('submit(submit)', data => {
+                let loadIdx = layer.load(1, { shade: [ 0.3 ] });
+                if(!expertId) {
+                    if (hasExpertByCertId(data.field.cartId)) {
+                        layer.close(loadIdx);
+                        layer.msg('本地专家库内已存在此证件号', { icon: 7 });
+                        return false;
+                    }
+                }
+                
+
+                $.ajax({
+                    type        : 'post',
+                    url         : huayi_personorg_url + (expertId ? 'projectExpert/update' : 'projectExpert/save'),
+                    data        : JSON.stringify({ ...data.field,
+                        expertId            : expertId,
+                        expertInfoId        : expertInfoId,
+                        appointmentList     : table.getData('table-knowledge'),
+                        cmeStandardKindId   : dictTool.getStandardKindId(), // 用于判断是新增还是修改
+                        appointUnitId       : dictTool.getUnitId()
+                    }),
+                    contentType : 'application/json;charset=UTF-8',
+                    dataType    : 'json',
+                    async       : false,
+                    success     : res => {
+                        if (res.success == true) {
+                            layer.close(layerIndex);
+                            if (parent.window != window) {
+                                parent.tableOp.reload();
+                                parent.layer.closeAll();
+                                parent.layer.msg(res.data, { icon: 1, time: 1500 });
+                            } else layer.msg(res.data, { icon: 1, time: 1500 });
+                        } else {
+                            layer.msg(res.msg, { icon: 7, time: 1500 });
+                        }
+                    },
+                    error       : () => layer.msg('操作失败', { icon: 7, time: 1500 })
+                });
+                layer.close(loadIdx);
+                return false;
+            });
+            
+        });
+    </script>
+</body>
+</html>

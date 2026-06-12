@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>公共配置表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <style>
+        #addConfigBox .layui-inline {
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!--        搜索框区域-->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <blockquote class="layui-form layui-form-item layui-elem-quote one-btn" lay-filter="query-form">
+                <div class="layui-inline">
+                    <label class="layui-form-label">配置字典</label>
+                    <div class="layui-input-block">
+                        <select name="configDictId" id="configDictIdSearch" lay-search>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">套</label>
+                    <div class="layui-input-block">
+                        <select name="standardKindId" id="standardKindSearch" lay-filter="standard-kind-search" lay-search >
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">学分级别</label>
+                    <div class="layui-input-block">
+                        <select name="scoreLevelId" id="scoreLevelIdSearch" lay-search >
+                        </select>
+                    </div>
+                </div>
+                <!-- <div class="layui-inline">
+                    <label class="layui-form-label">最高机构</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="topUnitId" id="topUnitIdSearch" readonly autocomplete="off" class="layui-input">
+                    </div>
+                </div> -->
+                <div class="layui-inline">
+                    <label class="layui-form-label">适用的用户类型</label>
+                    <div class="layui-input-block">
+                        <select name="userType" id="userTypeSearch">
+                            <option value="">请选择</option>
+                            <option value="2">管理员</option>
+                            <option value="3">技术支持和前方代表</option>
+                            <option value="11">卫生行政部门账号(政府版)</option>
+                            <option value="12">机构用户(单位版)</option>
+                            <option value="13">科室用户</option>
+                            <option value="14">个人用户</option>
+                            <option value="15">专家用户(专家评审)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <a class="layui-btn layui-btn-sm btn-search" id="searchBtn" onclick="loaderTable()" lay-filter="table-search" data-type="reload">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </a>
+                </div>
+            </blockquote>
+        </div>
+
+        <!--表格区域-->
+        <div class="layui-card-body layui_body_box">
+            <table class="layui-table" id="configDictTable" lay-filter="configDictTable" style="margin: 0px 0px;"></table>
+        </div>
+
+        <!--        添加弹窗-->
+        <div id="addConfigBox" style=" display:none;text-align: center">
+            <form class="layui-form" style="padding: 30px;" id="configForm" lay-filter="add-filter">
+                <input type="hidden" name="configId" autocomplete="off" class="layui-input">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>套</label>
+                        <div class="layui-input-block">
+                            <select name="cmeStandardKindId" id="standardKindForm" lay-search lay-filter="standard-kind-form" lay-verify="required">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>最高机构</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="topUnitId" id="topUnitIdForm" readonly autocomplete="off" class="layui-input" lay-filter="topUnitIdForm" lay-verify="topUnitIdVerify">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">学分级别</label>
+                        <div class="layui-input-block">
+                            <select name="scoreLevelId" id="scoreLevelIdForm" lay-search >
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>配置字典</label>
+                        <div class="layui-input-block">
+                            <select name="configDictId" id="configDictIdForm" lay-verify="configDictIdVerify" lay-search >
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>配置值</label>
+                        <div class="layui-input-block">
+                            <textarea name="configValue" placeholder="请填写具体配置" class="layui-textarea" autocomplete="off" lay-verify="configValueVerify"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">适用的用户类型</label>
+                        <div class="layui-input-block">
+                            <select name="userType">
+                                <option value="">请选择</option>
+                                <option value="2">管理员</option>
+                                <option value="3">技术支持和前方代表</option>
+                                <option value="11">卫生行政部门账号(政府版)</option>
+                                <option value="12">机构用户(单位版)</option>
+                                <option value="13">科室用户</option>
+                                <option value="14">个人用户</option>
+                                <option value="15">专家用户(专家评审)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">url</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="url" placeholder="请填写url" autocomplete="off" class="layui-input" lay-verify="urlVerify">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">备注</label>
+                        <div class="layui-input-block">
+                            <textarea name="remark" placeholder="请填写备注" class="layui-textarea" autocomplete="off" lay-verify="remarkVerify"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-sm" lay-submit lay-filter="submit">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--表格内数据编辑、删除按钮-->
+<script type="text/html" id="rowBar">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger btn-danger-row" lay-event="del">删除</a>
+</script>
+<script type="text/html" id="bar">
+    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="add">添加</a>
+</script>
+<script>
+    // 全局配置及引入相关的模块
+    layui.config({
+        base : '/js/layui/ext/'
+    }).extend({
+        treeSelect  :   'treeSelect',
+        tool        :   'tool'
+    });
+
+    layui.use(['table', 'form','upload','tool','treeSelect'], function () {
+        var table = layui.table,form = layui.form,$ = layui.jquery;
+        var layer = layui.layer,tool=layui.tool,treeSelect=layui.treeSelect;
+        let ajaxNum =0,loading=null;
+        let configDictObj = {},standardKindIdObj={};
+        let nowTopUnitId = null;
+
+        //关闭closeLoading的判断
+        let closeLoading = function(){
+            ajaxNum--;
+            if(ajaxNum<=0 && loading) layer.close(loading);
+        }
+        //打开加载
+        let openLoading = function(){
+            if(ajaxNum == 0) loading = layer.msg('加载中', {icon: 16, shade: 0.3, time:0});
+            ajaxNum ++;
+        }
+        //公共ajax
+        let commonAjax = function(type="get",url,data,failFun,successFun){
+            openLoading();
+            $.ajax({
+                type    :   type,
+                url     :   url,
+                data    :   data,
+                success :   function (res) {
+                    closeLoading();
+                    if(res.status != 200) {
+                        layer.msg(res.msg);
+                        return;
+                    }
+                    successFun(res);
+                },
+                error    :   function(res){
+                    closeLoading();
+                    failFun();
+                }
+            });
+        }
+        // 表格配置
+        window.loaderTable = function () {
+            table.render({
+                elem: '#configDictTable',
+                url: huayi_sjwh_url + 'cmeCommonConfig/list',
+                title: '配置字典表',
+                defaultToolbar: [],
+                where: {
+                    configDictId: $('#configDictIdSearch').val(),
+                    cmeStandardKindId: $('#standardKindSearch').val(),
+                    scoreLevelId: $('#scoreLevelIdSearch').val(),
+                    userType: $('#userTypeSearch').val(),
+                },
+                cols: [[
+                    {align: 'center',minWidth:120,toolbar: '#rowBar', title: '操作', fixed: 'left'},
+                    {field: 'configDictId', title: '配置字典',align: 'center',minWidth:360,templet:function(d){
+                        if(configDictObj.hasOwnProperty(d.configDictId)) return configDictObj[d.configDictId].configDictName;
+                        return "";
+                    }}, 
+                    {field: 'cmeStandardKindId', title: '套',align: 'center',minWidth:120,templet:function(d){
+                        if(!standardKindIdObj.hasOwnProperty(d.cmeStandardKindId)) return "";
+                        return standardKindIdObj[d.cmeStandardKindId].description;
+                    }},
+                    {field: 'topUnitName', title: '最高机构',minWidth:200,align: 'center'},
+                    {field: 'scoreLevelName', title: '学分级别',minWidth:220,align: 'center'}, 
+                    {field: 'configValue', title: '配置值',minWidth:200,align: 'center'}, 
+                    {field: 'userType', title: '用户类型',minWidth:200,align: 'center',templet:function(d){
+                        if(d.userType==null) return "";
+                        if(d.userType==2) return "管理员";
+                        if(d.userType==3) return "技术支持和前方代表";
+                        if(d.userType==11) return "卫生行政部门账号(政府版)";
+                        if(d.userType==12) return "机构用户(单位版)";
+                        if(d.userType==13) return "科室用户";
+                        if(d.userType==14) return "个人用户";
+                        if(d.userType==15) return "专家用户(专家评审)";
+                        return d.userType;
+                    }}, 
+                    {field: 'url', title: '对应的url',align: 'center'},
+                    {field: 'remark', title: '备注',align: 'center'},
+                    {field: 'addTime', title: '创建时间',minWidth:160,align: 'center'},
+                    {field: 'updateTime', title: '更新时间',minWidth:160,align: 'center'},
+                ]],
+                toolbar: '#bar',
+                id: "commonConfigDict",
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "count": res.data.recordsTotal, //解析数据长度
+                        "data": res.data.records, //解析数据列表
+                        "page": res.data.pageNum, //当前页
+                        "limit": res.data.pageSize, //每页条数
+                    }
+                },
+                request: {
+                    pageName: 'pageNum', //页码的参数名称，默认：page
+                    limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                },
+                done:function(res,curr,count){
+                    curr > 1 && res.data.length === 0 && loaderTable();
+                }
+            });
+        };
+        
+        //配置字典
+        let configDictInit = function(){
+            commonAjax('get',huayi_sjwh_url +"cmeCommonConfigDict",{},
+                function(){layer.msg("配置字典加载失败");},
+                function(res){
+                    for(let tempObj of res.data){
+                        configDictObj[tempObj.keyId] = tempObj; 
+                    }
+                    tool.appendSelect("#configDictIdSearch",res.data,"keyId","configDictName");
+                    tool.appendSelect("#configDictIdForm",res.data,"keyId","configDictName");
+                });
+        }
+
+        //套
+        let standardKindInit = function(){
+            commonAjax('get',huayi_sjwh_url +"cmestandardkind/list/all",{},
+                function(){layer.msg("套加载失败");},
+                function(res){
+                    let options = '<option value="" > 请选择套标准 </option>';
+                    for(let tempObj of res.data){
+                        standardKindIdObj[tempObj.cmeStandardKindId] = {
+                            description:tempObj.description,
+                            topUnitId:tempObj.topUnitId};
+                        options += '<option top-unit-id="' + tempObj.topUnitId + '" value="' + tempObj.cmeStandardKindId + '">'+tempObj.description+'</option>';
+                    }
+                    $('#standardKindSearch').append(options);
+                    $('#standardKindForm').append(options);
+                    form.render('select');
+                });
+        }
+
+        //监听套来加载学分级别和机构树
+        let bindStandardKind = function(){
+            form.on('select(standard-kind-search)', function (data) {
+                if(!tool.isEmpty(data.value)){
+                    scoreLevelInit(data.value,"scoreLevelIdSearch");
+                } else {
+                    $('#scoreLevelIdSearch').find('option:gt(0)').remove();
+                    form.render('select');
+                }
+            });
+            form.on('select(standard-kind-form)', function (data) {
+                if(!tool.isEmpty(data.value)) {
+                    scoreLevelInit(data.value,"scoreLevelIdForm");
+                    unitFormInit(data.value);
+                } else {
+                    $('#scoreLevelIdForm').find('option:gt(0)').remove();
+                    form.render('select');
+                }
+            });
+        }
+
+        //学分加载
+        let scoreLevelInit = function(standardkindId,id){
+            commonAjax('get',huayi_sjwh_url +"cmecomscorelevel/backend/taoId",
+                {cmeStandardKindId: standardkindId},
+                function(){layer.msg("学分级别加载失败");},
+                function(res){
+                    $(`#${id}`).find('option:gt(0)').remove();
+                    tool.appendSelect(`#${id}`,res.data,"scoreLevelId","scoreLevelName");
+                });
+        }
+
+        // 监听头部新增按钮
+        table.on('toolbar(configDictTable)', function (obj) {
+            if(obj.event != "add") return;
+            $("#configForm")[0].reset();
+            treeSelect.destroy('topUnitIdForm');
+            nowTopUnitId = "";
+            $("#topUnitIdForm").val('');
+            $('#scoreLevelIdForm').find('option:gt(0)').remove();
+            $("#addConfigBox input[name='configId']").val('');
+            openFormWindow();
+        });
+
+        // 监听行内按钮
+        table.on('tool(configDictTable)', function (obj) {
+            if(obj.event == "del") {
+                deleteConfig(obj.data.configId);
+                return;
+            }
+            if(obj.event == "edit"){
+                openFormWindow(obj.data);
+                unitFormInit(obj.data.cmeStandardKindId,obj.data.topUnitId);
+                scoreLevelFormInit(obj.data);
+            }
+        });
+
+        //新增，编辑时打开弹窗
+        let openFormWindow = function(data=null){
+            data!=null && form.val("add-filter",data);
+            layer.open({
+                type: 1,
+                title: (data==null) ? "新增":"修改",
+                content: $('#addConfigBox'),
+                area: ['85%', '85%'],
+                cancel: function(index, layero){ $("#configForm")[0].reset(); }
+            })
+        }
+
+        //删除配置
+        let deleteConfig = function(configId){
+            layer.confirm('确认删除', {icon: 3, title: '提示'}, function () {
+                $.ajax({
+                    type: 'get',
+                    url: huayi_sjwh_url + 'cmeCommonConfig/deleted',
+                    data: { configId: configId },
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.status === 200) {
+                            layer.msg("删除成功");
+                            loaderTable();
+                        }else{
+                            layer.msg(res.msg);
+                        }
+                    }
+                });
+            })
+        }
+
+        //加载机构树
+        let unitFormInit = function(cmeStandardKindId="",unitId=""){
+            if(tool.isEmpty(cmeStandardKindId)) return;
+            if(!standardKindIdObj.hasOwnProperty(cmeStandardKindId)) return;
+            let tempTopUnitId = standardKindIdObj[cmeStandardKindId].topUnitId;
+            if(nowTopUnitId == tempTopUnitId && !tool.isEmpty(unitId)){
+                treeSelect.checkNode('topUnitIdForm', unitId);
+                return;
+            }
+            treeSelect.destroy('topUnitIdForm');
+            nowTopUnitId = tempTopUnitId;
+            treeSelect.render({
+                elem    : '#topUnitIdForm',
+                data    : huayi_personorg_url + 'comunit/childrenAllTreeRedis?unitId='+tempTopUnitId,
+                headers : {
+                    'Authorization' : localStorage.getItem('token'),
+                    'KJPT-USER-ID'  : localStorage.getItem('user-id')
+                },
+                type    : 'get',
+                search  : true,
+                success : function(d){
+                    !tool.isEmpty(unitId) && treeSelect.checkNode('topUnitIdForm', unitId);
+                }
+            });
+        } 
+
+        let scoreLevelFormInit = function(data){
+            if(tool.isEmpty(data.scoreLevelId) || tool.isEmpty(data.cmeStandardKindId)) return;
+            commonAjax('get',huayi_sjwh_url +"cmecomscorelevel/taoId",
+                {cmeStandardKindId: data.cmeStandardKindId},
+                function(){layer.msg("学分级别加载失败");},
+                function(res){
+                    $('#scoreLevelIdForm').find('option:gt(0)').remove();
+                    tool.appendSelect("#scoreLevelIdForm",res.data,"scoreLevelId","scoreLevelName");
+                    form.render('select');
+                    form.val("add-filter",data);
+                });
+            
+        }
+
+        // form表单相关操作
+        // 新增/修改表单提交
+        form.on('submit(submit)', function (data) {
+            const configDictId = data.field.configDictId;
+            if(configDictObj.hasOwnProperty(configDictId)){
+                data.field.configDictCode = configDictObj[configDictId].configDictCode;
+            }
+            var configId = $("#configForm input[name='configId']").val();
+            let URL = huayi_sjwh_url + 'cmeCommonConfig/update';
+            if(configId=="" || configId==null) {
+                URL = huayi_sjwh_url + 'cmeCommonConfig/save';
+            }
+            $.ajax({
+                type: 'post',
+                url: URL,
+                data:JSON.stringify(data.field),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    if(res.status == 200){
+                        layer.closeAll();
+                        loaderTable();
+                        $("#configForm")[0].reset()
+                        layer.msg("保存成功");
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                },
+                error: function () {
+                    layer.msg("发送请求失败");
+                }
+            })
+            return false;
+        });
+
+        //自定义验证规则
+        form.verify({
+            topUnitIdVerify : function(value){
+                if(value.length == 0) return '最高机构不能为空';
+            },
+            configDictIdVerify: function(value){
+                if(value.length == 0) return '配置编码不能为空';
+            },
+            configValueVerify: function(value){
+                if(value.length == 0) return '配置值不能为空';
+                if(value.length > 1000) return '配置值最长不超过1000个字符';
+            },
+            urlVerify: function(value){
+                if(value.length > 120) return 'url最长不超过120个字符';
+            },
+            remarkVerify: function(value){
+                if(value.length > 300) return '备注最长不超过300个字符';
+            }
+
+        });
+
+        //页面初始化，通过查看参数是否都在来进行是否加载页面ed646370-a5f3-4f88-a640-d62fda36c4b8
+        let htmlInit = function(){
+            configDictInit();//配置字典初始化
+            bindStandardKind();
+            standardKindInit();//套初始化
+        }
+
+        htmlInit();
+
+    });
+
+</script>
+</body>
+</html>

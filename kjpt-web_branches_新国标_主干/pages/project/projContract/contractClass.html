@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+
+    <link rel="stylesheet" href="../../../css/person/reset.css" />
+    <link rel="stylesheet" href="../../../css/person/style.css" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <!-- <script type="text/javascript" src="../../js/global_ajax_setting.js"></script> -->
+
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="../../../js/api/manage.js"></script>
+    <style>
+        .ztree li span.button {
+            vertical-align: inherit !important;
+        }
+
+        .layui-form-label-my {
+            width: 100px;
+        }
+
+        .layui-inline-my {
+            width: 350px;
+        }
+
+        .myCenter {
+            display: flex;
+            align-items: center;
+            /* 垂直居中 */
+        }
+
+        /* 如果需要的话，可以设置一个固定的高度来匹配label行高 */
+        .myCenter .layui-input {}
+    </style>
+
+</head>
+
+<body>
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body" style="margin:0 auto;">
+                <div class="layui-form" lay-filter="classInfoForm">
+
+                    <input type="hidden" id="projContractClassId" name="projContractClassId" />
+                    <input type="hidden" id="projContractId" name="projContractId" />
+
+                    <fieldset class="layui-elem-field" style="margin-top: 10px; padding: 30px;">
+                        <legend style="color:rgba(235, 39, 39, 0.514);text-align: left;font-weight: bold; font-size: 18px;;">
+                            办班信息</legend>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="padding:9px 0px; width:100px;">项目举办形式:</label>
+                                <div class="layui-input-block">
+                                    <input type="radio" name="holdType" lay-filter="holdType" value="面授培训" title="面授培训" lay-verify="radioChecked">
+                                    <input type="radio" name="holdType" lay-filter="holdType" value="网络培训" title="网络培训" lay-verify="radioChecked">
+                                    <input type="radio" name="holdType" lay-filter="holdType" value="其他" title="其他" lay-verify="radioChecked">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <input type="text" id="holdTypeOther" name="holdTypeOther" class="layui-input">
+                            </div>
+
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">立项计划招生人数:</label>
+                                <div class="layui-input-block myCenter">
+                                    <input type="text" id="planNum" name="planNum" autocomplete="off" class="layui-input" />
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">实际计划招生人数:</label>
+                                <div class="layui-input-block myCenter">
+                                    <input type="text" id="factNum" name="factNum" autocomplete="off" class="layui-input" lay-verify="required|number" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+
+                            <label class="layui-form-label">说明理由:</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="factNumReason" name="factNumReason" placeholder="(如实际计划招生人数超出立项文件上的计划招生人数，请说明理由)" autocomplete="off"
+                                    class="layui-input" style="width:40%;" />
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="padding:9px 0px;width:100px;">举办开始时间:</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="startDt" name="startDt" autocomplete="off" class="layui-input" lay-verify="required|date" />
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="padding:9px 0px;;width:100px;">举办结束时间:</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="endDt" name="endDt" autocomplete="off" class="layui-input" lay-verify="required|date" />
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="padding:9px 0px;;width:100px;">举办地点:</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="holdPlace" name="holdPlace" autocomplete="off" class="layui-input" lay-verify="required" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+
+                            <div class="layui-inline">
+                                <label class="layui-form-label"> 考核方式:</label>
+                                <div class="layui-input-block">
+                                    <input type="radio" name="testType" lay-filter="testType" value="纸质考试" title="纸质考试" lay-verify="radioChecked">
+                                    <input type="radio" name="testType" lay-filter="testType" value="网络考试" title="网络考试" lay-verify="radioChecked">
+                                    <input type="radio" name="testType" lay-filter="testType" value="现场操作考核" title="现场操作考核" lay-verify="radioChecked">
+                                    <input type="radio" name="testType" lay-filter="testType" value="其他" title="其他" lay-verify="radioChecked">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <input type="text" name="testTypeOther" id="testTypeOther" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label"> 教学对象:</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="teachObject" name="teachObject" autocomplete="off" class="layui-input" lay-verify="required" />
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label"> 教学教材:</label>
+                                <div class="layui-input-block">
+                                    <input type="radio" name="teachMaterials" lay-filter="teachMaterials" value="文字材料" title="文字材料" lay-verify="radioChecked">
+                                    <input type="radio" name="teachMaterials" lay-filter="teachMaterials" value="音像材料" title="音像材料" lay-verify="radioChecked">
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item" style="display:none;">
+                            <label class="layui-form-label">教材目录及内容概述:</label>
+                            <div class="layui-input-block">
+                                <textarea id="classContent" name="classContent" autocomplete="off" class="layui-textarea" rows="4" style="width:50%"></textarea>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="layui-elem-field" style="margin-top: 10px; padding: 30px;">
+                        <legend style="color:rgba(235, 39, 39, 0.514);text-align: left;font-weight: bold; font-size: 18px;;">
+                            授课老师信息</legend>
+                            
+                        <div style="color:red;padding-left:110px;margin-bottom: 15px;">授课老师和课程信息填写原项目立项时信息，变更填写变更信息说明<br/>
+                            备注：未变更填无，有变更参考:教师变更“xxx”、职称变更“xxx”、单位变更“xxx”、授课变更“xxx”</div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">授课老师:</label>
+                            <div class="layui-input-block" style="width:80%">
+                                <table class="layui-table" id="periodTeachers" lay-filter="periodTeachers" style="margin: 0px 0px;">
+                                </table>
+                            </div>
+                        </div>
+
+
+
+                    </fieldset>
+
+                    <div class="layui-btn-container" style="text-align: center">
+                        <button class="layui-btn layui-btn-primary" id="btnCancel">返回列表</button>
+                        <button type="submit" class="layui-btn" lay-submit="" lay-filter="btnSave" id="btnSave">保存本页</button>
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
+
+
+<script type="text/html" id="rowBar">
+    <div class="layui-btn-container" style="display:inline">
+    <a class="layui-btn layui-btn-danger layui-btn-sm"  lay-event="del">删除</a>
+    </div>
+</script>
+
+<script type="text/html" id="toolbar">
+    <div class="layui-btn-container" style="display:inline">
+        <a class="layui-btn layui-btn-sm" lay-event="add" id="btnAdd"><i class="layui-icon layui-icon-add-1 layuiadmin-button-btn"></i>添加</a>
+   
+</script>
+
+<script>
+
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+
+    });
+
+    layui.use(['form', 'jquery', 'layer', "laydate", 'table'], function () {
+        var $ = layui.jquery;
+        var form = layui.form;
+        var layer = layui.layer;
+        var laydate = layui.laydate;
+        var table = layui.table;
+
+        var projId = parent.window["projId"];
+        var downId = parent.window["downId"];
+        window.getProjContractId = function () {
+            return parent.window["projContractId"];
+        }
+        var projContractId = getProjContractId();
+        var oper = parent.window["oper"];
+        var main = layui.sessionData("projContract")["main"];
+        var cmeProjContractClassPeriodTeacherList = [];
+
+        var commonObj = {
+            get projContractId() { return getProjContractId(); },
+            projId: projId,
+            downId: downId,
+            userCreate: localStorage.getItem("user-name"),
+            userUpdate: localStorage.getItem("user-name")
+        }
+
+
+        window.getUnitId = function () {
+            return localStorage.getItem("unit-id");
+        }
+        window.getCmeStandardKindId = function () {
+            return localStorage.getItem("standardkind-id");
+        }
+
+
+
+        window.initAll = function () {
+            if (oper == "details") {
+                $(".layui-form").find("input").prop("disabled", "disabled").addClass("layui-disabled");
+                $(".layui-form").find("checkbox").prop("disabled", "disabled").addClass("layui-disabled");
+                $(".layui-form").find("select").prop("disabled", "disabled").addClass("layui-disabled");
+                $(".layui-form").find("textArea").prop("disabled", "disabled").addClass("layui-disabled");
+                $("#btnSave").hide();
+            }
+
+            laydate.render({
+                elem: '#startDt'
+                , trigger: 'click'
+            });
+
+            laydate.render({
+                elem: '#endDt'
+                , trigger: 'click'
+            });
+
+
+            let limitPerson = main.limitPerson;
+            if (limitPerson != null && limitPerson > 0) {
+                $("#planNum").val(limitPerson).prop("disabled", "disabled").addClass("layui-disabled");
+                $("#factNum").val(limitPerson);
+            }
+
+            $("#startDt").val(main.startDt);
+            $("#endDt").val(main.endDt);
+            $("#holdPlace").val(main.studyAddress);
+        }
+
+
+        window.getClassInfo = function () {
+            if (projContractId != null && projContractId != "") {
+                let url = huayi_projectscore_url + `cmeProjContract/projContractPartInfo/${getProjContractId()}/CmeProjContractClass`;
+                $.ajax({
+                    url: url,
+                    type: "get",
+                    success: function (res) {
+                        if (res.success) {
+                            let cmeProjContractClass = res.data.cmeProjContractClass;
+                            let cmeProjContractClassPeriod = res.data.cmeProjContractClassPeriod;
+                            cmeProjContractClassPeriodTeacherList = res.data.cmeProjContractClassPeriodTeacherList;
+
+                            if (cmeProjContractClass != null && cmeProjContractClassPeriod != null
+                                && cmeProjContractClassPeriodTeacherList != null) {
+
+
+                                delete cmeProjContractClass.planNum;
+                                cmeProjContractClass["startDt"] = cmeProjContractClassPeriod.startDt;
+                                cmeProjContractClass["endDt"] = cmeProjContractClassPeriod.endDt;
+                                cmeProjContractClass["holdPlace"] = cmeProjContractClassPeriod.holdPlace;
+                                // cmeProjContractClass["classContent"] != null && $("#classContent").attr("lay-verify", "required").parent().parent().show();
+
+                                form.val("classInfoForm", cmeProjContractClass);
+                                if (cmeProjContractClass.holdType != "其他") {
+                                    $("#holdTypeOther").val("").prop("disabled", "disabled").addClass("layui-disabled");
+                                }
+                                if (cmeProjContractClass.testType != "其他") {
+                                    $("#testTypeOther").val("").prop("disabled", "disabled").addClass("layui-disabled");
+                                }
+                                form.render();
+                            }
+                            loaderTeacherTable();
+
+                        } else {
+                            layer.msg(res.msg, { icon: 2 });
+                        }
+                    },
+                    error: function (res) {
+                        layer.msg("发送数据失败", { icon: 2 });
+                    }
+                });
+            }
+        }
+
+        window.loaderTeacherTable = function () {
+            table.render({
+                elem: '#periodTeachers',
+                async: false,
+                title: '教师列表',
+                defaultToolbar: [],
+                data: cmeProjContractClassPeriodTeacherList,
+                cols: [[
+                    { field: 'projContractClassPeriodTeacherId', hide: true },
+                    { field: 'projContractId', hide: true },
+                    { align: 'center', width: 100, toolbar: '#rowBar', title: '操作' },
+                    { field: 'teacherName', title: '姓名', edit: (oper != "details") },
+                    { field: 'teacherUnit', title: '工作单位', edit: (oper != "details") },
+                    { field: 'teacherPost', title: '专业技术职务', edit: (oper != "details"), minWidth: 100 },
+                    { field: 'teacherTeachMethod', title: '授课方式', edit: (oper != "details") },
+                    { field: 'teachContent', title: '授课内容', edit: (oper != "details") },
+                    { field: 'period', title: '学时', edit: (oper != "details") },
+                    { field: 'changeinfo', title: '变更', edit: (oper != "details") }
+                ]],
+                toolbar: '#toolbar',
+                cellMinWidth: 100,
+                page: false,
+                limit: 100,
+                id: "periodTeachers",
+                parseData: function (res) {
+                    if (res.status != 200) {
+                        layer.msg(res.msg)
+                        return;
+                    }
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.msg, //解析提示文本
+                        "data": res.data, //解析数据列表
+                    }
+                },
+                done: function (res) {
+
+                    if (oper == "details") {
+                        console.log(res);
+                        $("[lay-event='del']").prop("disabled", true).addClass("layui-btn-disabled");
+                        $("[lay-event='add']").prop("disabled", true).addClass("layui-btn-disabled");
+                        form.render();
+                    }
+                }
+            });
+        };
+
+        window.reloadTeacherTable = function () {
+            if (projContractId != null && projContractId != "") {
+                let url = huayi_projectscore_url + `cmeProjContract/projContractPartInfo/${getProjContractId()}/CmeProjContractClassPeriodTeacherList`;
+                $.ajax({
+                    url: url,
+                    type: "get",
+                    success: function (res) {
+                        if (res.success) {
+                            cmeProjContractClassPeriodTeacherList = res.data.cmeProjContractClassPeriodTeacherList;
+                            loaderTeacherTable();
+
+                        } else {
+                            layer.msg(res.msg, { icon: 2 });
+                        }
+                    },
+                    error: function (res) {
+                        layer.msg("发送数据失败", { icon: 2 });
+                    }
+                });
+            }
+        }
+
+        form.on('submit(btnSave)', function (data) {
+            if (cmeProjContractClassPeriodTeacherList.length == 0) {
+                layer.msg("请填写授课教师信息", { icon: 5 });
+                return false;
+            }
+
+            let url = huayi_projectscore_url + `cmeProjContract/projContractPartInfo/${getProjContractId()}/CmeProjContractClass`;
+            let classInfoData = { ...data.field, ...commonObj };
+            let periodData = { ...data.field, ...commonObj };
+            let submitData = { "cmeProjContractClass": classInfoData, "cmeProjContractClassPeriod": periodData };
+
+            $.ajax({
+                url: url,
+                data: JSON.stringify(submitData),
+                type: "post",
+                contentType: "application/json",
+                dataType: "json",
+                success: function (res) {
+                    if (res.success) {
+
+                        layer.msg("保存成功", { icon: 1 });
+                        parent.getFullFlag('CmeProjContractClass');
+
+                    } else {
+                        layer.msg(res.msg, { icon: 2 });
+                    }
+                },
+                error: function () {
+                    layer.msg("发送数据失败", { icon: 2 });
+                }
+            });
+            return false;
+        });
+
+        form.on('radio(holdType)', function (data) {
+            if (data.value != "其他") {
+                $("#holdTypeOther").val("").prop("disabled", "disabled").addClass("layui-disabled");
+            } else {
+                $("#holdTypeOther").prop("disabled", false).removeClass("layui-disabled");
+            }
+        });
+
+        form.on('radio(testType)', function (data) {
+            if (data.value != "其他") {
+                $("#testTypeOther").val("").prop("disabled", "disabled").addClass("layui-disabled");
+            } else {
+                $("#testTypeOther").prop("disabled", false).removeClass("layui-disabled");
+            }
+        });
+
+        table.on('toolbar(periodTeachers)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+
+            if (obj.event == "add") {
+                if(cmeProjContractClassPeriodTeacherList.length > 50){
+                    layer.msg("最多添加50个教师", { icon: 5 });
+                    return false;
+                }
+                let newTeacher = {
+                    "projId": projId,
+                    "teacherName": "",
+                    "teacherUnit": "",
+                    "teacherPost": "",
+                    "teacherTeachMethod": "",
+                    "projContractId": getProjContractId(),
+                    "userCreate": localStorage.getItem("user-id"),
+                    "downId": downId,
+                    projContractClassPeriodTeacherId: null,
+                    myId: uuid()
+                };
+                cmeProjContractClassPeriodTeacherList.push(newTeacher);
+                loaderTeacherTable();
+            }
+
+        });
+
+        table.on('tool(periodTeachers)', function (obj) {
+            var data = obj.data;
+            var layEvent = obj.event;
+            var tr = obj.tr;
+            console.log(data);
+            if (obj.event == "del") {
+
+                if (data.projContractClassPeriodTeacherId == null) {
+                    $(tr).remove();
+                    cmeProjContractClassPeriodTeacherList = cmeProjContractClassPeriodTeacherList.filter(item => item.myId != data.myId);
+                    return;
+                }
+                let url = huayi_projectscore_url + `cmeProjContract/projContractPeriodTeacher/${data.projContractClassPeriodTeacherId}`;
+                $.ajax({
+                    url: url,
+                    type: "delete",
+                    success: function (res) {
+                        if (res.success) {
+                            reloadTeacherTable();
+                        } else {
+                            layer.msg(res.msg, { icon: 2 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg("发送数据失败", { icon: 2 });
+                    }
+                });
+            }
+
+
+        });
+
+        table.on('edit(periodTeachers)', function (obj) {
+            let period = obj.data.period;
+            
+            if (obj.field == "period" && (period == null || period == "" || /^\d+(\.\d{1})?$/.test(period) == false)) {
+                layer.msg('学时列请输入整数或1位小数');
+                return;
+            }
+            if (period == null || period =="") {
+                obj.data.period=0;
+            }
+            let url = huayi_projectscore_url + `cmeProjContract/projContractPartInfo/${getProjContractId()}/CmeProjContractClassPeriodTeacher`;
+            let teacherData = { ...obj.data, ...commonObj };
+            let submitData = { "cmeProjContractClassPeriodTeacher": teacherData };
+
+            $.ajax({
+                url: url,
+                data: JSON.stringify(submitData),
+                type: "post",
+                contentType: "application/json",
+                dataType: "json",
+                success: function (res) {
+                    if (res.success) {
+                        reloadTeacherTable();
+                    } else {
+                        layer.msg(res.msg, { icon: 2 });
+                    }
+                },
+                error: function () {
+                    layer.msg("发送数据失败", { icon: 2 });
+                }
+            });
+        });
+
+
+        $("#btnCancel").click(function () {
+            parent.closeLayer();
+        });
+
+
+        form.verify({
+
+            radioChecked: function (value, item) {
+                var $ = layui.$;
+                var verifyName = $(item).attr('name')
+                    , verifyType = $(item).attr('type')
+                    , formElem = $(item).parents('.layui-form')//获取当前所在的form元素，如果存在的话
+                    //,verifyElem=formElem.find('input[name='+verifyName+']')//获取需要校验的元素
+                    , verifyElem = formElem.find("input[name='" + verifyName + "']")//获取需要校验的元素
+                    , isTrue = verifyElem.is(':checked')//是否命中校验
+                    , focusElem = verifyElem.next().find('i.layui-icon');//焦点元素
+                if (!isTrue || !value) {
+                    //定位焦点
+                    focusElem.css(verifyType == 'radio' ? { "color": "#FF5722" } : { "border-color": "#FF5722" });
+                    //对非输入框设置焦点
+                    focusElem.first().attr("tabIndex", "1").css("outline", "0").blur(function () {
+                        focusElem.css(verifyType == 'radio' ? { "color": "" } : { "border-color": "" });
+                    }).focus();
+                    return '必填项不能为空';
+                }
+            }
+
+        });
+
+        $(function () {
+            window.initAll();
+            getClassInfo();
+
+        });
+    });
+
+</script>

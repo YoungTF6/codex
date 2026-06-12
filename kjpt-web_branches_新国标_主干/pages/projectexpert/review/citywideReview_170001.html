@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <title>评审表（武汉）</title>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+    <script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <script type="text/javascript" src="../../../js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="../../../js/common.js"></script>
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="../../../js/tools/form_validation_tool.js?d=20240312"></script>
+    <style>
+        .layui-fluid {
+            text-align: center;
+        }
+        .layui-card {
+            box-shadow: none;
+            display: inline-block;
+        }
+        .layui-card-body {
+            padding: 20px;
+        }
+        .layui-tab-content {
+            padding: 0;
+        }
+        #expertReviewProject {
+            padding-right: 20px;
+        }
+        .footer {
+            text-align: center;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            margin-bottom: 0;
+            width: 100%;
+            background-color: #fff;
+            padding: 15px 0;
+        }
+
+        table {
+            max-width: 850px;
+            margin: 0 auto;
+            color: #000;
+            font-family: 宋体;
+            font-size: 16PX;
+        }
+        th { 
+            padding: 10px;
+            border: #000 solid 1px;
+            font-weight: normal;
+            height: 60px;
+        }
+        .th-1 { width: 9%; }
+        .th-2 { width: 18%; }
+        .th-3 { width: 48%; }
+        .th-4 { width: 13%; }
+        .th-5 { width: 12%; }
+        td { 
+            padding: 10px;
+            border: #000 solid 1px;
+            text-align: center;
+            height: 90px;
+        }
+        .t-desc {
+            text-align: left;
+            font-size: 14px;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+        .t-input {
+            padding: 0;
+        }
+        .h-auto {
+            height: auto !important
+        }
+        table input {
+            padding: 10px;
+            height: 100% !important;
+            text-align: center;
+        }
+        .layui-form-danger {
+            border-width: unset!important;
+            border-color: #FF5722!important;
+        }   
+    </style>
+</head>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body layui_body_box">
+                <form class="layui-form" lay-filter="review-form" onsubmit="return false;" action="">
+                    <table>
+                        <thead>
+                            <th class="th-1">序号</th>
+                            <th class="th-2">评审项目</th>
+                            <th class="th-3">评审内容</th>
+                            <th class="th-4">分值</th>
+                            <th class="th-5">得分</th>
+                        </thead>
+                        <tbody>
+                            <tr><td>1</td>
+                                <td>项目标题</td>
+                                <td class="t-desc">标题完整、主题突出、含义清晰、与内容相匹配。</td>
+                                <td>5</td>
+                                <td class="t-input"><input class="layui-input score allow-fill" name="score-1-1" 
+                                    lay-verify="required|intInRange" range="0-5" placeholder="" disabled></td>
+                            </tr>
+                            <tr><td>2</td>
+                                <td rowspan="6">项目内容</td>
+                                <td class="t-desc">专业性强，具有近几年高质量研究支持，对专业研究进展了解深入。</td>
+                                <td>10</td>
+                                <td class="t-input"><input class="layui-input score allow-fill" name="score-2-1" 
+                                    lay-verify="required|intInRange" range="0-10" placeholder="" disabled></td>
+                            </tr>
+                            <tr><td>3</td>
+                                <td class="t-desc">针对性强，内容具有新意和深度，内容是（至少是本地区内）本学科最新发展、最新成果或亟待解决的问题。组织架构安排合理。</td>
+                                <td>15</td>
+                                <td class="t-input"><input class="layui-input score allow-fill" name="score-2-2" 
+                                    lay-verify="required|intInRange" range="0-15" placeholder="" disabled></td>
+                            </tr>
+                            <tr><td>4</td>
+                                <td class="t-desc">培训内容以新理论、新知识、新技术和新方法为主，能够实现培训目标，满足培训需求。</td>
+                                <td>15</td>
+                                <td class="t-input"><input class="layui-input score allow-fill" name="score-2-3" 
+                                    lay-verify="required|intInRange" range="0-15" placeholder="" disabled></td>
+                            </tr>
+                            <tr><td>5</td>
+                                <td class="t-desc">教学课时安排合理，无重复内容，培训时间、培训内容、培训目标相符。</td>
+                                <td>5</td>
+                                <td class="t-input"><input class="layui-input score allow-fill" name="score-2-4" 
+                                    lay-verify="required|intInRange" range="0-5" placeholder="" disabled></td>
+                            </tr>
+                            <tr><td>6</td>
+                                <td class="t-desc">项目内容要有科学依据、符合伦理道德原则，并具有独立性、客观性、公正性和完整性。</td>
+                                <td>5</td>
+                                <td class="t-input"><input class="layui-input score allow-fill" name="score-2-5" 
+                                    lay-verify="required|intInRange" range="0-5" placeholder="" disabled></td>
+                            </tr>
+                            <tr><td>7</td>
+                                <td class="t-desc">项目具有实用性、推广性，有显著的社会效益的技术与方法，可以使学员的临床水平有所提高，带来了某个社区公众的健康改善。</td>
+                                <td>15</td>
+                                <td class="t-input"><input class="layui-input score allow-fill" name="score-2-6" 
+                                    lay-verify="required|intInRange" range="0-15" placeholder="" disabled></td>
+                            </tr>
+                            <tr><td>8</td>
+                                <td rowspan="2">培训师资</td>
+                                <td class="t-desc">项目负责人与申报项目专业领域相符，且开展过相关领域研究、培训、科研等活动。</td>
+                                <td>10</td>
+                                <td class="t-input"><input class="layui-input score allow-fill" name="score-3-1" 
+                                    lay-verify="required|intInRange" range="0-10" placeholder="" disabled></td>
+                            </tr>
+                            <tr><td>9</td>
+                                <td class="t-desc">授课教师师资力量满足培训内容和培训目标，申办科室师资力量较强，院内外师资比例适当，本单位授课教师不得少于50%。</td>
+                                <td>10</td>
+                                <td class="t-input"><input class="layui-input score allow-fill" name="score-3-2" 
+                                    lay-verify="required|intInRange" range="0-10" placeholder="" disabled></td>
+                            </tr>
+                            <tr><td>10</td>
+                                <td>教学方法</td>
+                                <td class="t-desc">教学方式、方法安排合理，符合培训内容和目标的要求：（1）陈述性知识的学习（了解）：学员对学习内容有所了解；（2）程序性知识的学习（知道怎样做）：通过学习，学员了解到如何进行某项操作；（3）能力的学习（如何表现）：通过学习，学员能够进行某项操作；（4）临床应用：学员能够在临床实践中应用所学的知识。</td>
+                                <td>10</td>
+                                <td class="t-input"><input class="layui-input score allow-fill" name="score-4-1" 
+                                    lay-verify="required|intInRange" range="0-10" placeholder="" disabled></td>
+                            </tr>
+                            <tr><td rowspan="5">11</td>
+                                <td rowspan="5">加分项（满足其中一项加5分）</td>
+                                <td class="t-desc h-auto">1．项目负责人到上级医疗卫生单位进修或出国进修（培训）6 个月及其以上（含国内外访问学习）。</td>
+                                <td rowspan="5">5</td>
+                                <td rowspan="5" class="t-input"><input class="layui-input score allow-fill" name="score-5-1" 
+                                    lay-verify="required|intInRange" range="0-5" placeholder="" disabled></td>
+                            </tr>
+                            <tr><td class="t-desc h-auto">2．项目负责人到老少边穷地区或下级医疗卫生单位工作或带教（援藏、援疆及其他形式对口支援）3 个月及其以上。</td>
+                            </tr>
+                            <tr><td class="t-desc h-auto">3．项目负责人参加援外医疗任务 6 个月及其以上（含援外前集中培训）。</td>
+                            </tr>
+                            <tr><td class="t-desc h-auto">4．项目负责人曾获市级以上二等以上科技进步奖成果奖。</td>
+                            </tr>
+                            <tr><td class="t-desc h-auto">5．上一年度所负责的继教项目获得“精品继教项目”称号。</td>
+                            </tr>
+                            <tr><td colspan="3">总分</td>
+                                <td>100 + 5</td>
+                                <td class="t-input"><input class="layui-input" name="grade" disabled></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="layui-form-item layui-footer footer hide">
+                        <button class="layui-btn layui-btn-disabled allow-fill" lay-submit lay-filter="review-submit" disabled>提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary layui-btn-disabled allow-fill" disabled>重置</button>
+                    </div>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        const   projectId       = getUrlParam('projectId'),
+                reviewId        = getUrlParam('reviewId'),
+                updateFlag      = reviewId && reviewId.length == 36,
+                allowFillFlag   = getUrlParam('allowFill') == 't' ? true : false,
+                standardKindId  = localStorage.getItem('standardkind-id'),
+                userType        = localStorage.getItem('user-type');
+
+
+        /** 全局配置及引入相关的模块 */
+        layui.use([ 'table', 'form', 'layer' ], () => {
+            let table   = layui.table,
+                form    = layui.form,
+                layer   = layui.layer;
+                
+            let loadIdx = layer.load(1, { shade: 0.3 });
+
+
+            /** 页面初始化 */
+            $(() => {
+                /* 分数校验、统计 */
+                $('.score').on('input', function () {
+                    let $item       = $(this),
+                        val         = $item.val(),
+                        range       = $item.attr('range'),
+                        result      = numTool.intInRange(val, range);
+                    if (result) {
+                        $item.addClass('layui-form-danger');
+                        layer.msg(result, { icon: 5, time: 1500 });
+                        // $item.val('');
+                    }
+                    else $item.removeClass('layui-form-danger');
+
+                    let grade = 0;
+                    $('.score').each((i, item) => {
+                        let score = $(item).val();
+                        if (score) grade += parseInt(score);
+                    });
+                    $('[name=grade]').val(grade);
+                });
+                
+
+                /* 获取评审信息 */
+                if (updateFlag) {
+                    $.ajax({
+                        type        : 'get',
+                        url         : huayi_projectscore_url + 'projectExpertReview/' + reviewId,
+                        async       : false,
+                        dataType    : 'json',
+                        success     : res => {
+                            if (res && 200 == res.status) {
+                                let data = res.data;
+                                data = $.extend({}, data, JSON.parse(data.reviewDetail));
+                                form.val('review-form', data);
+                                form.render();
+                            } 
+                            else layer.msg('获取评审信息失败', { icon: 7, time: 1000 });
+                        },
+                        error       : () => layer.msg('获取评审信息失败', { icon: 7, time: 1500 })
+                    });
+                }
+
+                if (allowFillFlag) {
+                    $('.allow-fill').removeAttr('disabled').removeClass('layui-btn-disabled');
+                    $('.layui-input.allow-fill').attr('placeholder', '请输入');
+                    $('.layui-card').css('margin-bottom', '70px');
+                    $('.layui-footer').show();
+                }
+
+                layer.close(loadIdx);
+            });
+
+
+            form.verify(layuiVerify);
+
+            
+            form.on('submit(review-submit)', data => {
+                let reviewData  = data.field,
+                    parentFlag  = window.parent != window,
+                    layer       = parentFlag ? window.parent.layer : layui.layer;
+                $.ajax({
+                    type        : 'post',
+                    url         : huayi_projectscore_url + 'projectExpertReview/' + (updateFlag ? 'update' : 'save'),
+                    contentType : 'application/json;charset=UTF-8',
+                    async       : false,
+                    data        : JSON.stringify({
+                        projectId       : projectId,
+                        id              : updateFlag ? reviewId : '',
+                        standardKindId  : standardKindId,
+                        reviewResult    : 3,
+                        reviewDetail    : reviewData,
+                        grade           : reviewData.grade
+                    }),
+                    dataType    : 'json',
+                    success     : res => {
+                        if (parentFlag) {
+                            window.parent.tableOp.reload();
+                            window.parent.layer.closeAll();
+                        }
+                        layer.msg('评审成功', { icon: 1, time: 1500 });
+                    },
+                    error       : () => layer.msg('评审失败', { icon: 7, time: 1500 })
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>

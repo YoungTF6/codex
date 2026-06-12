@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <title>学分完成情况统计</title>
+
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="../../js/axios.min.js"></script>
+    <script type="text/javascript" src="../../js/auth.js"></script>
+    <!-- 工具 -->
+    <script type="text/javascript" src="../../js/base64.js"></script>
+    <script type="text/javascript" src="../../js/tools/form_validation_tool.js"></script>
+
+    <style>
+        .layui-card-body.layui_body_box {
+            padding: 0 !important;
+        }
+        .layui-form.layui-border-box.layui-table-view {
+            margin: 0 !important;
+        }
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+        .layui-treeSelect .ztree li {
+            line-height: initial !important;
+            padding: 2px 0;
+        }
+        .table_toolbar_right {
+            float: right;
+            position: relative;
+            right: -120px;
+        }
+        .layui-table-header th .layui-table-cell {
+            text-align: center;
+        }
+        .disabled {
+            pointer-events: none;
+            cursor: not-allowed;
+            color: #d2d2d2 !important;
+            opacity: 0.5;
+        }
+
+        .div-statistical-year span {
+            float: left;
+        }
+        .div-statistical-year .span-left {
+            width: 75px; 
+            display: inline-block;
+        }
+        .div-statistical-year .span-right {
+            display: inline-block; 
+            margin-left: 10px; 
+            width: calc(186.4px - 15px); 
+            color: blue;
+            height: 38px;
+            line-height: 38px;
+        }
+        #table_score_completion {
+            margin: 0;
+        }
+    </style>
+</head>
+<body class="body-area">
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area">
+                <div class="layui_mess">
+                    <!-- 筛选项 -->
+                    <div class="layui_display">
+                        <div class="layui-inline layui-form div-statistical-year" lay-filter="div-statistical-year">
+                            <label class="layui-form-label">统计年度</label>
+                            <div class="layui-input-block">
+                                <span class="span-left">
+                                    <select id="statistical-year" lay-filter="statistical-year"></select>
+                                </span>
+                                <span class="span-right"><d1></d1>&nbsp;至&nbsp;<d2></d2></span>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-form" lay-filter="">
+                            <label class="layui-form-label">统计维度</label>
+                            <div class="layui-input-block">
+                                <select id="statistical-dimension" lay-filter="statistical-dimension">
+                                    <option value="TITLE_LEVEL">按职称级别统计</option>
+                                    <option value="TITLE">按职称统计</option>
+                                    <option value="DEPT">按科室统计</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-form" lay-filter="dept-select-div">
+                            <label class="layui-form-label">科室</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" disabled
+                                        lay-filter="deptSelect" id="deptSelect" name="deptId" placeholder="请选择">
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-form" lay-filter="">
+                            <label class="layui-form-label">在编状态</label>
+                            <div class="layui-input-block">
+                                <select id="series-state" lay-filter="series-state">
+                                    <option value="">全部</option>
+                                    <option value="IN_THE_SERIES">在编</option>
+                                    <option value="OUT_OF_THE_SERIES">不在编</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui_display">
+                        <div class="layui-inline btn-search-positon">
+                            <a class="layui-btn layui-btn-sm" onclick="initTable()" id="searchBtn" lay-filter="table-search" data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 表格区域 -->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="table_score_completion" lay-filter="table_score_completion"></table>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 表头工具条 -->
+    <script type="text/html" id="table_toolbar">
+        <span class="table_toolbar_right">
+            <a class="layui-btn layui-btn-sm" lay-event="export-excel">导出Excel</a>
+        </span>
+    </script>
+
+
+    <script type="text/javascript">
+        const unitId            = localStorage.getItem('unit-id'),
+              unitName          = localStorage.getItem('unit-name'),
+              username          = localStorage.getItem('user-name'),
+              cmeStandardKindId = localStorage.getItem('standardkind-id'),
+              deptId            = localStorage.getItem('dept-id');
+
+
+        layui.config({
+            base : '../../js/layui/ext/'
+        }).extend({
+            treeSelect : 'treeSelect',
+            excel      : 'excel'
+        }).use([ 'table', 'form', 'jquery', 'layer', 'treeSelect', 'excel' ], () => {
+            let table       = layui.table,
+                form        = layui.form,
+                $           = layui.jquery,
+                layer       = layui.layer,
+                treeSelect  = layui.treeSelect,
+                excel       = layui.excel;
+
+            let statisticalYearList = [];
+
+
+            /** 页面初始化 */
+            $(() => {
+                /* 统计年度 */   
+                $.ajax({
+                    url      : huayi_sjwh_url + 'cmeYear',
+                    type     : 'get',
+                    async    : false,
+                    dataType : 'json',
+                    data     : { cmeStandardKindId : cmeStandardKindId },
+                    success  : function(res) {
+                        if (res.status == 200) {
+                            let option              = '';
+                                statisticalYearList = res.data,
+                                $selectElem         = $('#statistical-year'),
+                                $msgElem            = $selectElem.parent().next();
+
+                            $.each(statisticalYearList, (i, item) => option += '<option value="' + item.cmeYearId + '">' + item.cmeYear + '</option>');
+                            $selectElem.append(option);
+                            form.render('select', 'div-statistical-year');
+                            $msgElem.find('d1').html(statisticalYearList[0].startDate);
+                            $msgElem.find('d2').html(statisticalYearList[0].endDate);
+
+                            form.on('select(statistical-year)', data => {
+                                $.each(statisticalYearList, (i, item) => {
+                                    if (item.cmeYearId == data.value) {
+                                        $msgElem.find('d1').html(item.startDate);
+                                        $msgElem.find('d2').html(item.endDate);
+                                        return false;
+                                    }
+                                });
+                            });
+                        } else layer.msg('获取统计年度列表失败', { icon: 7, time: 1500 });
+                    },
+                    error    : () => layer.msg('获取统计年度列表失败', { icon: 7, time: 1500 })
+                });
+
+                /* 科室 */   
+                let deptTreeSelect = treeSelect.render({
+                    elem    : '#deptSelect',
+                    data    : huayi_personorg_url + 'comdept/tree/unit?unitId=' + unitId,
+                    type    : 'get',
+                    search  : true,
+                    style   : {
+                        folder : { enable: true }, // 父节点图标
+                        line   : { enable: true } // 连接线
+                    },   
+                    success : d => {
+                        if (deptId && deptId.trim().length > 0) {
+                            treeSelect.checkNode('deptSelect', deptId);
+                            $('.layui-treeSelect').addClass('disabled').addClass('layui-disabled').addClass('layui-input-disabled');
+                        } else $('.layui-treeSelect').removeClass('disabled').removeClass('layui-disabled').removeClass('layui-input-disabled');
+                    }
+                });
+
+                // 表格初始化
+                // initTable();
+            });
+
+
+            /** 表格相关 */
+            let load_index;
+            /* 表格配置及数据 */
+            window.initTable = () => {
+                let msg        = '<span style="color: #666666;">&nbsp;正在查询&nbsp;···</span>';
+                    load_index = layer.msg(msg, { icon: 16, shade: 0.3, time: 0 });
+                            //    = layer.load(2, { shade: 0.3 });
+
+                let colsConfig      = [],
+                    colsConfigData  = [],
+                    tableData       = [];
+
+
+                axios({
+                    method       : 'get',
+                    url          : huayi_projectscore_url + 'statisticsUtility/scoreCompletion',
+                    responseType : 'json',
+                    params       : {
+                        cmeStandradKindId    : cmeStandardKindId,
+                        unitId               : unitId,
+                        kind                 : 1,
+                        statisticalYear      : $('#statistical-year').val(),
+                        statisticalDimension : $('#statistical-dimension').val(),
+                        deptId               : $('#deptSelect').val(),
+                        seriesState          : $('#series-state').val()
+                    }
+                }).then(res => {
+                    if (res.status == 200 && res.data.status == 200) {
+                        let data = res.data.data;
+
+                        // 表头
+                        $.each(data.colName, (i, item) => {
+                            let col = {
+                                field    : item,
+                                title    : item,
+                                align    : i == 0 ? 'left' : 'center',
+                                minWidth : i == 0 ? 150 : strTool.countWidth(item) * 8 + 30
+                            };
+                            if (item.indexOf('百分比') >= 0) col.templet = d => d[item] + ' %';
+                            colsConfigData.push(col);
+                        });
+
+                        // 数据
+                        tableData = data.compliance;
+
+                    } else layer.msg('查询失败', { icon: 2, time: 1500 });
+
+                    colsConfig.push(colsConfigData);
+                    loaderTable(colsConfig, tableData);
+
+                }).catch(error => {
+                    layer.msg('网络异常，请稍后再试', { icon: 7, time: 1500 });
+
+                    colsConfig.push(colsConfigData);
+                    loaderTable(colsConfig, tableData);
+
+                    console.log(error);
+                });
+            }
+            /* 加载表格 */
+            window.loaderTable = (colsConfig, tableData) => {
+                table.render({
+                    elem            : '#table_score_completion',
+                    title           : '单位达标情况',
+                    toolbar         : '#table_toolbar',
+                    defaultToolbar  : [],
+                    cols            : colsConfig,
+                    data            : tableData,
+                    cellMinWidth    : 150,
+                    id              : 'table_score_completion',
+                    height          : 'full-165',
+                    page            : false,
+                    limit           : Number.MAX_VALUE,
+                    done            : (res, curr, count) => layer.close(load_index)
+                });
+            };
+            /* 监听表头工具条 */
+            table.on('toolbar(table_score_completion)', obj => {
+                let datas = obj.data;
+
+                switch (obj.event) {
+                    case 'export-excel':
+                        let fileName = '学分完成情况（' + new Date().toLocaleString() + '）.xlsx';
+                        // excelBody = excel.filterExportData(excelBody, excelHead);
+                        // excel.exportExcel({ '单位达标情况' : excelBody }, fileName, 'xlsx');
+                        exportFile('table_score_completion', fileName, 'xlsx');
+                        break;
+
+                    default:
+                }
+            });
+            /* 监听行工具条 */
+            table.on('tool(table_score_completion)', obj => {
+                let datas = obj.data;
+
+                switch (obj.event) {
+                    case '':
+                        break;
+
+                    default:
+                }
+            });
+			/* 表格导出 */
+            window.exportFile = (id, fileName, extension) => {
+                // 根据传入 tableID 获取表头
+                let headers = $('div[lay-id=' + id + '] .layui-table-box table').get(0),
+                    htrs    = Array.from(headers.querySelectorAll('tr')),
+                    titles  = {};
+                $.each(htrs, (j, htr) => {
+                    let hths = Array.from(htr.querySelectorAll('th'));
+                    $.each(hths, (i, hth) => {
+                        let clazz = hth.getAttributeNode('class').value;
+                        // 排除居左、具有、隐藏字段
+                        // 修改：默认字段 data-field + i，兼容部分数据表格中不存在 data-field 值的问题
+                        if (clazz != ' layui-table-col-special' && clazz != 'layui-hide') titles['data-field' + i] = hth.innerText;
+                    });
+                }); 
+                // 根据传入 tableID 获取 table 内容
+                let bodys       = $('div[lay-id=' + id + '] .layui-table-box table').get(1),
+                    btrs        = Array.from(bodys.querySelectorAll('tr')),
+                    bodysArr    = new Array();
+                $.each(btrs, (j, btr) => {
+                    let contents    = {},
+                        btds        = Array.from(btr.querySelectorAll('td'));
+                    $.each(btds, (i, btd) => {
+                        for (let key in titles) {
+                            // 修改：默认字段 data-field + i，兼容部分数据表格中不存在 data-field 值的问题
+                            let field = 'data-field' + i;
+                            if (field === key) contents[field] = btd.innerText; // 根据表头字段获取 table 内容字段
+                        }
+                    });
+                    bodysArr.push(contents);
+                });
+                // 将标题行置顶添加到数组
+                bodysArr.unshift(titles);
+                // 导出 excel
+                excel.exportExcel({ sheet1: bodysArr }, fileName, extension);
+            }
+
+        });
+    </script>
+</body>
+</html>

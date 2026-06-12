@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>导出excel文件</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <script type="text/javascript" src="/js/layui/ext/excel.js"></script>
+</head>
+<!-- 行政版 -->
+<body class="body-area">
+</body>
+
+<script>
+    function exportUrl(data,tableName,fileType){
+        LAY_EXCEL.exportExcel(data, tableName, fileType)
+    }    
+</script>

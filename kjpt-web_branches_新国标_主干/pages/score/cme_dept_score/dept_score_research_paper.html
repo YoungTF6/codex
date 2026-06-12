@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>录入个人学分-向导录入</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="../../../js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+    <script type="text/javascript" src="../../../js/jquery-3.5.1.min.js"></script>
+    <script src="../../../js/layui-v2.6.8/layui/layui.js"></script>
+    <script src="../../../js/common.js"></script>
+    <!-- pdf查看 -->
+    <script type="text/javascript" src="/js/pdfjs/build/pdf.js"></script>
+    <!-- 二维码生成 -->
+    <script type="text/javascript" src="/js/jquery.qrcode.min.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <!-- 个人学分录入样式  -->
+    <script type="text/javascript" src="/js/api/number.js"></script>
+    <link rel="stylesheet" href="/css/score/score.css" media="all">
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+</head>
+<body>
+    <!--活动信息-->
+    <form class="layui-form" style="padding: 30px;" id="scoreForm" lay-filter="add-filter">
+        <input type="hidden" id="comPersonId" name="comPersonId" autocomplete="off" class="layui-input">
+        <div class="score-model">
+            <span class="title">基本信息</span>
+            <div id="scoreType" style="display: none;">
+                <input type="hidden" id="scoreLevelHide" name="scoreLevel">
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>活动名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="singleProjName" placeholder="请输入活动名称" autocomplete="off" class="layui-input sql_keyword" lay-verify="singleProjNameVerify" require>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">活动编号</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="singleProjNo" placeholder="请输入活动编号" autocomplete="off" class="layui-input sql_keyword" lay-verify="singleProjNoVerify" require>
+                        </div>
+                        <div id="projNoRemark" style="margin-left: 110px; color: red; display: none;">
+                            <p>国家级项目请填写编号，例：2024-01-01-001（国）</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>活动日期</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="studyDate" id="activityDate" placeholder="请输入活动日期"
+                                autocomplete="off" class="layui-input" readonly lay-verify="required" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" name="lblActivityForm"><font color="red">*&nbsp;</font></label>
+                        <div class="layui-input-block">
+                            <select name="holdType" id="holdType" lay-verify="required" required lay-search>
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>二级学科</label>
+                        <div class="layui-input-block">
+                            <select name="knowledgeTwo" id="knowledgeTwo" lay-filter="knowledgeTwo" lay-verify="required" required lay-search>
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>三级学科</label>
+                        <div class="layui-input-block">
+                            <select name="knowledgeId" id="knowledgeThree" lay-verify="required" required lay-search>
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <!-- 活动内容 -->
+                        <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span><label name="lblActivityContent"></label></label>
+                        <div class="layui-input-block">
+                            <select name="scoreType" lay-verify="required" id="scoreLevelContent" lay-filter="scoreLevelContent"></select>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name="projTypeKind" id="projTypeKind" autocomplete="off" class="layui-input">
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span><label name="lblActivityType"></label></label>
+                        <div class="layui-input-block">
+                            <select name="projType" id="projType" lay-verify="required">
+                                <option value="">全部</option>
+                                <option value="1">推荐项目</option>
+                                <option value="2">推广项目</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <!-- 所属医学体系 -->
+                        <label class="layui-form-label"><span style="color: red;">*&nbsp;</span><label name="lblMedicalSystem" style="padding-right:1px;"></label></label>
+                        <div class="layui-input-block">
+                            <select name="medicalType" id="medicalTypeSelector" lay-verify="required">
+                                <option value=""></option>
+                                <option value="1">西医</option>
+                                <option value="2">中医</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"><font color="red">*&nbsp;</font>发证机构</label>
+                        <div class="layui-input-block" style="position: relative;">
+                            <input type="text" id="text_unit_name" name="teachUnitName" placeholder="请选择单位"
+                                autocomplete="off" class="layui-input" style="display: inline;"
+                                 lay-verify="unitNameVerify" required>
+                            <a class="layui-btn  select-unit-btn" id="selectUnitBtn">选择单位</a>
+                            <input type="hidden" id="hidden_unit_id" name="teachUnit">
+                        </div>
+                        <div style="margin-left: 110px; color: red;">
+                            <p>外省机构请录入单位名称，本省机构点击选择</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item-box">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">备注</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="remark" id="remark" autocomplete="off" placeholder="备注"
+                                class="layui-input sql_keyword" lay-verify="remarkVerify">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item-box">
+                </div>
+                
+            </div>
+            
+                <!-- -------------------浙江分类录入----------------------- -->
+            <div id="content_ext_edit"></div>
+            <div>
+                <div class="layui-form-item-box js-photo-box" style="width: 98%;">
+                    <div class="layui-upload" >
+                        <font color="red js-photo-tip">*&nbsp;</font>
+                        <button type="button" class="layui-btn layui-btn-sm js-photo-tip" id="chooseFileBtn">选择学分证明材料</button>
+                        <button type="button" class="layui-btn layui-btn-sm" id="mobileChooseFileBtn">手机端上传</button>
+                        <button type="button" class="layui-btn layui-btn-sm layui-btn-disabled" id="submitFileBtn" disabled="true">开始上传</button>
+                        <p style="margin-left: 10px; color: red;display: inline-block;" id="uploadTips"></p>
+                        <div class="layui-upload-list" style="max-width: 1000px;">
+                            <table class="layui-table">
+                                <colgroup>
+                                    <col><col width="100"><col width="100"><col width="100"><col width="120">
+                                </colgroup>
+                                <thead>
+                                    <tr><th>文件名</th><th>大小</th><th>缩略图</th><th>状态</th><th>操作</th></tr>
+                                </thead>
+                                <tbody id="fileList"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- 表格信息 -->
+        <div class="default-fixed-width" style="text-align: center;">
+            <!--  表格区域-->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="activityInfoTable" lay-filter="activity_table" style="margin: 0px 0px;">
+                </table>
+            </div>
+
+            <div class="layui-form-item">
+                <button class="layui-btn" btn-type="save" lay-submit lay-filter="submit">保存</button>
+                <button class="layui-btn" btn-type="saveAndApply" lay-submit lay-filter="submit">保存并上报</button>
+                <button class="layui-btn js-close">关闭</button>
+            </div>
+        </div>
+    </form>   
+
+    <!--   添加弹窗-->
+    <div id="add-score-people" style="display:none;">
+        <!--筛选授分人员-->
+        <div class="score-model">
+            <span class="title">筛选授分人员</span>
+            <div class="layui-form">
+                <div class="layui-form-item layui-form-item2">
+                    <label class="layui-form-label">身份证号：</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="certId" id="certId" placeholder="请输入身份证号" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-item2">
+                    <label class="layui-form-label">人员编号：</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="personNo" id="personNo" placeholder="请输入人员编号" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-item2">
+                    <label class="layui-form-label">人员姓名：</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="personName" id="personName" placeholder="请输入人员姓名" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <a class="layui-btn" lay-filter="formDemo" id="search">查询</a>
+            </div>
+            
+        </div>
+        <div class="layui-form" style="text-align: center;margin-top: 20px;">
+            <a class="layui-btn js-choose-people">确定</a>
+            <a class="layui-btn js-choose-close">取消</a>
+        </div>
+        <!-- 选择筛选人员 -->
+        <div class="people-box">
+            <div class="dept-box" style="height: 500px;">
+                <div>
+                    <div>选择科室</div>
+                    <div id="deptTree"></div>
+                </div>
+            </div>
+            <div id="peopleFransfer"></div>
+        </div>
+    </div>
+
+    <!-- 预览 -->
+    <div id="viewFile" style="display: none;"></div>
+    <!-- 二维码 -->
+    <div id="qrCode" style="display: none;"></div>
+    
+</body>
+
+<script type="text/javascript" src="/pages/score/cme_singleproj_score/js/singleproj.js"></script>
+<script type="text/javascript" src="/pages/score/cme_singleproj_score/js/evidenceOcrVerify.js"></script>
+<!-- 学分input test1-aaa-->
+    <input type="number" min="0" class="layui-input js-score-input {{# if(window.getCmeStandardKindId() == '289bf0ca-52cb-4b19-b737-9bd200a69ce1'){ }} layui-disabled {{# } }}" 
+        lay-vertype="tips" name="period" value="{{d.period}}" {{# if(window.getCmeStandardKindId() == '289bf0ca-52cb-4b19-b737-9bd200a69ce1'){ }} readonly {{# } }}>
+<!-- 人员input -->
+<script type="text/html" id="test2">
+    <input type="text" class="layui-input js-people-input" lay-vertype="tips" name="personNames" value="{{d.peopleValues}}" readonly>
+</script>
+<!-- 操作按钮 -->
+<script type="text/html" id="rowBar">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row js-choose-btn" lay-event="choose">选择</a>
+</script>
+
+<script> 
+    layui.config({
+        base: '../../../js/layui/ext/'
+    }).extend({
+        eleTree: 'eleTree',
+        tool:'tool',
+        ysUpload:'ysUpload'
+    });
+    layui.use(['table', 'form', 'laydate', 'transfer','eleTree','tool','ysUpload'], function () {
+        var table = layui.table,form = layui.form,$ = layui.jquery,layer = layui.layer,laydate = layui.laydate,
+        transfer = layui.transfer,eleTree = layui.eleTree,tool = layui.tool,ysUpload=layui.ysUpload;
+        let ajaxNum = 0,openIndex,loading,nowData,deptId,deptName,tableData =[], allPersonData = new Map();
+        let personName,deptPeopleIndex,nowDataIndex,fileUrls = [],
+        grandData = ["order1","order2","order3","order4","order5","order6","order7","order8","order9","order10"],
+        standardkindId = localStorage.getItem("standardkind-id");
+        let userId = localStorage.getItem("user-id");
+        let unitId = localStorage.getItem("unit-id");
+        let timestamp = new Date().getTime();
+        let nowUnitName = localStorage.getItem("unit-name");
+        let allDeptName = "全部",submitScoreArr=[];
+        let addUrl = huayi_projectscore_url + 'cmeDeptSingleprojScore/saveBatch';
+        let isUploadPhoto = true,configFileNum= 10;
+        let scale = 3,viewFile = "viewFile";
+        let sendClickNum=0;//是否发送请求获取图片
+        let getPhotoUrl = huayi_projectscore_url + `cmeSingleprojScoreMobilePhoto/list`;
+        let delayTime = 5000;//延时执行的时间
+        let globalPersonData = {};//人员数据
+
+        // 提供当前页已选授分人员，供项目名称失焦时做同年度相似项目统一校验。
+        window.getSingleScorePersonIds = function () {
+            let personIds = [];
+            let rows = table.cache['scoreTable'] || tableData || [];
+            for (let i = 0; i < rows.length; i++) {
+                let rowPersonIds = rows[i].peopleIds || [];
+                for (let j = 0; j < rowPersonIds.length; j++) {
+                    if (rowPersonIds[j] && personIds.indexOf(rowPersonIds[j]) === -1) {
+                        personIds.push(rowPersonIds[j]);
+                    }
+                }
+            }
+            return personIds;
+        }
+
+        var GUANGDONG = "289bf0ca-52cb-4b19-b737-9bd200a69ce1";
+        let grantscoreStandardIdArr = ['32dbcceb-6cfd-4d32-8b88-9beb00b0a84d', '5b2fc07f-6c18-4f7c-95a1-9beb00b0a84d'
+                                        , '0a1fe658-b2df-4266-b73f-9beb00b0a84d', '15c2a832-d36f-4f18-b975-9beb00b0a84d'
+                                        , '51b03eba-afd8-43bc-9fbc-9beb00b0a84d', '607e63ee-d516-4e22-bf05-9beb00b0a84d',
+                                        '07ed8e05-6056-49c8-8f74-9bdd00b21ba4',
+                                        'bf0471c7-d315-4e25-8e7f-9bdd00b21ba4',
+                                        '994cfdc3-b3b9-4259-b126-9bdd00b21ba4',
+                                        'a88af211-5951-4068-a99a-9bdd00b21ba4',
+                                        'd21db8c0-be68-4884-abfc-9bdd00b21ba4',
+                                        '4c95e118-daed-4f7e-abef-9bdd00b21ba4',
+                                        'aedd8c18-bba2-4cae-b457-9bdd00b21ba4',
+                                        '3e72b982-7955-4558-af38-9bdd00b21ba4',
+                                        'a616c884-be09-4bb0-929e-9bdd00b21ba4',
+                                        '74b4d702-3f24-45b9-acf2-9bdd00b21ba4',
+                                        'a4d86e2c-4bcb-499a-9d66-9bdd00b21ba4',
+                                        'ba6e7ca0-c814-4a36-b140-9bdd00b21ba4',
+                                        '46f8cbc9-b5c4-49c0-adbc-9bdd00b21ba4',
+                                        '5e1f1d07-29eb-4662-ac14-9bdd00b21ba4',
+                                        '47d0e010-9c7e-4228-9153-9bdd00b21ba4',
+                                        'fab3ef0c-e2e4-489a-830a-9bdd00b21ba4',
+                                        'baefbc60-54af-462a-ab0b-9bdd00b21ba4',
+                                        '0cdd75ef-4cce-42c9-a237-9bdd00b21ba4']
+        
+
+        // 上传文件大小限制 河南限制3M
+        let fileSize = standardkindId == 'a6280900-a9c2-11ec-84d6-fa163e9b64fb' ? 3*1024 : 10*1024;
+        // 限制文件类型
+        let fileExts = standardkindId == 'a6280900-a9c2-11ec-84d6-fa163e9b64fb' ? 'jpg|png|bmp|jpeg' : 'jpg|png|bmp|jpeg|pdf';
+        
+        //关闭closeLoading的判断
+        let closeLoading = function(){
+            ajaxNum--;
+            if(ajaxNum<=0 && loading) layer.close(loading);
+        }
+        //打开加载
+        let openLoading = function(){
+            if(ajaxNum == 0) loading = layer.msg('加载中', {icon: 16, shade: 0.3, time:0});
+            ajaxNum ++; 
+        }
+
+        window.getCmeStandardKindId = function () {
+            return localStorage.getItem("standardkind-id");
+        }
+        //表格加载
+        let tableInit = function(){
+            table.render({
+                elem : "#activityInfoTable",
+                id: "scoreTable",
+                data: tableData,
+                page: false,
+                cellMinWidth: 100,
+                done: function(res,curr,count){
+                    form.render();
+                    if(null != personName && personName != ""){
+                        $(".js-people-input").val(personName);
+                    }
+                    bindInputValChange();
+                },
+                cols: [[
+                    {field:'order',title: '名称',align:"center"},
+                    {field:'score',title: '学分',align:"center"},
+                    {field:'period',title: '学时',align:"center",templet:'#test1'
+                        , hide: standardkindId == '190c480d-d43c-450b-8472-a6fd00a6729d' ? true : false},
+                    {field:'peopleValues',title: '授分人员',align:"center",templet:'#test2'},
+                    {align: 'center', title: '操作', width: 170, toolbar: '#rowBar', fixed: 'right',align:"center"}
+                ]]
+            });
+        }
+
+        //监听input值改变
+        let bindInputValChange = function(){
+            //输入框的值改变时触发
+            $(".js-score-input").change("input",function(e){
+                const index = getIndex(e.target);
+                const value = e.target.value;
+                const name = e.target.name;
+                tableData[index][name] = value;
+                // tableInit();
+            });
+        }
+
+        //判断数据是第几行，这里获取的是下表
+        let getIndex = function(elem) {
+            if(elem.tagName == "TR"){
+                return elem.getAttribute("data-index");
+            }else {
+                return getIndex(elem.parentElement);
+            }
+        }
+
+        // 获取科室信息
+        let getDepts = function (deptData) {
+            commonAjax('get',huayi_personorg_url + 'comdept/getDeptTreeByUserId',{},
+                function(){layer.msg("获取科室信息失败");},
+                function(res){
+                    if(res.status != 200) {
+                        layer.msg(res.msg);
+                        return;
+                    }
+                    let tempTreeData = [];
+                    if(res.data!=null && res.data.length > 0){
+                        let tempObj = {deptId: res.data[0].deptId, deptName: allDeptName,parentId:"",children:res.data}
+                        tempTreeData.push(tempObj);
+                        deptId= res.data[0].deptId;
+                        deptName = allDeptName;
+                    }
+                    createDeptTree(tempTreeData);
+                });
+        }
+        //构建树形结构
+        let createDeptTree = function(data){
+            if(data.length > 0){
+                deptId = data[0]["deptId"];
+                if(!data[0].hasOwnProperty("children")) data[0]["children"] = [];
+            }
+            let deptTree = eleTree({
+                el: '#deptTree',
+                data: data,
+                highlightCurrent: true, // 选中高亮
+                accordion: true, // 是否每次只打开一个同级树节点展开
+                response: {statusName: 'status',statusCode: 200,dataName: 'data'},
+                request: {          // 对于后台数据重新定义名字
+                    name: "deptName",
+                    key: "deptId",
+                    children: "children",
+                    pid: "parentId",
+                }
+            });
+            
+            deptTree.on("click", function (data) {
+                const elem = this.srcElement;
+                if(!this.srcElement.classList.contains("eleTree-dropdown")){
+                    deptId = data.data.deptId;
+                    deptName = data.data.deptName;
+                    let searchData = {};
+                    searchData.deptId = deptId;
+                    searchData.unitId = localStorage.getItem("unit-id");
+                    searchForData(searchData);
+                }
+            })
+        }
+
+        // 发送请求到后台，请求人员列表。
+        window.searchForData = function (searchData) {
+            // 获得右侧数据
+            if (!searchData) var searchData = {}
+            var personDatas = transfer.getData('demo1');
+            console.log("allDeptName:"+allDeptName+",deptName:"+deptName);
+            if(allDeptName == deptName) {
+                searchData.isAllDept = 1;
+            }
+            commonAjax('get',huayi_personorg_url + 'comperson/searchDeptPerson',searchData,
+                function(){layer.msg("获取科室人员失败");},
+                function(res){
+                    if (res.status === 200) {
+                        for(let tempPo of res.data) {
+                            globalPersonData[tempPo.id] = tempPo.deptName;
+                        }
+                        createTransferData(res.data,personDatas);
+                    }
+                });
+        }
+
+        //构建穿梭框的数据，data是新数据，chooseData是之前已经选的数据
+        let createTransferData = function(data,chooseData){
+            if(data.length == 0) layer.msg("无人员数据");
+            let rightArr = [];
+            //需要去除data里chooseData里面已经存在的
+            aa:
+            for(let chooseObj of chooseData){
+                rightArr.push(chooseObj.value);
+                for (let dataObj of data) {
+                    if(dataObj.id == chooseObj.value) continue aa;
+                }
+                data.push({id:chooseObj.value,nameAndId:chooseObj.title});
+            }
+            let leftNum = data.length-rightArr.length;
+            transfer.reload('demo1', {
+                data: data, value: rightArr,
+                title: [`候选人员(${leftNum})`, `已选人员(${rightArr.length})`],
+            });
+            //绑定监听
+            tool.transferAllTipBind(document.getElementById("peopleFransfer"),globalPersonData);
+        }
+
+        // //获取举办方式
+        // let getHoldType = function(){
+        //     commonAjax('get',huayi_sjwh_url + "cmeHoldType/getHoldType",{"standardKindId":standardkindId,projectType:3,userType:2},
+        //         function(){layer.msg("获取举办方式失败");},
+        //         function(res){
+        //             $.each(res.data, function (index, item) {
+        //                 $('#holdType').append(new Option(item.holdTypeName, item.holdTypeId));
+        //             })
+        //             form.render('select');
+        //         });
+        // }
+
+        // 一些form组件开发
+        let initFrom = function(){
+            $("#hidden_unit_id").val(unitId);
+            $("#text_unit_name").val(nowUnitName);
+            // laydate.render({ elem: '#studyDate', type: 'date',max: maxDate()});
+        }
+        // //获取二级学科
+        // let getTwoKnowledge = function(){
+        //     commonAjax('get',huayi_sjwh_url + 'comKnowledge',{"knowledgeType":2},
+        //         function(){layer.msg("二级学科加载失败");},
+        //         function(res){
+        //             if (res.status == 200) {
+        //                 var data = res.data;
+        //                 for (var i = 0; i < data.length; i++) {
+        //                     var option = $('<option value="' + data[i].knowledgeId + '">' + data[i].knowledgeName + '</option>');
+        //                     $('#knowledgeTwo').append(option);
+        //                 }
+        //                 form.render('select');
+        //                 bindTwoKnowledge();
+        //             } else { layer.msg('二级学科加载失败'); }
+        //         });
+        // }
+        // //监听二级学科，获取三级学科
+        // let bindTwoKnowledge = function(){
+        //     // 三级学科 todo
+        //     form.on('select(knowledgeTwo)', function (data) {
+        //         var knowledgeTwoId = data.value;
+        //         getThreeKnowledge(knowledgeTwoId,function(){});
+        //     });
+        // }
+        // //获取三级学科
+        // let getThreeKnowledge = function(knowledgeTwoId,setFormData){
+        //     commonAjax('get',huayi_sjwh_url + 'comKnowledge',
+        //         {"knowledgeType":3,knowledgeTwoId:knowledgeTwoId},
+        //         function(){layer.msg("三级学科加载失败");},
+        //         function(res){
+        //             if (res.success == true) {
+        //                 $('#knowledgeThree').find('option:gt(0)').remove();
+        //                 for (var i = 0; i < res.data.length; i++) {
+        //                     $('#knowledgeThree').append($(`<option value="${res.data[i].knowledgeId}">${res.data[i].knowledgeName}</option>`));
+        //                 }
+        //                 form.render('select');
+        //                 setFormData();
+        //             } else { layer.msg('三级学科加载失败'); }
+        //         });
+        // }
+        //获取授分标准信息
+        let getScoreStandard = function() {
+            const grantscoreStandardId = tool.getParamFromUrl("grantscoreStandardId");
+            commonAjax('get',huayi_sjwh_url + 'cmegrantscorestandard/'+grantscoreStandardId,{},
+                function(){layer.msg("加载授分标准信息失败");},
+                function(res){
+                    if(res.code == 0){
+                        createData(res.data);
+                    }else{ layer.msg("加载授分标准信息失败"); }
+                });
+        }
+        //构建表格加载的data
+        let createData = function(data){
+            $("#scoreLevelHide").val(data["type"]);
+            for (let i = 0; i < grandData.length; i++) {
+                if(data["score"+(i+1)] > 0) {
+                    let period = 0;
+                    // if(window.getCmeStandardKindId() == GUANGDONG) {
+                        period = data["score"+(i+1)] * 6;
+                    // }
+                    const obj = {index:i,order:data[grandData[i]],score:data["score"+(i+1)],period:period,peopleIds:[],peopleValues:[]};
+                    tableData.push(obj);
+                }
+            }
+            tableInit();
+        }
+
+        let bindAllBtn = function(){
+            $(".js-choose-people").click(function(){
+                // 在处理新选择前，先清除当前nowDataIndex相关的记录
+                allPersonData.forEach((value, key) => {
+                    if(value === nowDataIndex) {
+                        allPersonData.delete(key);
+                    }
+                });
+                const personDatas = transfer.getData('demo1');
+                let peopleIds = [];
+                let peopleValues = [];
+                for (let i = 0; i < personDatas.length; i++) {
+                    // 判断在allPersonData是否已存在
+                    if(allPersonData.has(personDatas[i].value) 
+                        && allPersonData.get(personDatas[i].value) !== nowDataIndex){
+                        layer.msg(personDatas[i].title + ' 已选择');
+                        return;
+                    }
+                    peopleIds.push(personDatas[i].value);
+                    peopleValues.push(personDatas[i].title);
+                    
+                    allPersonData.set(peopleIds[i], nowDataIndex)
+                }
+                tableData[nowDataIndex].peopleValues = peopleValues;
+                tableData[nowDataIndex].peopleIds = peopleIds;
+                tableInit();
+                layer.close(deptPeopleIndex);
+            });
+
+            //机构名输入的时候，清空机构id
+            $("#text_unit_name").keyup(function(){  $("#hidden_unit_id").val(""); });
+            
+            $(".js-close").click(function(){ 
+                window.close();
+            });
+            $(".js-choose-close").click(function(){
+                layer.close(deptPeopleIndex);
+            });
+            //选择单位按钮点击
+            $("#selectUnitBtn").click(function () {
+                layer.open({
+                    area: ['700px', '600px'],
+                    type: 2, title: '选择单位',
+                    content: '../../controls/unit/unitsMessage.html'});
+                return false;
+            });
+            //点击搜索框
+            $("#search").click(function () {
+                var certId = $("#certId").val();
+                var personName = $("#personName").val();
+                var personNo = $("#personNo").val();
+                if(certId == "" && personName == "" && personNo == ""){
+                    layer.msg("请填人员信息");
+                    return
+                }
+                //在使用查询按钮查询的时候，查询的是本单位的人员
+                var data = {
+                    certId: certId,
+                    personName: personName,
+                    personNo: personNo,
+                    unitId: localStorage.getItem("unit-id")
+                    , deptId: localStorage.getItem("dept-id")
+                }
+                searchForData(data)
+                return false;
+            });
+
+            $("#mobileChooseFileBtn").click(function(){
+                $(`#qrCode`).empty();
+                let uploadFileNum = $("#fileList").children().length;
+                let mobileUrl = window.location.origin + `/pages/mobile/scoreImgUpload.html?userId=${userId}&unitId=${unitId}&standardkindId=${standardkindId}&timestamp=${timestamp}&configFileNum=${configFileNum}&uploadFileNum=${uploadFileNum}`;
+                $('#qrCode').qrcode({
+                    text    :   mobileUrl,
+                    width   :   '280',
+                    height  :   '280'
+                }); 
+                layer.open({
+                    type: 1
+                    ,title: false //不显示标题栏
+                    ,closeBtn: false
+                    ,area: ['300px','300px']
+                    ,shade: 0.8
+                    ,shadeClose :true
+                    ,scrollbar :true
+                    ,id: 'LAY_layuipro' //设定一个id，防止重复弹出
+                    ,moveType: 1 //拖拽模式，0或者1
+                    ,content: $(`#qrCode`)
+                });
+                sendClickNum++;
+                if(sendClickNum==1){
+                    delayTime = 5000;
+                    getTempMobileFile();
+                }
+            });
+
+            // 监听行内按钮
+            table.on('tool(activity_table)', function (obj) {
+                if (obj.event != 'choose') return;
+                nowDataIndex = obj.data.index;
+                // 清空缓存数据
+                personValue = [];
+                personNames = [];
+                transfer.reload('demo1', {
+                    data: [],
+                    value: [],
+                    title: [`候选人员(0)`, `已选人员(0)`]
+                });
+                deptPeopleIndex = layer.open({
+                    type: 1,title: '筛选授分人员',
+                    content: $('#add-score-people'),
+                    area: ['95%', '90%']
+                })
+            })
+        }
+
+        //轮训向服务器获取手机上传的图片,只执行一次
+        let getTempMobileFile = function(){
+            if(sendClickNum==0 || $("#fileList").children().length >= configFileNum) return;
+            setTimeout(getMobileRequrest, delayTime);
+        }
+
+        //向后台发送请求
+        let getMobileRequrest = function(){
+            let getPhotoData = {userId:userId,timestamp:timestamp};
+            $.ajax({
+                type    :   "post",
+                url     :   getPhotoUrl,
+                data    :   JSON.stringify(getPhotoData),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success :   function (res) {
+                    if(res.status==200 && !tool.isEmpty(res.data)&& res.data.length >0){
+                        createPhoto(res.data);
+                    }
+                    getTempMobileFile();
+                },
+                error    :   function(res){ getTempMobileFile(); }
+            });
+        }
+
+        let createPhoto = function(datas){
+            let tempPhotos = [];
+            aa:
+            for (let i = 0; i < datas.length; i++) {
+                for (let j = 0; j < fileUrls.length; j++) {
+                    if(datas[i].scorePhotoUrl == fileUrls[j].scorePhotoUrl) continue aa;
+                }
+                tempPhotos.push(datas[i]);
+            }
+            for (let i = 0; i < tempPhotos.length; i++) {
+                if(fileUrls.length >= configFileNum){
+                    break;
+                }
+                let tempPhoto = tempPhotos[i];
+                fileUrls.push({
+                    fileName:tempPhoto.fileName,
+                    scorePhotoUrl:tempPhoto.scorePhotoUrl,
+                    photoSize:tempPhoto.photoSize,
+                    tempId:tempPhoto.keyId
+                })
+                let fileHtml = `<tr id="upload-${tempPhoto.keyId}">
+                    <td>${tempPhoto.fileName}</td><td>${tempPhoto.photoSize}kb</td>
+                    <td><img class="image-table-tr" onclick="viewPhoto('${tempPhoto.scorePhotoUrl}')" src="${tempPhoto.scorePhotoUrl}" alt="${tempPhoto.fileName}" file-size="${tempPhoto.photoSize}" file-id="${tempPhoto.keyId}"></td>
+                    <td>已上传</td>
+                    <td>
+                        <a class="layui-btn layui-btn-xs layui-btn-danger" file-id="${tempPhoto.keyId}" onclick="deletePhoto(this)">删除</a>
+                    </td>
+                    </tr>`;
+                $("#fileList").append(fileHtml);
+                delayTime = delayTime + 1000;
+            }
+            if($("#fileList").children().length >= configFileNum) {
+                isCanChooseBtn(false);
+                isCanOpenQcode(false);
+                sendClickNum = 0;
+                delayTime = 5000;
+
+            }
+        }
+
+        //删除图片
+        window.deletePhoto = function(elem){
+            layer.confirm('确认删除', {icon: 3, title: '提示'}, function (windowIndex) {
+                let index = elem.getAttribute("file-id");
+                let deleteUrl = huayi_projectscore_url + "cmeSingleprojScoreMobilePhoto/deleteById";
+                commonAjax('post',deleteUrl,{keyId:index},
+                    function(){layer.msg("删除失败");},
+                    function(res){
+                        if(res.status == 200){
+                            for(let i=0 ; i<fileUrls.length ; i++){
+                                if(fileUrls[i].tempId==index){
+                                    fileUrls.splice(i,1);
+                                    break;
+                                }
+                            }
+                            elem.parentElement.parentElement.remove();
+                            isCanOpenQcode(true);
+                            isCanChooseBtn(true);
+                        }else{ layer.msg("删除失败"); }
+                    });
+                layer.close(windowIndex);
+            })
+        }
+
+        window.getChildUnitMsg = function (unitId, unitName, hospitalLevelId, unitLevelName) {
+            $("#hidden_unit_id").val(unitId);
+            $("#text_unit_name").val(unitName);
+
+            $("#select_cme_unit_level").val(hospitalLevelId);
+            form.val("cmeDetail", {
+                "select_cme_unit_level": hospitalLevelId
+            });
+            form.render('select');
+        }
+
+        //穿梭框
+        let transferInit = function (personData) {
+            transfer.render({
+                elem: '#peopleFransfer',  //绑定元素
+                title: ['候选人员', '已选人员'],
+                width: '40%',
+                height: 500,
+                data: personData,
+                value: personData,
+                id: 'demo1', //定义索引
+                showSearch: true,
+                parseData: function (res) {
+                    return {
+                        "value": res.id //数据值
+                        , "title": res.nameAndId //数据标题
+                        , "disabled": res.disabled  //是否禁用
+                        , "checked": res.checked //是否选中
+                    }
+                },
+                onchange: function(data,index) {
+                    let changeNum = data.length;
+                    let tempElem = document.getElementById("peopleFransfer");
+                    tool.transferChangeTitle(tempElem,index,changeNum,transfer);
+                    tool.transferAllTipBind(tempElem,globalPersonData);
+                }
+            });
+        }
+
+        //公共ajax
+        let commonAjax = function(type="get",url,data,failFun,successFun){
+            openLoading();
+            $.ajax({
+                type    :   type,
+                url     :   url,
+                data    :   data,
+                success :   function (res) {
+                    closeLoading();
+                    successFun(res);
+                },
+                error    :   function(res){ 
+                    closeLoading(); 
+                    failFun();
+                }
+            });
+        }
+        
+        /**
+         * OCR重新上传时重置当前证明材料批次，并清理手机端临时上传记录。
+         */
+        let resetEvidenceUpload = function(){
+            const oldTimestamp = timestamp;
+            fileUrls = [];
+            isCanChooseBtn(true);
+            isCanSubmitBtn(false);
+            isCanOpenQcode(true);
+            sendClickNum = 1;
+            delayTime = 1000;
+            $("#fileList").html("");
+            $("#fileListTips").empty();
+            $("#qrCode").empty();
+            const fileInput = $("#chooseFileBtn").next()[0];
+            if(fileInput){ fileInput.value = ""; }
+            if(typeof uploadFiles !== "undefined" && uploadFiles != null){
+                for(let index in uploadFiles){ delete uploadFiles[index]; }
+            }
+            if(userId && oldTimestamp){
+                $.ajax({
+                    type: "post",
+                    url: huayi_projectscore_url + "cmeSingleprojScoreMobilePhoto/delete",
+                    data: {userId:userId,timestamp:oldTimestamp}
+                });
+            }
+            getTempMobileFile();
+        }
+
+
+        //清空form
+        let handerForm = function(){
+            fileUrls = [];
+            isCanChooseBtn(true);
+            isCanSubmitBtn(false);
+            isCanOpenQcode(true);
+            sendClickNum = 0;
+            timestamp = new Date().getTime();
+            $("#fileList").html("");
+            $("#activityDate").val("");
+            form.render();
+        }
+
+        //上传文件
+        let updateFile = function(){
+            let uploadListIns = ysUpload.render({
+                elem: "#chooseFileBtn",
+                elemList: $("#fileList"),
+                url: huayi_upload_url + 'uploadApi/upload',
+                exts     : fileExts,
+                size: fileSize ,//大小小于10M
+                accept: 'file',
+                number: configFileNum,
+                auto: (standardkindId === '289bf0ca-52cb-4b19-b737-9bd200a69ce1'),
+                bindAction: '#submitFileBtn',
+                before: function(obj){
+                    this.data = getFileType(this.files);
+                },
+                choose: function(obj){ 
+                    isCanSubmitBtn(true);
+                    var that = this;
+                    var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                    // 文件上传数量限制
+                    if (Object.keys(files).length + fileUrls.length >= configFileNum) {
+                        isCanChooseBtn(false);
+                        isCanOpenQcode(false);
+                    }
+                    //读取本地文件
+                    obj.preview(function (index, file, result) {
+                        let imgSrc = file.type.indexOf("pdf") >=0? '/img/pdf.png' : result;
+                        var tr = $([`<tr id="upload-${index}">
+                            <td><a>${file.name}</a></td><td>${(file.size / 1014).toFixed(1)}kb</td>
+                            <td><img id="showSmallPic${index}" src="${imgSrc}" alt="${file.name}" class="image-table-tr js-photo"></td>
+                            <td>${standardkindId === '289bf0ca-52cb-4b19-b737-9bd200a69ce1' ? '上传' : '未上传'}</td>
+                            <td>
+                                <a class="layui-btn layui-btn-xs layui-btn-danger demo-delete">删除</a>
+                                <a class="layui-btn layui-btn-xs demo-reload layui-hide">重传</a>
+                            </td></tr>`].join(''));
+                        //单个重传
+                        tr.find('.demo-reload').on('click', function () { obj.upload(index, file); });
+                        //删除
+                        tr.find('.demo-delete').on('click', function () {
+                            layer.confirm('确认删除', {icon: 3, title: '提示'}, function (windowIndex) {
+                                for(let i=0 ; i<fileUrls.length ; i++){
+                                    if(fileUrls[i].tempId==index){
+                                        fileUrls.splice(i,1);
+                                        break;
+                                    }
+                                }
+                                delete files[index]; //删除对应的文件
+                                tr.remove();
+                                uploadListIns.config.elem.next()[0].value = ''; //清空input file值,以免删除后出现同名文件不可选
+                                isCanChooseBtn(true);
+                                isCanOpenQcode(true);
+                                if (Object.keys(files).length == 0) {
+                                    isCanSubmitBtn(false);
+                                }
+                                layer.close(windowIndex);
+                            });
+                        });
+                        that.elemList.append(tr);
+                        //某图片放大预览
+                        $("#showSmallPic"+index).bind('click',function () { viewPhoto(result,file); });
+                    })
+                },
+                done: function(res,index,upload){
+                    let that = this;
+                    let tr = that.elemList.find('tr#upload-' + index);
+                    let tds = tr.children();
+                    if(res.code == 200){
+                        let fileSize = (this.files[index].size/1014).toFixed(1);
+                        let fileName = this.files[index].name;
+                        fileUrls.push({
+                            fileName:this.files[index].name,
+                            scorePhotoUrl:res.data.picUrl,
+                            photoSize:fileSize,
+                            tempId:index
+                        })
+                        tds.eq(3).html('已上传');
+                        tds.eq(4).find('.demo-reload').addClass('layui-hide'); //显示重传
+                        delete this.files[index]; //删除文件队列已经上传成功的文件
+                        if(Object.keys(this.files).length == 0){
+                            isCanSubmitBtn(false);
+                        }
+                        return;
+                    }
+                    this.error(index, upload);
+                },
+                error: function(index,upload){  
+                    var that = this;
+                    var tr = that.elemList.find('tr#upload-' + index);
+                    var tds = tr.children();
+                    tds.eq(3).html('上传失败');
+                    tds.eq(4).find('.demo-reload').removeClass('layui-hide'); //显示重传
+                }
+            });
+            if (standardkindId === '289bf0ca-52cb-4b19-b737-9bd200a69ce1') {
+                $('#submitFileBtn').hide();
+            }
+        }
+
+        //获取文件类型
+        let getFileType = function(filesObj) {
+            let tempDatas = {};
+            let year = new Date().getFullYear();
+            let path = `/individualScoreManage/${standardkindId}/${year}/${unitId}`;
+            for(let key in filesObj){
+                let fileData = {path:path,scale:0.6,outputQuality:0.6};
+                // 判断文件大小, 超过3M压缩比例改为0.3
+                debugger
+                if(filesObj[key].size > 3000000 ){
+                    fileData = {path:path,scale:0.3,outputQuality:0.3};
+                }
+                const tempType = filesObj[key].type;
+                if(tempType.indexOf("image") >= 0){
+                    fileData.fileType = "IMAGE";
+                } else if(tempType.indexOf("application/pdf") >= 0){
+                    fileData.fileType = "DOC";
+                } else {
+                    fileData.fileType = "OTHER";
+                }
+                tempDatas[key] = fileData;
+            }
+            return tempDatas;
+        }
+
+        // 图片预览
+        window.viewPhoto = function(srcUrl,file){
+            $(`#${viewFile}`).empty();
+            if(file!=null && file.type.indexOf("pdf")>=0) {
+                let test = createPdf(file,viewFile);
+            } else {
+                $(`#${viewFile}`).append(`<img src='${srcUrl}'/>`);
+            }
+            layer.open({
+                type: 1,
+                shade: 0.8,
+                offset: 'auto',
+                area: ['90%','90%'],
+                shadeClose:true,//点击外围关闭弹窗
+                scrollbar: false,//不现实滚动条
+                title: "预览", //不显示标题
+                content: $(`#${viewFile}`)
+            });
+        }
+
+        //pdf预览解析
+        let createPdf = function(pdfElem,id){
+            let currentPages=1;
+            let totalPages=0;
+            var reader = new FileReader();
+            reader.readAsDataURL(pdfElem);
+            reader.onload = function(e) {
+                let loadingTask = pdfjsLib.getDocument({
+                    url: this.result,
+                    cMapUrl: "/js/pdfjs/web/cmaps/",
+                    cMapPacked: true
+                });
+                loadingTask.promise.then(function(pdf){
+                    if(pdf){
+                        totalPages =  pdf.numPages;
+                        for (let i = 1; i <= totalPages; i++) {
+                            var canvas = document.createElement('canvas');
+                            canvas.id = "pageNum" + i;
+                            $(`#${id}`).append(canvas);
+                            var context = canvas.getContext('2d');
+                            renderImg(pdf,i,context);
+                        }
+                    }
+                })
+            }
+        }
+
+        //解析pdf一页
+        let renderImg = function(pdfFile,pageNum,canvasContext){
+            let pageElem =  pdfFile.getPage(pageNum);
+            pageElem.then(function(page){
+                var viewport = page.getViewport({scale:scale});
+                var newcanvas = canvasContext.canvas;
+                newcanvas.width = viewport.width;
+                newcanvas.height = viewport.height;
+                newcanvas.style.width = "100%";
+                var renderContext = {
+                    canvasContext :  canvasContext,
+                    viewport:viewport
+                };
+                page.render(renderContext);
+            })
+            return;
+        }
+
+        //获取配置信息
+        let getConfig = function(){
+            let configName1 = "fun_singleproj_photo_upload",
+            configName2="value_single_proj_score_photo_count";
+            let configUrl = huayi_sjwh_url + `cmeCommonConfig/getConfigByUnitFromRedis?unitId=${unitId}&configNames=${configName1}&configNames=${configName2}`;
+            commonAjax('post',configUrl,{},
+                function(){layer.msg("配置信息加载失败");},
+                function(res){
+                    if(res.status == 200){
+                        if(!tool.isEmpty(res.data)){
+                            if(res.data.hasOwnProperty(configName1) && res.data[configName1] == 0){
+                                isUploadPhoto = false;
+                                // 隐藏类layui-upload下的font
+                                $(".layui-upload").find("font").addClass("hide");
+                                // $(".js-photo-box").addClass("hidden-el");
+                            }
+                            if(res.data.hasOwnProperty(configName2) && res.data[configName2] != ""){
+                                configFileNum = res.data[configName2];
+                            }
+                            updateFile();
+                        }else{ layer.msg("配置加载失败"); }
+                    }else{ layer.msg("配置信息加载失败"); }
+                });
+        }
+
+        //是否可以选择按钮
+        let isCanChooseBtn = function(flag=true){
+            if(flag) {
+                $("#chooseFileBtn").removeClass("layui-btn-disabled");
+                $("#chooseFileBtn").attr("disabled", false);
+            }else{
+                $("#chooseFileBtn").addClass("layui-btn-disabled");
+                $("#chooseFileBtn").attr("disabled", true);
+            }
+        }
+        //是否可以提交按钮
+        let isCanSubmitBtn = function(flag=true){
+            if(flag) {
+                $("#submitFileBtn").removeClass("layui-btn-disabled");
+                $("#submitFileBtn").attr("disabled", false);
+            }else{
+                $("#submitFileBtn").addClass("layui-btn-disabled");
+                $("#submitFileBtn").attr("disabled", true);
+            }
+        }
+
+        //是否可以弹出二维码
+        let isCanOpenQcode = function(flag = true){
+            if(flag){
+                $("#mobileChooseFileBtn").removeClass("layui-btn-disabled");
+                $("#mobileChooseFileBtn").attr("disabled", false);
+            }else{
+                $("#mobileChooseFileBtn").addClass("layui-btn-disabled");
+                $("#mobileChooseFileBtn").attr("disabled", true);
+            }
+        }
+
+        //确定提交
+        let backSubmit = function(){
+            layer.open({
+                type:1,
+                title:false,
+                area:['260px','130px'],
+                btn:['继续授分','取消'],
+                closeBtn :0,
+                btnAlign: 'c',
+                content:'<div class="is-yes-context">已选人员已存在该学分，请谨慎授分</div>',
+                yes:function(){
+                    openLoading();
+                    for(let tempObj of submitScoreArr){ tempObj.isYes =1;}
+                    $.ajax({
+                        type: 'post',
+                        url: addUrl,
+                        data: JSON.stringify(submitScoreArr),
+                        contentType: 'application/json;charset=UTF-8',
+                        dataType: 'json',
+                        success: function (res) {
+                            closeLoading();
+                            if (res.status == 200) {
+                                window.EvidenceOcrVerify.notifySaveSuccess(submitScoreArr[0], function () {
+                                    handerForm();
+                                    layer.closeAll();
+                                });
+                            } else {
+                                layer.msg(res.msg);
+                            }
+                        },
+                        error: function () {
+                            closeLoading();
+                            layer.msg("保存失败");
+                        }
+                    })
+                },
+                btn2:function(index,layero){
+                    closeLoading();
+                }
+            })
+        }
+
+        form.on('submit(submit)', function (data) { 
+            tableInit();
+            var allTableList=table.cache['scoreTable'];
+            let tableList = [];
+            for(let obj of allTableList){
+                if(obj.peopleIds.length == 0) continue;
+                if(obj.period == "" || obj.period == null) obj.period = 0;
+                // if(obj.period <= 0 
+                //     && !grantscoreStandardIdArr.includes(tool.getParamFromUrl("grantscoreStandardId"))
+                //     && standardkindId != '190c480d-d43c-450b-8472-a6fd00a6729d'
+                // ){
+                //     layer.msg("小于最小限定学时!",{icon:5});
+                //     return false;
+                // }
+                if(obj.period > 150){
+                    layer.msg("超出最大限定学时!",{icon:5});
+                    return false;
+                }
+                tableList.push(obj);
+            }
+            if(tableList.length <=0){
+                layer.msg("请选择人员进行授分！",{icon:5});
+                return false;
+            }
+            
+            // 浙江套独立表单数据处理 singleproj.js
+            setExtData(data);
+            
+            const btnType = data.elem.getAttribute("btn-type");
+            const tempData = data.field;
+            submitScoreArr = [];
+            if(isUploadPhoto && fileUrls.length <= 0){
+                layer.msg("请上传证明材料",{icon:5});
+                return false;
+            }
+            for(let tempObj of tableList){
+                let peopleIds = tempObj.peopleIds;
+                for (let peopleId of peopleIds) {
+                    let obj = {period:tempObj["period"],
+                        score:tempObj["score"],
+                        comPersonId:peopleId,
+                        addUser:userId,
+                        addUnit:unitId,
+                        scoreMode:2,
+                        singleProjName:tempData.singleProjName.trim(),
+                        singleProjNo:tempData.singleProjNo.trim(),
+                        scoreLevel:tempData.scoreLevel,
+                        holdType:tempData.holdType,
+                        checkType:2,
+                        knowledgeId:tempData.knowledgeId,
+                        scoreType:tempData.scoreType,medicalType:tempData.medicalType,
+                        projType:tempData.projType,projTypeKind:tempData.projTypeKind,
+                        studyDate:tempData.studyDate,
+                        teachUnit:tempData.teachUnit.trim(),
+                        teachUnitName:tempData.teachUnitName.trim(),
+                        remark:tempData.remark.trim(),
+                        isYes:1,
+                        extData:tempData.extData
+                    };
+                    obj.checkState = (btnType && btnType == "saveAndApply")? 0 : -1;
+                    obj.cmeDeptSingleprojPhotos = fileUrls;
+                    submitScoreArr.push(obj);
+                }
+            }
+
+            const ocrPersonNames = [];
+            for (let i = 0; i < tableList.length; i++) {
+                const values = tableList[i].peopleValues || [];
+                for (let j = 0; j < values.length; j++) {
+                    const name = window.EvidenceOcrVerify.extractPersonName(values[j]);
+                    if (name && ocrPersonNames.indexOf(name) === -1) {
+                        ocrPersonNames.push(name);
+                    }
+                }
+            }
+            /**
+             * 科室发表论文批量录入按已选作者逐一核验佐证姓名。
+             */
+            window.checkSimilarProjectNameForScores(submitScoreArr, function () {
+                window.EvidenceOcrVerify.run({
+                    unitId: unitId,
+                    scoreLevel: data.field.scoreLevel,
+                    fileUrls: fileUrls,
+                    personNames: ocrPersonNames,
+                    resetUpload: function () {
+                        resetEvidenceUpload();
+                    }
+                }, function (verifyRes) {
+                    if (!verifyRes.pass) {
+                        return;
+                    }
+                    for (let k = 0; k < submitScoreArr.length; k++) {
+                        Object.assign(submitScoreArr[k], verifyRes.patchFields || {});
+                    }
+                    openLoading();
+                    $.ajax({
+                        type: 'post',
+                        url: addUrl,
+                        data: JSON.stringify(submitScoreArr),
+                        contentType: 'application/json;charset=UTF-8',
+                        dataType: 'json',
+                        success: function (res) {
+                            closeLoading();
+                            if (res.status == 200) {
+                                if(res.data == null || isNaN(res.data)){
+                                    window.EvidenceOcrVerify.notifySaveSuccess(verifyRes, function () {
+                                        handerForm();
+                                    });
+                                }else{
+                                    backSubmit();
+                                }
+                            } else {
+                                layer.msg(res.msg);
+                            }
+                        },
+                        error: function () {
+                            closeLoading();
+                            layer.msg("保存失败");
+                        }
+                    });
+                });
+            });
+            return false;
+        });
+
+        //表单校验 移入公共js: singleproj.js
+        form.verify({
+            // singleProjNameVerify: function(value,item){
+            //     if(null==value || value=="" || value.trim()=="") return "必填字段不能为空";
+            //     if(value.length > 300) return "输入最大限定字数";
+            // },
+            // singleProjNoVerify : function(value,item){
+            //     if(value.length > 30) return "输入最大限定字数";
+            // },
+            // remarkVerify:function(value,item){
+            //     if(value.length > 100) return "超出最大限定字数";
+            // },
+            // unitNameVerify:function(value,item){
+            //     if(null==value || value=="" || value.trim()=="") return "必填字段不能为空";
+            //     if(value.length > 100) return "发证机构名超过最大限定长度100";
+            // }
+        });
+
+        //页面初始化
+        let htmlInit = function(){
+            transferInit();
+            // getHoldType();//举办方式
+            // getTwoKnowledge();
+            initFrom();
+            getScoreStandard();
+            getDepts();
+            bindAllBtn();
+            getConfig();
+        }
+
+        htmlInit();  
+    })
+</script>
+</html>

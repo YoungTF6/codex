@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>录入个人学分-向导录入</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+<script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <link rel="stylesheet" href="/pages/score/cme_singleproj_score/css/singleproj.css" media="all">
+
+    <style>
+        .myBoder {
+            border: 1px solid #6086b5;
+        }
+
+    </style>
+</head>
+
+<body>
+
+
+    <div class="layui-bg-gray" style="padding: 30px;">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header myBoder">
+                        <h3 class="stepTitle" style="font-weight: bold;">第二步 请输入具体数据，系统将自动计算应授学分</h3>
+                    </div>
+                    <div class="layui-card-body myBoder">
+                        <div id="inputPeriod" style="padding: 10px; margin:0px 10px 10px 10px;">
+                            <div class="layui-inline" style="display: block;">
+                                <p id="description"></p><br>
+                            </div>
+                            <div>
+                                <label>实际完成</label>
+                                <div class="layui-inline">
+                                    <input type="number" id="completePeriod" class="layui-input" min="0">
+                                </div>
+                                <label id="unitName"></label>
+                            </div>
+                            <div id="step" style="padding-top: 20px; padding-left: 50px;">
+                                <a href="grant_score_singleproj_guid.html" class="layui-btn layui-btn-sm">上一步</a>
+                                <a id="nextStep" href="" class="layui-btn layui-btn-sm">下一步</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script>
+        layui.config({
+            base: '/js/layui/ext/'
+        }).extend({
+            eleTree: 'eleTree',
+            xmSelect: 'xm-select',
+            zTreeSelectM: 'zTreeSelectM'
+        });
+        // 全局配置及引入相关的模块
+        layui.use(['table', 'form', 'element', 'laydate', 'eleTree', 'xmSelect', 'zTreeSelectM'], function () {
+            var $ = layui.jquery
+                , table = layui.table
+                , element = layui.element
+                , form = layui.form
+                , laydate = layui.laydate
+                , xmSelect = layui.xmSelect
+                , eleTree = layui.eleTree
+                , zTreeSelectM = layui.zTreeSelectM
+                , layer = layui.layer;
+            var cmeStandardKindId = localStorage.getItem("standardkind-id");
+            const _isGuangdong = cmeStandardKindId === '289bf0ca-52cb-4b19-b737-9bd200a69ce1';
+
+            //解析url参数
+            let getParamFromUrl = function (paramName) {
+                let urlStr = location.search;
+                if (urlStr.indexOf(paramName) < 0 || urlStr.indexOf("?") < 0) return;
+                let paramKV = urlStr.substr(1).split("&");
+                for (let i = 0; i < paramKV.length; i++) {
+                    if (paramKV[i].indexOf(paramName) >= 0) {
+                        return paramKV[i].split("=")[1];
+                    }
+                }
+            }
+            var grantName = decodeURI(getParamFromUrl("grantName") || '');
+            var unitName = getParamFromUrl("unitName");
+            unitName = decodeURI(unitName);
+            var description = getParamFromUrl("description");
+            description = decodeURI(description);
+            var unitNum = getParamFromUrl("unitNum");
+            unitNum = decodeURI(unitNum);
+            var unitScore = getParamFromUrl("unitScore");
+            unitScore = decodeURI(unitScore);
+            var unitMaxscore = getParamFromUrl("unitMaxscore");
+            unitMaxscore = decodeURI(unitMaxscore);
+            let scoreLevel = decodeURI(getParamFromUrl('scoreLevel'));
+            let cmeYear = decodeURI(getParamFromUrl('cmeYear'));
+
+            var updateNextStepHref = function (completePeriod) {
+                $("#nextStep").attr('href', 'grant_score_singleproj.html?v=' + today() + '&completePeriod=' + completePeriod
+                    + '&unitNum=' + unitNum + '&unitScore=' + unitScore + '&unitMaxscore=' + unitMaxscore
+                    + '&unitName=' + unitName + '&grantName=' + encodeURIComponent(grantName)
+                    + '&scoreLevel=' + scoreLevel + '&cmeYear=' + cmeYear);
+            }
+
+            // 广东套且指定学分级别下使用固定文案
+            // const _guangdongScoreLevelId = '9f006836-16ef-11f1-bc03-005056a64c01';
+            // const _isGuangdongWithScoreLevel = _isGuangdong && (scoreLevel === _guangdongScoreLevelId);
+
+            var init = function () {
+                console.log(unitName + "---" + description)
+                $("#unitName").text(unitName);
+                $("#description").text(description);
+                if (_isGuangdong && grantName) {
+                    $(".stepTitle").text(grantName);
+                }
+
+                // if (_isGuangdongWithScoreLevel) {
+                //     $('#description').html('<span style="color: red;">每天按6小时计算授予1分，最高限15分</span>');
+                //     $('#unitName').html('<span style="color: red;">天数</span>');
+                // }
+
+                if (description.includes("每1次") && _isGuangdong) {
+                    $("#completePeriod").val(1);
+                    $("#completePeriod").attr("disabled", true);
+                }
+
+                // 输入框禁用时也要预先生成下一步链接
+                updateNextStepHref($("#completePeriod").val() || '');
+            }
+            init();
+
+            $(function(){
+                // 输入框的值改变时触发
+                $("#completePeriod").on("input", function(e){
+                    updateNextStepHref(e.delegateTarget.value);
+                    console.log($("#nextStep").attr('href'));
+                });
+            });
+
+
+            // 下一步前校验输入
+            $('#nextStep').click(function () {
+                if (description.includes("每1次") && _isGuangdong) {
+                    $("#completePeriod").val(1);
+                }
+                updateNextStepHref($("#completePeriod").val() || '');
+
+                if ($("#completePeriod").val() < 0) {
+                    layer.msg('实际完成内容不能小于0', {icon: 5})
+                    return false
+                }
+                // 湖北: 因月份问题，出现小数学分，限制月份输入，只允许输入整数
+                if(cmeStandardKindId == '73ba18db-33fd-4746-ab41-9beb009f69a1' && unitName.indexOf('月') >= 0){
+                    var completePeriod = $("#completePeriod").val();
+                    if(completePeriod != parseInt(completePeriod)){
+                        layer.msg('月份只能输入整数')
+                        return false
+                    }
+                }
+
+                var completePeriod = $("#completePeriod").val();
+                if(completePeriod == '' || completePeriod == null || completePeriod == undefined){
+                    layer.msg('实际完成内容不能为空')
+                    return false
+                }
+            })
+
+        });
+
+    </script>
+</body>
+
+</html>

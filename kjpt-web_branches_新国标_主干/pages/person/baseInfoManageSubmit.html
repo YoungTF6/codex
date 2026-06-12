@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>会员上报</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+        media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+
+    <!-- 工具 -->
+    <script type="text/javascript" src="../../js/base64.js"></script>
+
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="../../js/axios.min.js"></script>
+    <script type="text/javascript" src="../../js/auth.js"></script>
+    <script type="text/javascript" src="../../js/layui/ext/tool.js"></script>
+    <script type="text/javascript" src="../../js/common.js"></script>
+    <script type="text/javascript" src="../../js/person/memberSubmit/memberSubmitState.js"></script>
+     <!--    ajax全局配置-->
+     <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+
+    <style>
+        .layui-icon-ok {
+            color: green;
+            font-weight: bold;
+        }
+
+        .layui-icon-close.notok,
+        .require,
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+
+        .layui-btn+.layui-btn {
+            margin-left: 0;
+        }
+        .layui-table-tool-temp {
+            padding-right: 0px;
+        }
+
+        .member-submit-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            height: 30px;
+        }
+        .member-submit-toolbar .layui-btn,
+        .member-submit-toolbar .layui-form-checkbox {
+            height: 30px;
+            line-height: 30px;
+            margin: 0;
+            vertical-align: middle;
+        }
+        .member-submit-toolbar .layui-form-checkbox span {
+            display: inline-flex;
+            align-items: center;
+            height: 30px;
+            line-height: 30px;
+        }
+        .member-submit-toolbar .layui-form-checkbox i {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            height: 30px;
+            line-height: 1;
+        }
+
+        .member-submit-tabs {
+            margin: 10px 0 0 0;
+        }
+
+        .member-submit-tabs .tab_others {
+            width: 100px !important;
+            background-color: #009688;
+            color: #ffffff;
+            margin-left: 6px;
+        }
+
+        .member-submit-tabs .tab_this {
+            width: 100px !important;
+            background-color: #f5f5f5;
+            color: #404040;
+            margin-left: 6px;
+            border-bottom: 1px solid #F5F5F5;
+        }
+    </style>
+</head>
+
+<body class="body-area">
+       
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-tab member-submit-tabs" lay-filter="memberSubmitTab">
+                <ul class="layui-tab-title">
+                    <li class="tab_others tab_this tabsRounded layui-this" lay-id="unsubmitted">未上报</li>
+                    <li class="tab_others tabsRounded" lay-id="submitted">已上报</li>
+                </ul>
+            </div>
+
+            <!-- 搜索框区域 -->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area">
+                <!-- <blockquote class="layui-form layui-form-item layui-elem-quote one-btn" lay-filter="query-form"> -->
+                <div class="layui_mess">
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">申报年度</label>
+                            <div class="layui-input-block">
+                                <select name="checkYear" id="checkYear" lay-filter="loadReport">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-form  tree-select" lay-filter="deptSelectArea">
+                            <label class="layui-form-label">科室</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" disabled
+                                    lay-filter="deptSelect" id="deptSelect" name="deptId" placeholder="请选择单位">
+
+                            </div>
+                            <input type="hidden" id="hidden_dept_id" />
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">职称</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="text_title" id="text_title_names" placeholder="请输入关键字"
+                                    autocomplete="off" class="layui-inline layui-input">
+                                <input type="hidden" id="hidden_title_ids" value="" />
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">人员编号</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="personNo" id="personNo" placeholder="请填写" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">证件号</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="cert_id" id="cert_id" placeholder="请填写" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">姓名</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="person_name" id="person_name" placeholder="请填写" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-form" lay-filter="select_person_state_id">
+                            <label class="layui-form-label">人员状态</label>
+                            <div class="layui-input-block">
+                                <select class="con_sel" id="select_person_state_id">
+                                    <option value="">请选择</option>
+                                </select>
+                            </div>
+                            <input type="hidden" id="hidden_person_state_id" />
+                        </div>
+                        <div class="layui-inline" id="memberStateItem">
+                            <label class="layui-form-label">审核状态</label>
+                            <div class="layui-input-block">
+                                <select class="con_sel" id="select_member_state">
+                                    <option value="">全部</option>
+                                    <option value="1">审核中</option>
+                                    <option value="2">审核通过</option>
+                                    <option value="3">审核退回</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" id="searchBtn" lay-filter="table-search"
+                                data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- </blockquote> -->
+            </div>
+
+
+            <!-- 表格区域 -->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="comPerson" lay-filter="comPerson" style="margin: 0px 0px;">
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+ 
+
+</body>
+
+</html>
+
+<!--表格内数据编辑、删除按钮 -->
+<script type="text/html" id="rowBar">
+    {{# var memberSubmitState = window.MemberSubmitState; }}
+    {{# if(memberSubmitState.canSubmit(d)){ }}
+        <a class="layui-btn layui-btn-xs" lay-event="submitPerson" style="color: #009688;background-color: transparent;">上报</a>
+    {{# }else if(memberSubmitState.canCancel(d)){ }}
+        <a class="layui-btn layui-btn-xs" lay-event="cancelSubmit" style="color: #ffb82e;background-color: transparent;">取消上报</a>
+    {{# }else if(memberSubmitState.canResubmit(d)){ }}
+        <a class="layui-btn layui-btn-xs" lay-event="opinions" style="color: #d22525;background-color: transparent;">审核不通过原因</a>
+        <a class="layui-btn layui-btn-xs" lay-event="restSubmit" style="color: #009688;background-color: transparent;">重新上报</a>
+    {{# } }}
+</script>
+ 
+<script type="text/html" id="toolbarBtns">
+    <div class="layui-btn-container member-submit-toolbar">
+        <input type="checkbox" name="layTableCheckbox" title="本页全选" lay-filter="layTableAllChoose" id="checkboxCurrent">
+        <button class="layui-btn layui-btn-sm" id="btnSubmitSelected" lay-event="submitPerson">上报</button>
+    </div>
+</script>
+
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        treeSelect: 'treeSelect'
+    });
+
+    /* 全局配置及引入相关的模块 */
+    layui.use(['table', 'form', 'jquery', 'layer', 'element', 'xmSelect', 'treeSelect','tool'], function () {
+        var table = layui.table,
+            form = layui.form,
+            $ = layui.jquery,
+            layer = layui.layer,
+            element = layui.element,
+            xmSelect = layui.xmSelect,
+            treeSelect = layui.treeSelect,
+            tool = layui.tool;
+        var debounceTime=1500;//防抖时间
+        const JILIN = "acd09b62-333b-4aee-934f-9ec500a9d46d";
+
+        var curDeptId;
+        var currentYear = new Date().getFullYear();
+        let isCheck = false;
+        let currentSubmitTab = "unsubmitted";
+        window.submittedTabInitialized = false;
+
+        window.getUnitId = function () {
+            return localStorage.getItem("unit-id");
+        }
+        window.getCmeStandardKindId = function () {
+            return localStorage.getItem("standardkind-id");
+        }
+        window.getUserType = function () {
+            return localStorage.getItem("user-type");
+        }
+
+        window.isSubmittedTab = function () {
+            return currentSubmitTab === "submitted";
+        }
+
+        window.getSubmitListUrl = function () {
+            if (window.isSubmittedTab()) {
+                return huayi_personorg_url + 'memberSubmit/query/submit/submitted/list';
+            }
+            return huayi_personorg_url + 'memberSubmit/query/submit/unsubmitted/list';
+        }
+
+        window.getSubmitTableCols = function () {
+            return [
+                {
+                    field: 'checkbox',
+                    title: '选择',
+                    width: 58,
+                    align: 'center',
+                    hide: window.isSubmittedTab(),
+                    templet: function (d) {
+                        if (!window.MemberSubmitState.canSelectForSubmit(d)) {
+                            return '<img src="/img/score/disableIcon.png" style="width:16px;height:16px;" alt="已上报">';
+                        }
+                        return '<input type="checkbox" lay-skin="primary" name="layTableCheckbox" lay-type="layTableCheckbox" value="' + d.comPersonId + '">';
+                    }
+                }, {
+                    field: 'comPersonId',
+                    title: 'ID',
+                    hide: true
+                }, {
+                    field: 'memberState',
+                    title: '审核状态',
+                    hide: true
+                }, {
+                    align: 'center',
+                    title: '操作',
+                    toolbar: '#rowBar',
+                    minWidth: 90
+                }, {
+                    title: '审批步骤',
+                    align: 'center',
+                    minWidth: 100,
+                    hide: !window.isSubmittedTab(),
+                    templet: function (d) {
+                        if (!d.memberCheckId) {
+                            return '';
+                        }
+                        return '<a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="memberSubmitProgress">查看</a>';
+                    }
+                }, {
+                    field: 'memberStateName',
+                    title: '审核状态',
+                    align: 'center',
+                    minWidth: 110,
+                    hide: !window.isSubmittedTab(),
+                    templet: function (d) {
+                        return window.MemberSubmitState.text(d);
+                    }
+                }, {
+                    field: 'submitUnitName',
+                    title: '上报单位',
+                    align: 'center',
+                    minWidth: 160,
+                    hide: !window.isSubmittedTab(),
+                    templet: function (d) {
+                        return d.submitUnitName || '';
+                    }
+                }, {
+                    field: 'currentUnitName',
+                    title: '当前单位',
+                    align: 'center',
+                    minWidth: 160,
+                    templet: function (d) {
+                        return d.currentUnitName || '';
+                    }
+                }, {
+                    field: 'personName',
+                    title: '姓名',
+                    align: 'center',
+                    minWidth: 100,
+                    sort: true,
+                    templet: function (d) {
+                        return '<a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" ' +
+                            'lay-event="detail">' + d.personName + '</a>';
+                    }
+                }, {
+                    field: 'personNo',
+                    title: '人员编号',
+                    align: 'center',
+                    minWidth: 120
+                }, {
+                    field: 'certId',
+                    title: '证件号码',
+                    align: 'center',
+                    minWidth: 120
+                }, {
+                    field: 'titleName',
+                    title: '职称',
+                    align: 'center',
+                    minWidth: 110,
+                    sort: true
+                }, {
+                    field: 'personStateName',
+                    title: '人员状态',
+                    align: 'center',
+                    minWidth: 120,
+                    sort: true
+                }
+            ];
+        }
+
+        window.renderCheckYearOptions = function () {
+            var selectedYear = $("#checkYear").val();
+            $("#checkYear").empty();
+            if (window.isSubmittedTab()) {
+                for (var i = currentYear; i > currentYear - 3; i--) {
+                    $('#checkYear').append(new Option(i, i));
+                }
+                if (!selectedYear
+                    || Number(selectedYear) > currentYear
+                    || Number(selectedYear) <= currentYear - 3) {
+                    selectedYear = currentYear;
+                }
+            } else {
+                selectedYear = currentYear;
+                $('#checkYear').append(new Option(currentYear, currentYear));
+            }
+            $("#checkYear").val(selectedYear);
+            form.render('select');
+        }
+
+        window.getDeptId = function () {
+            if (localStorage.getItem("user-type") == 13) {
+                let userId = localStorage.getItem("user-id");
+                $.ajax({
+                    async: false,
+                    headers: {
+                        'Authorization': localStorage.getItem('token'),
+                        'KJPT-USER-ID': localStorage.getItem('user-id')
+                    },
+                    url: huayi_permission_url + "comuser/detail",
+                    type: "get",
+                    data: { userId: userId },
+                    success: function (res) {
+                        if (res.success == true) {
+                            if (res.data != null && res.data != undefined && res.data != "") {
+                                curDeptId = res.data.base.unitId;
+                            }
+                        }
+                    },
+                    error: function () {
+                        layer.msg("发送信息失败");
+                    }
+                });
+            }
+        }
+
+        //---------------------------------初始化------------------------
+        //#region
+
+
+        /* 查询项初始化 */
+        window.initSelect = function () {
+            //初始化人员状态下拉框
+            $.ajax({
+                async: false,
+                url: huayi_personorg_url + "comperson/getPersonStateListByCmeStandardKindId",
+                type: "post",
+                data: {
+                    cmeStandardKindId: window.getCmeStandardKindId()
+                },
+                success: function (result) {
+                    if (result.success == true) {
+                        var personStateList = result.data;
+                        var personState = {};
+                        for (var i = 0; i < personStateList.length; i++) {
+                            personState = personStateList[i];
+                            if ($.trim(personState.person_state_name) == "正常") {
+                                $("<option value=" + personState.person_state_id + " selected>" + personState.person_state_name + "</option>").appendTo($("#select_person_state_id"));
+                            } else {
+                                $("<option value=" + personState.person_state_id + ">" + personState.person_state_name + "</option>").appendTo($("#select_person_state_id"));
+                            }
+                            console.log(0);
+                        }
+                        form.render("select", "select_person_state_id");
+                    } else {
+                        layer.msg("加载人员状态下拉框出现问题");
+                    }
+                }
+            });
+
+        };
+
+
+        /** 科室选择下拉列表初始化 */
+        var deptTreeSelect;
+        window.initDeptTree = function (deptId) {
+            var unitId = window.getUnitId();
+            deptTreeSelect = treeSelect.render({
+                elem: '#deptSelect',
+                data: huayi_personorg_url + 'comdept/tree/unit?unitId=' + unitId,
+                type: 'get',
+                search: true,
+                style: {
+                    folder: {     // 父节点图标
+                        enable: true   // 是否开启：true/false
+                    },
+                    line: {     // 连接线
+                        enable: true   // 是否开启：true/false
+                    }
+                },
+                click: function (data) {
+                    $("#hidden_dept_id").val(data.current.id);
+                },
+                success: function () {
+                    if (deptId != null && deptId != undefined && deptId != "") {
+                        deptTreeSelect.checkNode('deptSelect', deptId);
+                    }
+                }
+            });
+        }
+
+        /* 表格初始化 */
+        window.initTable = function () {
+            table.render({
+                elem: '#comPerson',
+                url: window.getSubmitListUrl(),
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                async: false,
+                autoSort: false ,//禁用前端自动排序。
+                toolbar: window.isSubmittedTab() ? true : '#toolbarBtns',
+                title: '用户表',
+                defaultToolbar: [ 'exports', 'print'],
+                where: {
+                    unitId: window.getUnitId(),
+                    deptId: curDeptId,
+                    personStateId: $("#select_person_state_id").val(),
+                    checkYear: $("#checkYear").val(),
+                    isCheck: isCheck
+                },
+                cols: [window.getSubmitTableCols()],
+                cellMinWidth: 100,
+                id: 'comPerson',
+                height: 'full-225',
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    return {
+                        'code': res.status === 200 ? 0 : res.status, // 解析接口状态
+                        'msg': res.message, // 解析提示文本
+                        'count': res.data.recordsTotal, // 解析数据长度
+                        'data': res.data.records, // 解析数据列表
+                        'page': res.data.pageNum, // 当前页
+                        'limit': res.data.pageSize, // 每页条数
+                    }
+
+                },
+                request: {
+                    pageName: 'pageNum', // 页码的参数名称，默认：page
+                    limitName: 'pageSize' // 每页数据量的参数名，默认：limit
+                },
+                done: function  (res, curr, count) {
+                    resetSubmitPageCheck();
+                    toggleAddBtnVisibility();
+                    
+                }
+            });
+
+
+        };
+
+        $(function () {
+            window.renderCheckYearOptions();
+            window.initSelect();
+            getConfig("fun_unit_add_person");
+            getConfig("fun_unit_del_com_person");
+            getDeptId();
+            if (curDeptId != null && curDeptId != undefined && curDeptId != "") {
+                $("#hidden_dept_id").val(curDeptId);
+                $("#deptSelect").val(localStorage.getItem('realname')).addClass("layui-disabled");
+
+            } else {
+                //两个treeSelect几乎同时加载，可能会加载不出来
+                setTimeout(() => {
+                    window.initDeptTree();
+                }, 200);
+               
+            }
+            
+            
+            window.initTable();
+            syncSubmitTabView();
+
+            toggleAddBtnVisibility();
+
+        });
+
+        //#endregion
+
+        //---------------------------------事件--------------------------
+        window.reloadTable = function () {
+            table.reload("comPerson", {
+                url: window.getSubmitListUrl(),
+                cols: [window.getSubmitTableCols()],
+                toolbar: window.isSubmittedTab() ? true : '#toolbarBtns',
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                where: getDefaultData(),
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+        }
+
+        /* 列表基础参数 */
+        window.getDefaultData = function () {
+            return {
+                    unitId: window.getUnitId(),
+                    deptId: $("#hidden_dept_id").val(),
+                    personStateId: $("#select_person_state_id").val(),
+                    titleIds: $("#hidden_title_ids").val(),
+                    personNo: $("#personNo").val(),
+                    certId: $("#cert_id").val(),
+                    memberState: window.isSubmittedTab() ? $("#select_member_state").val() : 0,
+                    personName: $("#person_name").val(),
+                    checkYear: $("#checkYear").val(),
+                    isCheck: isCheck
+               };
+        }
+
+        window.showMemberSubmitManageResult = function (res, defaultMessage) {
+            if (res.status === 200) {
+                var message = res.data && res.data.message ? res.data.message : defaultMessage;
+                layer.msg(message);
+                window.reloadTable();
+            } else {
+                layer.msg(res.msg);
+            }
+        }
+
+        window.executeMemberSubmitManageAction = function (confirmIndex, url, payload, successMessage) {
+            layer.close(confirmIndex);
+            var loadingIndex = layer.load(2, {
+                shade: [0.2, '#fff']
+            });
+            return $.ajax({
+                type: "post",
+                url: huayi_personorg_url + url,
+                data: JSON.stringify(payload),
+                contentType: "application/json",
+                success: function (res) {
+                    window.showMemberSubmitManageResult(res, successMessage);
+                },
+                error: function () {
+                    layer.msg("响应失败");
+                },
+                complete: function () {
+                    layer.close(loadingIndex);
+                }
+            });
+        }
+
+        $("#searchBtn").click(function () {
+            window.reloadTable();
+        })
+
+
+
+        // 监听头部新增按钮
+        table.on('toolbar(comPerson)', function (obj) {
+            var datas = obj.data;
+            console.log(datas);
+            if (obj.event === 'submitPerson') {
+                if (window.isSubmittedTab && window.isSubmittedTab()) {
+                    return;
+                }
+                var comPersonIds = window.getCheckedSubmitPersonIds();
+                if(comPersonIds.length == 0){
+                    layer.msg("请选择要上报的人员");
+                    return;
+                }
+                var comPersonId = comPersonIds.join(",");
+                layer.confirm('确定要上报吗', {icon: 3, title: '提示'}, debounce(function (index) {
+                    return window.executeMemberSubmitManageAction(
+                        index,
+                        "memberSubmit/manage/submit",
+                        window.MemberSubmitState.buildPayload(comPersonId, $("#checkYear").val(), 0, ""),
+                        "上报成功"
+                    );
+                },debounceTime))
+            }
+        });
+
+
+        // 监听行内按钮
+        table.on('tool(comPerson)', function (obj) {
+            var datas = obj.data;
+            if (obj.event === 'submitPerson') {
+                if (datas.length == 0) {
+                    layer.msg("请选择要上报的人员");
+                    return;
+                }
+                var comPersonIds = []; 
+                comPersonIds.push(datas.comPersonId);
+                var comPersonId = comPersonIds.join(",");
+                layer.confirm('确定要上报吗', {icon: 3, title: '提示'}, debounce(function (index) {
+                    return window.executeMemberSubmitManageAction(
+                        index,
+                        "memberSubmit/manage/submit",
+                        window.MemberSubmitState.buildPayload(comPersonId, $("#checkYear").val(), 0, ""),
+                        "上报成功"
+                    );
+                },debounceTime))
+            } else if (obj.event === 'cancelSubmit') {
+                if (datas.length == 0) {
+                    layer.msg("请选择要取消上报的人员");
+                    return;
+                }
+                var comPersonIds = [];
+                comPersonIds.push(datas.comPersonId);
+                var comPersonId = comPersonIds.join(",");
+                layer.confirm('确定要取消上报吗', {icon: 3, title: '提示'}, debounce(function (index) {
+                    return window.executeMemberSubmitManageAction(
+                        index,
+                        "memberSubmit/manage/cancel",
+                        window.MemberSubmitState.buildPayload(comPersonId, $("#checkYear").val(), null, ""),
+                        "取消上报成功"
+                    );
+                },debounceTime))
+            }else if (obj.event === 'restSubmit') {
+                if (datas.length == 0) {
+                    layer.msg("请选择要重新上报的人员");
+                    return;
+                }
+                var comPersonIds = [];
+                comPersonIds.push(datas.comPersonId);
+                var comPersonId = comPersonIds.join(",");
+                layer.confirm('确定要重新上报吗', {icon: 3, title: '提示'}, debounce(function (index) {
+                    return window.executeMemberSubmitManageAction(
+                        index,
+                        "memberSubmit/manage/resubmit",
+                        window.MemberSubmitState.buildPayload(comPersonId, $("#checkYear").val(), 0, ""),
+                        "重新上报成功"
+                    );
+                },debounceTime))
+            } 
+            
+            else if (obj.event === 'opinions') {
+                layer.open({
+                    type: 1,
+                    title: '审核不通过原因',
+                    content: '<div style="padding: 20px 100px;">' + datas.content + '</div>',
+                    btn: '关闭',
+                    btnAlign: 'c',
+                    shade: 0,
+                    yes: function () {
+                        layer.closeAll();
+                    }
+                });
+            } else if (obj.event === 'memberSubmitProgress') {
+                window.MemberSubmitState.openProgress(datas, $("#checkYear").val(), layer, $);
+            } else if (obj.event === 'detail') {
+                layer.open({
+                    type: 2,
+                    title: '人员信息',
+                    content: 'baseInfoDetails.html?comPersonId=' + datas.comPersonId,
+                    area: ['75%', '90%']
+                });
+            }
+        });
+
+        table.on('sort(comPerson)', function(obj){ //注：sort 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            console.log(obj.field); //当前排序的字段名
+            console.log(obj.type); //当前排序类型：desc（降序）、asc（升序）、null（空对象，默认排序）
+            console.log(this); //当前排序的 th 对象
+            
+            let orderField = humpToUnderline((obj.field));
+            let orderType = obj.type;
+            table.reload('comPerson', {
+                initSort: obj, //记录初始排序，如果不设的话，将无法标记表头的排序状态。
+                where: $.extend({},window.getDefaultData(),{ orderField: orderField,orderType: orderType})
+            });
+            
+        });
+
+
+       
+
+        window.humpToUnderline = function(str) {
+            let temp = str.replace(/[A-Z]/g, function (match) { 
+            return "_" + match.toLowerCase();
+            });
+            // 如果首字母是大写，执行replace时会多一个_，这里需要去掉
+            if(temp.slice(0,1) === '_'){ 
+            temp = temp.slice(1);
+            }
+            return temp;
+        }
+
+        // form表单相关操作
+        // 新增/修改表单提交
+        form.on('submit(submit)', function (data) {
+            // 用于判断是新增还是修改
+            var formTableId = $("#add-comPerson input[name='comPersonId']").val();
+            var datas = JSON.stringify(data.field);
+            var URL;
+            if (formTableId === '' || formTableId === null) {
+                // 走新增逻辑
+                URL = kjpt_url + 'comPerson/save';
+            } else {
+                // 走修改逻辑
+                URL = kjpt_url + 'comPerson/update';
+            }
+            $.ajax({
+                type: 'post',
+                url: URL,
+                data: datas,
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    layer.msg("修改成功");
+                },
+                error: function () {
+                    layer.msg("发送请求失败");
+                }
+            })
+        });
+        //下拉框值改变
+        form.on('select(loadReport)', function(data) {
+            window.reloadTable();
+        })
+
+        element.on('tab(memberSubmitTab)', function(data) {
+            $(this).addClass("tab_this").siblings().removeClass("tab_this");
+            currentSubmitTab = $(this).attr("lay-id") || "unsubmitted";
+            syncSubmitTabView();
+            window.reloadTable();
+        });
+
+        form.on('checkbox(layTableAllChoose)', function(data) {
+            $("div[lay-id='comPerson'] .layui-table-main input[lay-type='layTableCheckbox']").prop("checked", data.elem.checked);
+            form.render('checkbox');
+        });
+
+        //鼠标悬停提示特效
+        $("#hint").hover(function () {
+            openMsg();
+        }, function () {
+            layer.close(subtips);
+        });
+
+
+        $("#text_title_names").click(function () {
+            var titleIds = $("#hidden_title_ids").val();
+            layer.open({
+                type: 2,
+                content: "../controls/selectTitle/selectTitles.html?titleIds=" + titleIds,
+                area: ['610px', '450px'],
+                scrollbar: false
+            });
+        });
+
+    });
+
+    function syncSubmitTabView() {
+        if (window.renderCheckYearOptions) {
+            window.renderCheckYearOptions();
+        }
+        if (window.isSubmittedTab && window.isSubmittedTab()) {
+            $("#memberStateItem").show();
+            if (!window.submittedTabInitialized) {
+                $("#select_person_state_id").val("");
+                window.submittedTabInitialized = true;
+            }
+        } else {
+            $("#memberStateItem").hide();
+            $("#select_member_state").val("");
+        }
+        if (layui.form) {
+            layui.form.render("select");
+        }
+        window.toggleAddBtnVisibility();
+    }
+    
+    window.toggleAddBtnVisibility = function(){
+            if (window.isSubmittedTab && window.isSubmittedTab()) {
+                $("#btnSubmitSelected").hide();
+                return;
+            }
+            if (window["fun_unit_add_person"] == "0") {
+                $("#btnSubmitSelected").hide();
+            }else{
+                $("#btnSubmitSelected").show();
+            }
+    }
+
+    window.resetSubmitPageCheck = function () {
+        $("#checkboxCurrent").prop("checked", false);
+        $("div[lay-id='comPerson'] .layui-table-main input[lay-type='layTableCheckbox']").prop("checked", false);
+        if (layui.form) {
+            layui.form.render('checkbox');
+        }
+    }
+
+    window.getCheckedSubmitPersonIds = function () {
+        var comPersonIds = [];
+        $("div[lay-id='comPerson'] .layui-table-main input[lay-type='layTableCheckbox']:checked").each(function (index, item) {
+            if (item.value) {
+                comPersonIds.push(item.value);
+            }
+        });
+        return comPersonIds;
+    }
+
+
+    function getChildTitles(titleIds, titleNames) {
+        $("#text_title_names").val(titleNames);
+        $("#hidden_title_ids").val(titleIds);
+    }
+
+    function openMsg() {
+        subtips = layer.tips('提示信息', '#hint', {
+            tips: [1, '#ff6700'],
+            time: 30000
+        });
+    }
+
+    //获取配置的值
+    window.getConfig = function (config_name) {
+        var config_value = "";
+        $.ajax({
+            async: false,
+            type: "post",
+            url: huayi_sjwh_url + "cmeCommonConfig/getConfigByUnitFromRedis",
+            data: { unitId: localStorage.getItem("unit-id"), configNames: config_name },
+            success: function (res) {
+                if (res.success == true) {
+                    window[config_name] =  res.data[config_name];
+                } else {
+                    layer.msg("获取配置出错");
+                }
+            },
+            error: function () {
+                layer.msg("获取配置出错");
+            }
+        });
+        return config_value;
+    }
+
+</script>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>pdf下载文件页，可以用于自定义打印出pdf文件</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <style>
+        #printSpace{
+            width: 95%;
+            margin: 10px auto;
+            padding: 0px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 具体的打印空间，会动态插入 -->
+    <div id="printSpace"></div>
+<script>
+    function printWindow(){
+        window.print();
+    }
+</script>
+</body>
+</html>
+

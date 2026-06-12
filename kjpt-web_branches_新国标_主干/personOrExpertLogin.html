@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=0.3, minimum-scale=0.3, maximum-scale=1.0, user-scalable=yes">
+    <title>选择角色登录</title>
+    <link rel="stylesheet" href="css/reset.css" />
+    <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="js/constant.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
+
+    <style>
+        /*选择首页*/
+        .zhezhao {
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background: #000;
+            opacity: 0.3;
+            filter: alpha(opacity=57);
+            /*ie8透明度兼容*/
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 5;
+            display: none;
+        }
+
+
+
+        .login {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .login_item {
+            width: 400px;
+            background: #fff;
+            padding: 30px;
+            border-radius: 14px;
+        }
+
+        .text_tit {
+            display: flex;
+            width: 400px;
+            padding: 10px 0;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .text_tit p {
+            font-size: 28px;
+            color: #333;
+        }
+
+        .sele_box ul {
+            display: flex;
+            justify-content: center;
+            padding: 18px 0;
+        }
+
+        .sele_box ul li {
+            background: #fff;
+            width: 130px;
+            padding: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            border-radius: 20px;
+            margin: 0 10px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .sele_box ul li a {
+            color: #046bfe;
+            display: contents;
+        }
+
+        .sele_box ul li i {
+            width: 92px;
+            height: 92px;
+            display: block;
+        }
+
+        .sele_box ul li i.per {
+            background: url(img/login/perk_icon.png) no-repeat center center;
+        }
+
+        .sele_box ul li i.pszj {
+            background: url(img/login/zjk_icon.png) no-repeat center center;
+        }
+
+        .sele_box ul li i.xmsb {
+            background: url(img/login/xmsbk_icon.png) no-repeat center center;
+        }
+
+        .sele_box ul li.cur {
+            box-shadow: inset 0 0 0 4px #046bfe;
+        }
+
+        .sele_box ul li.cur i.per {
+            background: url(img/login/pers_icon.png) no-repeat center center;
+        }
+
+        .sele_box ul li.cur i.pszj {
+            background: url(img/login/zjs_icon.png) no-repeat center center;
+        }
+
+        .sele_box ul li.cur i.xmsb {
+            background: url(img/login/xmsbs_icon.png) no-repeat center center;
+        }
+
+        .sele_box ul li span {
+            color: #333333;
+            font-size: 18px;
+            margin-top: 14px;
+        }
+
+        .sele_box ul li.cur span {
+            color: #046bfe;
+        }
+
+        .btn_box {
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+            align-items: center;
+        }
+
+        .btn_box button {
+            width: 350px;
+            height: 48px;
+            text-align: center;
+            background: #046bfe;
+            color: #fff;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login">
+        <div class="login_item">
+            <div class="login_box">
+                <div class="text_tit">
+                    <p>请选择对应的角色进入系统</p>
+                </div>
+                <div class="sele_box">
+                    <ul>
+                        <li class="cur" id="1">
+                            <a href="javascript:void(0)">
+                                <i class="per"></i>
+                                <span>学员</span>
+                            </a>
+                        </li>
+                        <li id="2">
+                            <a href="javascript:void(0)">
+                                <i class="pszj"></i>
+                                <span>评审专家</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="btn_box">
+                    <button id="cbtn" onclick="confirmClick()">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+    var jsonDes = "";
+    var userType;
+    $(function () {
+        //进入这个页面进行登录验证验证,不然会有危险漏洞
+
+        jsonDes = getUrlParam("jsonDes");
+        if (jsonDes == "" || jsonDes == null || jsonDes == undefined) {
+            alert("参数传递错误");
+            $("#cbtn").attr("disabled", "disabled").css("background", "gray");
+        }
+
+    });
+
+    function confirmClick() {
+        let id = $(".sele_box ul").find(".cur").attr("id");
+        if (id == "1") {
+            userType = 14;
+        }
+        if (id == "2") {
+            userType = 15;
+        }
+        let url = huayi_permission_url + "auth-service/singleLoginPersonSel";
+        let data = { jsonDes: jsonDes, userType: userType };
+        $.ajax({
+            url: url,
+            data: data,
+            type: "get",
+            success: function (res) {
+                if (res.code == "1") {
+                    alert(res.msg);
+                }
+                if (res.code == "0") {
+                    window.open(res.data,"_blank ");
+                    //通知父iframe，关闭当前窗口
+                }
+            },
+            error: function () {
+                alert("发送数据失败");
+            }
+        });
+    }
+
+    $(".sele_box ul li").off("click").on("click", function () {
+        $(this).addClass("cur").siblings().removeClass("cur");
+    });
+
+
+</script>

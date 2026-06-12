@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+<!--    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">-->
+    <script src="/js/layui-v2.6.8/layui/layui.js"></script>
+<!--    <link rel="stylesheet" href="https://unpkg.com/eletree@2.2.21/dist/css/icon.css">-->
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <style type="text/css">
+        div.aaa{
+            width:70%;
+            height:100%;
+            padding:5px 30px;
+            margin-top:50px;
+            margin-left:150px;
+            border:2px solid #CCCCCC;
+        }
+        span.title{
+            display:block;
+            width:100px;
+            height:30px;
+            position:relative;
+            top:-15px;
+            text-align: center;
+            background: white;
+        }
+        .myProperty{
+            text-align: right;
+            width: 20%;
+            color: #0a6aa1;
+        }
+        .myValue{
+            text-align: -webkit-left;
+
+        }        
+        .no-click {
+            pointer-events: none;
+        }
+
+    </style>
+</head>
+<body >
+<!--项目信息-->
+<div class="aaa" style="height: 100px">
+    <span class="title" style="color: #0a6aa1">项目信息</span>
+    <div>
+        <table width="100%" style="text-align: center">
+            <tr>
+                <td class="myProperty">项目名称：</td>
+                <td class="myValue" id="projectName"></td>
+                <td class="myProperty">项目编号：</td>
+                <td class="myValue" id="projectNo"></td>
+            </tr>
+            <tr>
+                <td class="myProperty">开始日期：</td>
+                <td class="myValue" id="startDate"></td>
+                <td class="myProperty">截止日期：</td>
+                <td class="myValue" id="endDate"></td>
+            </tr>
+            <tr>
+                <td class="myProperty">学分：</td>
+                <td class="myValue" id="score"></td>
+                <td class="myProperty">学时：</td>
+                <td class="myValue" id="period"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<!--筛选授分人员-->
+<div class="aaa">
+    <span class="title" style="color: #0a6aa1">筛选授分人员</span>
+    <div class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">证件号：</label>
+            <div class="layui-input-block">
+                <input type="text" name="certId"  placeholder="请输入证件号" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">人员姓名：</label>
+            <div class="layui-input-block">
+                <input type="text" name="personName"  placeholder="请输入人员姓名" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">人员编号：</label>
+            <div class="layui-input-block">
+                <input type="text" name="personNo"  placeholder="请输入人员编号" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="search">查询</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 授分按钮及表单-->
+<div class="layui-form" style="margin-top:50px;text-align: center;width:70%;margin-left:150px;">
+    <div class="layui-inline">
+        <label class="layui-form-label">学分</label>
+        <div class="layui-input-inline">
+            <input type="text" name="score" id="score_id" lay-verify="required|number|givingScore" placeholder="请输入学分" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-inline">
+        <label class="layui-form-label">授分日期</label>
+        <div class="layui-input-inline">
+            <input type="text" name="studyDate" id="studyDate_id" lay-verify="required|date" placeholder="请选择授分日期" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-inline">
+        <div class="layui-inline">
+            <button class="layui-btn" lay-submit lay-filter="formDemo" id="btnScore">授分</button>
+        </div>
+    </div>
+</div>
+
+<!--选择授分人员-->
+<div style="margin-top:50px;width:70%;margin-left:150px;height: 500px">
+    <div style="width: 28%;float: left;border: 1px solid #eee; height: 360px" id="keshi">
+        <div style="border-bottom: 1px solid #eee;text-align: center;height: 38px;color: #666;padding: 0 10px;overflow: auto">选择科室</div>
+        <div id="deptTreeList" style="height: 320px;width: 100%;overflow: auto"></div>
+    </div>
+    <div id="chuansuokuang" style="width: 70%;float: right"></div>
+</div>
+</body>
+
+<script>
+    var downId=getUrlParam("downId");
+    var projectType=getUrlParam("projectType");
+    var startDate=getUrlParam("startDate").substring(0,10)
+    var endDate=getUrlParam("endDate").substring(0,10)
+    var projectId=getUrlParam("projectId")
+    var period=0, score = 0;
+    var el=null;
+    var personData=[];
+    var personValue=[];
+    var  _standardId  = localStorage.getItem("standardkind-id");
+    const HUBEI = "73ba18db-33fd-4746-ab41-9beb009f69a1";
+    const GANSU = "7068a5c0-2cd3-471a-90b9-9bf100aec95a";
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        eleTree: 'eleTree'
+    }).use(['table', 'form', 'laydate','transfer','eleTree'], function () {
+        var table = layui.table,form = layui.form,$ = layui.jquery;
+        var layer = layui.layer,laydate = layui.laydate;
+        var transfer=layui.transfer,eleTree=layui.eleTree;
+        let _deptId = localStorage.getItem("dept-id");
+        //渲染
+        transfer.render({
+            elem: '#chuansuokuang',  //绑定元素
+            title: ['候选人员','已选人员'],
+            width: '40%',
+            data: personData,
+            value: personValue,
+            id: 'demo1', //定义索引
+            showSearch: true,
+            parseData: function(res){
+                return {
+                    // "value": res.comPersonId // 数据值
+                    // ,"title": res.personName // 数据标题
+                    "value": res.id,//数据值 
+                    "title": res.nameAndId, //数据标题
+                    "disabled": res.disabled,  //是否禁用
+                    "checked": res.checked //是否选中
+                }
+            }
+        });
+
+        let appendGansuAllDeptNode = function (deptTreeData) {
+            if ((_standardId || "").toLowerCase() !== GANSU) {
+                return deptTreeData;
+            }
+            return [{
+                deptId: "all",
+                deptName: "全部",
+                parentId: "",
+                children: deptTreeData
+            }];
+        }
+
+        //获取科室数据
+        let getDeptData = function () {
+            let tempDeptId = localStorage.getItem("dept-id");
+            if(tempDeptId==null) return;
+            $.ajax({
+                type: 'get',
+                url: huayi_personorg_url+'comdept/getDeptTreeByDeptId?deptId='+tempDeptId,
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    if (res.status != 200) {
+                        layer.msg(res.msg);
+                        return;
+                    }
+                    let tempTreeData = [];
+                    if(res.data!=null && res.data.length > 0){
+                        if(!res.data[0].hasOwnProperty("children")) {
+                            res.data[0].children = [];
+                        }
+                        tempTreeData = res.data;
+                    }
+                    tempTreeData = appendGansuAllDeptNode(tempTreeData);
+                    createDeptTree(tempTreeData);
+                },
+                error: function () {
+                    layer.msg("请求失败")
+                }
+            })
+        }
+
+        let getUnitDeptsData = function() {
+            let tempUnitId = localStorage.getItem("unit-id");
+            if(tempUnitId==null) return;
+            $.ajax({
+                type: 'get',
+                url: huayi_personorg_url+'comdept/getDeptListByUnitId?unitId='+tempUnitId,
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    if (res.status != 200) {
+                        layer.msg(res.msg);
+                        return;
+                    }
+                    let tempTreeData = [];
+                    if(res.data!=null && res.data.length > 0){
+                        if(!res.data[0].hasOwnProperty("children")) {
+                            res.data[0].children = [];
+                        }
+                        tempTreeData = res.data;
+                    }
+                    tempTreeData = appendGansuAllDeptNode(tempTreeData);
+                    createDeptTree(tempTreeData);
+                },
+                error: function () {
+                    layer.msg("请求失败")
+                }
+            })
+        }
+
+        let createDeptTree = function(data){
+            el=eleTree({
+                el: '#deptTreeList',
+                data: data,
+                highlightCurrent: true,
+                showRadio: false,
+                response: {
+                    statusName: 'status',
+                    statusCode: 200,
+                    dataName: 'data'
+                },
+                request: {          // 对于后台数据重新定义名字
+                    name: "deptName",
+                    key: "deptId",
+                    children: "children",
+                    pid: "parentId",
+                },
+            })
+
+            el.on("click",function (data) {
+                _deptId=data.data.deptId;
+                searchForData(_deptId,null,null,null,localStorage.getItem("unit-id"));
+            })
+        }
+        
+        // 发送请求到后台，请求人员列表。
+        window.searchForData=function (deptId, personName, personNo, certId,unitId){
+            personValue=[];
+
+            // 获得右侧数据
+            var searchData={};
+            var personDatas = transfer.getData('demo1');
+            if (personDatas.length>0){
+                for (var j=0;j<personDatas.length;j++){
+                    personValue.push(personDatas[j].value);
+                }
+            }
+            // 获取其他搜索条件
+            searchData.personIds=personValue;
+            searchData.deptId=deptId == "all" ? null : deptId;
+            //在点击查询按钮查询的时候,应该查询本单位的数据
+            searchData.unitId = unitId;
+            searchData.personName=personName;
+            searchData.personNo=personNo;
+            searchData.certId=certId;
+            // searchData.cmeStandardKindId="289bf0ca-52cb-4b19-b737-9bd200a69ce1";
+            searchData.cmeStandardKindId=localStorage.getItem("standardkind-id")
+            //
+            $.ajax({
+                type: 'get',
+                // 甘肃“全部”节点按单位查候选人员，searchDeptPerson 不支持空科室/all，需要走 selectComPerson。
+                url: huayi_personorg_url + (deptId == "all" ? 'comperson/selectComPerson' : 'comperson/searchDeptPerson'),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                data: searchData,
+                success: function (res) {
+                    if (res.status === 200) {
+                        // personData=res.data;
+                        // transfer.reload('demo1',{data: personData,
+                        // value: personValue});
+                        createTransferData(res.data,personDatas);
+                    }
+                },
+                error: function () {
+                    layer.msg("请求失败")
+                }
+            })
+            transfer.reload('demo1',{data: personData,
+                value: personValue});
+        }
+
+        //构建穿梭框的数据，data是新数据，chooseData是之前已经选的数据
+        let createTransferData = function(data,chooseData){
+            if(data.length == 0) layer.msg("无人员数据");
+            let rightArr = [];
+            //需要去除data里chooseData里面已经存在的
+            aa:
+            for(let chooseObj of chooseData){
+                rightArr.push(chooseObj.value);
+                for (let dataObj of data) {
+                    if(dataObj.id == chooseObj.value) continue aa;
+                }
+                let tempData = {id:chooseObj.value,nameAndId:chooseObj.title};
+                data.push(tempData);
+            }
+            transfer.reload('demo1', {
+                data: data, value: rightArr
+            });
+        }
+
+        // 查询按钮
+        form.on('submit(search)', function(data){
+           
+            if(
+                (data.field.personName == null || data.field.personName == null|| data.field.personName == "")
+              &&(data.field.personNo == null || data.field.personNo == null|| data.field.personNo == "")
+              &&(data.field.certId == null || data.field.certId == null|| data.field.certId == "")
+            ){
+                layer.msg("证件号、人员姓名、人员编号不能同时为空");
+                return ;
+            }
+             //在使用查询按钮查询的时候，查询的是本单位的人员
+            searchForData(null,data.field.personName,data.field.personNo,data.field.certId,localStorage.getItem("unit-id"))
+            return false;
+        });
+
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#studyDate_id', //指定元素
+            min: startDate,
+            max: endDate
+        });
+
+        layer.ready(function () {
+            $.ajax({
+                type: 'get',
+                url: huayi_projectscore_url+'giving/getProjectInfo',
+                data: {downId:downId,projectType: projectType},
+                success: function (res) {
+                    if (res.status ===200){
+                        document.getElementById('projectName').innerHTML=res.data.projectName;
+                        document.getElementById('projectNo').innerHTML=res.data.projectNo == null ? '':res.data.projectNo;
+                        document.getElementById('startDate').innerHTML=res.data.startDate.substring(0,10);
+                        document.getElementById('endDate').innerHTML=res.data.endDate.substring(0,10);
+                        document.getElementById('score').innerHTML=res.data.score;
+                        document.getElementById('period').innerHTML=res.data.period;
+                        period=res.data.period;
+                        score=res.data.score;
+                        $('#score_id').val(res.data.score);
+                         //湖北的医院院内活动和科室院内活动，无法修改学分
+                         if(HUBEI === _standardId && 
+                        (res.data.scoreLevel ==="f7db2c56-f498-11ed-8e50-005056a64c01" || 
+                        res.data.scoreLevel ==="074bf5ee-f499-11ed-8e50-005056a64c01")) {
+                            $('#score_id').prop("disabled","disabled").addClass("layui-disabled");
+                        }
+                    }
+                },
+                error: function () {
+                    layer.msg('获取项目信息失败');
+                }
+            })
+        })
+
+
+        // 授分按钮
+        form.on('submit(formDemo)', function f(data) {
+            $("#btnScore").prop("disabled","disabled").addClass("layui-disabled").addClass("no-click");
+            //获得穿梭框右侧数据
+            var personIdsDTO=[];
+            var getData = transfer.getData('demo1');
+            if (getData.length>0){
+                for (var l=0;l<getData.length;l++){
+                    personIdsDTO.push(getData[l].value);
+                }
+            }else {
+                layer.msg('授分对象为空');
+                return;
+            }
+            var dataDTO ={
+                score: data.field.score,
+                studyDate: data.field.studyDate,
+                downId: downId,
+                period: period,
+                comPersonIds: personIdsDTO,
+                projectType: projectType,
+                projectId:projectId,
+                unitId: localStorage.getItem("unit-id"),
+                deptId: localStorage.getItem("dept-id"),
+                userType: localStorage.getItem('user-type'),
+                addUser: localStorage.getItem('user-name')
+            }
+            $.ajax({
+                type: 'post',
+                data: JSON.stringify(dataDTO),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                url: huayi_projectscore_url+'giving/givingPoints',
+                success: function (res) {
+                    if(res.status === 200){
+                        layer.msg(res.data);
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                    $("#btnScore").removeAttr("disabled","disabled").removeClass("layui-disabled").removeClass("no-click");
+                },
+                error: function () {
+                    layer.msg("请求失败");
+                    $("#btnScore").removeAttr("disabled","disabled").removeClass("layui-disabled").removeClass("no-click");
+                }
+            })
+        })
+
+        
+        form.verify({
+            givingScore: function (value, item) {
+                debugger
+                // 修改学分时不能大于申报学分
+                var msg = "";
+                if (value <= 0) {
+                    return msg = '授予学分需大于0';
+                }
+                if (value > score) {
+                    msg = ("授予学分不能大于此项目学分");
+                }
+                return msg;
+            }
+        });
+
+
+        let htmlInit = function() {
+            // getDeptData();
+            getUnitDeptsData();
+        }
+
+        htmlInit();
+    })
+</script>
+</html>

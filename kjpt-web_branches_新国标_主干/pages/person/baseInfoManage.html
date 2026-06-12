@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>人员基本信息查看维护</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script type="text/javascript" src="../../js/layui-v2.6.8/layui/layui.js"></script>
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <!-- <script type="text/javascript" src="../../js/global_ajax_setting.js"></script> -->
+
+    <!-- 工具 -->
+    <script type="text/javascript" src="../../js/base64.js"></script>
+
+    <!-- <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script> -->
+    <script type="text/javascript" src="../../js/axios.min.js"></script>
+    <script type="text/javascript" src="../../js/auth.js"></script>
+    <script type="text/javascript" src="../../js/layui/ext/tool.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+
+
+    <style>
+        .layui-icon-ok {
+            color: green;
+            font-weight: bold;
+        }
+
+        .layui-icon-close.notok,
+        .require,
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+
+        .layui-btn+.layui-btn {
+            margin-left: 0;
+        }
+
+        .layui-table-tool-temp {
+            padding-right: 0px;
+        }
+    </style>
+</head>
+
+<body class="body-area">
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <!-- 搜索框区域 -->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area">
+                <!-- <blockquote class="layui-form layui-form-item layui-elem-quote one-btn" lay-filter="query-form"> -->
+
+                <div class="layui_mess">
+                    <div class="layui_display">
+
+                        <div class="layui-inline zhejiang_show">
+                            <label class="layui-form-label">添加时间</label>
+                            <div class="layui-input-inline" style="float: left;">
+                                <input type="text" class="layui-input" id="addTime" readonly="" placeholder="请选择">
+                            </div>
+                        </div>
+
+                        <div class="layui-inline layui-form tree-select" lay-filter="specSelectArea">
+                            <label class="layui-form-label">专业</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" disabled lay-filter="specSelect" id="specSelect" name="specId"
+                                    placeholder="请选择">
+                            </div>
+                            <input type="hidden" id="hidden_spec">
+                        </div>
+
+
+
+                        <div class="layui-inline layui-form  tree-select" lay-filter="deptSelectArea">
+                            <label class="layui-form-label">科室</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" disabled lay-filter="deptSelect" id="deptSelect" name="deptId"
+                                    placeholder="请选择单位">
+
+                            </div>
+                            <input type="hidden" id="hidden_dept_id" />
+                        </div>
+
+                        <div class="layui-inline zhejiang_hide">
+                            <label class="layui-form-label">在编状态</label>
+                            <div class="layui-input-block">
+                                <select class="con_sel" id="select_intheseries">
+                                    <option value="">全部</option>
+                                    <option value="0">在编</option>
+                                    <option value="1">不在编</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-form" lay-filter="select_person_state_id" id="personStateDiv">
+                            <label class="layui-form-label">人员状态</label>
+                            <div class="layui-input-block">
+                                <select class="con_sel" id="select_person_state_id">
+                                    <option value="">请选择</option>
+                                </select>
+                            </div>
+                            <input type="hidden" id="hidden_person_state_id" />
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">照片状态</label>
+                            <div class="layui-input-block">
+                                <select class="con_sel" id="select_has_photo">
+                                    <option value="">全部</option>
+                                    <option value="1">有</option>
+                                    <option value="4">无</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">当前职称</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="text_title" id="text_title_names" placeholder="请输入关键字" autocomplete="off" class="layui-inline layui-input">
+                                <input type="hidden" id="hidden_title_ids" value="" />
+                            </div>
+                        </div>
+                        <div class="layui-inline zhejiang_show">
+                            <label class="layui-form-label">人员类型</label>
+                            <div class="layui-input-block">
+                                <select class="con_sel" id="select_medical_type">
+                                    <option value="">请选择</option>
+                                    <option value="1">西医</option>
+                                    <option value="2">中医</option>
+                                    <option value="3">疾控</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">查询项</label>
+                            <div class="layui-input-block">
+                                <span style="width:105px;display:inline-block;">
+                                    <select id="select_column">
+                                        <option value="person_name">姓名</option>
+                                        <option value="cert_id">证件号码</option>
+                                        <option value="sex">性别</option>
+                                        <option value="person_no">人员编号</option>
+                                        <option value="internals" class='zhejiang_remove'>内部编号</option>
+                                        <!-- 民族、毕业院校、联系电话、手机号、专业、聘任年度、学历、学位、执业资格证书号、院内职务、内部编号 -->
+                                        <option value="nation">民族</option>
+                                        <option value="university">毕业院校</option>
+                                        <option value="telephone">联系电话</option>
+                                        <option value="mobile">手机号</option>
+                                        <option value="spec">专业</option>
+                                        <option value="job_date" class='zhejiang_remove'>聘任年度</option>
+                                        <option value="education">学历</option>
+                                        <option value="degree">学位</option>
+                                        <option value="prof_cert_id">执业资格证书号</option>
+                                        <option value="hospital_duty">院内职务</option>
+                                    </select>
+                                </span>
+                                <span style="width:140px;display:inline-block;">
+                                    <input type="text" name="description" id="text_value" placeholder="请输入关键字" autocomplete="off" class="layui-input">
+                                </span>
+                            </div>
+                        </div>
+                        <div class="layui-inline " style="display: none;" id="is_gl_div">
+                            <label class="layui-form-label">是否管理人员</label>
+                            <div class="layui-input-block">
+                                <select class="con_sel" id="select_is_gl">
+                                    <option value="">请选择</option>
+                                    <option value="1">是</option>
+                                    <option value="0">否</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" id="searchBtn" lay-filter="table-search" data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- </blockquote> -->
+            </div>
+
+
+            <!-- 表格区域 -->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="comPerson" lay-filter="comPerson" style="margin: 0px 0px;">
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- 照片查看 -->
+    <div id="photoArea" style="display: none;">
+        <img src="" style="height: 400px; width: 283px;margin:16px;">
+    </div>
+
+
+</body>
+
+</html>
+
+<!--表格内数据编辑、删除按钮 -->
+<script type="text/html" id="rowBar">
+    <a class="layui-btn layui-btn-xs btn-row" lay-event="edit">编辑</a>
+    {{# if(getUserType()=="12" && window["fun_unit_del_com_person"] != "f"){ }}
+    <a class="layui-btn layui-btn-danger layui-btn-xs btn-danger-row" lay-event="del">删除</a>
+    {{# } }}
+</script>
+
+<!-- 表格头部工具栏 -->
+<script type="text/html" id="toolbarBtns">
+    <div class="layui-btn-container" style="display:inline">
+        <a class="layui-btn layui-btn-sm" lay-event="add" id="btnAdd" style="display: none;"><i class="layui-icon layui-icon-add-1 layuiadmin-button-btn"></i>添加</a>
+    </div>
+    <span style="color:#31BDEC" id="personStateGroupCountSpan"> </span>
+    <div style="float:right">
+            <div class="layui-inline" title="筛选列" lay-event="LAYTABLE_COLS"><i class="layui-icon layui-icon-cols"></i></div>
+            <div class="layui-inline" title="打印" lay-event="LAYTABLE_PRINT"><i class="layui-icon layui-icon-print"></i></div>
+            <div class="layui-inline" title="导出" lay-event="myExport"><i class="layui-icon layui-icon-export"></i></div>
+    </div>
+</script>
+
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        treeSelect: 'treeSelect'
+    });
+
+    /* 全局配置及引入相关的模块 */
+    layui.use(['table', 'form', 'jquery', 'layer', 'xmSelect', 'treeSelect', 'tool', 'laydate'], function () {
+        var table = layui.table,
+            form = layui.form, laydate = layui.laydate,
+            $ = layui.jquery,
+            layer = layui.layer,
+            xmSelect = layui.xmSelect,
+            treeSelect = layui.treeSelect,
+            tool = layui.tool;
+        const JILIN = "acd09b62-333b-4aee-934f-9ec500a9d46d";
+        const ZHEJIANG = "190c480d-d43c-450b-8472-a6fd00a6729d";
+        const GUANGDONG = "289bf0ca-52cb-4b19-b737-9bd200a69ce1";
+        let hideIsGl = true;
+
+        // 日期范围
+        laydate.render({
+            elem: '#addTime',
+            range: true
+            //done: function(value, date, endDate) {
+            //    if (date.year !== endDate.year) {
+            //        layer.msg("日期不允许跨年");
+            //        // 重置选择
+            //        // 重置选择
+            //        laydate.render({
+            //            elem: '#addTime',
+            //            range: true
+            //        }).setValue('');
+            //    }
+            //}
+        });
+        function doHandleMonth(month) {
+            var m = month;
+            if (month.toString().length == 1) {
+                m = "0" + month;
+            }
+            return m;
+        }
+        //
+        if (localStorage.getItem("standardkind-id") == ZHEJIANG) {
+            $(".zhejiang_hide").hide();
+            $(".zhejiang_show").show();
+            $(".zhejiang_remove").remove();
+            form.render();
+        } else {
+            $(".zhejiang_hide").show();
+            $(".zhejiang_show").hide();
+        }
+
+        var curDeptId;
+
+        window.getUnitId = function () {
+            return localStorage.getItem("unit-id");
+        }
+        window.getCmeStandardKindId = function () {
+            return localStorage.getItem("standardkind-id");
+        }
+        window.getUserType = function () {
+            return localStorage.getItem("user-type");
+        }
+
+        window.getDeptId = function () {
+            if (localStorage.getItem("user-type") == 13) {
+                let userId = localStorage.getItem("user-id");
+                $.ajax({
+                    async: false,
+                    headers: {
+                        'Authorization': localStorage.getItem('token'),
+                        'KJPT-USER-ID': localStorage.getItem('user-id')
+                    },
+                    url: huayi_permission_url + "comuser/detail",
+                    type: "get",
+                    data: { userId: userId },
+                    success: function (res) {
+                        if (res.success == true) {
+                            if (res.data != null && res.data != undefined && res.data != "") {
+                                curDeptId = res.data.base.unitId;
+                            }
+                        }
+                    },
+                    error: function () {
+                        layer.msg("发送信息失败");
+                    }
+                });
+            }
+        }
+        // 判断是否为吉林大学下属单位（080017	吉林大学医院管理处）
+        window.checkIsJiLinUniversity = function () {
+            var unitId = localStorage.getItem('unit-id');
+            $.ajax({
+                async: false,
+                url: huayi_personorg_url + "comunit/parentUnits?unitId=" + unitId,
+                success: function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].unitId == '080017') {
+                            hideIsGl = false;
+                            $("#is_gl_div").show();
+                            break;
+                        }
+                    }
+                }
+            })
+        }
+        window.checkIsJiLinUniversity();
+
+        //---------------------------------初始化------------------------
+        //#region
+
+
+        /* 查询项初始化 */
+        window.initSelect = function () {
+            //初始化人员状态下拉框
+            $.ajax({
+                async: false,
+                url: huayi_personorg_url + "comperson/getPersonStateListByCmeStandardKindId",
+                type: "post",
+                data: {
+                    cmeStandardKindId: window.getCmeStandardKindId()
+                },
+                success: function (result) {
+                    if (result.success == true) {
+                        var personStateList = result.data;
+                        var personState = {};
+                        for (var i = 0; i < personStateList.length; i++) {
+                            personState = personStateList[i];
+                            if(window.getCmeStandardKindId() == ZHEJIANG && personState.person_state_name == '产假') {
+                                continue;
+                            } 
+                            
+                            if ($.trim(personState.person_state_name) == "正常") {
+                                $("<option value=" + personState.person_state_id + " selected>" + personState.person_state_name + "</option>").appendTo($("#select_person_state_id"));
+                            } else {
+                                $("<option value=" + personState.person_state_id + ">" + personState.person_state_name + "</option>").appendTo($("#select_person_state_id"));
+                            }
+                            console.log(0);
+                        }
+                        form.render("select", "select_person_state_id");
+                    } else {
+                        layer.msg("加载人员状态下拉框出现问题");
+                    }
+                }
+            });
+
+            /* 专业树初始化 */
+            var specTreeSelect = treeSelect.render({
+                elem: '#specSelect',
+                data: huayi_sjwh_url + 'comPersonSpec/tree',
+                type: 'get',
+                search: true,
+                style: {
+                    folder: { // 父节点图标
+                        enable: true // 是否开启：true/false
+                    },
+                    line: { // 连接线
+                        enable: true // 是否开启：true/false
+                    }
+                },
+                click: function (data) {
+                    $("#hidden_spec").val(data.current.id);
+                }
+            });
+
+        };
+
+
+        /** 科室选择下拉列表初始化 */
+        var deptTreeSelect;
+        window.initDeptTree = function (deptId) {
+            var unitId = window.getUnitId();
+            deptTreeSelect = treeSelect.render({
+                elem: '#deptSelect',
+                data: huayi_personorg_url + 'comdept/tree/unit?unitId=' + unitId,
+                type: 'get',
+                search: true,
+                style: {
+                    folder: {     // 父节点图标
+                        enable: true   // 是否开启：true/false
+                    },
+                    line: {     // 连接线
+                        enable: true   // 是否开启：true/false
+                    }
+                },
+                click: function (data) {
+                    $("#hidden_dept_id").val(data.current.id);
+                },
+                success: function () {
+                    if (deptId != null && deptId != undefined && deptId != "") {
+                        deptTreeSelect.checkNode('deptSelect', deptId);
+                    }
+                }
+            });
+        }
+
+        /* 表格初始化 */
+        window.initTable = function () {
+            table.render({
+                elem: '#comPerson',
+                url: huayi_personorg_url + 'comperson/list',
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                autoSort: false,//禁用前端自动排序。
+                toolbar: '#toolbarBtns', //开启头部工具栏，并为其绑定左侧模板
+                title: '用户表',
+                defaultToolbar: false,
+                where: {
+                    unitId: window.getUnitId(),
+                    deptId: curDeptId,
+                    personStateId: $("#select_person_state_id").val()
+                },
+                cols: [
+                    [{
+                        align: 'center',
+                        title: '操作',
+                        toolbar: '#rowBar',
+                        minWidth: 110,
+                        fixed: 'left'
+                    }, {
+                        field: 'personName',
+                        title: '姓名',
+                        align: 'center',
+                        minWidth: 100,
+                        sort: true,
+                        templet: function (d) {
+                            return '<a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" ' +
+                                'lay-event="detail">' + d.personName + '</a>';
+                        }
+                    }, {
+                        field: 'personNo',
+                        title: '人员编号',
+                        align: 'center',
+                        minWidth: 120
+                    }, {
+                        field: 'personStateName',
+                        title: '人员状态',
+                        align: 'center',
+                        minWidth: 120,
+                        sort: true
+                    }, {
+                        field: 'sex',
+                        title: '性别',
+                        align: 'center',
+                        minWidth: 70,
+                        sort: true
+                    }, {
+                        field: 'deptName',
+                        title: '科室',
+                        align: 'center',
+                        minWidth: 150,
+                        sort: true
+                    }, {
+                        field: 'titleName',
+                        title: '当前职称',
+                        align: 'center',
+                        minWidth: 110,
+                        sort: true
+                    }, {
+                        field: 'personSpecName',
+                        title: '专业',
+                        align: 'center',
+                        minWidth: 110,
+                        sort: true
+                    }, {
+                        field: 'isIntheseriesName',
+                        title: '在编状态',
+                        align: 'center',
+                        minWidth: 120,
+                        hide: (window.getCmeStandardKindId() == ZHEJIANG)
+                    }, {
+                        field: 'isGl', title: '是否为管理人员', align: 'center', minWidth: 150, hide: hideIsGl,
+                        templet: function (data) {
+                            return data.isGl == 1 ? "是" : "否";
+                        }
+                    }, {
+                        field: 'medicalType',
+                        title: '人员类型',
+                        align: 'center',
+                        minWidth: 80,
+                        hide: (window.getCmeStandardKindId() != ZHEJIANG),
+                        templet: function (row) {
+                            let medicalType = row.medicalType;
+                            return medicalType == 1 ? "西医" : medicalType == 2 ? "中医" : medicalType == 3 ? "疾控" : "";
+
+                        }
+                    }, {
+                        field: 'hasPhotoName',
+                        title: '照片',
+                        align: 'center',
+                        minWidth: 90,
+                        templet: function (row) {
+                            if (row.hasPhoto == "1") {
+                                return '<a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" ' +
+                                    'lay-event="photo">有</a>';
+                            } else {
+                                return '无';
+                            }
+                        }
+                    }, {
+                        field: 'hospitalDutyName',
+                        title: '院内职务',
+                        align: 'center',
+                        minWidth: 110,
+                    }, {
+                        field: 'internals',
+                        title: '内部编号',
+                        align: 'center',
+                        minWidth: 110,
+                        // hide: (getCmeStandardKindId() != JILIN)
+                    }, {
+                        field: 'addTime',
+                        title: '添加时间',
+                        align: 'center',
+                        minWidth: 170,
+                        sort: true,
+                        hide: (window.getCmeStandardKindId() != ZHEJIANG)
+                    }
+                        , {
+                        field: 'remark',
+                        title: '备注',
+                        align: 'center',
+                        minWidth: 120,
+                        hide: (window.getCmeStandardKindId() == ZHEJIANG)
+                    }]
+                ],
+                cellMinWidth: 100,
+                id: 'comPerson',
+                height: 'full-190',
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    return {
+                        'code': res.status === 200 ? 0 : res.status, // 解析接口状态
+                        'msg': res.message, // 解析提示文本
+                        'count': res.data.recordsTotal, // 解析数据长度
+                        'data': res.data.records, // 解析数据列表
+                        'page': res.data.pageNum, // 当前页
+                        'limit': res.data.pageSize, // 每页条数
+                    }
+
+                },
+                request: {
+                    pageName: 'pageNum', // 页码的参数名称，默认：page
+                    limitName: 'pageSize' // 每页数据量的参数名，默认：limit
+                },
+                done: function () {
+
+
+
+                    toggleAddBtnVisibility();
+                    localStorage.getItem("user-type") == "12" && drawPersonStateGroupCountSpan();
+                }
+            });
+
+
+        };
+
+        $(function () {
+
+            window.initSelect();
+            getConfig("fun_unit_add_person");
+            getConfig("fun_unit_del_com_person");
+            getDeptId();
+            if (curDeptId != null && curDeptId != undefined && curDeptId != "") {
+                $("#hidden_dept_id").val(curDeptId);
+                $("#deptSelect").val(localStorage.getItem('realname')).addClass("layui-disabled");
+
+            } else {
+                //两个treeSelect几乎同时加载，可能会加载不出来
+                setTimeout(() => {
+                    window.initDeptTree();
+                }, 200);
+
+            }
+            window.initTable();
+
+            toggleAddBtnVisibility();
+
+        });
+
+        //#endregion
+
+        //---------------------------------事件--------------------------
+        window.reloadTable = function () {
+            table.reload("comPerson", {
+                url: huayi_personorg_url + 'comperson/list',
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                where: getDefaultData(),
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+        }
+
+        /* 列表基础参数 */
+        window.getDefaultData = function () {
+            var addTime = $('#addTime').val();
+            var data = {
+                unitId: window.getUnitId(),
+                keywordColumn: $("#select_column").val(),
+                keyword: $("#text_value").val(),
+                spec: $("#hidden_spec").val(),
+                deptId: $("#hidden_dept_id").val(),
+                isIntheseries: $("#select_intheseries").val(),
+                personStateId: $("#select_person_state_id").val(),
+                hasPhoto: $("#select_has_photo").val(),
+                titleIds: $("#hidden_title_ids").val(),
+                medicalType: $("#select_medical_type").val(),
+                isGl: $("#select_is_gl").val()
+            };
+            if (addTime && addTime.indexOf(' - ') > -1) {
+                var dates = addTime.split(' - ');
+                if (dates[0]) data.addStartDate = dates[0].trim() + " 00:00:00";
+                if (dates[1]) data.addEndDate = dates[1].trim() + " 23:59:59";
+            }
+            return data;
+        }
+
+        $("#searchBtn").click(function () {
+            if ($("#select_column").val() == "job_date") {
+                let text_value = $("#text_value").val();
+                if (!(text_value == "未聘任" || parseInt(text_value) > 1900)) {
+                    layer.msg("请录入正确的聘任年度或者未聘任", { icon: 2, time: 2000 });
+                    return;
+                }
+            }
+            window.reloadTable();
+        })
+
+
+
+        // 监听头部新增按钮
+        table.on('toolbar(comPerson)', function (obj) {
+            var datas = obj.data;
+            console.log(datas);
+            if (obj.event === 'add') {
+                layer.open({
+                    type: 2,
+                    title: '添加人员',
+                    content: "baseInfoAddOrEdit.html?operate=add",
+                    skin: '',
+                    area: ['75%', '90%'],
+                    shadeClose: true
+                });
+            }
+            if (obj.event === 'myExport') {
+                layer.msg("下载中，请稍等", { icon: 6, time: 3000 });
+                let url = huayi_personorg_url + 'comperson/listExcel';
+                let params = window.getDefaultData();
+                params['cmeStandardKindId'] = window.getCmeStandardKindId();
+                tool.exportExcelPost(url, params, "人员表.xlsx");
+            }
+        });
+
+
+        // 监听行内按钮
+        table.on('tool(comPerson)', function (obj) {
+            var datas = obj.data;
+
+
+            if (obj.event === 'edit') {
+                form.val('add-filter', datas);
+                layer.open({
+                    type: 2,
+                    title: '编辑人员',
+                    content: "baseInfoAddOrEdit.html?operate=edit&comPersonId=" + datas.comPersonId,
+                    skin: '',
+                    //area: ['900px', '600px'],
+                    area: ['75%', '90%'],
+                    shadeClose: true
+                });
+            } else if (obj.event === 'del') {
+                var personName = datas.personName;
+                layer.confirm('确认删除' + personName + '?', {
+                    icon: 3,
+                    title: '提示'
+                }, function () {
+                    $.ajax({
+                        type: 'post',
+                        url: huayi_personorg_url + 'comperson/delete',
+                        headers: {
+                            'Authorization': localStorage.getItem('token'),
+                            'KJPT-USER-ID': localStorage.getItem('user-id')
+                        },
+                        data: {
+                            comPersonId: datas.comPersonId
+                        },
+                        success: function (res) {
+                            if (res.status == 10001) {
+                                layer.msg("该人员为已调入人员或该人员下存在业务数据，无法删除");
+                            }
+                            if (res.status === 200) {
+                                layer.msg("删除成功");
+                                table.reload('comPerson');
+                            }
+                        },
+                        error: function () {
+                            layer.msg("请求失败");
+                        }
+                    });
+
+                });
+            } else if (obj.event === 'detail') {
+                layer.open({
+                    type: 2,
+                    title: '人员信息',
+                    content: 'baseInfoDetails.html?comPersonId=' + datas.comPersonId,
+                    area: ['75%', '90%']
+                });
+            } else if (obj.event === 'photo') {
+                url = tool.getComAliyunUrl(datas.photo);
+                $('#photoArea img').attr('src', url);
+                layer.open({
+                    type: 1,
+                    title: false,
+                    content: $('#photoArea'),
+                    area: ['auto', '432px'],
+                    shadeClose: true
+                });
+            }
+        });
+
+        table.on('sort(comPerson)', function (obj) { //注：sort 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            console.log(obj.field); //当前排序的字段名
+            console.log(obj.type); //当前排序类型：desc（降序）、asc（升序）、null（空对象，默认排序）
+            console.log(this); //当前排序的 th 对象
+
+            let orderField = humpToUnderline((obj.field));
+            let orderType = obj.type;
+            table.reload('comPerson', {
+                initSort: obj, //记录初始排序，如果不设的话，将无法标记表头的排序状态。
+                where: $.extend({}, window.getDefaultData(), { orderField: orderField, orderType: orderType })
+            });
+
+        });
+
+        window.humpToUnderline = function (str) {
+            let temp = str.replace(/[A-Z]/g, function (match) {
+                return "_" + match.toLowerCase();
+            });
+            // 如果首字母是大写，执行replace时会多一个_，这里需要去掉
+            if (temp.slice(0, 1) === '_') {
+                temp = temp.slice(1);
+            }
+            return temp;
+        }
+
+        // form表单相关操作
+        // 新增/修改表单提交
+        form.on('submit(submit)', function (data) {
+            // 用于判断是新增还是修改
+            var formTableId = $("#add-comPerson input[name='comPersonId']").val();
+            var datas = JSON.stringify(data.field);
+            var URL;
+            if (formTableId === '' || formTableId === null) {
+                // 走新增逻辑
+                URL = kjpt_url + 'comPerson/save';
+            } else {
+                // 走修改逻辑
+                URL = kjpt_url + 'comPerson/update';
+            }
+            $.ajax({
+                type: 'post',
+                url: URL,
+                data: datas,
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    layer.msg("修改成功");
+                },
+                error: function () {
+                    layer.msg("发送请求失败");
+                }
+            })
+        });
+
+        //鼠标悬停提示特效
+        $("#hint").hover(function () {
+            openMsg();
+        }, function () {
+            layer.close(subtips);
+        });
+
+
+        $("#text_title_names").click(function () {
+            var titleIds = $("#hidden_title_ids").val();
+            layer.open({
+                type: 2,
+                content: "../controls/selectTitle/selectTitles.html?titleIds=" + titleIds,
+                area: ['610px', '450px'],
+                scrollbar: false
+            });
+        });
+
+
+
+        window.toggleAddBtnVisibility = function () {
+
+            if (window["fun_unit_add_person"] == "0") {
+                $("#btnAdd").hide();
+            } else if (localStorage.getItem("standardkind-id") == GUANGDONG && localStorage.getItem("user-type") == "13") {
+                $("#btnAdd").hide();
+            } else {
+                $("#btnAdd").show();
+            }
+        }
+
+        window.drawPersonStateGroupCountSpan = function () {
+            $.ajax({
+                async: false,
+                type: "post",
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                url: huayi_personorg_url + "comperson/getPersonStateGroupCount",
+                data: { unitId: localStorage.getItem("unit-id") },
+                success: function (res) {
+                    if (res.success == true) {
+                        $("#personStateGroupCountSpan").text(res.data);
+                    } else {
+                        if (res.ResultCode.status == 501) {
+                            layer.msg(msg);
+                        }
+                        layer.msg("获取信息失败");
+                    }
+                },
+                error: function () {
+                    layer.msg("发送请求失败");
+                }
+            });
+        }
+
+        window.getChildTitles = function (titleIds, titleNames) {
+            $("#text_title_names").val(titleNames);
+            $("#hidden_title_ids").val(titleIds);
+        }
+
+        window.openMsg = function() {
+            subtips = layer.tips('提示信息', '#hint', {
+                tips: [1, '#ff6700'],
+                time: 30000
+            });
+        }
+
+        //获取配置的值
+        window.getConfig = function (config_name) {
+            var config_value = "";
+            $.ajax({
+                async: false,
+                type: "post",
+                url: huayi_sjwh_url + "cmeCommonConfig/getConfigByUnitFromRedis",
+                data: { unitId: localStorage.getItem("unit-id"), configNames: config_name },
+                success: function (res) {
+                    if (res.success == true) {
+                        window[config_name] = res.data[config_name];
+                    } else {
+                        layer.msg("获取配置出错");
+                    }
+                },
+                error: function () {
+                    layer.msg("获取配置出错");
+                }
+            });
+            return config_value;
+        }
+    });
+
+</script>

@@ -1,0 +1,22 @@
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue 3 模块化示例</title>
+</head>
+<body>
+    <div id="app">
+        <!-- 根据参数动态加载组件 -->
+         <div>{{ appName }}</div>
+         <div style="text-align: center; margin: 50px;">
+            <h3>请指定要加载的模块</h3>
+            <p>例如：?modules=user 或 ?modules=product</p>
+        </div>
+        <component v-if="activeModuleComponent" :is="activeModuleComponent" v-bind="moduleProps"></component>
+        
+    </div>
+
+    <!-- 使用 ES6 模块 -->
+    <script type="module" src="/pages/vueTest/module/app.js"></script>
+</body>
+</html>

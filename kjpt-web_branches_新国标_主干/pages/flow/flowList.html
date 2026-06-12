@@ -1,0 +1,2172 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>流程管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+        media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+<script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+
+    <style>
+        #comFlowWindow .layui-inline-660,
+        #chainFormWindow .layui-inline-660 {
+            width: 85%;
+            max-width: 430px;
+        }
+
+        #resultAddForm .layui-inline-660,
+        #resultEditForm .layui-inline-660 {
+            width: 85%;
+            max-width: 550px;
+        }
+
+        #resultAddForm .layui-form-label,
+        #resultEditForm .layui-form-label {
+            width: 28%;
+        }
+
+        #resultAddForm .layui-input-block,
+        #resultEditForm .layui-input-block {
+            margin-left: 40%;
+        }
+
+        .layui-btn-radius {
+            border-radius: 5px;
+        }
+
+        .factor-window-flex,
+        .chain-window-flex,
+        .result-window-flex {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .result-window-flex {
+            justify-content: space-between;
+        }
+
+        .factor-window-item33 {
+            width: 33%;
+        }
+
+        .chain-window-item50,
+        .result-window-item50 {
+            width: 49%;
+            margin-bottom: 10px;
+        }
+
+        .factor-input-hide {
+            display: none;
+        }
+
+        .factor-list,
+        .chain-list {
+            padding: 10px 60px;
+            margin: 10px 10px 30px;
+            border: 1px solid #999;
+            border-radius: 5px;
+            min-height: 100px;
+            min-width: 300px;
+        }
+
+        .chain-list li {
+            padding-bottom: 15px;
+            font-size: 14px;
+            max-width: 650px;
+        }
+
+        .chain-list li div {
+            display: inline-block;
+        }
+
+        .chain-name {
+            position: relative;
+        }
+
+        .chain-attribute {
+            min-width: 100px;
+        }
+
+        .chain-list li .chain-name::after {
+            content: '↓';
+            font-size: 20px;
+            position: absolute;
+            left: 36%;
+            top: 15px;
+        }
+
+        .chain-list li:last-child .chain-name::after {
+            content: '';
+        }
+
+        .item-li,
+        .other-item-li {
+            padding-bottom: 10px;
+            font-size: 14px;
+            max-width: 650px;
+        }
+
+        .factor-result-del,
+        .chain-result-del {
+            color: #f25643;
+            background-color: transparent;
+        }
+
+        .factor-result-del:hover,
+        .chain-result-del:hover {
+            color: #D2433A;
+        }
+
+        .factor-form-text {
+            width: 91%;
+            margin: 5px auto;
+            text-align: left;
+            line-height: 23px;
+            color: #01AAED;
+        }
+
+        .specital-text {
+            color: #5FB878;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <!--搜索框区域-->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+                <blockquote class="layui-form layui-form-item layui-elem-quote one-btn">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">流程名</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="flowNameSearch" name="flowName" required lay-verify="required"
+                                placeholder="请输入流程名称" autocomplete="off" class="layui-input" defaultVal="50">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">套标准</label>
+                        <div class="layui-input-block">
+                            <select name="cmeStandardKindId" lay-verify="notBlank" lay-search
+                                lay-filter="layui-select-tao" id="cmeStandardKindIdSearch" lay-verify="required">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="renderTable()"
+                            lay-filter="LAY-app-order-search" data-type="reload">
+                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                        </a>
+                    </div>
+                </blockquote>
+            </div>
+
+            <!-- 表格区域-->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="flowTable" lay-filter="flow-table" style="margin: 0px 0px;">
+                </table>
+            </div>
+        </div>
+
+        <!-- 流程弹框内容 -->
+        <div id="comFlowWindow" style=" display:none;text-align: center">
+            <form class="layui-form" style="padding: 30px;" id="comFlowForm" lay-filter="flow-add">
+                <div class="layui-form-item" style="display: none">
+                    <div class="layui-inline layui-inline-660">
+                        <label class="layui-form-label">主键id:</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="flowId" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline layui-inline-660">
+                        <label class="layui-form-label">套标准:</label>
+                        <div class="layui-input-block">
+                            <select name="cmeStandardKindId" lay-verify="notBlank" lay-search
+                                lay-filter="layui-select-tao" id="cmeStandardKindId" lay-verify="required" required>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline layui-inline-660">
+                        <label class="layui-form-label">流程名:</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="flowName" required lay-verify="required" placeholder="请输入流程名"
+                                autocomplete="off" class="layui-input" defaultVal="50">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <div class="">
+                        <button class="layui-btn" lay-submit lay-filter="flow-submit">提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- 条件弹窗  弹窗内是一个表格 -->
+        <div id="comFactorWindow" style=" display:none;text-align: center">
+            <!-- 表格区域 -->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="factorTable" lay-filter="factor-table" style="margin: 0px 0px;">
+                </table>
+            </div>
+        </div>
+
+        <!-- factor新增弹窗框 -->
+        <div id="factorFormWindow" style=" display:none;text-align: center">
+            <form class="layui-form" style="padding: 30px;" id="comFactorForm" lay-filter="factor-add">
+                <input type="hidden" name="flowId" class="layui-input">
+                <input type="hidden" name="flowFactorId" class="layui-input">
+                <input type="hidden" name="factorIndex" class="layui-input">
+                <div class="factor-form-text">影响因子是具体的一个字段，有<span
+                        class="specital-text">内部输入和外部输入</span>可以选择，默认是内部输入。内部输入是需要先点击数据源（<span
+                        class="specital-text">数据源就是数据库中表名，选中表名才有获取表中字段</span>），然后选择该表中的具体数据项字段；外部输入由于是手动输入的字段，所以不需要下拉，直接填写就可。
+                </div>
+                <div class="factor-window-flex">
+                    <div class="factor-window-item33">
+                        <div class="layui-form-item">
+                            <div class="layui-inline layui-inline-660">
+                                <label class="layui-form-label">输入方式:</label>
+                                <div class="layui-input-block">
+                                    <select lay-verify="notBlank" name="dataResourceType" id="dataResourceType"
+                                        lay-search lay-filter="layui-select-intype">
+                                        <option value="">请选择输入方式</option>
+                                        <option value="0">内部字段</option>
+                                        <option value="1">外部输入</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="factor-window-item33">
+                        <div class="layui-form-item">
+                            <div class="layui-inline layui-inline-660">
+                                <label class="layui-form-label">数据源:</label>
+                                <div class="layui-input-block">
+                                    <select lay-verify="notBlank" name="dataSource" id="dataSource" lay-search
+                                        lay-filter="layui-select-datasource">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="factor-window-item33">
+                        <div class="layui-form-item">
+                            <div class="layui-inline layui-inline-660">
+                                <label class="layui-form-label">数据项:</label>
+                                <div class="layui-input-block data-item-select-block">
+                                    <select lay-verify="notBlank" name="dataItem" id="dataItem" lay-search
+                                        lay-filter="layui-select-dataItem">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="factor-form-text">影响因子判断方法，无论是内部输入的影响因子还是外部输入的影响因子都有<span
+                        class="specital-text">相同的判断逻辑</span>。下面的左侧第一个就是判断的方式,例如选中大于，后面会生成一个输入框，输入要大于的值。
+                    <br>1.区间内是两个数字的闭区间
+                    <br>2.包含和不包含是都是一次输入多个值,使用逗号分割
+                    <br>3.枚举可一次输入多个值，逗号分割，例如：省级，市级相当于等于省级，等于市级两种情况
+                </div>
+                <div class="factor-window-flex">
+                    <div class="factor-window-item33">
+                        <div class="layui-form-item">
+                            <div class="layui-inline layui-inline-660">
+                                <label class="layui-form-label">判断类型:</label>
+                                <div class="layui-input-block data-judge-select-block">
+                                    <select lay-verify="notBlank" name="judgeKind" id="judgeKind" lay-search
+                                        lay-filter="layui-select-judgeKind">
+                                        <option value="">请选择判断类型</option>
+                                        <option value="greaterthan">大于</option>
+                                        <option value="greaterEqual">大于等于</option>
+                                        <option value="lessthan">小于</option>
+                                        <option value="lessEqual">小于等于</option>
+                                        <option value="equal">等于</option>
+                                        <option value="between">区间内</option>
+                                        <option value="enum">枚举</option>
+                                        <option value="inside">包含</option>
+                                        <option value="notInside">不包含</option>
+                                        <option value="whether">是否</option>
+                                        <option value="other">其他</option>
+                                        <option value="all">全部</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="factor-window-item33">
+                        <div class="layui-form-item">
+                            <!-- 目前为空，选择判断方式的时候会自动加入对应的元素 -->
+                            <div class="layui-inline layui-inline-660 judge-value-block1"></div>
+                        </div>
+                    </div>
+                    <div class="factor-window-item33">
+                        <div class="layui-form-item">
+                            <!-- 目前为空，选择判断方式的时候会自动加入对应的元素 -->
+                            <div class="layui-inline layui-inline-660 judge-value-block2"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="factor-form-text">点击添加按钮，该判断逻辑生成到下面的列表中，该操作不会操作数据库，添加错误点击下面对应的删除就好
+                    <br>例子1：选择包含，右侧输入<span class="specital-text">省级，市级</span>。点击按钮下面生成包含(省级，市级)
+                    <br>例子2：选择枚举，右侧输入<span class="specital-text">省级，市级</span>。点击按钮下面生成等于省级，等于市级两条记录
+                </div>
+                <div class="factor-window-flex">
+                    <div class="factor-window-item33">
+                        <div class="layui-form-item">
+                            <!-- 目前为空，选择判断方式的时候会自动加入对应的元素 -->
+                            <div class="layui-inline layui-inline-660 judge-value-block3">
+                                <a class="layui-btn layui-btn-sm  layui-btn-normal" id="addInsideBtn">添加</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 所有情况遍历 -->
+                <div class="factor-window-flex">
+                    <ul class="factor-list" data-type='0'></ul>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="">
+                        <button class="layui-btn" lay-submit lay-filter="factor-submit">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+
+        <!-- 流程链表格弹窗 -->
+        <div id="comChainWindow" style=" display:none;text-align: center">
+            <!-- 表格区域 -->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="chainTable" lay-filter="chain-table" style="margin: 0px 0px;">
+                </table>
+            </div>
+        </div>
+
+        <!-- chain流程链新增编辑弹窗 -->
+        <div id="chainFormWindow" style=" display:none;text-align: center">
+            <form class="layui-form" style="padding: 30px;" id="comChainForm" lay-filter="chain-add">
+                <input type="hidden" name="flowId" class="layui-input">
+                <input type="hidden" name="flowChainId" class="layui-input">
+                <div class="layui-form-item">
+                    <div class="layui-inline layui-inline-660">
+                        <label class="layui-form-label">
+                            <font color="red">*&nbsp;</font>流程链名:
+                        </label>
+                        <div class="layui-input-block">
+                            <input type="text" name="flowChainName" autocomplete="off" placeholder="请输入名字"
+                                class="layui-input" lay-verify="required">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline layui-inline-660">
+                        <label class="layui-form-label">
+                            <font color="red">*&nbsp;</font>使用最高机构:
+                        </label>
+                        <div class="layui-input-block">
+                            <input type="text" id="topUnitId" name="topUnitId" autocomplete="off" lay-filter="topUnitId"
+                                class="layui-input" readonly="true" lay-verify="required">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline layui-inline-660">
+                        <label class="layui-form-label">描述:</label>
+                        <div class="layui-input-block">
+                            <textarea name="remark" placeholder="请输入描述" class="layui-textarea"
+                                autocomplete="off"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="chain-window-flex">
+                    <div class="chain-window-item50">
+                        <div class="layui-form-item">
+                            <div class="layui-inline layui-inline-660">
+                                <label class="layui-form-label">节点:</label>
+                                <div class="layui-input-block">
+                                    <select lay-verify="notBlank" name="flowNodeId" id="flowNodeId" lay-search>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chain-window-item50">
+                        <div class="layui-form-item">
+                            <div class="layui-inline layui-inline-660">
+                                <label class="layui-form-label">是否必须:</label>
+                                <div class="layui-input-block">
+                                    <select lay-verify="notBlank" name="isMust" lay-search>
+                                        <option value="">请选择</option>
+                                        <option value="true">必须</option>
+                                        <option value="false">非必须</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chain-window-flex">
+                    <div class="chain-window-item33">
+                        <div class="layui-form-item">
+                            <!-- 目前为空，选择判断方式的时候会自动加入对应的元素 -->
+                            <div class="layui-inline layui-inline-660">
+                                <a class="layui-btn layui-btn-sm  layui-btn-normal" id="addNodeBtn">添加</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 所有情况遍历 -->
+                <div class="chain-window-flex">
+                    <ul class="chain-list"></ul>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="">
+                        <button class="layui-btn" lay-submit lay-filter="chain-submit">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- 流程链关联表格 -->
+        <div id="resultTableWindow" style=" display:none;text-align: center">
+            <!-- 表格区域 -->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="chainResultTable" lay-filter="chain-result-table"
+                    style="margin: 0px 0px;">
+                </table>
+            </div>
+        </div>
+        <!-- 流程全部的关联表格 -->
+        <div id="allchainResultTableWindow" style=" display:none;text-align: center">
+            <!-- 表格区域 -->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="allchainResultTable" lay-filter="all-chain-result-table"
+                    style="margin: 0px 0px;">
+                </table>
+            </div>
+        </div>
+
+        <!-- 新增：影响因子结果 -->
+        <div id="resultFormAddWindow" style="display:none;text-align: center">
+            <form class="layui-form" style="padding: 30px;" id="resultAddForm" lay-filter="result-add-form">
+                <input type="hidden" name="flowId" class="layui-input">
+                <input type="hidden" name="flowChainId" class="layui-input">
+                <div id="resultAddSelectBlock"></div>
+                <div class="layui-form-item">
+                    <div class="">
+                        <button class="layui-btn" lay-submit lay-filter="result-add-submit">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- 编辑：影响因子结果 -->
+        <div id="resultFormEditWindow" style="display:none;text-align: center">
+            <form class="layui-form" style="padding: 30px;" id="resultEditForm" lay-filter="result-edit-form">
+                <input type="hidden" name="flowId" class="layui-input">
+                <input type="hidden" name="flowChainId" class="layui-input">
+                <input type="hidden" name="contractId" class="layui-input">
+                <div id="resultEditSelectBlock"></div>
+                <div class="layui-form-item">
+                    <div class="">
+                        <button class="layui-btn" lay-submit lay-filter="result-edit-submit">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!--列表工具栏-->
+    <script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="factor">配置条件</a>
+    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="chain">配置流程链</a>
+    <a class="layui-btn layui-btn-sm  layui-btn-normal layui-btn-radius" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-sm layui-btn-danger layui-btn-radius" lay-event="del">删除</a>
+</script>
+    <!-- 流程新增按钮 -->
+    <script type="text/html" id="barDemo1">
+    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="add">新增</a>
+</script>
+    <!-- 流程字段新增按钮 -->
+    <script type="text/html" id="factorAdd">
+    <div style="text-align: left;">
+        <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="add"> 新增</a>
+    </div>
+</script>
+    <!-- 流程链新增按钮 -->
+    <script type="text/html" id="chainAdd">
+    <div style="text-align: left;">
+        <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="add"> 新增</a>
+        <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="select"> 查看影响因子配置</a>
+    </div>
+</script>
+    <!-- 流程链关联结果操作按钮 -->
+    <script type="text/html" id="chainResultBtns">
+    <a class="layui-btn layui-btn-sm  layui-btn-normal layui-btn-radius" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-sm layui-btn-danger layui-btn-radius" lay-event="del">删除</a>
+</script>
+    <!-- 流程链关联结果新增按钮 -->
+    <script type="text/html" id="chainResultAdd">
+    <div style="text-align: left;">
+        <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="add"> 新增</a>
+    </div>
+</script>
+    <!-- 流程字段工具栏 -->
+    <!--列表工具栏-->
+    <script type="text/html" id="factorTool">
+    <a class="layui-btn layui-btn-sm  layui-btn-normal layui-btn-radius" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-sm layui-btn-danger layui-btn-radius" lay-event="del">删除</a>
+</script>
+    <!--列表工具栏-->
+    <script type="text/html" id="chainTool">
+    <a class="layui-btn layui-btn-sm  layui-btn-normal layui-btn-radius" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-sm  layui-btn-radius" lay-event="related">条件集</a>
+    <!-- <a class="layui-btn layui-btn-sm  layui-btn-danger layui-btn-radius" lay-event="delRelated">清除关联</a> -->
+    <a class="layui-btn layui-btn-sm layui-btn-danger layui-btn-radius" lay-event="del">删除</a>
+</script>
+
+    <!--增加序号列-->
+    <script type="text/html" id="rank">
+    {{d.LAY_TABLE_INDEX+1}}
+</script>
+
+    <script>
+        layui.config({
+            base: '/js/layui/ext/'
+        }).extend({
+            xmSelect: 'xm-select',
+            treeSelect: 'treeSelect'
+        });
+
+        // 全局配置及引入相关的模块
+        layui.use(['table', 'form', 'treeSelect', 'xmSelect'], function () {
+            var table = layui.table,
+                form = layui.form,
+                $ = layui.jquery,
+                treeSelect = layui.treeSelect,
+                xmSelect = layui.xmSelect;
+
+            var nowFlowId, nowChainId, conditionMap, nowUnitId, ajaxNowUnitId;
+            var factorIndex, chainIndex, resultIndex, resultAddIndex, resultEditIndex;
+            var chainFactorXmMap = {};
+            var scoreLevelFactorId = null;
+            var SCORE_LEVEL_DATA_ITEM = 'score_level_id';
+            var colsResultArr = [];
+            var colsResultChainArr = [];
+
+            //初始化进行加载表格
+            window.renderTable = function () {
+
+                // 表格数据渲染
+                var tableIns = table.render({
+                    elem: '#flowTable',
+                    url: huayi_flow_url + 'comFlow/getFlowList',
+                    method: "POST",
+                    title: '角色表',
+                    defaultToolbar: [],
+                    where: {
+                        flowName: $('#flowNameSearch').val(),
+                        cmeStandardKindId: $('#cmeStandardKindIdSearch').val(),
+                    },
+                    request: {
+                        pageName: 'pageNum', //页码的参数名称，默认：page
+                        limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                    },
+                    cols: [[
+                        { field: 'xuhao', title: '序号', templet: '#rank', width: 60 },
+                        { field: 'flowName', title: '流程名', sort: true },
+                        { field: 'cmeStandardkindId', title: '套id', hide: true },
+                        { field: 'cmeStandardkindName', title: '套', sort: true },
+                        { field: 'addTime', title: '创建时间', sort: true },
+                        { field: 'updateTime', title: '修改时间', sort: true },
+                        { align: 'center', width: 350, toolbar: '#barDemo', title: '操作', fixed: 'right' }
+                    ]],
+                    toolbar: '#barDemo1',
+                    cellMinWidth: 100,
+                    id: "flowTable",
+                    height: 'full-155',
+                    page: true,
+                    limit:30,
+                    limits: [10, 20, 30, 40, 50],
+                    request:{
+                        pageName: 'pageNum' //页码的参数名称，默认：page
+                        ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                    },
+                    parseData: function (res) {
+                        return {
+                            "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                            "msg": res.message, //解析提示文本
+                            "count": res.data.recordsTotal, //解析数据长度
+                            "data": res.data.records, //解析数据列表
+                            "page": res.data.pageNum, //当前页
+                            "limit": res.data.pageSize, //每页条数
+                        }
+                    }
+                });
+            }
+
+            // 条件表格数据渲染
+            let factorTableInit = function (flowId) {
+                table.render({
+                    elem: '#factorTable',
+                    url: huayi_flow_url + 'comFlowFactor/getFactors',
+                    method: "POST",
+                    title: '流程条件配置',
+                    defaultToolbar: [],
+                    where: {
+                        flowId: flowId
+                    },
+                    cols: [[
+                        { field: 'xuhao', title: '序号', templet: '#rank', width: 60 },
+                        { field: 'dataSource', title: '数据源', sort: true },
+                        { field: 'dataItem', title: '条件字段', sort: true },
+                        { field: 'factorIndex', title: '优先级', sort: true },
+                        { field: 'addTime', title: '创建时间', sort: true },
+                        { field: 'flowId', title: '流程id', hide: true },
+                        { align: 'center', width: 300, toolbar: '#factorTool', title: '操作' }
+                    ]],
+                    toolbar: '#factorAdd',
+                    cellMinWidth: 100,
+                    id: "factorTable",
+                    height: 'full-155',
+                    page: true,
+                    limit: 30,
+                    limits: [10, 20, 30, 40, 50],
+                    request:{
+                        pageName: 'pageNum' //页码的参数名称，默认：page
+                        ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                    },
+                    parseData: function (res) {
+                        return {
+                            "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                            "msg": res.message, //解析提示文本
+                            "count": res.data.recordsTotal, //解析数据长度
+                            "data": res.data.records, //解析数据列表
+                            "page": res.data.pageNum, //当前页
+                            "limit": res.data.pageSize, //每页条数
+                        }
+                    }
+                });
+            }
+
+            //流程链表格加载
+            let chainTableInit = function (flowId) {
+                table.render({
+                    elem: '#chainTable',
+                    url: huayi_flow_url + 'comFlowChain/getListPage',
+                    method: "POST",
+                    title: '流程链配置',
+                    defaultToolbar: [],
+                    where: {
+                        flowId: flowId
+                    },
+                    cols: [[
+                        { align: 'center', field: 'xuhao', title: '序号', templet: '#rank', width: 60 },
+                        { align: 'center', field: 'flowChainName', title: '名称', sort: true },
+                        { align: 'center', field: 'topUnitName', title: '适用最高机构', sort: true },
+                        { align: 'center', field: 'remark', title: '描述', sort: true },
+                        { align: 'center', field: 'road', title: '链路', sort: false },
+                        // { field: 'addTime', title: '创建时间', sort: true },
+                        { align: 'center', field: 'flowId', title: '流程id', hide: true },
+                        { align: 'center', width: 350, toolbar: '#chainTool', title: '操作', fixed: 'right' }
+                    ]],
+                    toolbar: '#chainAdd',
+                    cellMinWidth: 100,
+                    id: "chainTable",
+                    height: 'full-155',
+                    page: true,
+                    limit: 30,
+                    limits: [5,10, 20, 30, 40, 50],
+                    request:{
+                        pageName: 'pageNum' //页码的参数名称，默认：page
+                        ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                    },
+                    parseData: function (res) {
+                        return {
+                            "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                            "msg": res.message, //解析提示文本
+                            "count": res.data.recordsTotal, //解析数据长度
+                            "data": res.data.records, //解析数据列表
+                        }
+                    },
+                    done: function (res, curr, count) {
+
+                    }
+                });
+            }
+
+            // 流程链关联条件表格数据渲染
+            let chainResultTableInit = function (chainId) {
+                console.log(123);
+                table.render({
+                    elem: '#chainResultTable',
+                    url: huayi_flow_url + 'comFlowContractMultresultChain/getResultsByChainId',
+                    method: "POST",
+                    title: '影响因子结果集',
+                    defaultToolbar: [],
+                    where: { flowChainId: chainId },
+                    cols: colsResultArr,
+                    toolbar: '#chainResultAdd',
+                    cellMinWidth: 100,
+                    id: "chainResultTable",
+                    height: 'full-155',
+                    page: false,
+                    limit: 30,
+                    limits: [10, 20, 30, 40, 50],
+                    request:{
+                        pageName: 'pageNum' //页码的参数名称，默认：page
+                        ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                    },
+                    parseData: function (res) {
+                        return {
+                            "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                            "msg": res.message, //解析提示文本
+                            "data": res.data, //解析数据列表
+                        }
+                    }
+                });
+            }
+
+            //获取到该流程下的全部结果集
+            let flowResultTableInit = function (flowId) {
+                table.render({
+                    elem: '#allchainResultTable',
+                    url: huayi_flow_url + 'comFlowContractMultresultChain/getResultsByFlowId',
+                    method: "POST",
+                    title: '影响因子结果集',
+                    defaultToolbar: [],
+                    where: { flowId: flowId },
+                    cols: colsResultChainArr,
+                    // toolbar: '#chainResultAdd',
+                    cellMinWidth: 100,
+                    id: "allchainResultTable",
+                    height: 'full-155',
+                    page: false,
+                    limit: 30,
+                    limits: [10, 20, 30, 40, 50],
+                    request:{
+                        pageName: 'pageNum' //页码的参数名称，默认：page
+                        ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                    },
+                    parseData: function (res) {
+                        return {
+                            "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                            "msg": res.message, //解析提示文本
+                            // "count": res.data.recordsTotal, //解析数据长度
+                            "data": res.data, //解析数据列表
+                            // "page": res.data.pageNum, //当前页
+                            // "limit": res.data.pageSize, //每页条数
+                        }
+                    }
+                });
+            }
+
+
+            let getUnitTree = function (unitId) {
+                while ($(".layui-treeSelect").length > 0) {
+                    treeSelect.destroy('topUnitId');
+                }
+                ajaxNowUnitId = unitId;
+
+                var loading = layer.msg('加载中', { icon: 16, shade: 0.3, time: 0 });
+                treeSelect.render({
+                    elem: '#topUnitId',
+                    data: huayi_personorg_url + 'comunit/childrenAllTreeRedis?unitId=' + unitId,
+                    headers: {
+                        'Authorization': localStorage.getItem('token'),
+                        'KJPT-USER-ID': localStorage.getItem('user-id')
+                    },
+                    type: 'get',
+                    search: true,
+                    success: function (d) {
+                        layer.close(loading);
+                        if (unitId == topUnitId) {
+                            ajaxNowUnitId = "";
+                            openChainWindowTable();
+                        }
+                    }
+                });
+                // treeSelect.refresh('topUnitId');
+            }
+
+            //初始化是进行加载套标准
+            var getCmeStandartKind = function () {
+                //初始化套标准下拉框
+                $.ajax({
+                    url: huayi_sjwh_url + "cmestandardkind/list/all",
+                    type: 'get',
+                    success: function (res) {
+                        var standards = res.data;
+                        if (standards != null && standards.length > 0) {
+                            var options = '<option value="" > 请选择套标准 </option>';
+                            options += '<option value="00000000-0000-0000-0000-000000000000" > 通用 </option>';
+                            for (var i = 0; i < standards.length; i++) {
+                                options += '<option top-unit-id="' + standards[i].topUnitId + '" value="' + standards[i].cmeStandardKindId + '">' + standards[i].description + '</option>';
+                            }
+                            $('#cmeStandardKindId').append(options);
+                            $('#cmeStandardKindIdSearch').append(options);
+                            form.render('select');
+                        } else {
+                            console.log('score kind is null!');
+                        }
+                    }
+                });
+            }
+
+            //chain弹窗中 初始化是进行加载流程链节点
+            var getComFlowNode = function () {
+                //初始化节点下拉框
+                $.ajax({
+                    url: huayi_flow_url + "comFlowNode",
+                    type: 'get',
+                    success: function (res) {
+                        var flowNodes = res.data;
+                        if (flowNodes != null && flowNodes.length > 0) {
+                            var options = '<option value="" > 请选择节点 </option>';
+                            for (var i = 0; i < flowNodes.length; i++) {
+                                options += '<option value="' + flowNodes[i].flowNodeId + '">' + flowNodes[i].flowNodeName + '</option>';
+                            }
+                            $('#flowNodeId').append(options);
+                            form.render('select');
+                        } else {
+                            console.log('flow node is null!');
+                        }
+                    }
+                });
+            }
+
+            //factor弹窗中 获取数据源，渲染其到下拉列表
+            let getDateSource = function () {
+                $.ajax({
+                    url: huayi_flow_url + "comFlowFactor/getAllTablename",
+                    type: 'post',
+                    success: function (res) {
+                        var tablenames = res.data;
+                        if (tablenames != null && tablenames.length > 0) {
+                            var options = '<option value="" >请选择表</option>';
+                            for (var i = 0; i < tablenames.length; i++) {
+                                options += '<option value="' + tablenames[i] + '">' + tablenames[i] + '</option>';
+                            }
+                            $('#dataSource').append(options);
+                            form.render('select');
+                        } else {
+                            console.log('table is null!');
+                        }
+                    }
+                });
+            }
+
+            //得到流程链的所有节点
+            var getChainDetails = function (flowChainId) {
+                //初始化节点下拉框
+                $.ajax({
+                    url: huayi_flow_url + "comFlowChainDetails/getChainDetailsByChainId?flowChainId=" + flowChainId,
+                    type: 'post',
+                    success: function (res) {
+                        var chainDetails = res.data;
+                        if (chainDetails != null && chainDetails.length > 0) {
+                            var liHtml = '';
+                            for (var j = 0; j < chainDetails.length + 4; j++) {
+                                for (var i = 0; i < chainDetails.length; i++) {
+                                    if (j == Number(chainDetails[i].flowNodeIndex)) {
+                                        let isMustText = "";
+                                        if (chainDetails[i].isMust) isMustText = "必须节点";
+                                        liHtml += '<li class="item-li" data-value="' + chainDetails[i].flowNodeId + '" data-type="' + chainDetails[i].isMust + '"><div class="chain-name">' + chainDetails[i].flowNodeName + '</div><div class="chain-attribute">' + isMustText + '</div><a class="layui-btn layui-btn-xs chain-result-del" onclick="deleteChainLi(this)">删除</a></li>';
+                                    }
+                                }
+                            }
+
+                            $('.chain-list').append(liHtml);
+                        } else {
+                            console.log('flow chain details is null!');
+                        }
+                    }
+                });
+            }
+
+            //新增，编辑关闭弹窗的时候清空表单
+            let removeFactorFrom = function () {
+                $("#comFactorForm")[0].reset();
+                $("#comFactorForm input[name='flowFactorId']").val('');
+                $(".judge-value-block1").empty();
+                $(".judge-value-block2").empty();
+                $(".factor-list").attr("data-type", "0");
+                $('.factor-list').empty();
+            }
+
+            //增加流程链节点按钮监听
+            let addNodeBtnClick = function () {
+                $('#addNodeBtn').click(function () {
+                    let flowNodeId = $("#comChainForm select[name='flowNodeId']").val();
+                    //选中节点的时候就可以进行构建 否则跳出
+                    if (flowNodeId == "") return;
+                    let isMust = $("#comChainForm select[name='isMust']").val();
+                    let flowNodeName = $("#comChainForm select[name='flowNodeId']").find("option:selected").text();
+                    createChainLi(flowNodeName, flowNodeId, isMust);
+                })
+            }
+
+            let deleteLiClink = function () {
+                $(".item-li").click(function () {
+                    layer.mag("点击事件")
+                })
+            }
+
+            //新增点击添加流程节点，编辑初始化的时候都需要构建一个流程链
+            let createChainLi = function (flowNodeName, flowNodeId, isMust) {
+                let mustHtml = '';
+                if (isMust == "true") mustHtml = '必须节点';
+                let inputHtml = '<li class="item-li" data-value="' + flowNodeId + '" data-type="' + isMust + '"><div class="chain-name">' + flowNodeName + '</div><div class="chain-attribute">' + mustHtml + '</div><a class="layui-btn layui-btn-xs chain-result-del" onclick="deleteChainLi(this)">删除</a></li>';
+                $('.chain-list').append(inputHtml);
+            }
+
+            //清空chain的弹窗表单，新增关闭和编辑关闭的时候都会执行
+            let removeChainFrom = function () {
+                $("#comChainForm")[0].reset();
+                $('.chain-list').empty();
+                $("#comChainForm input[name='flowChainId']").val('');
+            }
+
+            let isScoreLevelMultiFactor = function (dataItem) {
+                return dataItem === SCORE_LEVEL_DATA_ITEM;
+            }
+
+            let buildConditionOptionLabel = function (condition) {
+                switch (condition.judgeKind) {
+                    case 'greaterthan':
+                        return '大于' + condition.equal;
+                    case 'greaterEqual':
+                        return '大于等于' + condition.equal;
+                    case 'lessthan':
+                        return '小于' + condition.equal;
+                    case 'lessEqual':
+                        return '小于等于' + condition.equal;
+                    case 'equal':
+                        return '等于' + condition.equal;
+                    case 'between':
+                        return '区间[' + condition.equal.split(",")[0] + ',' + condition.equal.split(",")[1] + ']';
+                    case 'inside':
+                        return '包含（' + condition.equal.replace(",", ",") + '）';
+                    case 'notInside':
+                        return '不包含（' + condition.equal.replace(",", ",") + '）';
+                    case 'enum':
+                        return '等于' + condition.equal;
+                    case 'whether':
+                        return condition.equal;
+                    case 'other':
+                        return '其他';
+                    case 'all':
+                        return '全部';
+                    default:
+                        return condition.equal || '';
+                }
+            }
+
+            let buildConditionOptionHtml = function (condition) {
+                return '<option value="' + condition.flowFactorConditionId + '"> ' + buildConditionOptionLabel(condition) + '</option>';
+            }
+
+            let getConditionIdsForFactor = function (factorId) {
+                if (!conditionMap || !conditionMap[factorId]) return [];
+                let ids = [];
+                for (let i = 0; i < conditionMap[factorId].length; i++) {
+                    ids.push(conditionMap[factorId][i].flowFactorConditionId);
+                }
+                return ids;
+            }
+
+            let buildFactorFormItemOpenHtml = function (key) {
+                let dataSource = conditionMap[key][0].dataSource;
+                if (dataSource == null) dataSource = '外部输入';
+                return '<div class="layui-form-item"><div class="layui-inline layui-inline-660"><label class="layui-form-label">' + dataSource + '<br>' + conditionMap[key][0].dataItem + '</label><div class="layui-input-block">';
+            }
+
+            let destroyChainFactorXm = function () {
+                for (let key in chainFactorXmMap) {
+                    if (chainFactorXmMap[key] && chainFactorXmMap[key].destroy) {
+                        chainFactorXmMap[key].destroy();
+                    }
+                }
+                chainFactorXmMap = {};
+            }
+
+            let resolveScoreLevelFactorId = function () {
+                if (!conditionMap) return null;
+                for (let key in conditionMap) {
+                    if (isScoreLevelMultiFactor(conditionMap[key][0].dataItem)) {
+                        return key;
+                    }
+                }
+                return null;
+            }
+
+            let getScoreLevelXmData = function (factorId) {
+                let xmData = [];
+                for (let i = 0; i < conditionMap[factorId].length; i++) {
+                    let condition = conditionMap[factorId][i];
+                    xmData.push({
+                        name: buildConditionOptionLabel(condition),
+                        value: condition.flowFactorConditionId
+                    });
+                }
+                return xmData;
+            }
+
+            let initScoreLevelXmSelect = function () {
+                scoreLevelFactorId = resolveScoreLevelFactorId();
+                if (!scoreLevelFactorId) return;
+                if (chainFactorXmMap[scoreLevelFactorId]) {
+                    chainFactorXmMap[scoreLevelFactorId].destroy();
+                    delete chainFactorXmMap[scoreLevelFactorId];
+                }
+                if (!$('#chain-factor-xm-' + scoreLevelFactorId).length) return;
+                chainFactorXmMap[scoreLevelFactorId] = xmSelect.render({
+                    el: '#chain-factor-xm-' + scoreLevelFactorId,
+                    filterable: true,
+                    data: getScoreLevelXmData(scoreLevelFactorId)
+                });
+            }
+
+            let getScoreLevelSelectedIds = function () {
+                if (!scoreLevelFactorId) {
+                    scoreLevelFactorId = resolveScoreLevelFactorId();
+                }
+                let inst = scoreLevelFactorId && chainFactorXmMap[scoreLevelFactorId];
+                if (!inst || !inst.getValue) return [];
+                let selected = inst.getValue();
+                if (!Array.isArray(selected)) return [];
+                if (selected.length === 0) return [];
+                if (typeof selected[0] === 'object') {
+                    return selected.map(function (item) {
+                        return item.value;
+                    }).filter(function (v) {
+                        return v != null && v !== '';
+                    });
+                }
+                return selected;
+            }
+
+            let renderResultAddForm = function () {
+                destroyChainFactorXm();
+                scoreLevelFactorId = null;
+                if (!conditionMap) return;
+                let html = '';
+                for (let key in conditionMap) {
+                    html += buildFactorFormItemOpenHtml(key);
+                    let dataItem = conditionMap[key][0].dataItem;
+                    if (isScoreLevelMultiFactor(dataItem)) {
+                        scoreLevelFactorId = key;
+                        html += '<div id="chain-factor-xm-' + key + '" class="chain-factor-xm" data-factor-id="' + key + '"></div>';
+                    } else {
+                        html += '<select class="chain-factor-select" lay-verify="notBlank" lay-search data-factor-id="' + key + '" lay-verify="required"><option value="">请选择</option>';
+                        for (let i = 0; i < conditionMap[key].length; i++) {
+                            html += buildConditionOptionHtml(conditionMap[key][i]);
+                        }
+                        html += '</select>';
+                    }
+                    html += '</div></div></div>';
+                }
+                $("#resultAddSelectBlock").html(html);
+                form.render('select');
+            }
+
+            let renderResultEditForm = function () {
+                if (!conditionMap) return;
+                let html = '';
+                for (let key in conditionMap) {
+                    html += buildFactorFormItemOpenHtml(key);
+                    html += '<select class="chain-factor-select" lay-verify="notBlank" lay-search data-factor-id="' + key + '" lay-verify="required"><option value="">请选择</option>';
+                    for (let i = 0; i < conditionMap[key].length; i++) {
+                        html += buildConditionOptionHtml(conditionMap[key][i]);
+                    }
+                    html += '</select></div></div></div>';
+                }
+                $("#resultEditSelectBlock").html(html);
+                form.render('select');
+            }
+
+            let clearResultAddForm = function () {
+                $("#resultAddForm")[0].reset();
+                $("#resultAddSelectBlock .chain-factor-select").each(function () {
+                    this.selectedIndex = 0;
+                });
+                if (scoreLevelFactorId && chainFactorXmMap[scoreLevelFactorId] && chainFactorXmMap[scoreLevelFactorId].setValue) {
+                    chainFactorXmMap[scoreLevelFactorId].setValue([]);
+                }
+                form.render('select');
+            }
+
+            let removeResultAddForm = function () {
+                destroyChainFactorXm();
+                clearResultAddForm();
+            }
+
+            let removeResultEditForm = function () {
+                $("#resultEditForm")[0].reset();
+                $("#resultEditForm input[name='contractId']").val('');
+                $("#resultEditSelectBlock .chain-factor-select").each(function () {
+                    this.selectedIndex = 0;
+                });
+                form.render('select');
+            }
+
+            let chainFactorSelectedEdit = function (factorMultresult) {
+                if (factorMultresult == null || factorMultresult == undefined || factorMultresult == "") return;
+                let factorResult = factorMultresult.split(",");
+                $("#resultEditSelectBlock .chain-factor-select").each(function () {
+                    let factorId = $(this).attr('data-factor-id');
+                    let validIds = getConditionIdsForFactor(factorId);
+                    this.selectedIndex = 0;
+                    for (let j = 0; j < this.options.length; j++) {
+                        for (let i = 0; i < factorResult.length; i++) {
+                            if (this.options[j].value == factorResult[i] && validIds.indexOf(factorResult[i]) >= 0) {
+                                this.selectedIndex = j;
+                                break;
+                            }
+                        }
+                    }
+                });
+                form.render('select');
+            }
+
+            let buildAddCombinations = function () {
+                let slFactorId = scoreLevelFactorId || resolveScoreLevelFactorId();
+                let otherIdByFactor = {};
+                $("#resultAddSelectBlock .chain-factor-select").each(function () {
+                    otherIdByFactor[$(this).attr('data-factor-id')] = $(this).val();
+                });
+                let scoreIds = getScoreLevelSelectedIds();
+                for (let key in conditionMap) {
+                    if (key === slFactorId) continue;
+                    if (!otherIdByFactor[key]) {
+                        return { error: '请完整选择各影响因子条件' };
+                    }
+                }
+                if (slFactorId) {
+                    if (!scoreIds.length) {
+                        return { error: '请至少选择一个学分级别条件' };
+                    }
+                    let combinations = [];
+                    for (let si = 0; si < scoreIds.length; si++) {
+                        let parts = [];
+                        for (let key in conditionMap) {
+                            if (key === slFactorId) {
+                                parts.push(scoreIds[si]);
+                            } else {
+                                parts.push(otherIdByFactor[key]);
+                            }
+                        }
+                        combinations.push(parts.join(','));
+                    }
+                    return { combinations: combinations };
+                }
+                let parts = [];
+                for (let key in conditionMap) {
+                    parts.push(otherIdByFactor[key]);
+                }
+                return { combinations: [parts.join(',')] };
+            }
+
+            let saveAddCombinations = function (combinations, baseField, done) {
+                let userId = localStorage.getItem('user-id');
+                let successCount = 0;
+                let failMsg = '';
+                let index = 0;
+                let runNext = function () {
+                    if (index >= combinations.length) {
+                        done(successCount, failMsg);
+                        return;
+                    }
+                    let payload = $.extend({}, baseField, {
+                        factorMultresult: combinations[index],
+                        userCreate: userId,
+                        userUpdate: userId
+                    });
+                    $.ajax({
+                        type: 'post',
+                        url: huayi_flow_url + 'comFlowContractMultresultChain/save',
+                        data: JSON.stringify(payload),
+                        contentType: 'application/json;charset=UTF-8',
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.status == 200) {
+                                successCount++;
+                            } else {
+                                failMsg = res.msg || '保存失败';
+                            }
+                            index++;
+                            runNext();
+                        },
+                        error: function () {
+                            failMsg = '发送请求失败';
+                            index++;
+                            runNext();
+                        }
+                    });
+                };
+                runNext();
+            }
+
+            //判断是选中选择框还是编辑进去的构建
+            let createTableSelect = function (dataSource, dataItem) {
+                $('.data-item-select-block').empty();
+                $('#dataSource').removeAttr("disabled");
+                $('.data-item-select-block').append('<select lay-verify="notBlank" name="dataItem" id="dataItem" lay-search lay-filter = "layui-select-dataItem"> </select>');
+                form.render('select');
+            }
+
+            //构建非选择框
+            let createInputNoSelect = function (dataItem) {
+                if (dataItem == "" || dataItem == null || dataItem == undefined) dataItem = ""
+                $('.data-item-select-block').empty();
+                $('.data-item-select-block').append('<input name="dataItem" placeholder="请输入字段" autocomplete="off"  class="layui-input" value="' + dataItem + '">');
+                $('#dataSource option').prop("selected", '');
+                $('#dataSource').attr("disabled", "disabled");
+                $('#dataResourceType').val("1");
+                form.render('select');
+            }
+
+            //获取该数据源所有字段
+            let getDateItem = function (tableName, field) {
+                //表为空表示他是外部输入字段，需要请求字段下拉框
+                if (tableName == null || tableName == "" || tableName == undefined) {
+                    createInputNoSelect(field)
+                    return;
+                }
+                createTableSelect();
+                $.ajax({
+                    url: huayi_flow_url + "comFlowFactor/getAllField",
+                    type: 'post',
+                    data: { tableName: tableName },
+                    success: function (res) {
+                        var fields = res.data;
+                        if (fields != null && fields.length > 0) {
+                            var options = '<option value="" >请选择字段</option>';
+                            for (var i = 0; i < fields.length; i++) {
+                                if (field != "" && field != null && field != undefined && field == fields[i]) {
+                                    options += '<option value="' + fields[i] + '" selected >' + fields[i] + '</option>';
+                                    continue;
+                                }
+                                options += '<option value="' + fields[i] + '">' + fields[i] + '</option>';
+                            }
+                            $('#dataItem').append(options);
+                            form.render('select');
+                        } else {
+                            console.log('field is null!');
+                        }
+                    }
+                });
+            }
+
+            //条件增加按钮监听
+            let addInsideBtn = function () {
+                $('#addInsideBtn').click(function () {
+                    let ulElem = $('.factor-list');
+                    let judgeKind = $('#judgeKind').val();
+                    if (judgeKind == "" || judgeKind == "undefined" || judgeKind == null) return;
+                    let valueName = $("#comFactorForm input[name='judgeNum']").val();
+                    let min;
+                    let max;
+                    if (judgeKind == "between") {
+                        if ($("#comFactorForm input[name='judgeMinNum']").val() == "" || $("#comFactorForm input[name='judgeMaxNum']").val() == "") {
+                            layer.msg("区间最大值和最小值都必填", { time: 2000 });
+                            return
+                        }
+                        let a = Number($("#comFactorForm input[name='judgeMinNum']").val());
+                        let b = Number($("#comFactorForm input[name='judgeMaxNum']").val());
+                        if (a == b) {
+                            layer.msg("区间最大值和最小值相同", { time: 2000 });
+                            return
+                        }
+                        min = a > b ? b : a;
+                        max = a > b ? a : b;
+                    }
+                    if (judgeKind === 'enum' || judgeKind === 'inside' || judgeKind === 'notInside') {
+                        valueName = $("#comFactorForm input[name='equal']").val();
+                        if (valueName != null && valueName !== '') {
+                            valueName = valueName.replaceAll("，", ",");
+                        }
+                    }
+                    if (judgeKind === 'whether') {
+                        valueName = $("#comFactorForm select[name='equal']").val();
+                    }
+                    if ((judgeKind != "other" || judgeKind != "all") && valueName == "") return;
+
+                    initJudgeLi(judgeKind, valueName, min, max, 0);
+                });
+            }
+
+            //请求字段下所有条件，然后进行构建他弹出框的显示
+            let getTiaojianByFactorId = function (flowFactorId) {
+                $.ajax({
+                    url: huayi_flow_url + "comFlowFactorCondition/getConditionByFactorId",
+                    type: 'post',
+                    data: { flowFactorId: flowFactorId },
+                    success: function (res) {
+                        var fields = res.data;
+                        if (fields == null && fields.length == 0) return
+                        let min;
+                        let max;
+                        $(".factor-list").attr('data-type', '1');
+                        for (let i = 0; i < fields.length; i++) {
+                            if (fields[i].judgeKind == 'enum' || fields[i].judgeKind == 'inside' || fields[i].judgeKind == 'notInside') {
+                                $(".factor-list").attr('data-type', '2');
+                            }
+                            if (fields[i].judgeKind == "between") {
+                                let a = Number(fields[i].equal.split(",")[0]);
+                                let b = Number(fields[i].equal.split(",")[1]);
+                                max = a > b ? a : b;
+                                min = a < b ? a : b;
+                            }
+                            initJudgeLi(fields[i].judgeKind, fields[i].equal, min, max, fields[i].isHasResult);
+                        }
+                    }
+                });
+            }
+
+            //点击对应的判断类型时，进行相应的变换
+            let createJudateInput = function (type) {
+                //先清空
+                $(".judge-value-block1").empty();
+                $(".judge-value-block2").empty();
+                //后创建
+                let textHtml1 = '';
+                let textHtml2 = '';
+                if (type == 1) {
+                    textHtml1 = '<label class="layui-form-label">判断的值:</label><div class="layui-input-block"><input type="number" name="judgeNum" placeholder="请输入数字" autocomplete="off" class="layui-input" ></div>';
+                }
+                if (type == 2) {
+                    textHtml1 = '<label class="layui-form-label">最小值:</label><div class="layui-input-block"><input type="number" name="judgeMinNum" placeholder="请输入数字" autocomplete="off" class="layui-input"></div>';
+                    textHtml2 = '<label class="layui-form-label">最大值:</label><div class="layui-input-block"><input type="number" name="judgeMaxNum" placeholder="请输入数字" autocomplete="off" class="layui-input"></div>';
+                }
+                if (type == 3) {
+                    textHtml1 = '<label class="layui-form-label">判断的值:</label><div class="layui-input-block"><input type="text" name="equal" placeholder="请输入" autocomplete="off" class="layui-input"></div>';
+                }
+                if (type == 6) {
+                    textHtml1 = '<label class="layui-form-label">判断的值:</label><div class="layui-input-block"><input type="text" name="equal" placeholder="请输入，多个值可用逗号分隔，如：省级,市级" autocomplete="off" class="layui-input"></div>';
+                }
+                if (type == 4) {
+                    textHtml1 = '';
+                }
+                if (type == 5) {
+                    textHtml1 = '<label class="layui-form-label">判断的值:</label><div class="layui-input-block"><select name="equal"  placeholder="请输入"><option value="true">true</option><option value="false">false</option></select></div>';
+                }
+                $(".judge-value-block1").append(textHtml1);
+                $(".judge-value-block2").append(textHtml2);
+                form.render();
+            }
+
+            //通过所有流程id获取所有字段条件
+            var getConditions = function (flowId) {
+                //初始化节点下拉框
+                $.ajax({
+                    url: huayi_flow_url + "comFlowFactorCondition/getConditionByFlowId?flowId=" + flowId,
+                    type: 'post',
+                    success: function (res) {
+                        conditionMap = res.data;
+                        let defaultField = [];
+                        let defaultFlowField = [];
+                        for (let key in conditionMap) {
+                            let text = conditionMap[key][0].dataSource + "：";
+                            if (conditionMap[key][0].dataSource == null || conditionMap[key][0].dataSource == 'null' ||
+                                conditionMap[key][0].dataSource == undefined || conditionMap[key][0].dataSource == '') {
+                                text = '外部输入：'
+                            }
+                            let fieldObj = { filed: 'factorMultresult', title: text + conditionMap[key][0].dataItem, factorId: key, templet: setTemplate };
+                            defaultField.push(fieldObj);
+                            defaultFlowField.push(fieldObj);
+                        }
+                        if (defaultField.length > 0) {
+                            let fieldObj = { align: 'center', minWidth: 150, toolbar: '#chainResultBtns', title: '操作' }
+                            defaultField.push(fieldObj);
+                        }
+                        if (defaultFlowField.length > 0) {
+                            let chainFieldObj1 = { field: 'flowChainName', title: '链名称', sort: true };
+                            defaultFlowField.push(chainFieldObj1);
+                            let chainFieldObj2 = { field: 'flowNodeNames', title: '链结构', sort: true };
+                            defaultFlowField.push(chainFieldObj2);
+                        }
+                        colsResultArr[0] = defaultField;
+
+                        colsResultChainArr[0] = defaultFlowField;
+                        renderResultAddForm();
+                        renderResultEditForm();
+                    }
+                });
+            }
+
+            //动态处理表格方法，是链关联获取字段
+            let setTemplate = function (data) {
+                let arr1 = data.factorMultresult.split(',');
+                for (let i = 0; i < arr1.length; i++) {
+                    for (let j = 0; j < conditionMap[this.factorId].length; j++) {
+                        if (arr1[i] == conditionMap[this.factorId][j].flowFactorConditionId) {
+                            let condition = conditionMap[this.factorId][j];
+                            if (condition.judgeKind == 'greaterthan') return '大于' + condition.equal;
+                            if (condition.judgeKind == 'greaterEqual') return '大于等于' + condition.equal;
+                            if (condition.judgeKind == 'lessthan') return '小于' + condition.equal;
+                            if (condition.judgeKind == 'lessEqual') return '小于等于' + condition.equal;
+                            if (condition.judgeKind == 'equal') return '等于' + condition.equal;
+                            if (condition.judgeKind == 'between') return '区间[' + condition.equal + ']';
+                            if (condition.judgeKind == 'inside') return '包含(' + condition.equal + ')';
+                            if (condition.judgeKind == 'notInside') return '不包含(' + condition.equal + ')';
+                            if (condition.judgeKind == 'enum') return '等于' + condition.equal;
+                            if (condition.judgeKind == 'other') return '其他';
+                            if (condition.judgeKind == 'all') return '全部';
+                            if (condition.judgeKind == 'whether') return '判断' + condition.equal;
+                            return condition.equal;
+                        }
+                    }
+                }
+                return '';
+            }
+
+            let openChainWindowTable = function () {
+                //当弹窗窗口一样的时候
+                if (topUnitId != ajaxNowUnitId) {
+                    layer.open({
+                        type: 1,
+                        title: '配置流程链',
+                        area: ['98%', '95%'],
+                        content: $('#comChainWindow'),
+                        skin: '',
+                        success: function (data) {
+                            //打开弹窗就要进行一些数据访问
+                            chainTableInit(nowFlowId);
+                            getConditions(nowFlowId);
+                        }
+                    });
+                }
+            }
+
+            //增加结果li
+            let initJudgeLi = function (judgeKind, valueName, min, max, state) {
+                if (valueName != "" && valueName != null && valueName != undefined) {
+                    valueName = valueName.replaceAll("，", ",");
+                }
+                if (state == "" && state == null && state == undefined) state = 0;
+                let inputHtml = '';
+                switch (judgeKind) {
+                    //大于
+                    case 'greaterthan':
+                        inputHtml = '<li class="item-li" data-value="' + valueName + '" data-type="' + judgeKind + '"> > ' + valueName + '<a class="layui-btn layui-btn-xs factor-result-del" data-state="' + state + '" onclick="deleteLi(this)">删除</a></li>';
+                        break;
+                    //大于等于
+                    case 'greaterEqual':
+                        inputHtml = '<li class="item-li" data-value="' + valueName + '" data-type="' + judgeKind + '"> >= ' + valueName + '<a class="layui-btn layui-btn-xs factor-result-del" data-state="' + state + '" onclick="deleteLi(this)">删除</a></li>';
+                        break;
+                    //小于
+                    case 'lessthan':
+                        inputHtml = '<li class="item-li" data-value="' + valueName + '" data-type="' + judgeKind + '"> < ' + valueName + '<a class="layui-btn layui-btn-xs factor-result-del"  data-state="' + state + '"  onclick="deleteLi(this)">删除</a></li>';
+                        break;
+                    //小于等于
+                    case 'lessEqual':
+                        inputHtml = '<li class="item-li" data-value="' + valueName + '" data-type="' + judgeKind + '"> <= ' + valueName + '<a class="layui-btn layui-btn-xs factor-result-del" data-state="' + state + '" onclick="deleteLi(this)">删除</a></li>';
+                        break;
+                    //等于
+                    case 'equal':
+                        inputHtml = '<li class="item-li" data-value="' + valueName + '" data-type="' + judgeKind + '"> = ' + valueName + '<a class="layui-btn layui-btn-xs factor-result-del" data-state="' + state + '" onclick="deleteLi(this)">删除</a></li>';
+                        break;
+                    //区间内
+                    case 'between':
+                        inputHtml = '<li class="item-li" data-value="' + min + ',' + max + '" data-type="' + judgeKind + '"> [ ' + min + ',' + max + ' ] <a class="layui-btn layui-btn-xs factor-result-del" data-state="' + state + '" onclick="deleteLi(this)">删除</a></li>';
+                        break;
+                    case 'inside':
+                        inputHtml = '<li class="item-li" data-value="' + valueName + '" data-type="' + judgeKind + '"> 包含(' + valueName + ')<a class="layui-btn layui-btn-xs factor-result-del" data-state="' + state + '" onclick="deleteLi(this)">删除</a></li>';
+                        break;
+                    case 'notInside':
+                        inputHtml = '<li class="item-li" data-value="' + valueName + '" data-type="' + judgeKind + '"> 不包含(' + valueName + ')<a class="layui-btn layui-btn-xs factor-result-del" data-state="' + state + '" onclick="deleteLi(this)">删除</a></li>';
+                        break;
+                    case 'whether':
+                        inputHtml = '<li class="item-li" data-value="' + valueName + '" data-type="' + judgeKind + '"> 判断(' + valueName + ')<a class="layui-btn layui-btn-xs factor-result-del" data-state="' + state + '" onclick="deleteLi(this)">删除</a></li>';
+                        break;
+                    case 'enum':
+                        let valueArr = valueName.split(",");
+                        valueName = "";
+                        valfor1:
+                        for (let i = 0; i < valueArr.length; i++) {
+                            let itemVal = (valueArr[i] == null ? "" : String(valueArr[i])).trim();
+                            if (itemVal === "") continue valfor1;
+                            for (let j = i + 1; j < valueArr.length; j++) {
+                                let dupVal = (valueArr[j] == null ? "" : String(valueArr[j])).trim();
+                                if (itemVal === dupVal) continue valfor1;
+                            }
+                            valueName += itemVal + ",";
+                        }
+                        if (valueName === "") break;
+                        let arr2 = valueName.substring(0, valueName.length - 1).split(",");
+                        for (let i = 0; i < arr2.length; i++) {
+                            inputHtml += '<li class="item-li" data-value="' + arr2[i] + '" data-type="' + judgeKind + '"> = ' + arr2[i] + '<a class="layui-btn layui-btn-xs factor-result-del" data-state="' + state + '" onclick="deleteLi(this)">删除</a></li>';
+                        }
+                        break;
+                    case 'other':
+                        inputHtml = '<li class="other-item-li" data-value="" data-type="other"> 其他<a class="layui-btn layui-btn-xs factor-result-del" data-state="' + state + '" onclick="deleteLi(this)">删除</a> </li>';
+                        break;
+                    case 'all':
+                        inputHtml = '<li class="other-item-li" data-value="" data-type="all"> 全部<a class="layui-btn layui-btn-xs factor-result-del" data-state="' + state + '" onclick="deleteLi(this)">删除</a> </li>';
+                    default:
+                        break;
+                }
+                $('.factor-list').append(inputHtml);
+            }
+
+            //页面初始化加载的方法
+            window.init = function () {
+                // 查询按钮执行方法
+                renderTable();
+                //加载套
+                getCmeStandartKind();
+                //加载流程链节点下拉框
+                getComFlowNode();
+                //加载数据源下拉框
+                getDateSource();
+                //监听流程链中的添加按钮
+                addNodeBtnClick();
+                //条件按钮监听
+                addInsideBtn();
+            }
+
+            init();
+
+            //监听头部工具条
+            table.on('toolbar(flow-table)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'add') {
+                    form.val('flow-add', '');
+                    layer.open({
+                        type: 1,
+                        title: '新增流程',
+                        area: ['500px', '360px'],
+                        content: $('#comFlowWindow'),
+                        skin: '',
+                        success: function (data) {
+                        },
+                        cancel: function (index, layero) {
+                            $("#comFlowForm")[0].reset();
+                            return true;
+                        }
+                    });
+                }
+            });
+
+
+            //监听头部工具条
+            table.on('toolbar(factor-table)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'add') {
+                    form.val('factor-add', data);
+                    factorIndex = layer.open({
+                        type: 1,
+                        title: '新增条件字段',
+                        area: ['1000px', '80%'],
+                        content: $('#factorFormWindow'),
+                        skin: '',
+                        success: function (data) {
+                            removeFactorFrom();
+                            $('.data-item-select-block').empty();
+                            $('#dataSource').removeAttr("disabled");
+                            $('.data-item-select-block').append('<select lay-verify="notBlank" name="dataItem" id="dataItem" lay-search lay-filter = "layui-select-dataItem"> </select>');
+                            form.render('select');
+                        },
+                        cancel: function (index, layero) {
+                            removeFactorFrom();
+                            return true;
+                        }
+                    });
+                }
+            });
+
+
+            //监听头部新增流程链工具
+            table.on('toolbar(chain-table)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'add') {
+                    form.val('chain-add', '');
+                    chainIndex = layer.open({
+                        type: 1,
+                        title: '新增流程',
+                        area: ['80%', '90%'],
+                        content: $('#chainFormWindow'),
+                        skin: '',
+                        cancel: function (index, layero) {
+                            removeChainFrom();
+                            return true;
+                        }
+                    });
+                } else if (obj.event == 'select') {
+                    //查看某一个流程下所有结果集的表格
+                    resultIndex = layer.open({
+                        type: 1,
+                        title: '该流程下全部结果集',
+                        area: ['93%', '90%'],
+                        content: $('#allchainResultTableWindow'),
+                        skin: '',
+                        success: function (data) {
+                            flowResultTableInit(nowFlowId);
+                        },
+                        cancel: function (index, layero) {
+                            // removeResultForm();
+                            return true;
+                        }
+                    });
+                }
+            });
+
+            //监听头部新增流程链条件结果集
+            table.on('toolbar(chain-result-table)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'add') {
+                    clearResultAddForm();
+                    form.val('result-add-form', {
+                        flowId: nowFlowId,
+                        flowChainId: nowChainId
+                    });
+                    resultAddIndex = layer.open({
+                        type: 1,
+                        title: '新增影响因子结果',
+                        area: ['90%', '80%'],
+                        content: $('#resultFormAddWindow'),
+                        skin: '',
+                        success: function () {
+                            initScoreLevelXmSelect();
+                        },
+                        cancel: function (index, layero) {
+                            removeResultAddForm();
+                            return true;
+                        }
+                    });
+                }
+            });
+
+
+            //监听流程链结果集中的操作按钮
+            table.on('tool(chain-result-table)', function (obj) {
+                var datas = obj.data;
+                console.log(datas);
+                if (obj.event === 'edit') {
+                    removeResultEditForm();
+                    form.val('result-edit-form', datas);
+                    resultEditIndex = layer.open({
+                        type: 1,
+                        title: '编辑影响因子结果',
+                        area: ['90%', '80%'],
+                        content: $('#resultFormEditWindow'),
+                        skin: '',
+                        success: function (data) {
+                            chainFactorSelectedEdit(datas["factorMultresult"]);
+                        },
+                        cancel: function (index, layero) {
+                            removeResultEditForm();
+                            return true;
+                        }
+                    });
+                } else if (obj.event === 'del') {
+                    layer.confirm('确认删除', { icon: 3, title: '提示' }, function () {
+                        $.ajax({
+                            type: 'get',
+                            url: huayi_flow_url + 'comFlowContractMultresultChain/deleted?contractId=' + datas.contractId,
+                            contentType: 'application/json;charset=UTF-8',
+                            dataType: 'json',
+                            success: function (res) {
+                                if (res.status === 200) {
+                                    layer.msg("删除成功");
+                                    chainResultTableInit(nowChainId);
+                                } else {
+                                    layer.msg(res.msg);
+                                }
+                            }
+                        });
+
+                    })
+                }
+            })
+
+
+            //监听字段表格工具栏
+            table.on('tool(factor-table)', function (obj) {
+                var datas = obj.data;
+                if (obj.event === 'edit') {
+                    form.val('factor-add', datas);
+                    factorIndex = layer.open({
+                        type: 1,
+                        title: '编辑条件字段',
+                        area: ['1000px', '80%'],
+                        content: $('#factorFormWindow'),
+                        skin: '',
+                        success: function (data) {
+                            //获取数据项选择框
+                            getDateItem(datas.dataSource, datas.dataItem);
+                            //请求结果数据
+                            getTiaojianByFactorId(datas.flowFactorId);
+                        },
+                        cancel: function (index, layero) {
+                            removeFactorFrom();
+                            return true;
+                        }
+                    });
+                } else if (obj.event === 'del') {
+                    layer.confirm('确认删除', { icon: 3, title: '提示' }, function () {
+                        $.ajax({
+                            type: 'post',
+                            url: huayi_flow_url + 'comFlowFactor/deleteFactors?flowFactorId=' + datas.flowFactorId + "&flowId=" + datas.flowId,
+                            contentType: 'application/json;charset=UTF-8',
+                            dataType: 'json',
+                            success: function (res) {
+                                if (res.status === 200) {
+                                    layer.msg("删除成功");
+                                    factorTableInit(nowFlowId);
+                                } else {
+                                    layer.msg(res.msg);
+                                }
+                            }
+                        });
+
+                    })
+                }
+            })
+
+            // 监听行内按钮
+            table.on('tool(flow-table)', function (obj) {
+                var datas = obj.data;
+                if (obj.event === 'factor') {
+                    layer.open({
+                        type: 1,
+                        title: '配置条件',
+                        area: ['98%', '95%'],
+                        content: $('#comFactorWindow'),
+                        skin: '',
+                        success: function (data) {
+                            nowFlowId = datas.flowId;
+                            factorTableInit(datas.flowId);
+                        }
+                    });
+                } else if (obj.event === 'chain') {
+                    nowFlowId = datas.flowId;
+                    if (topUnitId != datas.topUnitId) {
+                        topUnitId = datas.topUnitId;
+                        getUnitTree(datas.topUnitId);
+                    } else {
+                        openChainWindowTable();
+                    }
+
+
+                } else if (obj.event === 'edit') {
+                    form.val('flow-add', datas);
+                    layer.open({
+                        type: 1,
+                        title: '编辑流程',
+                        area: ['500px', '360px'],
+                        content: $('#comFlowWindow'),
+                        skin: '',
+                    });
+                } else if (obj.event === 'del') {
+                    layer.confirm('确认删除', { icon: 3, title: '提示' }, function () {
+                        $.ajax({
+                            type: 'get',
+                            url: huayi_flow_url + 'comFlow/deleted',
+                            data: {
+                                flowId: datas.flowId
+                            },
+                            contentType: 'application/json;charset=UTF-8',
+                            dataType: 'json',
+                            success: function (res) {
+                                if (res.status === 200) {
+                                    layer.msg("删除成功");
+                                    renderTable();
+                                }
+                            }
+                        });
+                        layer.closeAll('dialog');
+                    })
+                }
+            });
+
+            //监听字段表格工具栏
+            table.on('tool(chain-table)', function (obj) {
+                var datas = obj.data;
+                if (obj.event === 'related') {
+                    form.val('result-add-form', {
+                        flowId: datas.flowId,
+                        flowChainId: datas.flowChainId
+                    });
+                    resultIndex = layer.open({
+                        type: 1,
+                        title: '关联影响因子',
+                        area: ['93%', '90%'],
+                        content: $('#resultTableWindow'),
+                        skin: '',
+                        success: function (data) {
+                            nowChainId = datas["flowChainId"];
+                            chainResultTableInit(datas["flowChainId"]);
+                        },
+                        cancel: function (index, layero) {
+                            return true;
+                        }
+                    });
+                } else if (obj.event === 'edit') {
+
+                    form.val('chain-add', datas);
+                    chainIndex = layer.open({
+                        type: 1,
+                        title: '编辑流程链',
+                        area: ['1000px', '80%'],
+                        content: $('#chainFormWindow'),
+                        skin: '',
+                        success: function (data) {
+                            //获取流程链条数据
+                            getChainDetails(datas.flowChainId);
+                            treeSelect.checkNode('topUnitId', datas.topUnitId);
+                        },
+                        cancel: function (index, layero) {
+                            removeChainFrom();
+                            return true;
+                        }
+                    });
+                } else if (obj.event === 'del') {
+                    layer.confirm('确认删除', { icon: 3, title: '提示' }, function () {
+                        $.ajax({
+                            type: 'post',
+                            url: huayi_flow_url + 'comFlowChain/deleteChain?flowChianId=' + datas.flowChainId,
+                            contentType: 'application/json;charset=UTF-8',
+                            dataType: 'json',
+                            success: function (res) {
+                                if (res.status === 200) {
+                                    layer.msg("删除成功");
+                                    chainTableInit(nowFlowId);
+                                } else {
+                                    layer.msg(res.msg);
+                                }
+                            }
+                        });
+                    })
+                }
+            })
+
+            //流程新增提交
+            form.on('submit(flow-submit)', function (data) {
+                // 用于判断是新增还是修改
+                var formTableId = $("#comFlowForm input[name='flowId']").val();
+                var msg;
+                var URL;
+                if (formTableId === '' || formTableId === null) {
+                    data.field["userCreate"] = localStorage.getItem("user-id");
+                    data.field["userUpdate"] = localStorage.getItem("user-id");
+                    // 走新增逻辑
+                    URL = huayi_flow_url + 'comFlow/save';
+                    msg = '新增成功';
+                } else {
+                    data.field["userUpdate"] = localStorage.getItem("user-id");
+                    // 走修改逻辑
+                    URL = huayi_flow_url + 'comFlow/update';
+                    msg = '修改成功';
+                }
+                var datas = JSON.stringify(data.field);
+                $.ajax({
+                    type: 'post',
+                    url: URL,
+                    data: datas,
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.status === 200) {
+                            layer.closeAll();
+                            $("#comFlowForm")[0].reset();
+                            layer.msg(msg);
+                            renderTable();
+                        } else {
+                            layer.msg(res.msg);
+                        }
+                    },
+                    error: function () {
+                        layer.msg("发送请求失败");
+                    }
+                })
+                return false;
+            });
+
+            //监听select输入方式，如果是外部输入则需要输入框
+            form.on('select(layui-select-intype)', function (data) {
+                if (data.value == '1') {
+                    createInputNoSelect();
+                } else {
+                    createTableSelect();
+                }
+            });
+
+            //监听select 选择判断方式
+            form.on('select(layui-select-judgeKind)', function (data) {
+
+                if (data.value === 'greaterthan' || data.value === 'lessthan' || data.value === 'greaterEqual' || data.value === 'lessEqual' || data.value === 'equal') {
+                    //只有一个数字输入
+                    createJudateInput(1);
+                    return;
+                }
+                if (data.value === 'between') {
+                    //只有两个数字输入
+                    createJudateInput(2);
+                    return;
+                }
+                if (data.value === 'enum') {
+                    createJudateInput(6);
+                    return;
+                }
+                if (data.value === 'inside' || data.value === 'notInside') {
+                    createJudateInput(3);
+                    return;
+                }
+                if (data.value === "whether") {
+
+                    //是否
+                    createJudateInput(5);
+                    return;
+                }
+                if (data.value === 'other' || data.value === 'all') {
+                    createJudateInput(4);
+                    return;
+                }
+            });
+
+            //监听数据源，如果选中就进行ajax获取字段
+            form.on('select(layui-select-datasource)', function (data) {
+                if (data.value != "") getDateItem(data.value, "");
+            });
+
+            //表单提交
+            //流程新增提交
+            form.on('submit(factor-submit)', function (data) {
+                let mapData = new Object();
+                if (data.field["dataItem"] == "") {
+                    layer.msg("数据项必填", { time: 2000 });
+                    return false;
+                }
+                if ((data.field["dataResourceType"] == "" || data.field["dataResourceType"] == '0') && (data.field.dataSource == '')) {
+                    layer.msg("数据源必填", { time: 2000 });
+                    return false;
+                }
+                data.field["flowId"] = nowFlowId;
+                data.field["userCreate"] = localStorage.getItem('user-id');
+                data.field["userUpdate"] = localStorage.getItem('user-id');
+                let resultArr = new Array();
+                if ($('.factor-list li').length != 0) {
+                    $('.factor-list li').each(function (index) {
+                        let liType = this.getAttribute("data-type");
+                        let liValues = this.getAttribute("data-value");
+                        let condition = { flowId: nowFlowId, judgeKind: liType, equal: liValues, userCreate: localStorage.getItem('user-id'), userUpdate: localStorage.getItem('user-id') };
+                        resultArr.push(condition);
+                    })
+                }
+                if (resultArr.length <= 0) {
+                    layer.msg("至少添加一个条件", { time: 2000 });
+                    return false;
+                }
+                mapData["factor"] = data.field;
+                mapData["condition"] = resultArr;
+                var datas = JSON.stringify(mapData);
+                // 用于判断是新增还是修改
+                var formTableId = $("#comFactorForm input[name='flowFactorId']").val();
+                var URL;
+                if (formTableId === '' || formTableId === null) {
+                    // 走新增逻辑
+                    URL = huayi_flow_url + 'comFlowFactor/saveFactorCondition';
+                } else {
+                    // 走修改逻辑
+                    URL = huayi_flow_url + 'comFlowFactor/updateFactorCondition';
+                }
+                $.ajax({
+                    type: 'post',
+                    url: URL,
+                    data: datas,
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.status == 200) {
+                            layer.close(factorIndex);
+                            //清空form表单
+                            removeFactorFrom();
+                            factorTableInit(nowFlowId);
+                        } else {
+                            layer.msg(res.msg);
+                        }
+                    },
+                    error: function () {
+                        layer.msg("发送请求失败");
+                    }
+                })
+                return false;
+            })
+
+            //表单提交
+            //流程链新增提交
+            form.on('submit(chain-submit)', function (data) {
+                let mapData = new Object();
+                data.field["flowId"] = nowFlowId;
+                data.field["userCreate"] = localStorage.getItem('user-id');
+                data.field["userUpdate"] = localStorage.getItem('user-id');
+                let resultArr = new Array();
+                if ($('.chain-list li').length == 0) {
+                    layer.msg("至少添加一个节点", { time: 2000 });
+                    return false;
+                }
+                $('.chain-list li').each(function (index) {
+                    let isMust = this.getAttribute("data-type");
+                    if (isMust == "") isMust = "false";
+                    let detail = { flowId: nowFlowId, flowNodeIndex: index, flowNodeId: this.getAttribute("data-value"), isMust: isMust, userCreate: localStorage.getItem('user-id'), userUpdate: localStorage.getItem('user-id') };
+                    resultArr.push(detail);
+                })
+                mapData["chain"] = data.field;
+                mapData["chainDetails"] = resultArr;
+                var datas = JSON.stringify(mapData);
+                // 用于判断是新增还是修改
+                var flowChainId = $("#comChainForm input[name='flowChainId']").val();
+                var URL;
+                if (flowChainId === '' || flowChainId === null) {
+                    // 走新增逻辑
+                    URL = huayi_flow_url + 'comFlowChain/saveChain';
+                } else {
+                    // 走修改逻辑
+                    URL = huayi_flow_url + 'comFlowChain/updateChain';
+                }
+                $.ajax({
+                    type: 'post',
+                    url: URL,
+                    data: datas,
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.status == 200) {
+                            layer.close(chainIndex);
+                            //清空form表单
+                            removeChainFrom();
+                            chainTableInit(nowFlowId);
+                        } else {
+                            layer.msg(res.msg);
+                        }
+                    },
+                    error: function () {
+                        layer.msg("发送请求失败");
+                    }
+                })
+                return false;
+            })
+
+
+            // 新增：流程链关联条件（score_level_id 多选可批量 save）
+            form.on('submit(result-add-submit)', function (data) {
+                let built = buildAddCombinations();
+                if (built.error) {
+                    layer.msg(built.error);
+                    return false;
+                }
+                let loadIndex = layer.load(1, { shade: 0.3 });
+                saveAddCombinations(built.combinations, {
+                    flowId: data.field.flowId,
+                    flowChainId: data.field.flowChainId
+                }, function (successCount, failMsg) {
+                    layer.close(loadIndex);
+                    if (successCount === built.combinations.length) {
+                        layer.close(resultAddIndex);
+                        removeResultAddForm();
+                        chainResultTableInit(nowChainId);
+                        layer.msg('保存成功，共 ' + successCount + ' 条');
+                    } else if (successCount > 0) {
+                        chainResultTableInit(nowChainId);
+                        layer.msg('部分保存成功：' + successCount + '/' + built.combinations.length + (failMsg ? '，' + failMsg : ''));
+                    } else {
+                        layer.msg(failMsg || '保存失败');
+                    }
+                });
+                return false;
+            });
+
+            // 编辑：流程链关联条件（全部单选，单次 update）
+            form.on('submit(result-edit-submit)', function (data) {
+                let factorMultresult = "";
+                $("#resultEditSelectBlock select.chain-factor-select").each(function () {
+                    if (this.value != "") {
+                        factorMultresult += this.value + ",";
+                    }
+                });
+                if (!factorMultresult) {
+                    layer.msg('请完整选择各影响因子条件');
+                    return false;
+                }
+                data.field["factorMultresult"] = factorMultresult.substring(0, factorMultresult.length - 1);
+                data.field["userCreate"] = localStorage.getItem('user-id');
+                data.field["userUpdate"] = localStorage.getItem('user-id');
+                $.ajax({
+                    type: 'post',
+                    url: huayi_flow_url + 'comFlowContractMultresultChain/update',
+                    data: JSON.stringify(data.field),
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.status == 200) {
+                            layer.close(resultEditIndex);
+                            removeResultEditForm();
+                            chainResultTableInit(nowChainId);
+                        } else {
+                            layer.msg(res.msg);
+                        }
+                    },
+                    error: function () {
+                        layer.msg("发送请求失败");
+                    }
+                });
+                return false;
+            });
+
+
+        });
+
+
+        //绑定条件删除按钮
+        let deleteLi = function (elem) {
+            if (elem.getAttribute("data-state") == 1) {
+                let windowIndex = layer.confirm('确认删除', { icon: 3, title: '提示' }, function () {
+                    //删除单前元素的父节点的li元素
+                    elem.parentElement.remove();
+                    layer.close(windowIndex);
+                })
+            } else {
+                //删除单前元素的父节点的li元素
+                elem.parentElement.remove();
+            }
+        }
+
+        //绑定流程节点删除按钮
+        let deleteChainLi = function (elem) {
+            //删除
+            elem.parentElement.remove();
+        }
+    </script>
+
+</body>
+
+</html>

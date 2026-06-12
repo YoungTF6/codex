@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <script type="text/javascript" src="../../js/constantPage/projectConstant.js"></script>
+    <script type="text/javascript" src="../../js/tools/urlTools.js"></script>
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="../../js/tools/verification.js"></script>
+    <script type="text/javascript" src="../../js/common.js"></script>
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+
+    <style>
+        .layui-table-view .layui-table {
+            width: 100% !important;
+        }
+
+        .layui-table th {
+            text-align: -webkit-center !important;
+        }
+
+        .tips_inp {
+            color: red;
+        }
+
+        .error_mark {
+            border-color: #FF5722 !important
+        }
+    </style>
+</head>
+
+
+<body style="background-color: white;">
+    <div class="layui-fluid" style="padding-top:5px;">
+        <div class="layui-card">
+
+            <fieldset class="layui-elem-field">
+                <legend style="color:#009688;text-align: left;font-weight: bold; font-size: 18px;">
+                    添加课程信息</legend>
+                <!-- 课程信息  -->
+                <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="searchDiv">
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">开始时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="startDate" id="startDate" placeholder="请填写课程开始时间" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">结束时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="endDate" id="endDate" placeholder="请填写课程结束时间" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">时长</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="period" id="period" placeholder="请填写时长" autocomplete="off" class="layui-input" maxlength="3">
+                        </div>
+                    </div>
+                    <!-- <div class="layui-inline">
+                        <label class="layui-form-label">教学方法</label>
+                        <div class="layui-input-block">
+                            <select name="teachingMethod" id="teachingMethod" >
+                                <option value="">请选择教学方法</option>
+                                <option value="理论">理论</option>
+                                <option value="实验（技术示范）">实验（技术示范）</option>
+                            </select>
+                        </div>
+                    </div> -->
+                    <div class="layui-inline" style="padding-top:10px;">
+                        <label class="layui-form-label">讲授题目</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="teachSubject" id="teachSubject" placeholder="请填写讲授题目" autocomplete="off" class="layui-input" style="width:490px;">
+                        </div>
+                    </div>
+
+                </div>
+            </fieldset>
+
+
+            <div class="layui-card-body layui_body_box" style="padding:0px 8px;">
+                <div class="layui-tab-content" style="padding:5px 0px">
+                    <div class="layui-tab-item layui-show">
+                        <table class="layui-table" id="cmeCmeProjTeacher" lay-filter="cmeCmeProjTeacher" style="margin: 0px 0px;">
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 教师信息-->
+
+            <!--  按钮区域-->
+            <div class="layui-btn-container" style="text-align: center; padding-top:10px;">
+                <button type="button" class="layui-btn" id="btnConfirm">确认</button>
+                <button type="button" class="layui-btn layui-btn-primary" id="btnCancel">取消</button>
+            </div>
+
+
+        </div>
+    </div>
+
+
+    <div id="teacherTab" name="teacherTab" style=" display:none;">
+        <form class="layui-form" style="padding: 30px;" id="lay-teacher" lay-filter="lay-teacher">
+            <div style="display: none">
+                <div class="layui-inline layui-inline-660">
+                    <label class="layui-form-label">主键</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="projTeacherId" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline layui-inline-660">
+                    <label class="layui-form-label">课程id</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="projTeachId" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline layui-inline-660">
+                    <label class="layui-form-label">人员主键</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="comPersonId" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 120px;"><span class="tips_inp">*</span>授课教师</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="teachName" id="teachName" autocomplete="off" class="layui-input" placeholder="请输入授课教师姓名" lay-verify="required"
+                            oninput="clearTeacherPersonMatch()" onblur="teachNameBlur(this)">
+                    </div>
+                </div>
+                <div class="layui-inline" id="ifProjManagerBlock">
+                    <label class="layui-form-label" style="width: 120px;"><span class="tips_inp">*</span>是否为项目负责人</label>
+                    <div class="layui-input-inline">
+                        <select name="ifProjManager" lay-search lay-verify="required">
+                            <option value="">请选择</option>
+                            <option value="0">否</option>
+                            <option value="1">是</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline" style="vertical-align:top">
+                    <label class="layui-form-label" style="width: 120px;"><span data-id="spanOnCert" class="tips_inp">*</span>证件类型</label>
+                    <div class="layui-input-inline">
+                        <div class="layui-input-inline">
+                            <select id="cert_type" name="certType" lay-verify="required">
+                                <option value="">请选择证件类型</option>
+                                <option value="9fcb08ce-ee86-4e4c-9611-9d430101cea4">身份证</option>
+                                <option value="3444541a-9703-44ed-aae6-9d8b01574916">港澳台居民居住证</option>
+                                <option value="a85da857-fd72-4e9a-8657-afa900a0f569">台湾居民来往大陆通行证</option>
+                                <option value="031d0bdc-8cd0-11ee-9c60-005056a64c01">港澳居民来往内地通行证</option>
+                                <option value="d681a2b3-df10-421a-8279-afa900a0f569">其他法定有效证件</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 120px;"><span id="spanOnTeachNo" data-id="spanOnCert" class="tips_inp">*</span>证件号码</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="teachNo" id="teachNo" autocomplete="off" class="layui-input" placeholder="请输入证件号码" lay-verify="required|rightCertId"
+                            oninput="syncTeacherIdentityVerifyState();clearTeacherPersonMatch()"
+                            onblur="teachNoBlur(this)">
+                        <input type="checkbox" style="color:red" name="needScore" id="needScore" lay-filter="needScore" lay-skin="primary"  checked
+                            title="是否主讲人授分(如是,正确填写证件号码)">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" id="personNoBlock" style="display: none;">
+                <div class="layui-inline" style="display: block; width: 100%;">
+                    <label class="layui-form-label" style="width: 120px;"><span class="tips_inp" id="spanOnPersonNo">*</span>医通卡号</label>
+                    <div class="layui-input-inline" style="width: calc(100% - 162px);">
+                        <input type="text" name="personNo" id="personNo" autocomplete="off" class="layui-input" placeholder="请输入医通卡号"
+                            oninput="syncTeacherIdentityVerifyState();clearTeacherPersonMatch()" onblur="personNoBlur(this)">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline" id="sexBlock">
+                    <label class="layui-form-label" style="width: 120px;">性别</label>
+                    <div class="layui-input-inline">
+                        <select name="sex" id="sex">
+                            <option value="">请选择性别</option>
+                            <option value="1">男</option>
+                            <option value="0">女</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 120px;">出生日期</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="birthday" id="birthday" autocomplete="off" class="layui-input" placeholder="请选择出生日期">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 120px;"><span class="tips_inp">*</span>学历</label>
+                    <div class="layui-input-inline">
+                        <select name="education" id="select_education" lay-verify="required">
+                            <option value="">请选择学历</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline layui-form" lay-filter="specSelectArea">
+                    <label class="layui-form-label" style="width: 120px;"><span class="tips_inp">*</span>专业</label>
+                    <div class="layui-input-inline">
+                        <input type="text" autocomplete="off" class="layui-input" lay-filter="specSelect" id="specSelect" lay-verify="required">
+                    </div>
+                    <input type="hidden" id="hidden_spec" name="dept">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 120px;"><span class="tips_inp">*</span>职称</label>
+                    <div class="layui-input-inline">
+                        <input id="text_title_name" autocomplete="off" class="layui-input" placeholder="请选择职称" lay-verify="required">
+                        <input type="hidden" name="title" id="hidden_title_id" />
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 120px;"><span class="tips_inp">*</span>单位</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="unitName" id="unit" autocomplete="off" class="layui-input" placeholder="请输入单位名称" lay-verify="required">
+                    </div>
+                </div>
+
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 120px;">职务</label>
+                    <div class="layui-input-inline">
+                        <select name="duty" id="select_hospital_duty">
+                            <option value="">请选择院内职务</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 120px;">联系方式</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="telephone" id="telephone" autocomplete="off" class="layui-input" placeholder="请输入联系方式">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline" id="remarkBlock">
+                    <label class="layui-form-label" style="width: 120px;">备注</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="remark" placeholder="备注" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" id="submitAndResetTeacher" style="text-align: center;">
+                <button id="resetBtn" type="reset" class="layui-btn layui-btn-primary">重置</button>
+                <button class="layui-btn" lay-submit lay-filter="submitTeacher">提交</button>
+            </div>
+
+        </form>
+    </div>
+
+</body>
+
+<!--课程表格内数据编辑、删除按钮-->
+<script type="text/html" id="teacherRowBar">
+    <a class="layui-btn layui-btn-xs" lay-event="editTeacher" style="color: #27b1a2;background-color: transparent;">编辑</a>
+    <a class="layui-btn layui-btn-xs" lay-event="delTeacher" style="color: #f25643;background-color: transparent;">删除</a>
+</script>
+
+
+
+<!--表格内数据编辑、删除按钮-->
+<script type="text/html" id="toolBar">
+    <button class="layui-btn layui-btn-sm btnRounded" lay-event="addTeacher">添加授课教师</button>
+</script>
+
+
+<script>
+
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        eleTree: 'eleTree',
+        treeSelect: 'treeSelect',
+        xmSelect: 'xm-select',
+        opTable: '/opTable/opTable'
+    });
+
+
+
+    // 全局配置及引入相关的模块
+    layui.use(['table', 'form', 'laydate', 'element', 'upload', 'opTable', 'treeSelect', 'util'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var laydate = layui.laydate;
+        var treeSelect = layui.treeSelect;
+        var xmSelect = layui.xmSelect;
+        var util = layui.util;
+        var matchedTeacherPerson = null;
+        var lastTeacherPersonWarnKey = null;
+
+        var teacherTable = null;
+        var down_id = getQueryString("downId");
+        var proj_id = getQueryString("projId");
+        var projTeachId = getQueryString("projTeachId");
+        const HAINAN = "6eec6713-670a-43cc-ad4d-9bd700a92928";
+        const GUAGNXI = "4a6d91fb-8ba4-4560-a801-9c6f00e6d999";
+        const IS_GUANG_DONG = StandardKind.GUANG_DONG == localStorage.getItem("standardkind-id");
+
+        //获取套
+        window.getCmeStandardKindId = function () {
+            var cmeStandardKindId = localStorage.getItem("standardkind-id");
+            return cmeStandardKindId;
+        }
+        //获取单位
+        window.getUnitId = function () {
+            var unitId = localStorage.getItem("unit-id");
+            return unitId;
+        }
+
+        //初始化单个下拉框
+        window.initPerDic = function (select_id, kind_id, errorStr) {
+            $.ajax({
+                async: false,
+                url: huayi_sjwh_url + "comdictionary/getDicsByKindId",
+                data: { kindId: kind_id },
+                success: function (result) {
+                    if (result.success == true) {
+                        var objList = result.data;
+                        var obj = {};
+                        for (var i = 0; i < objList.length; i++) {
+                            obj = objList[i];
+                            $("<option value=" + obj.dict_id + ">" + obj.dict_name + "</option>").appendTo($("#" + select_id))
+                        }
+                    }
+                    else {
+                        layer.msg(errorStr);
+                    }
+                }
+            });
+        }
+
+
+        /* 专业树初始化 */
+        var specTreeSelect;
+        window.initSpecTree = function (spec) {
+            specTreeSelect = treeSelect.render({
+                elem: '#specSelect',
+                data: huayi_sjwh_url + 'comPersonSpec/tree',
+                type: 'get',
+                search: true,
+                style: {
+                    folder: {   // 父节点图标
+                        enable: true   // 是否开启：true/false
+                    },
+                    line: {     // 连接线
+                        enable: true   // 是否开启：true/false
+                    }
+                },
+                click: function (data) {
+                    $("#hidden_spec").val(data.current.id);
+                },
+                success: function () {
+                    if (spec != null && spec != undefined && spec != "") {
+                        specTreeSelect.checkNode('specSelect', spec);
+                    }
+                }
+            });
+        }
+
+        //初始化查询
+        window.init = function () {
+            let startDtStr = (window["down_with_datetime"] == 1) ? getQueryString("startDt") : (getQueryString("startDt") + ' 00:00:00');
+            let endDtStr = (window["down_with_datetime"] == 1) ?  getQueryString("endDt") : getQueryString("endDt") + " 23:59:59";
+
+            laydate.render({
+                elem: '#startDate' //指定元素
+                , type: 'datetime'
+                , min: startDtStr
+                , max: endDtStr
+                , value: (window["fun_teachdate_equal_downdate"] == '1') ? startDtStr : ''
+            });
+
+            laydate.render({
+                elem: '#endDate' //指定元素
+                , type: 'datetime'
+                , min: startDtStr
+                , max: endDtStr
+                , value: (window["fun_teachdate_equal_downdate"] == '1') ? endDtStr : ''
+            });
+            if(window["fun_teachdate_equal_downdate"] == '1') {
+                $("#startDate").prop('disabled','disabled').addClass('layui-disabled');
+                $("#endDate").prop('disabled','disabled').addClass('layui-disabled');
+            }
+
+            laydate.render({
+                elem: '#birthday',
+                type: 'date',
+                trigger: "click"
+            });
+
+            //初始化学历下拉框
+            window.initPerDic("select_education", 1, "初始化学历下拉框失败");
+
+            //初始化院内职务
+            window.initPerDic("select_hospital_duty", 6, "初始化院内职务下拉框失败");
+
+            initSpecTree();
+
+            //getCmeStandardKindId().toLowerCase() == HAINAN && $("#needScore").addClass("layui-disabled").prop("disabled", 'disabled');
+
+            form.render("select");
+            form.render("checkbox");
+
+        };
+
+        //编辑页面时初始化数据
+        window.initEditData = function () {
+            let projTeachId = getQueryString("projTeachId");
+            let url = huayi_projectscore_url + "cmeCmeProjTeach/getOne";
+            let reqData = { projTeachId: projTeachId };
+            //查找课程信息
+            $.ajax({
+                url: url,
+                type: "get",
+                data: reqData,
+                success: function (resData) {
+                    if (resData.success == true) {
+                        var projTeach = resData.data;
+                        if (projTeach != null && projTeach != undefined) {
+                            //startDate endDate teachSubject period
+                            if(window["fun_teachdate_equal_downdate"] != '1') { 
+                                $("#startDate").val(projTeach.startDate);
+                                $("#endDate").val(projTeach.endDate);
+                            }
+                            $("#teachSubject").val(projTeach.teachSubject);
+                            $("#period").val(projTeach.period);
+                        }
+                    } else {
+                        layer.msg(resData.msg);
+                    }
+                }
+
+            });
+
+            //查找教师列表
+            window.initTeacherTable(projTeachId);
+        }
+
+        window.initTeacherTable = function (courseId) {
+
+            teacherTable = table.render({
+                elem: '#cmeCmeProjTeacher',
+                toolbar: '#toolBar', //开启头部工具栏，并为其绑定左侧模板
+                title: '授课教师表',
+                url: huayi_projectscore_url + "cmeCmeProjTeach/selectAllTeachers",
+                where: {
+                    projTeachId: courseId
+                },
+                cols: [[
+                    { title: '操作', toolbar: '#teacherRowBar', align: "center", minWidth: 120 },
+                    { field: 'projTeacherId', hide: true },
+                    { field: 'teachName', title: '姓名', align: 'center', minWidth: 100 },
+                    {
+                        field: 'certType', title: '证件类型', align: 'center', minWidth: 200,
+                        templet: function (data) {
+                            let certType = data.certType;
+                            let certTypeName = "";
+                            switch (certType) {
+                                case "9fcb08ce-ee86-4e4c-9611-9d430101cea4":
+                                    certTypeName = "身份证";
+                                    break;
+                                case "3444541a-9703-44ed-aae6-9d8b01574916":
+                                    certTypeName = "港澳台居民居住证";
+                                    break;
+                                case "a85da857-fd72-4e9a-8657-afa900a0f569":
+                                    certTypeName = "台湾居民来往大陆通行证";
+                                    break;
+                                case "031d0bdc-8cd0-11ee-9c60-005056a64c01":
+                                    certTypeName = "港澳居民来往内地通行证";
+                                    break;
+                                case "d681a2b3-df10-421a-8279-afa900a0f569":
+                                    certTypeName = "其他法定有效证件";
+                                    break;
+                            }
+                            return certTypeName;
+                        }
+                    },
+                    {
+                        field: 'teachNo', title: '证件号码', align: 'center', minWidth: 180,
+                        templet: function (data) {
+                            return data.certSource === null || data.certSource === '1' ? (data.teachNo || '') : '';
+                        }
+                    },
+                    {
+                        field: 'teachNo', title: '医通卡号', align: 'center', minWidth: 180, hide: !IS_GUANG_DONG,
+                        templet: function (data) {
+                            return data.certSource === '2' ? (data.teachNo || '') : '';
+                        }
+                    },
+                    {
+                        field: 'sex', title: '性别', align: 'center', minWidth: 80, templet: function (data) {
+                            if (data.sex === "1") {
+                                return "男";
+                            }
+                            else if (data.sex === "0") {
+                                return "女";
+                            } else {
+                                return "";
+                            }
+                        }
+                    },
+                    { field: 'birthday', title: '出生日期', align: 'center', minWidth: 100 },
+                    { field: 'educationName', title: '最高学历', align: 'center' },
+                    { field: 'personSpecName', title: '专业', align: 'center' },
+                    { field: 'titleLevelName', title: '职称级别', align: 'center', minWidth: 110 },
+                    { field: 'titleName', title: '职称', align: 'center', minWidth: 110 },
+                    {
+                        field: 'ifProjManager', title: '是否为项目负责人', align: 'center', minWidth: 150, templet: function (data) {
+                            if (data.ifProjManager === "1") {
+                                return "是";
+                            }
+                            else if (data.ifProjManager === "0") {
+                                return "否";
+                            } else {
+                                return "";
+                            }
+                        }
+                    },
+                    { field: 'dutyName', title: '职务', align: 'center' },
+                    { field: 'unitName', title: '所在单位', align: 'center' },
+                    { field: 'telephone', title: '联系方式', align: 'center' },
+                    { field: 'remark', title: '备注', align: 'center' }
+
+                ]],
+                cellMinWidth: 100,
+                id: 'cmeCmeProjTeacher',
+                height: 'full-225',
+                page: false,
+                parseData: function (res) {
+                    return {
+                        'code': res.status === 200 ? 0 : res.status,  // 解析接口状态
+                        'msg': res.msg,                          // 解析提示文本
+                        'count': res.data.length,                // 解析数据长度
+                        'data': res.data                    // 解析数据列表
+                    }
+
+                },
+                done: function (res, curr, count) {
+
+                    if (getCmeStandardKindId() == "db0d980b-03d4-4c9c-b2d4-9f890109ed47") {
+                        $("[data-field='sex']").hide();
+                        $("[data-field='birthday']").hide();
+                        $("[data-field='educationName']").hide();
+                        $("[data-field='personSpecName']").hide();
+                        $("[data-field='dutyName']").hide();
+                        $("[data-field='telephone']").hide();
+                    }
+                }
+            });
+
+        }
+
+        window.closeChildPage = function (widowName) {
+            var index = parent.layer.getFrameIndex(widowName); //先得到当前iframe层的索引
+            layer.close(index); //再执行关闭
+            window.reloadTable();
+        }
+
+        var teacherLayerIndex;
+        table.on('toolbar(cmeCmeProjTeacher)', function (obj) {
+            var event = obj.event;
+            var data = obj.data;
+            if (obj.event === 'addTeacher') {
+                if (HasTeachAttenedOrScored(projTeachId)) {
+                    layer.msg("该课程已经举办，无法添加教师");
+                    return;
+                }
+                teacherLayerIndex = layer.open({
+                    type: 1,
+                    title: '添加教师',
+                    content: $('#teacherTab'),
+                    skin: '',
+                    area: ['70%', '95%'],
+                    success: function () {
+                        $("#resetBtn").click();
+                    }
+                });
+
+            }
+        });
+        window.HasTeachAttenedOrScored = function (projTeachId) {
+            let result = false;
+            let url = "teachHasAttendedOrScored";
+            $.ajax({
+                async: false,
+                data: { projTeachId: projTeachId },
+                type: "post",
+                url: url,
+                success: function (res) {
+                    if (res.success == false) {
+                        result = true;
+                    }
+                }
+            });
+            return result;
+        };
+
+        table.on('tool(cmeCmeProjTeacher)', function (obj) {
+            var event = obj.event;
+            var data = obj.data;
+            console.log(data);
+            if (obj.event === 'editTeacher') {
+                teacherLayerIndex = layer.open({
+                    type: 1,
+                    title: '编辑教师',
+                    content: $('#teacherTab'),
+                    skin: '',
+                    area: ['70%', '95%'],
+                    success: function () {
+                        data = splitTeacherIdentityForGuangdong(data);
+                        form.val("lay-teacher", data);
+                        setTeacherSexValue(data.sex);
+                        $("#birthday").val(formatTeacherBirthdayValue(data.birthday));
+
+                        if (data.personSpecId != null && data.personSpecId != undefined && data.personSpecId != "") {
+                            specTreeSelect.checkNode('specSelect', data.personSpecId);
+                        }
+                        if (data.titleName != null && data.titleName != undefined && data.titleName != "") {
+                            $("#text_title_name").val(data.titleName);
+                        }
+                        syncTeacherIdentityVerifyState();
+                        initCertVerifyInfo(data.needScore);
+                        form.render("checkbox");
+                    }
+                });
+            }
+            if (obj.event === 'delTeacher') {
+                layer.confirm('确认删除该教师吗？', { icon: 3, title: '提示' }, function (index) {
+                    let projTeacherId = data.projTeacherId;
+                    let url = huayi_projectscore_url + "cmeCmeProjTeacher/delete";
+                    $.ajax({
+                        url: url,
+                        type: "get",
+                        data: { projTeacherId: projTeacherId },
+                        success: function (res) {
+                            if (res.success === true) {
+                                layer.msg("删除教师成功");
+                                table.reload('cmeCmeProjTeacher');
+                            } else {
+                                layer.msg(res.msg);
+                            }
+                        },
+                        error: function () {
+                            layer.msg("请求出错");
+                        }
+                    });
+
+                    layer.close(index);
+                });
+            }
+
+        });
+
+        //取消按钮
+        $("#btnCancel").click(function () {
+            var winName = window.name;
+            parent.closeChildPage(window.name);
+        });
+
+        //确认按钮
+        $("#btnConfirm").click(function () {
+            var teach_subject = $("#teachSubject").val();
+            var period = $("#period").val();
+            var start_date = $("#startDate").val();
+            var end_date = $("#endDate").val();
+
+            if (teach_subject === "" || teach_subject === undefined || teach_subject == null
+                || period === "" || period === undefined || period == null
+                || start_date === "" || start_date === undefined || start_date == null
+                || end_date === "" || end_date === undefined || end_date == null) {
+                layer.msg("课程的信息填写不完整");
+                return false;
+            }
+
+            if (Date.parse(start_date) >= Date.parse(end_date)) {
+                layer.msg("课程结束日期应该大于课程开始日期");
+                return false;
+            }
+
+            //判断这个课程下老师的数量，如果没有添加老师，不准保存
+            var checkTeacherCnt = 0;
+            var checkTeacherCntUrl = huayi_projectscore_url + "cmeCmeProjTeach/selectAllTeachers";
+            $.ajax({
+                async: false,
+                type: 'get',
+                url: checkTeacherCntUrl,
+                data: { projTeachId: projTeachId },
+                success: function (res) {
+                    if (res.status === 200) {
+                        var teacherList = res.data;
+                        if (teacherList != null && teacherList != undefined) {
+                            checkTeacherCnt = teacherList.length;
+                            console.log("teacherList:");
+                            console.log(teacherList);
+                        }
+
+                    } else if (res.status === 500) {
+                        layer.msg("系统错误，请联系管理员");
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                }
+
+            });
+            if (checkTeacherCnt == 0) {
+                layer.msg("请添加老师");
+                return false;
+            }
+
+            //课程信息
+            var data = {
+                projTeachId: projTeachId,
+                downId: down_id,
+                projId: proj_id,
+                teachSubject: teach_subject,
+                period: period,
+                startDate: start_date,
+                endDate: end_date
+            };
+
+            let mode = getQueryString("mode");
+
+            if (mode === "add") {
+
+                //课程的开始时间和结束时间等同于周期的话，不用
+                //课程的时间范围不能有交叉，并且课程的时间范围应该在周期的时间范围内
+                if(window['fun_teachdate_equal_downdate'] != '1' ) {
+                    let startDateEndDateCheckResultObj = isTeachStartDateAndEndDateCorrect(down_id, projTeachId, start_date, end_date, "add");
+                    if (startDateEndDateCheckResultObj.code != 0) {
+                        layer.msg(startDateEndDateCheckResultObj.msg);
+                        return false;
+                    }
+                }
+
+                //总学时检查
+                if(window.getCmeStandardKindId() != GUAGNXI) {
+                    let doesBeyond = doesTeachTotalPeriodBeyondProjectPeriodWhenInsertTeach(proj_id, down_id, period);
+                    if (doesBeyond) {
+                        layer.msg("各课程时长之和将会大于项目总学时,请调整课程时长");
+                        return false;
+                    }
+                }
+
+                var url = huayi_projectscore_url + 'cmeCmeProjTeach/save';
+                var msg = "添加课程信息和老师信息成功";
+                $.ajax({
+                    async: false,
+                    type: 'post',
+                    url: url,
+                    data: JSON.stringify(data),
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.status === 200) {
+                            parent.reloadTable();
+                            layer.msg(msg);
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+
+                        } else if (res.status === 500) {
+                            layer.msg("系统错误，请联系管理员");
+                        } else {
+                            layer.msg(res.msg);
+                        }
+                    },
+                    error: function () {
+                        layer.msg("发送请求失败");
+                    }
+
+                });
+
+            }
+            if (mode === "edit") {
+
+                //课程的时间范围不能有交叉，并且课程的时间范围应该在周期的时间范围内
+                if(window['fun_teachdate_equal_downdate'] != '1' ) {
+                    let startDateEndDateCheckResultObj = isTeachStartDateAndEndDateCorrect(down_id, projTeachId, start_date, end_date, "edit");
+                    if (startDateEndDateCheckResultObj.code != 0) {
+                        layer.msg(startDateEndDateCheckResultObj.msg);
+                        return false;
+                    }
+                }
+
+                //总学时检查
+                if(getCmeStandardKindId() != GUAGNXI) {
+                    let doesBeyond = doesTeachTotalPeriodBeyondProjectPeriodWhenEditTeach(proj_id, down_id, projTeachId, period);
+                    if (doesBeyond) {
+                        layer.msg("各课程时长之和会大于项目总学时,请调整课程时长");
+                        return false;
+                    }
+                }
+
+
+                var url = huayi_projectscore_url + 'cmeCmeProjTeach/update';
+                var msg = "添加课程信息和老师信息成功";
+                $.ajax({
+                    async: false,
+                    type: 'post',
+                    url: url,
+                    data: JSON.stringify(data),
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.status === 200) {
+                            parent.reloadTable();
+                            layer.msg(msg);
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+
+                        } else if (res.status === 500) {
+                            layer.msg("系统错误，请联系管理员");
+                        } else {
+                            layer.msg(res.msg);
+                        }
+                    },
+                    error: function () {
+                        layer.msg("发送请求失败");
+                    }
+
+                });
+            }
+
+        });
+
+
+
+        //添加课程前，判断待添加的课程，加上周期里已经有的课程，其课时的总和是否超过了项目的课时
+        window.doesTeachTotalPeriodBeyondProjectPeriodWhenInsertTeach = function (projId, downId, addPeriod) {
+            let doesBeyond = false;
+            let url = huayi_projectscore_url + 'cmeProjPosDownload/doesTeachTotalPeriodBeyondProjectPeriodWhenInsertTeach';
+            $.ajax({
+                async: false,
+                type: 'get',
+                url: url,
+                data: { projId: projId, downId: downId, addPeriod: addPeriod },
+                success: function (res) {
+                    if (res.success == true) {
+                        doesBeyond = res.data;
+                    } else {
+                        doesBeyond = true;
+                        layer.msg("程序出现未知错误，请联系管理员");
+                    }
+
+                },
+                error: function () {
+                    layer.msg("发送信息失败");
+                }
+            });
+            return doesBeyond;
+        }
+
+        //编辑课程前，判断待编辑的课程，加上周期里其他课程，其课时的总和是否超过了项目的课时
+        window.doesTeachTotalPeriodBeyondProjectPeriodWhenEditTeach = function (projId, downId, editTeachId, editPeriod) {
+            let doesBeyond = false;
+            let url = huayi_projectscore_url + 'cmeProjPosDownload/doesTeachTotalPeriodBeyondProjectPeriodWhenEditTeach';
+            $.ajax({
+                async: false,
+                type: 'get',
+                url: url,
+                data: { projId: projId, downId: downId, editTeachId: editTeachId, editPeriod: editPeriod },
+                success: function (res) {
+                    if (res.success == true) {
+                        doesBeyond = res.data;
+                    } else {
+                        doesBeyond = true;
+                        layer.msg("程序出现未知错误，请联系管理员");
+                    }
+
+                },
+                error: function () {
+                    layer.msg("发送信息失败");
+                }
+            });
+            return doesBeyond;
+        }
+
+
+        window.isTeachStartDateAndEndDateCorrect = function (downId, projTeachId, startDateStr, endDateStr, operate) {
+            let resultObj = {};
+            let url = huayi_projectscore_url + 'cmeCmeProjTeach/isTeachStartDateAndEndDateCorrect';
+            $.ajax({
+                async: false,
+                type: 'get',
+                url: url,
+                data: { downId: downId, projTeachId: projTeachId, startDateStr: startDateStr, endDateStr: endDateStr, operate: operate },
+                success: function (res) {
+                    if (res.success == true) {
+                        resultObj = res.data;
+                    } else {
+                        resultObj = {
+                            "msg": "程序出现未知错误，请联系管理员",
+                            "code": 3
+                        };
+                    }
+                },
+                error: function () {
+                    resultObj = {
+                        "msg": "发送信息失败",
+                        "code": 3
+                    };
+                }
+            });
+            return resultObj;
+        }
+
+
+
+        //选择职称的时候点击
+        $("#text_title_name").focus(function () {
+            layer.open({
+                type: 2,
+                content: "../controls/selectTitle/selectTitle.html",
+                area: ['610px', '450px'],
+                scrollbar: false
+            });
+        });
+
+        form.on('checkbox(needScore)', function (data) {
+            let needScore = data.elem.checked;
+            initCertVerifyInfo(needScore);
+        });
+
+        // 职称选择
+        window.getChildTitle = function (titleId, titleName, type_id, list_order) {
+            $("#hidden_title_id").val(titleId);
+            $("#text_title_name").val(titleName);
+        }
+
+        function resetTeacherPersonMatchTip() {
+            matchedTeacherPerson = null;
+            lastTeacherPersonWarnKey = null;
+        }
+
+        function normalizeTeacherSexValue(sex) {
+            if (sex == null) {
+                return '';
+            }
+            let sexValue = $.trim(String(sex));
+            if (sexValue === '') {
+                return '';
+            }
+            if (sexValue === '男' || sexValue === '男性' || sexValue === '1' || sexValue === 'M' || sexValue === 'm' || sexValue === 'male' || sexValue === 'MALE' || sexValue === 'true') {
+                return '1';
+            }
+            if (sexValue === '女' || sexValue === '女性' || sexValue === '0' || sexValue === 'F' || sexValue === 'f' || sexValue === 'female' || sexValue === 'FEMALE' || sexValue === 'false') {
+                return '0';
+            }
+            return sexValue;
+        }
+
+        function setTeacherSexValue(sex) {
+            $('#sex').val(normalizeTeacherSexValue(sex));
+            form.render('select');
+        }
+
+        function formatTeacherBirthdayValue(birthday) {
+            if (birthday == null || birthday === '') {
+                return '';
+            }
+            return String(birthday).substring(0, 10);
+        }
+
+        function splitTeacherIdentityForGuangdong(teacher) {
+            if (!IS_GUANG_DONG || !teacher) {
+                return teacher;
+            }
+            let teacherData = $.extend({}, teacher);
+            let savedTeachNo = $.trim(teacherData.teachNo || '');
+            teacherData.personNo = teacherData.personNo || '';
+            if (savedTeachNo) {
+                if (teacherData.certSource === '2') {
+                    teacherData.personNo = savedTeachNo;
+                    teacherData.teachNo = '';
+                } else if (teacherData.certSource === '1' || !teacherData.certSource) {
+                    teacherData.teachNo = savedTeachNo;
+                } else if (checkTeachNo(savedTeachNo) == null) {
+                    teacherData.teachNo = savedTeachNo;
+                } else {
+                    teacherData.personNo = savedTeachNo;
+                    teacherData.teachNo = '';
+                }
+            }
+            return teacherData;
+        }
+
+        function clearTeacherPersonMatch() {
+            $("#teacherTab input[name='comPersonId']").val('');
+            resetTeacherPersonMatchTip();
+        }
+
+        window.syncTeacherIdentityVerifyState = function () {
+            if (!IS_GUANG_DONG) {
+                return;
+            }
+            let needScore = $('#needScore').prop('checked');
+            let teachNo = $.trim($('#teachNo').val());
+            let personNo = $.trim($('#personNo').val());
+            let hasTeachNo = teachNo !== '';
+            let hasPersonNo = personNo !== '';
+
+            if (!needScore && !hasTeachNo && !hasPersonNo) {
+                $('#teachNo').removeAttr('lay-verify');
+                $('#personNo').removeAttr('lay-verify');
+                $('#cert_type').removeAttr('lay-verify');
+                $("[data-id='spanOnCert']").hide();
+                $('#spanOnTeachNo').hide();
+                $('#spanOnPersonNo').hide();
+                $('#teachNo').removeAttr('disabled').removeClass('layui-disabled');
+                $('#personNo').removeAttr('disabled').removeClass('layui-disabled');
+                return;
+            }
+
+            $('#spanOnTeachNo').toggle(!hasPersonNo);
+            $('#spanOnPersonNo').toggle(!hasTeachNo);
+
+            $('#teachNo').removeAttr('disabled').removeClass('layui-disabled');
+            $('#personNo').removeAttr('disabled').removeClass('layui-disabled');
+            if (hasTeachNo && !hasPersonNo) {
+                $('#personNo').attr('disabled', 'disabled').addClass('layui-disabled');
+            }
+            if (hasPersonNo && !hasTeachNo) {
+                $('#teachNo').attr('disabled', 'disabled').addClass('layui-disabled');
+            }
+
+            if (hasPersonNo && !hasTeachNo) {
+                $('#cert_type').removeAttr('lay-verify');
+                $("[data-id='spanOnCert']").hide();
+            } else {
+                $('#cert_type').attr('lay-verify', 'required');
+                $("[data-id='spanOnCert']").show();
+            }
+            if (hasTeachNo) {
+                $('#teachNo').attr('lay-verify', 'required|rightCertId');
+                $('#personNo').removeAttr('lay-verify');
+            } else if (hasPersonNo) {
+                $('#teachNo').removeAttr('lay-verify');
+                $('#personNo').attr('lay-verify', 'required');
+            } else {
+                $('#teachNo').attr('lay-verify', 'required|rightCertId');
+                $('#personNo').attr('lay-verify', 'required');
+            }
+        }
+
+        function getTeacherPersonWarnKey(teacherData) {
+            if (!teacherData) {
+                return null;
+            }
+            return [teacherData.teachName || '', teacherData.teachNo || '', teacherData.personNo || '', teacherData.needScore ? '1' : '0'].join('|');
+        }
+
+        function warnTeacherPersonNotMatched(teacherData) {
+            let warnKey = getTeacherPersonWarnKey(teacherData);
+            if (!warnKey || lastTeacherPersonWarnKey === warnKey) {
+                return;
+            }
+            lastTeacherPersonWarnKey = warnKey;
+            layer.alert('授课教师未匹配到人员，会影响主讲人授分，请确认。', { icon: 0, title: '提示' });
+        }
+
+        function fillTeacherFormByPerson(person) {
+            if (!person) {
+                return;
+            }
+            if (person.teachName) {
+                $("input[name='teachName']").val(person.teachName);
+            }
+            if (person.comPersonId) {
+                $("#teacherTab input[name='comPersonId']").val(person.comPersonId);
+            }
+            if (person.sex !== null && person.sex !== undefined) {
+                setTeacherSexValue(person.sex);
+            }
+            if (person.birthday) {
+                $("#birthday").val(formatTeacherBirthdayValue(person.birthday));
+            }
+            if (person.education) {
+                $("#select_education").val(person.education);
+            }
+            if (person.dept) {
+                $("#hidden_spec").val(person.dept);
+                specTreeSelect.checkNode('specSelect', person.dept);
+            }
+            if (person.title) {
+                $("#hidden_title_id").val(person.title);
+            }
+            if (person.titleName) {
+                $("#text_title_name").val(person.titleName);
+            }
+            if (person.duty) {
+                $("#select_hospital_duty").val(person.duty);
+            }
+            if (person.unitName) {
+                $("#unit").val(person.unitName);
+            }
+            form.render("select");
+        }
+
+        function getTeacherPersonMatchResult(teacherData) {
+            let result = { matched: false, data: null };
+            if (!teacherData || !teacherData.teachName) {
+                return result;
+            }
+            let teachNo = $.trim(teacherData.teachNo || '');
+            let personNo = $.trim(teacherData.personNo || '');
+            if (teachNo === '' && personNo === '') {
+                return result;
+            }
+            $.ajax({
+                async: false,
+                method: 'get',
+                url: huayi_projectscore_url + 'cmeCmeProjTeacher/matchTeacherPerson',
+                data: {
+                    cmeStandardKindId: window.getCmeStandardKindId(),
+                    teachName: teacherData.teachName,
+                    teachNo: teachNo,
+                    personNo: personNo
+                },
+                success: function (res) {
+                    if (res.success && res.data) {
+                        result.matched = true;
+                        result.data = res.data;
+                    }
+                }
+            });
+            return result;
+        }
+
+        function syncTeacherPersonMatch(showNotMatchedWarn) {
+            let teacherData = {
+                teachName: $.trim($("input[name='teachName']").val()),
+                teachNo: $.trim($("#teachNo").val()),
+                personNo: $.trim($('#personNo').val()),
+                needScore: $("#needScore").prop("checked")
+            };
+            if (!teacherData.needScore && !teacherData.teachNo && !teacherData.personNo) {
+                resetTeacherPersonMatchTip();
+                return { matched: true, data: null };
+            }
+            if (!teacherData.teachName || (!teacherData.teachNo && !teacherData.personNo)) {
+                resetTeacherPersonMatchTip();
+                return { matched: false, data: null };
+            }
+            let matchResult = getTeacherPersonMatchResult(teacherData);
+            matchedTeacherPerson = matchResult.data;
+            if (matchResult.matched) {
+                lastTeacherPersonWarnKey = null;
+                fillTeacherFormByPerson(matchResult.data);
+            } else {
+                resetTeacherPersonMatchTip();
+                if (showNotMatchedWarn) {
+                    warnTeacherPersonNotMatched(teacherData);
+                }
+            }
+            return matchResult;
+        }
+
+        function submitTeacherAjax(url, msg, submitData) {
+            $.ajax({
+                type: 'post',
+                url: url,
+                data: JSON.stringify(submitData),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    if (res.status === 200) {
+                        layer.close(layer.index);
+                        layer.msg(msg);
+                        table.reload('cmeCmeProjTeacher');
+                        layer.close(teacherLayerIndex);
+                    } else if (res.status === 500) {
+                        layer.msg(res.msg);
+                    }
+                },
+                error: function () {
+                    layer.msg("发送请求失败");
+                }
+            })
+        }
+
+        // 提交教师信息
+        form.on('submit(submitTeacher)', function (data) {
+            // 用于判断是新增还是修改
+            data.field.projTeachId = projTeachId;
+            data.field.cmeStandardKindId = window.getCmeStandardKindId();
+            data.field.businessScene = 'publishedProjectManage';
+
+            let certType = $.trim(data.field.certType || '');
+            data.field.certType = certType === '' ? null : certType;
+            let comPersonId = $.trim(data.field.comPersonId || '');
+            data.field.comPersonId = comPersonId === '' ? null : comPersonId;
+
+            if (data.field.needScore == "on") {
+                data.field.needScore = true;
+            } else {
+                data.field.needScore = false;
+            }
+
+            var formTableId = $("#teacherTab input[name='projTeacherId']").val();
+            var msg;
+            var URL;
+            if (formTableId === '' || formTableId === undefined) {
+                // 走新增逻辑
+                URL = huayi_projectscore_url + 'cmeCmeProjTeacher/save';
+                msg = '新增教师信息成功';
+            } else {
+                // 走修改逻辑
+                URL = huayi_projectscore_url + 'cmeCmeProjTeacher/update';
+                msg = '修改教师信息成功';
+            }
+
+            if (IS_GUANG_DONG) {
+                let personNo = $.trim(data.field.personNo || '');
+                let teachNo = $.trim(data.field.teachNo || '');
+                if (personNo !== '') {
+                    let matchResult = getTeacherPersonMatchResult({
+                        teachName: data.field.teachName,
+                        teachNo: '',
+                        personNo: personNo
+                    });
+                    if (!matchResult.matched) {
+                        data.field.comPersonId = null;
+                        layer.msg('医通卡号未匹配到人员信息，无法保存');
+                        return false;
+                    }
+                    data.field.certType = null;
+                    data.field.comPersonId = $.trim(matchResult.data.comPersonId || '') || null;
+                    data.field.certSource = '2';
+                    data.field.teachNo = personNo;
+                } else {
+                    data.field.certSource = teachNo !== '' ? '1' : '';
+                    data.field.teachNo = teachNo;
+                }
+                submitTeacherAjax(URL, msg, data.field);
+                return false;
+            }
+
+            let matchResult = syncTeacherPersonMatch(false);
+            if (data.field.needScore && !matchResult.matched) {
+                layer.confirm('授课教师未匹配到人员，会影响主讲人授分，请确认。', { icon: 3, title: '提示' }, function (index) {
+                    layer.close(index);
+                    submitTeacherAjax(URL, msg, data.field);
+                });
+                return false;
+            }
+
+            submitTeacherAjax(URL, msg, data.field);
+            return false;
+        });
+
+
+        form.verify({
+            "rightCertId": checkTeachNo
+        });
+
+        function checkTeachNo(value, item) {
+            if ($("#cert_type").val() == "9fcb08ce-ee86-4e4c-9611-9d430101cea4") {
+                if (!isCertId(value)) {
+                    return "请输入正确的证件号码";
+                }
+            }
+            if ($("#cert_type").val() == "3444541a-9703-44ed-aae6-9d8b01574916") {
+                if (!isGATCertId(value)) {
+                    return "请输入正确的证件号码";
+                }
+            }
+        }
+
+
+        window.teachNoBlur = function (obj) {
+
+            if (IS_GUANG_DONG) {
+                syncTeacherIdentityVerifyState();
+                let teachNo = $.trim($(obj).val());
+                if (teachNo !== '' && checkTeachNo(teachNo) == null) {
+                    let certType = $("#cert_type").val();
+                    if(certType == "9fcb08ce-ee86-4e4c-9611-9d430101cea4" || certType == "3444541a-9703-44ed-aae6-9d8b01574916"){
+                        var birthday = teachNo.substring(6, 14);
+                        var gender = teachNo.substring(16, 17) % 2;
+                        var year = birthday.substring(0, 4);
+                        var month = birthday.substring(4, 6);
+                        var day = birthday.substring(6, 8);
+                        $("#birthday").val(year + "-" + month + "-" + day);
+                        $("#sex").val(gender);
+                    }
+                    form.render();
+                }
+                syncTeacherPersonMatch(true);
+                return;
+            }
+
+            let needScore = $("#needScore").prop("checked");
+            if (needScore) {
+                let certType = $("#cert_type").val();
+                if (certType == null || certType == "") {
+                    layer.msg("请选择证件类型", { icon: 5, time: 1500 });
+                    return;
+                }
+                let teachNo = $(obj).val();
+                let checkMsg = checkTeachNo(teachNo);
+                if (checkMsg != null) {
+                    layer.msg(checkMsg, { icon: 5, time: 1500 });
+                    return;
+                }
+ 
+                if(certType == "9fcb08ce-ee86-4e4c-9611-9d430101cea4" || certType == "3444541a-9703-44ed-aae6-9d8b01574916"){
+                    var birthday = teachNo.substring(6, 14);
+                    var gender = teachNo.substring(16, 17) % 2;
+                    var year = birthday.substring(0, 4);
+                    var month = birthday.substring(4, 6);
+                    var day = birthday.substring(6, 8);
+                    $("#birthday").val(year + "-" + month + "-" + day);
+                    $("#sex").val(gender);
+                }
+
+
+                form.render();
+                syncTeacherPersonMatch(true);
+            } else {
+                resetTeacherPersonMatchTip();
+            }
+        }
+
+        window.personNoBlur = function () {
+            syncTeacherIdentityVerifyState();
+            syncTeacherPersonMatch(true);
+        }
+
+        window.teachNameBlur = function () {
+            if (!IS_GUANG_DONG) {
+                syncTeacherPersonMatch(true);
+                return;
+            }
+            syncTeacherIdentityVerifyState();
+            let teachNo = $.trim($('#teachNo').val());
+            let personNo = $.trim($('#personNo').val());
+            if (teachNo === '' && personNo === '') {
+                return;
+            }
+            syncTeacherPersonMatch(true);
+        }
+
+        function initCertVerifyInfo(needScore) {
+            if (IS_GUANG_DONG) {
+                $('#personNoBlock').show();
+                $('#teachNo').attr('placeholder', '请输入证件号码');
+                syncTeacherIdentityVerifyState();
+                return;
+            }
+            $('#personNoBlock').hide();
+            $('#personNo').removeAttr('lay-verify').removeAttr('disabled').removeClass('layui-disabled').val('');
+            $('#spanOnPersonNo').hide();
+            if (needScore) {
+                $("[data-id='spanOnCert']").show();
+                $("#cert_type").attr("lay-verify", "required");
+                $("#teachNo").attr("lay-verify", "required|rightCertId");
+            } else {
+                $("[data-id='spanOnCert']").hide();
+                $("#cert_type").removeAttr("lay-verify");
+                $("#teachNo").removeAttr("lay-verify");
+                resetTeacherPersonMatchTip();
+            }
+        }
+
+        $(function () {
+            getConfig("down_with_datetime",getUnitId(),null);
+
+            getConfig("fun_teachdate_equal_downdate",getUnitId(),null);
+            window.init();
+           
+            var mode = getQueryString("mode");
+            if (mode === "edit") {
+                window.initEditData();
+            }
+            if (mode === "add") {
+                //addCourseId并不存在，只是绘制列
+                window.initTeacherTable(projTeachId);
+            }
+            if (IS_GUANG_DONG) {
+                syncTeacherIdentityVerifyState();
+            }
+            $(document).on('input', "input[name='teachName']", function () {
+                clearTeacherPersonMatch();
+            });
+            $(document).on('blur', "input[name='teachName']", function () {
+                teachNameBlur(this);
+            });
+            $("#resetBtn").on('click', function () {
+                clearTeacherPersonMatch();
+                setTimeout(function () {
+                    initCertVerifyInfo($("#needScore").prop("checked"));
+                }, 0);
+            });
+        });
+
+    });
+
+</script>

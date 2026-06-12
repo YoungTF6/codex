@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>guangxi.log</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <!-- base -->
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <!--<script type="text/javascript" src="/js/auth.js"></script>-->
+    <!--<script type="text/javascript" src="/js/global_ajax_setting.js"></script>-->
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+</head>
+<body style="background-color: white;">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!-- 查询区域 -->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" id="queryArea"
+             style="background-color: #f5f5f5;">
+            <div class="layui_mess">
+                <div class="layui_display">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">类别</label>
+                        <div class="layui-input-block">
+                            <select name="type">
+                                <option value="period" selected>学时</option>
+                                <option value="score">学分</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">年度</label>
+                        <div class="layui-input-block">
+                            <select name="cmeYear">
+                                <option value="2025" selected>2025</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                                <option value="2022">2022</option>
+                                <option value="2021">2021</option>
+                                <option value="2020">2020</option>
+                                <option value="2019">2019</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">人员编号</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="personNo" placeholder=""
+                                   autocomplete="off"
+                                   class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">姓名</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="personName" placeholder=""
+                                   autocomplete="off" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">证件号</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="certId" placeholder=""
+                                   autocomplete="off" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">职称级别</label>
+                        <div class="layui-input-block">
+                            <select name="titleLevelIds">
+                                <option value=""></option>
+                                <option value="7acab84c-e870-4a4d-90ea-9b2f01271376">初级职称</option>
+                                <option value="da42823c-796c-4377-a616-9b2f01271376">中级职称</option>
+                                <option value="6351aa8b-bba0-4805-99ca-9b2f01271376">副高级职称</option>
+                                <option value="3d5f8e06-1274-454c-9c55-9b2f01271376">正高级职称</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">职称</label>
+                        <div class="layui-input-block">
+                            <div name="titleIds" class="xm_sel"></div>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">达标结果</label>
+                        <div class="layui-input-block">
+                            <select name="passResult">
+                                <option></option>
+                                <option value="1">达标</option>
+                                <option value="0">不达标</option>
+                                <option value="2">不计达标</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">推送状态</label>
+                        <div class="layui-input-block">
+                            <select name="pushState">
+                                <option></option>
+                                <option value="1">推送成功</option>
+                                <option value="2">推送失败</option>
+                                <option value="3">身份证校验失败</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">推送批次</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="batchLabel" placeholder="" autocomplete="off" class="layui-input"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui_display">
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-sm btnRounded" lay-submit onclick="refreshTable({page: {curr: 1}})">
+                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 数据表格 -->
+        <div class="layui-card-body layui_body_box" style="padding-left: 0;padding-right: 0">
+            <table class="layui-table" id="table_id" lay-filter="table_id"
+                   style="margin: 0;"></table>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    const title_tree = [{
+        "titleId": "12b7281b-5a37-43f9-990a-9b2f0124b22e",
+        "titleName": "医师系列",
+        "parentId": "",
+        "listOrder": 1,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "ad054866-5331-4546-98bc-9b2f0124b22e",
+            "titleName": "主任医师",
+            "parentId": "12b7281b-5a37-43f9-990a-9b2f0124b22e",
+            "listOrder": 101,
+            "titleLevel": "3d5f8e06-1274-454c-9c55-9b2f01271376"
+        }, {
+            "titleId": "10849b98-9df0-40f9-b7e7-9b2f0124b22e",
+            "titleName": "副主任医师",
+            "parentId": "12b7281b-5a37-43f9-990a-9b2f0124b22e",
+            "listOrder": 102,
+            "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"
+        }, {
+            "titleId": "6a076a06-15ce-4b0d-b4f9-9b2f0124b22e",
+            "titleName": "主治医师",
+            "parentId": "12b7281b-5a37-43f9-990a-9b2f0124b22e",
+            "listOrder": 103,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {
+            "titleId": "7a62ba8b-e83c-4038-a6bf-9b2f0124b22e",
+            "titleName": "医师",
+            "parentId": "12b7281b-5a37-43f9-990a-9b2f0124b22e",
+            "listOrder": 104,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {
+            "titleId": "47ba2f59-7a20-4c0f-b172-a25b012798d5",
+            "titleName": "助理医师",
+            "parentId": "12b7281b-5a37-43f9-990a-9b2f0124b22e",
+            "listOrder": 105,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {"titleId": "ba8c132f-0d0f-428c-858f-9b2f0124b22e", "titleName": "医士", "parentId": "12b7281b-5a37-43f9-990a-9b2f0124b22e", "listOrder": 106, "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"}]
+    }, {
+        "titleId": "e46a0ff0-86de-47a8-bd7b-9b2f0124b22e",
+        "titleName": "护理系列",
+        "parentId": "",
+        "listOrder": 2,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "db9a65f4-893c-48bd-873f-9b2f0124b22e",
+            "titleName": "主任护师",
+            "parentId": "e46a0ff0-86de-47a8-bd7b-9b2f0124b22e",
+            "listOrder": 201,
+            "titleLevel": "3d5f8e06-1274-454c-9c55-9b2f01271376"
+        }, {
+            "titleId": "539e51c2-8652-435f-8361-9b2f0124b22e",
+            "titleName": "副主任护师",
+            "parentId": "e46a0ff0-86de-47a8-bd7b-9b2f0124b22e",
+            "listOrder": 202,
+            "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"
+        }, {
+            "titleId": "746fd884-24b8-4f7f-8d88-9b2f0124b22e",
+            "titleName": "主管护师",
+            "parentId": "e46a0ff0-86de-47a8-bd7b-9b2f0124b22e",
+            "listOrder": 203,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {
+            "titleId": "f3ffa3da-31fa-42b8-97c4-9b2f0124b22e",
+            "titleName": "护师",
+            "parentId": "e46a0ff0-86de-47a8-bd7b-9b2f0124b22e",
+            "listOrder": 204,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {"titleId": "f2d07246-76f8-4d18-b696-9b2f0124b22e", "titleName": "护士", "parentId": "e46a0ff0-86de-47a8-bd7b-9b2f0124b22e", "listOrder": 205, "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"}]
+    }, {
+        "titleId": "829a7a8f-ac8a-454b-87aa-9b2f0124b22e",
+        "titleName": "药师系列",
+        "parentId": "",
+        "listOrder": 3,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "aaf6e9a1-1f77-4df5-838b-9b2f0124b22e",
+            "titleName": "主任药师",
+            "parentId": "829a7a8f-ac8a-454b-87aa-9b2f0124b22e",
+            "listOrder": 301,
+            "titleLevel": "3d5f8e06-1274-454c-9c55-9b2f01271376"
+        }, {
+            "titleId": "9ebdc906-b0cc-4ce7-8208-9b2f0124b22e",
+            "titleName": "副主任药师",
+            "parentId": "829a7a8f-ac8a-454b-87aa-9b2f0124b22e",
+            "listOrder": 302,
+            "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"
+        }, {
+            "titleId": "04bbf7e7-844f-4830-ba2a-9b2f0124b22e",
+            "titleName": "主管药师",
+            "parentId": "829a7a8f-ac8a-454b-87aa-9b2f0124b22e",
+            "listOrder": 303,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {
+            "titleId": "c2e414e9-9b78-4ca1-9c58-9b2f0124b22e",
+            "titleName": "药剂师",
+            "parentId": "829a7a8f-ac8a-454b-87aa-9b2f0124b22e",
+            "listOrder": 304,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {"titleId": "673e52f3-b92d-468e-8e5f-9b2f0124b22e", "titleName": "药剂士", "parentId": "829a7a8f-ac8a-454b-87aa-9b2f0124b22e", "listOrder": 305, "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"}]
+    }, {
+        "titleId": "e5f5461d-45a6-4e22-a5c0-9b2f0124b22e",
+        "titleName": "技师系列",
+        "parentId": "",
+        "listOrder": 4,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "7bbbab7c-7335-47ee-adaa-9b2f0124b22e",
+            "titleName": "主任技师",
+            "parentId": "e5f5461d-45a6-4e22-a5c0-9b2f0124b22e",
+            "listOrder": 401,
+            "titleLevel": "3d5f8e06-1274-454c-9c55-9b2f01271376"
+        }, {
+            "titleId": "851fdd40-1264-4dfc-b9ae-9b2f0124b22e",
+            "titleName": "副主任技师",
+            "parentId": "e5f5461d-45a6-4e22-a5c0-9b2f0124b22e",
+            "listOrder": 402,
+            "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"
+        }, {
+            "titleId": "25fba574-7af4-4f03-955b-9b2f0124b22e",
+            "titleName": "主管技师",
+            "parentId": "e5f5461d-45a6-4e22-a5c0-9b2f0124b22e",
+            "listOrder": 403,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {
+            "titleId": "0a3ba382-42db-459b-917d-9b2f0124b22e",
+            "titleName": "技师",
+            "parentId": "e5f5461d-45a6-4e22-a5c0-9b2f0124b22e",
+            "listOrder": 404,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {"titleId": "5444eab3-a2e7-46d1-b1d0-9b2f0124b22e", "titleName": "技士", "parentId": "e5f5461d-45a6-4e22-a5c0-9b2f0124b22e", "listOrder": 405, "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"}]
+    }, {
+        "titleId": "7d25ad8e-043a-4921-9d80-9cfe00d791e9",
+        "titleName": "中医医师系列",
+        "parentId": "",
+        "listOrder": 5,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "e364c7b0-4737-42bd-9dff-9cfe00d93250",
+            "titleName": "中医主任医师",
+            "parentId": "7d25ad8e-043a-4921-9d80-9cfe00d791e9",
+            "listOrder": 501,
+            "titleLevel": "3d5f8e06-1274-454c-9c55-9b2f01271376"
+        }, {
+            "titleId": "88013164-d160-45ae-9446-9cfe00d93250",
+            "titleName": "中医副主任医师",
+            "parentId": "7d25ad8e-043a-4921-9d80-9cfe00d791e9",
+            "listOrder": 502,
+            "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"
+        }, {
+            "titleId": "7283e96b-a6c7-490f-821e-9cfe00d93250",
+            "titleName": "中医主治医师",
+            "parentId": "7d25ad8e-043a-4921-9d80-9cfe00d791e9",
+            "listOrder": 503,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {
+            "titleId": "5ff71d52-3b14-47ae-8845-9cfe00d93250",
+            "titleName": "中医医师",
+            "parentId": "7d25ad8e-043a-4921-9d80-9cfe00d791e9",
+            "listOrder": 504,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {"titleId": "89f4705d-c39c-482f-853e-9cfe00d93250", "titleName": "中医医士", "parentId": "7d25ad8e-043a-4921-9d80-9cfe00d791e9", "listOrder": 505, "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"}]
+    }, {
+        "titleId": "ea42541c-c77f-46e0-9eb1-9cfe00d791e9",
+        "titleName": "中西医结合医师系列",
+        "parentId": "",
+        "listOrder": 6,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "da15af8b-32d1-4523-bd6a-9cfe00d93250",
+            "titleName": "中西医结合主任医师",
+            "parentId": "ea42541c-c77f-46e0-9eb1-9cfe00d791e9",
+            "listOrder": 601,
+            "titleLevel": "3d5f8e06-1274-454c-9c55-9b2f01271376"
+        }, {
+            "titleId": "69ed8b6c-cb6e-4fd2-88f7-9cfe00d93250",
+            "titleName": "中西医结合副主任医师",
+            "parentId": "ea42541c-c77f-46e0-9eb1-9cfe00d791e9",
+            "listOrder": 602,
+            "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"
+        }, {
+            "titleId": "74a721fc-1776-4ad3-8065-9cfe00d93250",
+            "titleName": "中西医结合主治医师",
+            "parentId": "ea42541c-c77f-46e0-9eb1-9cfe00d791e9",
+            "listOrder": 603,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {"titleId": "200f3ab9-d769-4ce0-99f1-9cfe00d93250", "titleName": "中西医结合医师", "parentId": "ea42541c-c77f-46e0-9eb1-9cfe00d791e9", "listOrder": 604, "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"}]
+    }, {
+        "titleId": "21291252-9e79-418f-ba6d-9d6100ec5da1",
+        "titleName": "中医技师系列",
+        "parentId": "",
+        "listOrder": 7,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "c9fc7184-ec49-4574-985f-9d6100ec5da1",
+            "titleName": "中医主任技师",
+            "parentId": "21291252-9e79-418f-ba6d-9d6100ec5da1",
+            "listOrder": 701,
+            "titleLevel": "3d5f8e06-1274-454c-9c55-9b2f01271376"
+        }, {
+            "titleId": "e94719f5-f28f-45ef-be19-9d6100ec5da1",
+            "titleName": "中医副主任技师",
+            "parentId": "21291252-9e79-418f-ba6d-9d6100ec5da1",
+            "listOrder": 702,
+            "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"
+        }, {
+            "titleId": "04c9acff-e083-4ae4-a98a-9d6100ec5da1",
+            "titleName": "中医主管技师",
+            "parentId": "21291252-9e79-418f-ba6d-9d6100ec5da1",
+            "listOrder": 703,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {
+            "titleId": "6b40b56b-4b77-4ab8-913f-9d6100ec5da1",
+            "titleName": "中医技师",
+            "parentId": "21291252-9e79-418f-ba6d-9d6100ec5da1",
+            "listOrder": 704,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {"titleId": "44663848-f649-40e1-8142-9d6100ec5da1", "titleName": "中医技士", "parentId": "21291252-9e79-418f-ba6d-9d6100ec5da1", "listOrder": 705, "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"}]
+    }, {
+        "titleId": "b354e1ae-ab73-4b6c-b0e2-9cfe00d791e9",
+        "titleName": "中医药师系列",
+        "parentId": "",
+        "listOrder": 8,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "5c8f5665-0292-4b59-9e70-9cfe00d93250",
+            "titleName": "中医主任药师",
+            "parentId": "b354e1ae-ab73-4b6c-b0e2-9cfe00d791e9",
+            "listOrder": 801,
+            "titleLevel": "3d5f8e06-1274-454c-9c55-9b2f01271376"
+        }, {
+            "titleId": "ac73f7a7-d395-4038-889c-9cfe00d93250",
+            "titleName": "中医副主任药师",
+            "parentId": "b354e1ae-ab73-4b6c-b0e2-9cfe00d791e9",
+            "listOrder": 802,
+            "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"
+        }, {
+            "titleId": "2e036316-0a2d-4864-a063-9cfe00d93250",
+            "titleName": "中医主管药师",
+            "parentId": "b354e1ae-ab73-4b6c-b0e2-9cfe00d791e9",
+            "listOrder": 803,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {
+            "titleId": "20ee47b8-ead4-411b-b9ee-9cfe00d93250",
+            "titleName": "中医药师",
+            "parentId": "b354e1ae-ab73-4b6c-b0e2-9cfe00d791e9",
+            "listOrder": 804,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {"titleId": "7cf2363d-6f4d-4372-b485-9cfe00d93250", "titleName": "中医药士", "parentId": "b354e1ae-ab73-4b6c-b0e2-9cfe00d791e9", "listOrder": 805, "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"}]
+    }, {
+        "titleId": "6eb60a6f-23fa-4f68-8deb-9cfe00d791e9",
+        "titleName": "见习系列",
+        "parentId": "",
+        "listOrder": 9,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "c2fd8f49-d728-400f-a08f-9cff0113b305",
+            "titleName": "见习护师",
+            "parentId": "6eb60a6f-23fa-4f68-8deb-9cfe00d791e9",
+            "listOrder": 900,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {
+            "titleId": "a65413a6-b03e-4383-810c-9cff0113b305",
+            "titleName": "见习检验师",
+            "parentId": "6eb60a6f-23fa-4f68-8deb-9cfe00d791e9",
+            "listOrder": 901,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {
+            "titleId": "069e7bac-ac4d-405e-98b1-9cff0113b305",
+            "titleName": "见习检验士",
+            "parentId": "6eb60a6f-23fa-4f68-8deb-9cfe00d791e9",
+            "listOrder": 902,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {
+            "titleId": "5d65ec45-3403-441a-8351-9cff0113b305",
+            "titleName": "见习技师",
+            "parentId": "6eb60a6f-23fa-4f68-8deb-9cfe00d791e9",
+            "listOrder": 903,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {
+            "titleId": "af4b5fcb-663f-4e4f-a82c-9cff0113b305",
+            "titleName": "见习技士",
+            "parentId": "6eb60a6f-23fa-4f68-8deb-9cfe00d791e9",
+            "listOrder": 904,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {
+            "titleId": "b5bf9935-93a7-45f3-beaf-9cff0113b305",
+            "titleName": "见习药剂师",
+            "parentId": "6eb60a6f-23fa-4f68-8deb-9cfe00d791e9",
+            "listOrder": 905,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {
+            "titleId": "30b0bdb0-6f97-4ade-90b1-9cff0113b305",
+            "titleName": "见习药剂士",
+            "parentId": "6eb60a6f-23fa-4f68-8deb-9cfe00d791e9",
+            "listOrder": 906,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {
+            "titleId": "f9192924-a708-4b5d-9191-9cff0113b305",
+            "titleName": "见习医师",
+            "parentId": "6eb60a6f-23fa-4f68-8deb-9cfe00d791e9",
+            "listOrder": 907,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {
+            "titleId": "25d4d7a6-740b-483c-9ddf-9cfe00d93250",
+            "titleName": "见习医士",
+            "parentId": "6eb60a6f-23fa-4f68-8deb-9cfe00d791e9",
+            "listOrder": 908,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {"titleId": "170f6295-e267-4501-ad1d-9cfe00d93250", "titleName": "见习护士", "parentId": "6eb60a6f-23fa-4f68-8deb-9cfe00d791e9", "listOrder": 909, "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"}]
+    }, {
+        "titleId": "53f3f944-2189-4870-8387-9b2f0124b22e",
+        "titleName": "工程系列",
+        "parentId": "",
+        "listOrder": 10,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "1b44001e-d0ed-4d7d-8004-9b2f0124b22e",
+            "titleName": "高级工程师",
+            "parentId": "53f3f944-2189-4870-8387-9b2f0124b22e",
+            "listOrder": 1001,
+            "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"
+        }, {
+            "titleId": "cab6d08c-fd01-4df0-a8a3-9b2f0124b22e",
+            "titleName": "工程师",
+            "parentId": "53f3f944-2189-4870-8387-9b2f0124b22e",
+            "listOrder": 1002,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {
+            "titleId": "25d04624-ecbf-497e-b322-9b2f0124b22e",
+            "titleName": "助理工程师",
+            "parentId": "53f3f944-2189-4870-8387-9b2f0124b22e",
+            "listOrder": 1003,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {"titleId": "46ef158b-7b8b-4eeb-92a9-9b2f0124b22e", "titleName": "技术员", "parentId": "53f3f944-2189-4870-8387-9b2f0124b22e", "listOrder": 1004, "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"}]
+    }, {
+        "titleId": "50e39073-ca00-4e89-9e75-9b2f0124b22e",
+        "titleName": "研究系列",
+        "parentId": "",
+        "listOrder": 11,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "55f97bf3-f112-4656-b1c5-9b2f0124b233",
+            "titleName": "研究员",
+            "parentId": "50e39073-ca00-4e89-9e75-9b2f0124b22e",
+            "listOrder": 1101,
+            "titleLevel": "3d5f8e06-1274-454c-9c55-9b2f01271376"
+        }, {
+            "titleId": "f15497cd-719d-4a25-a7fa-9b2f0124b233",
+            "titleName": "副研究员",
+            "parentId": "50e39073-ca00-4e89-9e75-9b2f0124b22e",
+            "listOrder": 1102,
+            "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"
+        }, {
+            "titleId": "3fec509e-7dd9-4b48-b7d6-9b2f0124b233",
+            "titleName": "助理研究员",
+            "parentId": "50e39073-ca00-4e89-9e75-9b2f0124b22e",
+            "listOrder": 1103,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {"titleId": "cfb4d462-ced5-4a5f-8e37-9b2f0124b233", "titleName": "实习研究员", "parentId": "50e39073-ca00-4e89-9e75-9b2f0124b22e", "listOrder": 1104, "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"}]
+    }, {
+        "titleId": "ab1f839e-2986-40c4-80bf-9b2f0124b233",
+        "titleName": "会计系列",
+        "parentId": "",
+        "listOrder": 12,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "9f46c3d3-357a-4c3c-a099-9b2f0124b233",
+            "titleName": "高级会计师",
+            "parentId": "ab1f839e-2986-40c4-80bf-9b2f0124b233",
+            "listOrder": 1201,
+            "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"
+        }, {
+            "titleId": "73ab23a3-e440-4cb2-8704-9b2f0124b233",
+            "titleName": "会计师",
+            "parentId": "ab1f839e-2986-40c4-80bf-9b2f0124b233",
+            "listOrder": 1202,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {
+            "titleId": "09bc7d7e-e40e-4ee4-a1b1-9b2f0124b233",
+            "titleName": "助理会计师",
+            "parentId": "ab1f839e-2986-40c4-80bf-9b2f0124b233",
+            "listOrder": 1203,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {"titleId": "2e3fd670-6c40-450b-a78f-9b2f0124b233", "titleName": "会计员", "parentId": "ab1f839e-2986-40c4-80bf-9b2f0124b233", "listOrder": 1204, "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"}]
+    }, {
+        "titleId": "87babb13-63c2-480f-85ab-9b2f0124b233",
+        "titleName": "教学系列",
+        "parentId": "",
+        "listOrder": 13,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "9eb9ea34-334d-4886-a3b1-9b2f0124b233",
+            "titleName": "教授",
+            "parentId": "87babb13-63c2-480f-85ab-9b2f0124b233",
+            "listOrder": 1301,
+            "titleLevel": "3d5f8e06-1274-454c-9c55-9b2f01271376"
+        }, {
+            "titleId": "1bfcfe35-8bda-497e-938a-9b2f0124b233",
+            "titleName": "副教授",
+            "parentId": "87babb13-63c2-480f-85ab-9b2f0124b233",
+            "listOrder": 1302,
+            "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"
+        }, {
+            "titleId": "fee7fa5c-8437-4ef2-bc31-9b2f0124b233",
+            "titleName": "讲师",
+            "parentId": "87babb13-63c2-480f-85ab-9b2f0124b233",
+            "listOrder": 1303,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {"titleId": "de3bcf42-5cbd-4e57-92f9-9b2f0124b233", "titleName": "助教", "parentId": "87babb13-63c2-480f-85ab-9b2f0124b233", "listOrder": 1304, "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"}]
+    }, {
+        "titleId": "237e5b91-ea10-44f6-947b-9b2f0124b233",
+        "titleName": "出版系列",
+        "parentId": "",
+        "listOrder": 14,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "1d42d394-df08-401c-a38b-9b2f0124b233",
+            "titleName": "编审",
+            "parentId": "237e5b91-ea10-44f6-947b-9b2f0124b233",
+            "listOrder": 1401,
+            "titleLevel": "3d5f8e06-1274-454c-9c55-9b2f01271376"
+        }, {
+            "titleId": "b772b9f2-9841-42d2-a3e0-9b2f0124b233",
+            "titleName": "副编审",
+            "parentId": "237e5b91-ea10-44f6-947b-9b2f0124b233",
+            "listOrder": 1402,
+            "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"
+        }, {
+            "titleId": "3fc02e63-96ab-4ba1-a4f9-9b2f0124b233",
+            "titleName": "编辑",
+            "parentId": "237e5b91-ea10-44f6-947b-9b2f0124b233",
+            "listOrder": 1403,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {"titleId": "7562849e-0765-4966-ad65-9b2f0124b233", "titleName": "助理编辑", "parentId": "237e5b91-ea10-44f6-947b-9b2f0124b233", "listOrder": 1404, "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"}]
+    }, {
+        "titleId": "64579360-496a-407b-9e6e-9b2f0124b233",
+        "titleName": "检验师系列",
+        "parentId": "",
+        "listOrder": 15,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "524d610a-780f-4201-aa39-9b2f0124b233",
+            "titleName": "主任检验师",
+            "parentId": "64579360-496a-407b-9e6e-9b2f0124b233",
+            "listOrder": 1501,
+            "titleLevel": "3d5f8e06-1274-454c-9c55-9b2f01271376"
+        }, {
+            "titleId": "e365969f-d296-4d41-bcdf-9b2f0124b233",
+            "titleName": "副主任检验师",
+            "parentId": "64579360-496a-407b-9e6e-9b2f0124b233",
+            "listOrder": 1502,
+            "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"
+        }, {
+            "titleId": "d0683acf-e9af-4df0-88e3-9b2f0124b233",
+            "titleName": "主管检验师",
+            "parentId": "64579360-496a-407b-9e6e-9b2f0124b233",
+            "listOrder": 1503,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {
+            "titleId": "d3b10063-3220-4f77-a531-9b2f0124b233",
+            "titleName": "检验师",
+            "parentId": "64579360-496a-407b-9e6e-9b2f0124b233",
+            "listOrder": 1504,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {"titleId": "aea3a0b7-07c9-4f02-94d8-9b2f0124b233", "titleName": "检验士", "parentId": "64579360-496a-407b-9e6e-9b2f0124b233", "listOrder": 1505, "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"}]
+    }, {
+        "titleId": "cb2d002c-45e0-4d09-9fa1-9b2f0124b233",
+        "titleName": "统计系列",
+        "parentId": "",
+        "listOrder": 16,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "6d5abfbb-64a2-4f0d-ad87-9b2f0124b233",
+            "titleName": "高级统计师",
+            "parentId": "cb2d002c-45e0-4d09-9fa1-9b2f0124b233",
+            "listOrder": 1601,
+            "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"
+        }, {
+            "titleId": "76be6376-4976-4038-82bd-9b2f0124b233",
+            "titleName": "统计师",
+            "parentId": "cb2d002c-45e0-4d09-9fa1-9b2f0124b233",
+            "listOrder": 1602,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {
+            "titleId": "12e185ba-b9d8-4382-b49f-9b2f0124b233",
+            "titleName": "助理统计师",
+            "parentId": "cb2d002c-45e0-4d09-9fa1-9b2f0124b233",
+            "listOrder": 1603,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {"titleId": "77730af4-e8e2-45b1-8938-9b2f0124b233", "titleName": "统计员", "parentId": "cb2d002c-45e0-4d09-9fa1-9b2f0124b233", "listOrder": 1604, "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"}]
+    }, {
+        "titleId": "4a13c961-6c3d-4f11-a46a-9b2f0124b233",
+        "titleName": "经济系列",
+        "parentId": "",
+        "listOrder": 17,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "ce0b2d7f-680a-4782-bd42-9b2f0124b233",
+            "titleName": "高级经济师",
+            "parentId": "4a13c961-6c3d-4f11-a46a-9b2f0124b233",
+            "listOrder": 1701,
+            "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"
+        }, {
+            "titleId": "8f66c3ab-cc5c-4625-b1d7-9b2f0124b233",
+            "titleName": "经济师",
+            "parentId": "4a13c961-6c3d-4f11-a46a-9b2f0124b233",
+            "listOrder": 1702,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {
+            "titleId": "e616e699-4582-4203-bd46-9b2f0124b233",
+            "titleName": "助理经济师",
+            "parentId": "4a13c961-6c3d-4f11-a46a-9b2f0124b233",
+            "listOrder": 1703,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {"titleId": "0299db3b-59d2-49ad-a470-9b2f0124b233", "titleName": "经济员", "parentId": "4a13c961-6c3d-4f11-a46a-9b2f0124b233", "listOrder": 1704, "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"}]
+    }, {
+        "titleId": "1561760d-cd05-45b4-a827-9b2f0124b233",
+        "titleName": "图书资料系列",
+        "parentId": "",
+        "listOrder": 18,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "fae54ec4-1096-44ca-982b-9b2f0124b233",
+            "titleName": "研究馆员",
+            "parentId": "1561760d-cd05-45b4-a827-9b2f0124b233",
+            "listOrder": 1801,
+            "titleLevel": "3d5f8e06-1274-454c-9c55-9b2f01271376"
+        }, {
+            "titleId": "a16c8d4e-5629-4a97-8624-9b2f0124b233",
+            "titleName": "副研究馆员",
+            "parentId": "1561760d-cd05-45b4-a827-9b2f0124b233",
+            "listOrder": 1802,
+            "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"
+        }, {
+            "titleId": "d83002b9-2b0f-45b1-b789-9b2f0124b233",
+            "titleName": "馆员",
+            "parentId": "1561760d-cd05-45b4-a827-9b2f0124b233",
+            "listOrder": 1803,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {"titleId": "592384ad-0934-4937-b97b-9b2f0124b233", "titleName": "助理馆员", "parentId": "1561760d-cd05-45b4-a827-9b2f0124b233", "listOrder": 1803, "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"}]
+    }, {
+        "titleId": "54f68ef0-60c7-4689-988e-9c0c00b6dcf6",
+        "titleName": "中学教师系列",
+        "parentId": "",
+        "listOrder": 19,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "d381f6ec-1066-41d5-ba8c-9c0c00b7dc32",
+            "titleName": "中学特级教师",
+            "parentId": "54f68ef0-60c7-4689-988e-9c0c00b6dcf6",
+            "listOrder": 1901,
+            "titleLevel": "3d5f8e06-1274-454c-9c55-9b2f01271376"
+        }, {
+            "titleId": "d9ea7a68-e239-4998-a1ec-9c0c00b7d0ef",
+            "titleName": "中学高级教师",
+            "parentId": "54f68ef0-60c7-4689-988e-9c0c00b6dcf6",
+            "listOrder": 1902,
+            "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"
+        }, {
+            "titleId": "a106ef23-4a93-4705-b7cd-9c0c00b7c57d",
+            "titleName": "中学中级教师",
+            "parentId": "54f68ef0-60c7-4689-988e-9c0c00b6dcf6",
+            "listOrder": 1903,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {"titleId": "63f77029-4931-4920-94b2-9c0c00b7a8f1", "titleName": "中学初级教师", "parentId": "54f68ef0-60c7-4689-988e-9c0c00b6dcf6", "listOrder": 1904, "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"}]
+    }, {
+        "titleId": "3ee9d699-4121-4b81-b085-9c0c00b98579",
+        "titleName": "小学教师系列",
+        "parentId": "",
+        "listOrder": 20,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "daf297ad-807b-41b6-b5a7-9c0c00ba330a",
+            "titleName": "小学高级教师",
+            "parentId": "3ee9d699-4121-4b81-b085-9c0c00b98579",
+            "listOrder": 2001,
+            "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"
+        }, {
+            "titleId": "b69c8903-4f66-47d2-974e-9c0c00ba11bc",
+            "titleName": "小学中级教师",
+            "parentId": "3ee9d699-4121-4b81-b085-9c0c00b98579",
+            "listOrder": 2002,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {"titleId": "f2c7a330-14a9-4df5-b783-9c0c00b9a640", "titleName": "小学初级教师", "parentId": "3ee9d699-4121-4b81-b085-9c0c00b98579", "listOrder": 2003, "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"}]
+    }, {
+        "titleId": "902d06ea-52f6-45a3-8b0e-9b2f0124b233",
+        "titleName": "其他系列",
+        "parentId": "",
+        "listOrder": 21,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "35208e7a-f827-498e-997d-9b2f0124b233",
+            "titleName": "无职称",
+            "parentId": "902d06ea-52f6-45a3-8b0e-9b2f0124b233",
+            "listOrder": 2101,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {
+            "titleId": "31786ed7-9fd4-4040-80a5-ea0632fb0dc3",
+            "titleName": "乡村医生",
+            "parentId": "902d06ea-52f6-45a3-8b0e-9b2f0124b233",
+            "listOrder": 2102,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {"titleId": "8f0e85db-9c34-44a0-8ade-f6707125f619", "titleName": "乡级医疗机构人员", "parentId": "902d06ea-52f6-45a3-8b0e-9b2f0124b233", "listOrder": 2103, "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"}]
+    }, {
+        "titleId": "bbd1cffc-c226-461c-b1ca-c8cb9b5d37b2",
+        "titleName": "计生系列",
+        "parentId": "",
+        "listOrder": 22,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "4e698193-cf50-40f1-b99c-689bc7ee766d",
+            "titleName": "生殖健康高级咨询师",
+            "parentId": "bbd1cffc-c226-461c-b1ca-c8cb9b5d37b2",
+            "listOrder": 2201,
+            "titleLevel": "3d5f8e06-1274-454c-9c55-9b2f01271376"
+        }, {
+            "titleId": "a3329b0e-b82f-4070-bfd5-cd0c0e44371e",
+            "titleName": "生殖健康咨询师",
+            "parentId": "bbd1cffc-c226-461c-b1ca-c8cb9b5d37b2",
+            "listOrder": 2202,
+            "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"
+        }, {
+            "titleId": "a77e1804-88f7-4f9a-852e-3a224819079c",
+            "titleName": "生殖健康助理咨询师",
+            "parentId": "bbd1cffc-c226-461c-b1ca-c8cb9b5d37b2",
+            "listOrder": 2203,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {
+            "titleId": "1419f1da-7bb5-48bf-9a23-c898fbeed3e8",
+            "titleName": "生殖健康咨询员",
+            "parentId": "bbd1cffc-c226-461c-b1ca-c8cb9b5d37b2",
+            "listOrder": 2204,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {
+            "titleId": "c2ec0075-c031-4131-95cc-5c60ef24ceab",
+            "titleName": "生殖健康助理咨询员",
+            "parentId": "bbd1cffc-c226-461c-b1ca-c8cb9b5d37b2",
+            "listOrder": 2205,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {
+            "titleId": "2bb6ac75-27b3-459f-a936-560c4dd2dfbb",
+            "titleName": "药具士",
+            "parentId": "bbd1cffc-c226-461c-b1ca-c8cb9b5d37b2",
+            "listOrder": 2206,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {
+            "titleId": "18207aec-bb82-42f8-b496-b5a6f8a27380",
+            "titleName": "药具师",
+            "parentId": "bbd1cffc-c226-461c-b1ca-c8cb9b5d37b2",
+            "listOrder": 2206,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {"titleId": "6daa0dfe-0a53-44b2-9538-62b8141748d0", "titleName": "主管药具师", "parentId": "bbd1cffc-c226-461c-b1ca-c8cb9b5d37b2", "listOrder": 2208, "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"}]
+    }, {
+        "titleId": "1f2db05a-f8ee-4311-a304-6b496748498d",
+        "titleName": "中医护理系列",
+        "parentId": "",
+        "listOrder": 23,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "bbe6f3b5-b6ae-4f06-8dfa-5909b91d7051",
+            "titleName": "中医护士",
+            "parentId": "1f2db05a-f8ee-4311-a304-6b496748498d",
+            "listOrder": 2301,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {
+            "titleId": "bcbddd3a-376b-476f-b3da-130764f5497a",
+            "titleName": "中医护师",
+            "parentId": "1f2db05a-f8ee-4311-a304-6b496748498d",
+            "listOrder": 2302,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {
+            "titleId": "736a08bd-6037-4ec9-8d11-0edb82a9e346",
+            "titleName": "中医主管护师",
+            "parentId": "1f2db05a-f8ee-4311-a304-6b496748498d",
+            "listOrder": 2303,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {
+            "titleId": "ceee330b-c731-4d70-a185-6207528fd85d",
+            "titleName": "中医副主任护师",
+            "parentId": "1f2db05a-f8ee-4311-a304-6b496748498d",
+            "listOrder": 2304,
+            "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"
+        }, {"titleId": "d38af858-b8f7-4454-a0a1-ec3841620db1", "titleName": "中医主任护师", "parentId": "1f2db05a-f8ee-4311-a304-6b496748498d", "listOrder": 2305, "titleLevel": "3d5f8e06-1274-454c-9c55-9b2f01271376"}]
+    }, {
+        "titleId": "94741192-52be-47b6-ae75-4bf7dff34e4e",
+        "titleName": "公共卫生管理系列",
+        "parentId": "",
+        "listOrder": 24,
+        "titleLevel": null,
+        "children": [{
+            "titleId": "6ff2d55b-c30d-49ac-b268-a68d86a60f51",
+            "titleName": "卫生管理（正高）",
+            "parentId": "94741192-52be-47b6-ae75-4bf7dff34e4e",
+            "listOrder": 2401,
+            "titleLevel": "3d5f8e06-1274-454c-9c55-9b2f01271376"
+        }, {
+            "titleId": "8b32e5f8-03be-4438-90eb-8baa5e6938f0",
+            "titleName": "医院管理（中级）",
+            "parentId": "94741192-52be-47b6-ae75-4bf7dff34e4e",
+            "listOrder": 2402,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {
+            "titleId": "252a58fe-e6d0-4b5e-af63-693ef6c251c3",
+            "titleName": "公共卫生管理（中级）",
+            "parentId": "94741192-52be-47b6-ae75-4bf7dff34e4e",
+            "listOrder": 2403,
+            "titleLevel": "da42823c-796c-4377-a616-9b2f01271376"
+        }, {
+            "titleId": "a05cf117-6c2b-47ad-ba70-7949c1fe755f",
+            "titleName": "卫生管理（初级师）",
+            "parentId": "94741192-52be-47b6-ae75-4bf7dff34e4e",
+            "listOrder": 2404,
+            "titleLevel": "7acab84c-e870-4a4d-90ea-9b2f01271376"
+        }, {"titleId": "096eb40f-9d8c-42e3-8432-f196985f0606", "titleName": "卫生管理（副高）", "parentId": "94741192-52be-47b6-ae75-4bf7dff34e4e", "listOrder": 2405, "titleLevel": "6351aa8b-bba0-4805-99ca-9b2f01271376"}]
+    }];
+</script>
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        lat: 'lat'
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'xmSelect', 'lat'], function () {
+        let table = layui.table;
+        let layer = layui.layer;
+        let form = layui.form;
+        let laydate = layui.laydate;
+        let dropdown = layui.dropdown;
+        let element = layui.element;
+        let $ = layui.jquery;
+        let xmSelect = layui.xmSelect;
+        let lat = layui.lat;
+        let gLayerIndex = -1;
+        let gPageNum = 1, gTitleSel;
+        window.refreshTable = refreshTable;
+        $(function () {
+            renderTitle();
+            renderTable();
+        });
+        function renderTable() {
+            table.render({
+                id: 'table_id',
+                elem: '#table_id',
+                height: 'full-160',
+                defaultToolbar: [],
+                url: getUrl(),
+                method: 'POST',
+                contentType: 'application/json',
+                loading: true,
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                where: getSifter(),
+                request: {
+                    pageName: 'pageNum', // 页码的参数名称，默认：page
+                    limitName: 'pageSize' // 每页数据量的参数名，默认：limit
+                },
+                parseData: function (res) {
+                    let page = res.result || {};
+                    gPageNum = page.current;
+                    return {
+                        'code': res.code === 200 ? 0 : res.status, // 解析接口状态
+                        'msg': res.message || res.msg, // 解析提示文本
+                        'count': page.total, // 解析数据长度
+                        'data': page.records, // 解析数据列表
+                        'page': page.current, // 当前页
+                        'limit': page.size // 每页条数
+                    }
+                },
+                done: function (res, curr, count) {
+                    //
+                    gPageNum = curr;
+                },
+                error: function (error, msg) {
+                    $('.layui-table-main').html(`<div class="layui-none">${error.responseText}</div>`);
+                },
+                cols: [getCols()],
+                data: [{
+                    personNo: "123"
+                }],
+            });
+        }
+        function isScore() {
+            return 'score' === $('select[name=type]').val();
+        }
+        function refreshTable(ec) {
+            let c = {
+                url: getUrl(),
+                where: getSifter(),
+                cols: [getCols()],
+            };
+            ec ? $.extend(true, c, ec) : '';
+            table.reload('table_id', c);
+        }
+        function getSifter() {
+            return {
+                'cmeYear': $('select[name=cmeYear]').val(),
+                'personNo': $('input[name=personNo]').val(),
+                'personName': $('input[name=personName]').val(),
+                'certId': $('input[name=certId]').val(),
+                'pushState': $('select[name=pushState]').val(),
+                'titleLevelIds': $('select[name=titleLevelIds]').val(),
+                'titleIds': gTitleSel.getValue('valueStr'),
+                'batchLabel': $('input[name=batchLabel]').val(),
+                'passResult': $('select[name=passResult]').val(),
+                'verLabel': 1,
+            };
+        }
+        function getUrl() {
+            let dev = 'http://localhost:10086'; // dev
+            let prod = 'http://211.97.79.16:18001/guangxi_dock'; // prod
+            return `${prod}/guangxi/test/${isScore() ? 'score' : 'period'}/log/page`;
+        }
+        function getCols() {
+            return [
+                {field: 'cmeYear', title: '年度', width: 70, align: 'center', fixed: 'left', sort: false,},
+                {field: 'personNo', title: '人员编号', minWidth: 110, align: 'center', fixed: 'left', sort: true,},
+                {field: 'personName', title: '人员姓名', minWidth: 110, align: 'center', fixed: 'left', sort: true,},
+                {field: 'certId', title: '证件号', minWidth: 180, align: 'center', sort: true, templet: data => desensitization.certId(data.certId)},
+                {field: 'unitName', title: '单位', minWidth: 210, align: 'center', sort: true,},
+                {field: 'titleLevelName', title: '职称级别', minWidth: 106, align: 'center', sort: true,},
+                {field: 'titleName', title: '职称', minWidth: 106, align: 'center', sort: true,},
+                {field: 'score1', title: 'Ⅰ类学分', minWidth: 100, align: 'center', sort: true, hide: !isScore()},
+                {field: 'score2', title: 'Ⅱ类学分', minWidth: 100, align: 'center', sort: true, hide: !isScore()},
+                {field: 'totalScore', title: '总学分', minWidth: 90, align: 'center', sort: true,},
+                {field: 'totalPeriod', title: '总学时', minWidth: 90, align: 'center', sort: true,},
+                {field: 'passResult', title: '达标结果', minWidth: 106, align: 'center', sort: true, templet: data => PassResultEnum[data.passResult] || ''},
+                // {field: 'courseHours', title: '推送学时', minWidth: 90, align: 'center', sort: true,},
+                {
+                    field: 'pushState', title: '推送状态', minWidth: 140, align: 'center', sort: true, templet: data => {
+                        let txt = isScore() ? '学分' : '学时';
+                        let res = '';
+                        if (1 === data.pushState) res = `<span style="color: #27b1a2;">${txt}推送成功</span>`;
+                        if (2 === data.pushState) res = `<span style="color: #f56c6c;">${txt}推送失败</span>`;
+                        if (3 === data.pushState) res = `<span style="color: #f56c6c;">身份证校验失败</span>`;
+                        return res;
+                    }
+                },
+                {field: 'createTime', title: '推送时间', minWidth: 180, align: 'center', sort: true,},
+                {field: 'batchLabel', title: '推送批次', minWidth: 220, align: 'center', sort: true, templet: data => data.batchLabel || ''},
+                {field: 'remark', title: '备注', minWidth: 200, align: 'center', sort: true,},
+            ];
+        }
+        function renderTitle() {
+            let conf = {
+                el: 'div[name=titleIds]',
+                autoRow: false,
+                radio: true,
+                filterable: true,
+                direction: 'auto',
+                size: 'small',
+                clickClose: true,
+                height: '300px',
+                data: title_tree,
+                prop: {
+                    name: 'titleName',
+                    value: 'titleId',
+                },
+                tree: {
+                    show: true,
+                    clickExpand: true,
+                    clickCheck: true,
+                    showFolderIcon: true,
+                    showLine: true,
+                    indent: 20,
+                    simple: true,
+                    strict: false
+                },
+                theme: {
+                    color: '#5FB878'
+                },
+                model: {
+                    type: 'fixed',
+                    icon: 'hidden',
+                    label: {
+                        type: 'text'
+                    }
+                },
+            };
+            gTitleSel = xmSelect.render(conf);
+        }
+    });
+</script>
+<style>
+    .layui_mess {
+        display: flex;
+        justify-content: space-between;
+    }
+    .layui-form-select .layui-input {
+        padding-right: 0;
+    }
+    .layui-table-tool-temp {
+        padding-right: 0;
+    }
+    .layui-table-body div.layui-table-cell:has(span) {
+        display: flex;
+        flex-direction: column;
+        height: fit-content;
+    }
+    .xm_sel xm-select {
+        min-width: 166px;
+        min-height: 38px;
+        border: 0.5px solid #E6E6E6;
+    }
+    .xm_sel xm-select .xm-label .scroll .label-content {
+        line-height: 32px;
+    }
+    .layui-form-label{
+        width: 56px;
+    }
+    .layui-input-block{
+        margin-left: 86px;
+    }
+</style>
+</html>

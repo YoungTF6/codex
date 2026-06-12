@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>zixue.modal</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
+    <!-- base -->
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+    <script type="text/javascript" src="/js/api/number.js"></script>
+    <script type="text/javascript" src="/js/pdfjs/build/pdf.js"></script>
+    <!-- 首帧显隐与 body 内联脚本写入的 html 类一致，避免 loadZiConf/echozixue 前 fixform 未执行时的闪烁 -->
+    <style>
+        html.zixue-nm .zi-nm-bef-hide { display: none !important; }
+        html.zixue-nm .zi-nm-bef-plan-learn { display: block !important; }
+        html.zixue-hide-ing-tab .zihideing { display: none !important; }
+        html.zixue-no-planned-score .ziplannedscore { display: none !important; }
+        #nm_score_rule_wrap {
+            margin-top: 8px;
+        }
+        #btn_score_rule {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 34px;
+            line-height: 34px;
+            padding: 0 14px;
+            border: 1px solid #d4e3ff;
+            border-radius: 18px;
+            color: #2667d6;
+            background: linear-gradient(90deg, #f5f9ff 0%, #edf4ff 100%);
+            font-weight: 600;
+            transition: all .2s ease;
+            box-shadow: 0 2px 6px rgba(38, 103, 214, 0.12);
+        }
+        #btn_score_rule:hover {
+            color: #ffffff;
+            border-color: #2667d6;
+            background: #2667d6;
+            box-shadow: 0 4px 10px rgba(38, 103, 214, 0.24);
+        }
+    </style>
+</head>
+<body style="background-color: white;">
+<script>
+    (function () {
+        var el = document.documentElement;
+        var nm = typeof _isNeimeng !== 'undefined' && _isNeimeng;
+        var gd = typeof _isGuangdong !== 'undefined' && _isGuangdong;
+        el.classList.toggle('zixue-nm', nm);
+        el.classList.toggle('zixue-hide-ing-tab', gd || nm);
+        el.classList.toggle('zixue-no-planned-score', !gd);
+    })();
+</script>
+<div class="layui-fluid custom-ignore">
+    <div class="layui-card">
+        <div class="layui-tab" lay-filter="zixue_tab">
+            <ul class="layui-tab-title">
+                <li lay-id="tab_bef" class="tab-default layui-this">事前-自学申请</li>
+                <li lay-id="tab_ing" class="tab-default zihideing">事中-自学情况</li>
+                <li lay-id="tab_res" class="tab-default">事后-自学结果</li>
+            </ul>
+            <div class="layui-tab-content" style="min-height: 400px;">
+                <div class="layui-tab-item layui-show">
+                    <form class="layui-form" id="bef_form" lay-filter="bef_form" style="margin: 25px">
+                        <input type="hidden" name="id"/>
+                        <input type="hidden" name="cmeYear"/>
+                        <input type="hidden" name="comPersonId"/>
+                        <input type="hidden" name="unitId"/>
+                        <div class="layui-form-item zi-nm-bef-plan">
+                            <label class="layui-form-label zi-nm-bef-plan-lbl"><span style="color: red; ">*&nbsp;</span>自学时间</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="startDate" class="layui-input" lay-verify="required" placeholder="请选择" autocomplete="off"/>
+                            </div>
+                            <div class="layui-form-mid">至</div>
+                            <div class="layui-input-inline">
+                                <input type="text" name="endDate" class="layui-input" lay-verify="required" placeholder="请选择" autocomplete="off"/>
+                            </div>
+                        </div>
+                        <div class="layui-form-item ziselht zi-nm-bef-hide">
+                            <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>自学形式</label>
+                            <div class="layui-input-block">
+                                <select name="formId" lay-verify="required">
+                                    <option></option>
+                                    <option value="1873fd05-f3e0-49cf-93ba-cdaa31be96c2">文献阅读与考核</option>
+                                    <option value="4b11c645-af1e-42c0-a05e-69b5db0d7ff9">病例分析或实践反思</option>
+                                    <option value="0f22f26e-9f16-4e89-8818-ce5b44e27ff3">音频/视频课程（需配套考核）</option>
+                                    <option value="dab16eab-be92-43b4-98fc-0a7065d84157">自学书籍或教材（需考试）</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item ziselsl">
+                            <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>学分子分类</label>
+                            <div class="layui-input-block">
+                                <select name="scoreLevelId" lay-verify="required" lay-filter="scoreLevelId">
+                                    <option></option>
+                                    <option value="a9cbee45-0a8f-44b8-a944-2be7a3b89d31">参加授课或带教</option>
+                                    <option value="871b9447-2178-43fe-8195-ac7964f1e2cb">参与专业考试命题</option>
+                                    <option value="3edea98d-3410-425f-955d-330f65401c93">参与技能竞赛</option>
+                                    <option value="11675c2e-7766-11f0-a33e-fa163e2ff656">开展健康宣教</option>
+                                    <option value="edf982f6-2aa5-4859-8ef5-16dcf5ad5837">发表论文</option>
+                                    <option value="0b5a961d-9d1e-409f-907a-6fb3d568cf93">出版著作</option>
+                                    <option value="90590f39-9940-4904-b37e-f6670b7bab27">编制行业标准和团体标准</option>
+                                    <option value="21dc33f6-6739-4361-8cee-1c61bfd8d008">承担教学和科研课题</option>
+                                    <option value="f72ef11a-a9a0-11f0-a183-fa163e2ff656">其他自学形式</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item zi-nm-bef-target">
+                            <label class="layui-form-label zi-nm-bef-target-lbl"><span style="color: red; ">*&nbsp;</span>自学内容</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="content" lay-verify="required" autocomplete="off" class="layui-input" placeholder="请输入">
+                            </div>
+                        </div>
+                        <div class="layui-form-item zi-nm-bef-plan-learn" style="display:none">
+                            <label class="layui-form-label zi-nm-bef-plan-learn-lbl"><span style="color: red; ">*&nbsp;</span>学习计划</label>
+                            <div class="layui-input-block">
+                                <textarea name="planText" class="layui-textarea" placeholder="请输入学习计划" maxlength="1024" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item ziplannedscore">
+                            <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>拟学学分</label>
+                            <div class="layui-input-inline">
+                                <input type="number" name="plannedScore" lay-verify="required|number" autocomplete="off" class="layui-input number_ph" placeholder="请输入" min="0" step="0.1"/>
+                            </div>
+                        </div>
+                        <div class="layui-form-item zi-nm-bef-hide">
+                            <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>验证指标</label>
+                            <button type="button" class="btn_upload" onclick="uploadfile()">上传</button>
+                        </div>
+                        <div class="layui-form-item zi-nm-bef-hide">
+                            <label class="layui-form-label">上传附件</label>
+                            <div class="layui-input-block">
+                                <ul class="file_ul" id="bef_ul">
+                                    <!--<li>-->
+                                    <!--    <a class="layui-btn layui-btn-xs btn-normal-row js-file-name" onclick="viewfile(this)" data-url="url">a-1.PNG</a>-->
+                                    <!--    <a class="layui-btn layui-btn-xs btn-danger-row" onclick="delfile(this)" data-id="">移除</a>-->
+                                    <!--</li>-->
+                                </ul>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="layui-tab-item">
+                    <form class="layui-form" id="ing_form" lay-filter="ing_form" style="margin: 25px">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="width: fit-content;"><span style="color: red; ">*&nbsp;</span>自学佐证材料</label>
+                            <button type="button" class="btn_upload" onclick="uploadfile()">上传</button>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">上传附件</label>
+                            <div class="layui-input-block">
+                                <ul class="file_ul" id="ing_ul">
+                                    <!--<li>-->
+                                    <!--    <a class="layui-btn layui-btn-xs btn-normal-row js-file-name" onclick="viewfile(this)">a-1.PNG</a>-->
+                                    <!--    <a class="layui-btn layui-btn-xs btn-danger-row" onclick="delfile(this)">移除</a>-->
+                                    <!--</li>-->
+                                </ul>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="layui-tab-item">
+                    <form class="layui-form" id="res_form" lay-filter="res_form" style="margin: 25px">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label zi-res-summary-lbl" style="width: fit-content;">学习心得</label>
+                            <textarea class="layui-textarea" name="studyResult" placeholder="请输入" style="width: 460px; height: 200px; resize: none"></textarea>
+                        </div>
+                        <div class="zi-nm-res-dyn" style="display:none;">
+                            <div class="layui-form-item zi-nm-res-category" style="display:none;">
+                                <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span><span class="zi-nm-res-category-lbl">类别</span></label>
+                                <div class="layui-input-block">
+                                    <select name="nmResCategoryType">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item zi-nm-res-rank" style="display:none;">
+                                <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span><span class="zi-nm-res-rank-lbl">排序</span></label>
+                                <div class="layui-input-block">
+                                    <select name="nmResRankNo">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item zi-nm-res-metric" style="display:none;">
+                                <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span><span class="zi-nm-res-metric-lbl">数值</span></label>
+                                <div class="layui-input-inline">
+                                    <input type="number" name="nmResMetricValue" autocomplete="off" class="layui-input number_ph" placeholder="请输入" min="0" step="0.1"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>上传附件</label>
+                            <button type="button" class="btn_upload" onclick="uploadfile()">上传</button>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <ul class="file_ul" id="res_ul">
+                                    <!--<li>-->
+                                    <!--    <a class="layui-btn layui-btn-xs btn-normal-row js-file-name" onclick="viewfile(this)">a-1.PNG</a>-->
+                                    <!--    <a class="layui-btn layui-btn-xs btn-danger-row" onclick="delfile(this)">移除</a>-->
+                                    <!--</li>-->
+                                </ul>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="layui-input-block">
+            <button class="layui-btn only_person hide" id="btn_save">保存</button>
+            <button class="layui-btn only_person hide" id="btn_submit">提交</button>
+            <button class="layui-btn only_unit hide" id="btn_approve">审核通过</button>
+            <button class="layui-btn layui-btn-danger only_unit hide" id="btn_reject">审核不通过</button>
+        </div>
+        <button class="hide" id="btn_upload"></button>
+    </div>
+</div>
+<div id="score_modal" style="display: none;">
+    <form class="layui-form" style="margin: 20px;">
+        <div class="layui-form-item" id="planned_score_ref">
+            <div class="layui-input-block" style="margin-left: 0;">
+                <span style="color: red; font-weight: bold;">学员拟学学分：<span id="planned_score_value"></span> 分（授予学分不能超过此值）</span>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width: fit-content;"><span style="color: red; ">*&nbsp;</span>授予学分</label>
+            <div class="layui-input-block">
+                <input type="number" name="score" min="0" lay-verify="required|score" autocomplete="off" class="layui-input number_ph">
+            </div>
+        </div>
+        <div class="layui-form-item hide" id="nm_score_rule_wrap">
+            <div class="layui-input-block" style="margin-left: 0;">
+                <a class="layui-btn layui-btn-primary" id="btn_score_rule">
+                    <i class="layui-icon layui-icon-picture"></i>
+                    <span>授分规则查看</span>
+                </a>
+            </div>
+        </div>
+        <div class="layui-form-item" style="margin-top: 25px;">
+            <div class="layui-input-block">
+                <a class="layui-btn" id="btn_score">确定</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- 预览 -->
+<div id="viewFile" style="display: none;"></div>
+</body>
+<script type="text/javascript">
+    layui.config({
+        base: '/js/layui/ext/',
+    }).extend({
+        xmSelect: 'xm-select',
+        tool: 'tool',
+        lat: 'lat'
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'xmSelect', 'lat','tool'], function () {
+        let table = layui.table, layer = layui.layer, form = layui.form, laydate = layui.laydate, dropdown = layui.dropdown, element = layui.element, $ = layui.jquery, xmSelect = layui.xmSelect, lat = layui.lat, upload = layui.upload;
+        let gLayerIndex = -1, gPageNum = 1, gTabBacked = false, gFileName, gFileSize, befFileArr = [], ingFileArr = [], resFileArr = [];
+        let gNmResEcho = {category: null, rank: null, metric: null};
+        let tool = layui.tool;
+        let gId = getUrlParamByName('id'), gBefState = 0, gIngState = 0, gResState = 0, gPhase = 'bef';
+        const NM_SCORE_LEVEL = {
+            paper: '2da91f28-2272-11f1-8a80-005056a64c01',
+            project: '2da91f64-2272-11f1-8a80-005056a64c01',
+            book: '2da91fa0-2272-11f1-8a80-005056a64c01',
+            translation: '2da91fd2-2272-11f1-8a80-005056a64c01',
+            teach: '2da9200e-2272-11f1-8a80-005056a64c01',
+            exam: '2da9204a-2272-11f1-8a80-005056a64c01',
+            health: '2da92086-2272-11f1-8a80-005056a64c01',
+        };
+        const NM_SCORE_RULE_PAGE_URL = '/pages/mod/zixue/modals/neimengScoreRule.html';
+        const NM_RES_FIELD_CFG = {
+            [NM_SCORE_LEVEL.paper]: {
+                categoryLabel: '期刊类别',
+                categoryOptions: [
+                    {v: '1', t: 'SCI收录期刊'},
+                    {v: '2', t: '具有国际标准刊号（ISSN）和（CN）号的国家级期刊'},
+                    {v: '3', t: '省级期刊'},
+                ],
+                rankLabel: '作者排序',
+                rankOptions: [
+                    {v: '1', t: '第一作者（通讯作者）'},
+                    {v: '2', t: '第二作者'},
+                    {v: '3', t: '第三作者'},
+                ],
+            },
+            [NM_SCORE_LEVEL.project]: {
+                categoryLabel: '课题类别',
+                categoryOptions: [
+                    {v: '1', t: '国家级课题'},
+                    {v: '2', t: '省、部级课题'},
+                    {v: '3', t: '市、厅级课题'},
+                    {v: '4', t: '单位课题'},
+                ],
+                rankLabel: '课题组成员排序',
+                rankOptions: [
+                    {v: '1', t: '1'},
+                    {v: '2', t: '2'},
+                    {v: '3', t: '3'},
+                    {v: '4', t: '4'},
+                    {v: '5', t: '5'},
+                ],
+            },
+            [NM_SCORE_LEVEL.book]: {metricLabel: '著作字数', metricKind: 'int'},
+            [NM_SCORE_LEVEL.translation]: {metricLabel: '译文字数', metricKind: 'int'},
+            [NM_SCORE_LEVEL.teach]: {metricLabel: '授课小时数', metricKind: 'float'},
+            [NM_SCORE_LEVEL.exam]: {metricLabel: '开展工作小时数', metricKind: 'float'},
+            [NM_SCORE_LEVEL.health]: {metricLabel: '开展工作小时数', metricKind: 'float'},
+        };
+        /** 当前机构用户类型对应的 zixue/conf 行（内蒙自学结果填报时间窗） */
+        let gZiConfRow = null;
+        const _pid = getUrlParamByName('pid');
+        const _var = {
+            zhejiang: {'scoreLevelId': 'f81719d6-4015-4d31-8bf0-bd6e99fb2551', 'knowledgeId': 'b9521268-0022-11f1-ad3f-005056a64c01'}, // select formId
+            henan: {'knowledgeId': 'eda43bee-b91f-11f0-89d0-fa163e2ff656', 'formId': 'b73ff51a-31c8-444a-b2b1-a12300eb5f13'}, // select scoreLevel
+            neimeng: {'knowledgeId': 'f1f2eaa2-9dcb-41c7-8af6-1be81c8dd180', 'formId': '3b5c8ffd-2ecd-44b7-8da3-9ecb00a8c4d2'}, // select scoreLevel
+        }
+        window.uploadfile = function () {
+            if ('bef' === gPhase && _isNeimeng) {
+                return;
+            }
+            if ('bef' === gPhase && befFileArr.length >= 5) {
+                lat.failMsg('最多上传5个附件');
+                return;
+            }
+            if ('ing' === gPhase && ingFileArr.length >= 5) {
+                lat.failMsg('最多上传5个附件');
+                return;
+            }
+            if ('res' === gPhase && resFileArr.length >= 5) {
+                lat.failMsg('最多上传5个附件');
+                return;
+            }
+            $('#btn_upload').click();
+        }
+        window.viewfile = function (elem) {
+            let url = $(elem).data('url');
+            if (tool.isImg(url)) {
+                tool.openViewImg(url);
+            } else {
+                tool.viewPdfBack(url,"viewFile");
+                layer.open({
+                    type: 1,
+                    shade: 0.8,
+                    offset: 'auto',
+                    area: ['90%','90%'],
+                    shadeClose:true,//点击外围关闭弹窗
+                    scrollbar: false,//不现实滚动条
+                    title: "预览", //不显示标题
+                    content: $(`#viewFile`)
+                });
+            }
+            // parent.viewfile(url);
+        }
+        window.delfile = function (elem) {
+            let id = $(elem).data('id'), ts = $(elem).data('timestamp');
+            if (id) {
+                _act.dodelfile(id, ts, elem);
+            } else {
+                _f.remove_file(id, ts, elem);
+            }
+        }
+        element.on('tab(zixue_tab)', function () {
+            let layId = this.getAttribute('lay-id');
+            let old = gPhase;
+            gPhase = layId.replace('tab_', '');
+            let msg = tabmsg();
+            if (msg) {
+                if (!gTabBacked) {
+                    lat.failMsg(msg);
+                    gTabBacked = true;
+                    element.tabChange('zixue_tab', `tab_${old}`);
+                    gPhase = old;
+                    gTabBacked = false;
+                }
+            }
+            _echo.fixform();
+        });
+        /**
+         * 从 conf 列表中选取与当前登录机构用户类型匹配的一行。
+         */
+        function pickZiConfRow(arr) {
+            let row = null;
+            (arr || []).forEach(function (c) {
+                if (c.unitUserType === _uut) {
+                    row = c;
+                }
+            });
+            return row;
+        }
+
+        /**
+         * 内蒙古套：当前在「事后-自学结果」页签且配置了结果填报窗时，若不在窗内则返回提示文案。
+         */
+        function neimengResWindowBlockMsg() {
+            if (typeof _isNeimeng === 'undefined' || !_isNeimeng || 'res' !== gPhase) {
+                return '';
+            }
+            if (!gZiConfRow || !gZiConfRow.resStartTime || !gZiConfRow.resEndTime) {
+                return '';
+            }
+            let rs = gZiConfRow.resStartTime, re = gZiConfRow.resEndTime;
+            if (!moment().isBetween(rs, re, undefined, '[]')) {
+                return '不在自学结果填报时间内(' + String(rs).substring(0, 10) + '至' + String(re).substring(0, 10) + ')';
+            }
+            return '';
+        }
+
+        /**
+         * 加载自学时间配置后执行回调。
+         */
+        function loadZiConf(done) {
+            postAction(huayi_sjwh_url + 'zixue/conf', {'unitId': _unitId, 'cmeYear': _cur_year}).then(function (resp) {
+                let jsonRes = resp.data;
+                if (jsonRes.success && jsonRes.data) {
+                    gZiConfRow = pickZiConfRow(jsonRes.data);
+                } else {
+                    gZiConfRow = null;
+                }
+                done && done();
+            }).catch(function () {
+                gZiConfRow = null;
+                done && done();
+            });
+        }
+        function renderScoreLevelOptions() {
+            let opts = [{'id': '', 'name': ''}];
+            if (_isNeimeng) {
+                opts = opts.concat([
+                    {'id': '2da91f28-2272-11f1-8a80-005056a64c01', 'name': '在期刊上发表论文或综述'},
+                    {'id': '2da91f64-2272-11f1-8a80-005056a64c01', 'name': '科研项目'},
+                    {'id': '2da91fa0-2272-11f1-8a80-005056a64c01', 'name': '出版医学著作'},
+                    {'id': '2da91fd2-2272-11f1-8a80-005056a64c01', 'name': '发表医学译文'},
+                    {'id': '2da9200e-2272-11f1-8a80-005056a64c01', 'name': '授课或带教'},
+                    {'id': '2da9204a-2272-11f1-8a80-005056a64c01', 'name': '专业考试命题'},
+                    {'id': '2da92086-2272-11f1-8a80-005056a64c01', 'name': '开展健康宣教'},
+                ]);
+            } else {
+                opts = opts.concat([
+                    {'id': 'a9cbee45-0a8f-44b8-a944-2be7a3b89d31', 'name': '参加授课或带教'},
+                    {'id': '871b9447-2178-43fe-8195-ac7964f1e2cb', 'name': '参与专业考试命题'},
+                    {'id': '3edea98d-3410-425f-955d-330f65401c93', 'name': '参与技能竞赛'},
+                    {'id': '11675c2e-7766-11f0-a33e-fa163e2ff656', 'name': '开展健康宣教'},
+                    {'id': 'edf982f6-2aa5-4859-8ef5-16dcf5ad5837', 'name': '发表论文'},
+                    {'id': '0b5a961d-9d1e-409f-907a-6fb3d568cf93', 'name': '出版著作'},
+                    {'id': '90590f39-9940-4904-b37e-f6670b7bab27', 'name': '编制行业标准和团体标准'},
+                    {'id': '21dc33f6-6739-4361-8cee-1c61bfd8d008', 'name': '承担教学和科研课题'},
+                    {'id': 'f72ef11a-a9a0-11f0-a183-fa163e2ff656', 'name': '其他自学形式'},
+                ]);
+            }
+            let html = opts.map(function (x) {
+                return '<option value="' + x.id + '">' + x.name + '</option>';
+            }).join('');
+            $('select[name=scoreLevelId]').html(html);
+            form.render('select');
+        }
+        function currentNmScoreLevelId() {
+            return String($('select[name=scoreLevelId]').val() || '').trim();
+        }
+        function parseIntOrNull(v) {
+            let x = String(v ?? '').trim();
+            if (!x) return null;
+            let n = parseInt(x, 10);
+            return Number.isNaN(n) ? null : n;
+        }
+        function parseFloatOrNull(v) {
+            let x = String(v ?? '').trim();
+            if (!x) return null;
+            let n = parseFloat(x);
+            return Number.isNaN(n) ? null : n;
+        }
+        function renderSelectWithOptions(selName, options, selectedVal) {
+            let html = '<option value=""></option>' + (options || []).map(function (x) {
+                return '<option value="' + x.v + '">' + x.t + '</option>';
+            }).join('');
+            let $sel = $('select[name=' + selName + ']');
+            $sel.html(html);
+            if (selectedVal !== undefined && selectedVal !== null && String(selectedVal) !== '') {
+                let sval = String(selectedVal);
+                if ((options || []).some(function (x) { return x.v === sval; })) {
+                    $sel.val(sval);
+                }
+            }
+        }
+        function clearNmResDynamicFields() {
+            $('select[name=nmResCategoryType]').val('');
+            $('select[name=nmResRankNo]').val('');
+            $('input[name=nmResMetricValue]').val('');
+        }
+        function syncNmResDynamicFields(keepValues) {
+            if (!_isNeimeng) {
+                $('.zi-nm-res-dyn').hide();
+                return;
+            }
+            let sid = currentNmScoreLevelId();
+            let cfg = NM_RES_FIELD_CFG[sid];
+            $('#res_form .zi-res-summary-lbl').html('成果总结');
+            if ('res' !== gPhase) {
+                $('.zi-nm-res-dyn').hide();
+                return;
+            }
+            if (!cfg) {
+                $('.zi-nm-res-dyn').hide();
+                clearNmResDynamicFields();
+                form.render('select');
+                return;
+            }
+            $('.zi-nm-res-dyn').show();
+            let oldCategory = keepValues ? $('select[name=nmResCategoryType]').val() : '';
+            let oldRank = keepValues ? $('select[name=nmResRankNo]').val() : '';
+            if (keepValues && (oldCategory === null || oldCategory === '') && gNmResEcho.category != null) {
+                oldCategory = String(gNmResEcho.category);
+            }
+            if (keepValues && (oldRank === null || oldRank === '') && gNmResEcho.rank != null) {
+                oldRank = String(gNmResEcho.rank);
+            }
+            if (cfg.categoryOptions) {
+                $('.zi-nm-res-category').show();
+                $('.zi-nm-res-category-lbl').text(cfg.categoryLabel);
+                renderSelectWithOptions('nmResCategoryType', cfg.categoryOptions, oldCategory);
+            } else {
+                $('.zi-nm-res-category').hide();
+                $('select[name=nmResCategoryType]').val('');
+            }
+            if (cfg.rankOptions) {
+                $('.zi-nm-res-rank').show();
+                $('.zi-nm-res-rank-lbl').text(cfg.rankLabel);
+                renderSelectWithOptions('nmResRankNo', cfg.rankOptions, oldRank);
+            } else {
+                $('.zi-nm-res-rank').hide();
+                $('select[name=nmResRankNo]').val('');
+            }
+            if (cfg.metricLabel) {
+                $('.zi-nm-res-metric').show();
+                $('.zi-nm-res-metric-lbl').text(cfg.metricLabel);
+                $('input[name=nmResMetricValue]').attr('placeholder', '请输入' + cfg.metricLabel);
+                if (keepValues && String($('input[name=nmResMetricValue]').val() ?? '') === '' && gNmResEcho.metric != null) {
+                    $('input[name=nmResMetricValue]').val(gNmResEcho.metric);
+                }
+            } else {
+                $('.zi-nm-res-metric').hide();
+                $('input[name=nmResMetricValue]').val('');
+            }
+            form.render('select');
+        }
+        function getResFields() {
+            let fields = {'id': gId, 'studyResult': $('textarea[name=studyResult]').val()};
+            if (!_isNeimeng) return fields;
+            let sid = currentNmScoreLevelId();
+            let cfg = NM_RES_FIELD_CFG[sid];
+            fields.scoreLevelId = sid || null;
+            if (!cfg) {
+                fields.nmResCategoryType = null;
+                fields.nmResRankNo = null;
+                fields.nmResMetricValue = null;
+                return fields;
+            }
+            fields.nmResCategoryType = cfg.categoryOptions ? parseIntOrNull($('select[name=nmResCategoryType]').val()) : null;
+            fields.nmResRankNo = cfg.rankOptions ? parseIntOrNull($('select[name=nmResRankNo]').val()) : null;
+            fields.nmResMetricValue = cfg.metricLabel ? parseFloatOrNull($('input[name=nmResMetricValue]').val()) : null;
+            return fields;
+        }
+
+        $(function () {
+            let c = {min: `${_cur_year}-01-01`, max: `${_cur_year}-12-31`};
+            lat.renderDaySelector('input[name=startDate]', null, c);
+            lat.renderDaySelector('input[name=endDate]', null, c);
+            renderScoreLevelOptions();
+            renderUploader();
+            loadZiConf(function () {
+                _act.doload();
+            });
+            _bind.click();
+            $('select[name=scoreLevelId]').on('change', function () {
+                gNmResEcho = {category: null, rank: null, metric: null};
+                syncNmResDynamicFields(false);
+            });
+        });
+        function tabmsg() {
+            if (_isPerson) {
+                if (_isGuangdong || _isNeimeng) {
+                    if ('res' === gPhase && 23 !== gBefState) return '自学申请未审核通过';
+                    return '';
+                }
+                if ('ing' === gPhase && 23 !== gBefState) return '自学申请未审核通过';
+                if ('res' === gPhase && 23 !== gIngState) return '自学过程未审核通过';
+                return '';
+            }
+            if (_isUnit) {
+                if (_isGuangdong || _isNeimeng) {
+                    if ('res' === gPhase && gResState < 20) return '自学结果未提交';
+                    return '';
+                }
+                if ('ing' === gPhase && gIngState < 20) return '自学过程未提交';
+                if ('res' === gPhase && gResState < 20) return '自学结果未提交';
+                return '';
+            }
+            return '';
+        }
+        function validate(fields, fileArr) {
+            if ('bef' === gPhase) {
+                if (!fields.startDate) {
+                    lat.failMsg(_isNeimeng ? '请选择自学周期开始日期' : '请选择开始日期');
+                    return false;
+                }
+                if (!fields.endDate) {
+                    lat.failMsg(_isNeimeng ? '请选择自学周期结束日期' : '请选择结束日期');
+                    return false;
+                }
+                if (!fields.content) {
+                    lat.failMsg(_isNeimeng ? '请输入学习目标' : '请输入自学内容');
+                    return false;
+                }
+                if (!fields.content.match(/^[\s\S]{1,200}$/)) {
+                    lat.failMsg(_isNeimeng ? '学习目标最多200字' : '自学内容最多200字');
+                    return false;
+                }
+                if (_isNeimeng) {
+                    if (!fields.planText || !String(fields.planText).trim()) {
+                        lat.failMsg('请输入学习计划');
+                        return false;
+                    }
+                    if (String(fields.planText).length > 1024) {
+                        lat.failMsg('学习计划最多1024字');
+                        return false;
+                    }
+                }
+                if (!_isNeimeng) {
+                    if (_zi.isselht() && !fields.formId) {
+                        lat.failMsg('请选择自学形式');
+                        return false;
+                    }
+                    if (_zi.isselsl() && !fields.scoreLevelId) {
+                        lat.failMsg('请选择学分子分类');
+                        return false;
+                    }
+                }
+                if (_isGuangdong) {
+                    if (!fields.plannedScore) {
+                        lat.failMsg('请输入拟学学分');
+                        return false;
+                    }
+                    if (parseFloat(fields.plannedScore) <= 0) {
+                        lat.failMsg('拟学学分必须大于0分');
+                        return false;
+                    }
+                    if (parseFloat(fields.plannedScore) > 5) {
+                        lat.failMsg('拟学学分最大值不能超过5分');
+                        return false;
+                    }
+                }
+            }
+            if ('res' === gPhase) {
+                let nmWin = neimengResWindowBlockMsg();
+                if (nmWin) {
+                    lat.failMsg(nmWin);
+                    return false;
+                }
+                let summary = String(fields.studyResult || '');
+                if (_isNeimeng) {
+                    if (!summary.trim()) {
+                        lat.failMsg('请输入成果总结');
+                        return false;
+                    }
+                    if (!summary.match(/^[\s\S]{1,200}$/)) {
+                        lat.failMsg('成果总结最多200字');
+                        return false;
+                    }
+                    let sid = currentNmScoreLevelId();
+                    let cfg = NM_RES_FIELD_CFG[sid];
+                    if (!cfg) {
+                        lat.failMsg('请先在事前选择学分子分类');
+                        return false;
+                    }
+                    if (cfg.categoryOptions) {
+                        let cval = String(fields.nmResCategoryType ?? '');
+                        if (!cfg.categoryOptions.some(function (x) { return x.v === cval; })) {
+                            lat.failMsg('请选择' + cfg.categoryLabel);
+                            return false;
+                        }
+                    }
+                    if (cfg.rankOptions) {
+                        let rval = String(fields.nmResRankNo ?? '');
+                        if (!cfg.rankOptions.some(function (x) { return x.v === rval; })) {
+                            lat.failMsg('请选择' + cfg.rankLabel);
+                            return false;
+                        }
+                    }
+                    if (cfg.metricLabel) {
+                        let n = Number(fields.nmResMetricValue);
+                        if (!Number.isFinite(n) || n <= 0) {
+                            lat.failMsg('请输入' + cfg.metricLabel);
+                            return false;
+                        }
+                        if ('int' === cfg.metricKind && !/^\d+$/.test(String(fields.nmResMetricValue))) {
+                            lat.failMsg(cfg.metricLabel + '需为整数');
+                            return false;
+                        }
+                    }
+                } else if (!summary.match(/^[\s\S]{0,200}$/)) {
+                    lat.failMsg('学习心得最多200字');
+                    return false;
+                }
+            }
+            if (fileArr.length < 1) {
+                if (!('bef' === gPhase && _isNeimeng)) {
+                    lat.failMsg('请上传附件');
+                    return false;
+                }
+            }
+            return true;
+        }
+        const _bind = {
+            click: function () {
+                $('#btn_save').on('click', function () {
+                    if ('bef' === gPhase) {
+                        let fields = lat.getFormVal('bef_form');
+                        let isValid = validate(fields, befFileArr);
+                        isValid && _act.dosavezi(fields, befFileArr);
+                    }
+                    if ('ing' === gPhase) {
+                        let isValid = validate({}, ingFileArr);
+                        isValid && lat.okMsg('已保存');
+                    }
+                    if ('res' === gPhase) {
+                        let fields = getResFields();
+                        let isValid = validate(fields, resFileArr);
+                        isValid && _act.dosavezi(fields, resFileArr);
+                    }
+                });
+                $('#btn_submit').on('click', function () {
+                    if ('bef' === gPhase) {
+                        let fields = lat.getFormVal('bef_form');
+                        let isValid = validate(fields, befFileArr);
+                        isValid && _act.dosavezi(fields, befFileArr, {'befState': 20});
+                    }
+                    if ('ing' === gPhase) {
+                        let isValid = validate({}, ingFileArr);
+                        isValid && _act.dostate({'id': gId, 'ingState': 20});
+                    }
+                    if ('res' === gPhase) {
+                        let fields = getResFields();
+                        let isValid = validate(fields, resFileArr);
+                        isValid && _act.dosavezi(fields, resFileArr, {'resState': 20});
+                    }
+                });
+                $('#btn_approve').on('click', function () {
+                    if ('bef' === gPhase) _act.dostate({'id': gId, 'befState': 23});
+                    if ('ing' === gPhase) _act.dostate({'id': gId, 'ingState': 23});
+                    if ('res' === gPhase) {
+                        // 如果是广东用户，显示拟学学分参考
+                        if (_isGuangdong) {
+                            let plannedScore = $('input[name=plannedScore]').val();
+                            $('#planned_score_value').text(plannedScore || '0');
+                            $('#planned_score_ref').show();
+                        } else {
+                            $('#planned_score_ref').hide();
+                        }
+                        if (_isNeimeng) {
+                            $('#nm_score_rule_wrap').show();
+                        } else {
+                            $('#nm_score_rule_wrap').hide();
+                        }
+                        gLayerIndex = layer.open({
+                            type: 1,
+                            shade: 0.4,
+                            shadeClose: true,
+                            title: '学分',
+                            content: $('#score_modal'),
+                            area: ['45%', '45%'],
+                        });
+                    }
+
+                    return false;
+                });
+                $('#btn_reject').on('click', function () {
+                    if ('bef' === gPhase) _act.dostate({'id': gId, 'befState': 22});
+                    if ('ing' === gPhase) _act.dostate({'id': gId, 'ingState': 22});
+                    if ('res' === gPhase) _act.dostate({'id': gId, 'resState': 22});
+                });
+                $('#btn_score_rule').on('click', function () {
+                    layer.open({
+                        type: 2,
+                        shade: 0.4,
+                        shadeClose: true,
+                        title: '授分规则',
+                        content: NM_SCORE_RULE_PAGE_URL,
+                        area: ['86%', '92%'],
+                    });
+                    return false;
+                });
+                $('#btn_score').on('click', function () {
+                    let val = $('input[name=score]').val();
+                    let score = +val;
+                    if (!val) {
+                        lat.failMsg('请输入学分');
+                        return false;
+                    }
+                    if (0 === score) {
+                        lat.failMsg('学分不能为0');
+                        return false;
+                    }
+                    // 广东用户校验：授予学分不能超过拟学学分
+                    if (_isGuangdong) {
+                        let plannedScore = parseFloat($('#planned_score_value').text()) || 0;
+                        if (score > plannedScore) {
+                            lat.failMsg('授予学分不能超过拟学学分');
+                            return false;
+                        }
+                    }
+                    if (score > 10) {
+                        lat.failMsg('最多10分');
+                        return false;
+                    }
+                    if (!/^\d+(\.\d)?$/.test(val)) {
+                        lat.failMsg('最多一位小数');
+                        return false;
+                    }
+                    // toscore
+                    let p = {'id': gId, 'resState': 23, 'score': score, 'checkState': 3, 'ifAvail': 1};
+                    if (_isHenan || _isNeimeng) {
+                        p.checkState = 0;
+                        p.ifAvail = 4;
+                    }
+                    _act.dostate(p, () => layer.close(gLayerIndex));
+                    return false;
+                });
+            },
+            el_mouse: function () {
+                $('*[id^=btn_][data-tip]').off('mouseenter').off('mouseleave');
+                $('*[id^=btn_][data-tip][data-tip!=""]').mouseenter(function () {
+                    let tip = this.dataset.tip;
+                    if (!tip) return;
+                    gLayerIndex = layer.tips(tip, this, {
+                        tips: [1, '#808080'],
+                        time: 50000
+                    });
+                }).mouseleave(function () {
+                    layer.close(gLayerIndex);
+                });
+            },
+        }
+        const _echo = {
+            cansave: function () {
+                if (!_isPerson) return 'no_privilege';
+                let nmRes = neimengResWindowBlockMsg();
+                if (nmRes) {
+                    return nmRes;
+                }
+                if (_isHenan) {
+                    if ('bef' === gPhase && 23 === gBefState) return '自学申请已审核通过，无法修改';
+                    if ('ing' === gPhase && 23 === gIngState) return '自学过程已审核通过，无法修改';
+                    if ('res' === gPhase && 23 === gResState) return '自学结果已审核通过，无法修改';
+                    return '';
+                }
+                if (_isGuangdong) {
+                    if ('bef' === gPhase && 23 === gBefState) return '自学申请已审核通过，无法修改';
+                    if ('res' === gPhase && 23 === gResState) return '自学结果已审核通过，无法修改';
+                    return '';
+                }
+                if (_isNeimeng) {
+                    if ('bef' === gPhase && (23 === gBefState || 20 === gBefState )) return '自学申请已提交，无法修改';
+                    if ('res' === gPhase && 23 === gResState) return '自学结果已审核通过，无法修改';
+                    return '';
+                }
+                if (20 === gResState) return '自学结果已提交，无法修改！';
+                if (23 === gResState) return '自学结果已审核通过，无法修改！';
+                return '';
+            },
+            cansubmit: function () {
+                if (!_isPerson) return 'no_privilege';
+                let state, txt;
+                if ('bef' === gPhase) {
+                    if (_isGuangdong) {
+                        const month = new Date().getMonth() + 1;
+                        if (month < 1 || month > 3) {
+                            return '只有第一季度能提交';
+                        }
+                    }
+                    state = gBefState, txt = '自学申请';
+                }
+                if ('ing' === gPhase) state = gIngState, txt = '自学过程';
+                if ('res' === gPhase) {
+                    if (_isGuangdong) {
+                        const month = new Date().getMonth() + 1;
+                        if (month < 10 || month > 12) {
+                            return '只有第四季度能提交';
+                        }
+                    }
+                    let nmRes = neimengResWindowBlockMsg();
+                    if (nmRes) {
+                        return nmRes;
+                    }
+                    state = gResState, txt = '自学结果';
+                }
+                if (20 === state) return `${txt}已提交`;
+                if (23 === state) return `${txt}已审核通过`;
+                return '';
+            },
+            cancheck: function () {
+                if (!_isUnit) return 'no_privilege';
+                let state, txt;
+                if ('bef' === gPhase) state = gBefState, txt = '自学申请';
+                if ('ing' === gPhase) state = gIngState, txt = '自学过程';
+                if ('res' === gPhase) state = gResState, txt = '自学结果';
+                if (0 === state) return `${txt}未提交`;
+                if (state > 20) return `${txt}已审核`;
+                return '';
+            },
+            disableform: function (phase) {
+                let $form = $(`#${phase}_form`);
+                $form.find('input,select,textarea').attr('disabled', 'true');
+                $form.find('.btn_upload,a[data-action=del]').hide();
+            },
+            enableform: function (phase) {
+                let $form = $(`#${phase}_form`);
+                $form.find('input,select,textarea').removeAttr("disabled").removeClass('layui-btn-disabled');
+                $form.find('.btn_upload,a[data-action=del]').show();
+            },
+            /**
+             * 事前区显隐、Tab、拟学分行等与 head 内「html.zixue-*」关键 CSS 及 body 首行 classList 条件保持一致（见 zixue-nm / zixue-hide-ing-tab / zixue-no-planned-score）。
+             */
+            fixform: function () {
+                let $btn_save = $('#btn_save');
+                let $btn_submit = $('#btn_submit');
+                let $btn_approve = $('#btn_approve');
+                let $btn_reject = $('#btn_reject');
+                if (_isHenan) {
+                    $('.ziselht').remove();
+                }
+                if (_isZhejiang) {
+                    $('.ziselsl').remove();
+                }
+                if (_isGuangdong || _isNeimeng) {
+                    $('.zihideing').hide();
+                }
+                if (!_isGuangdong) {
+                    // 非广东套首帧已由 html.zixue-no-planned-score 隐藏，此处 remove 与历史逻辑一致
+                    $('.ziplannedscore').remove();
+                }
+                if (_isNeimeng) {
+                    $('.zi-nm-bef-hide').hide();
+                    $('.zi-nm-bef-plan-learn').show();
+                    $('#bef_form .zi-nm-bef-plan-lbl').html('<span style="color: red; ">*&nbsp;</span>自学周期');
+                    $('#bef_form .zi-nm-bef-target-lbl').html('<span style="color: red; ">*&nbsp;</span>学习目标');
+                    $('#bef_form .zi-nm-bef-plan-learn-lbl').html('<span style="color: red; ">*&nbsp;</span>学习计划');
+                    $('#res_form .zi-res-summary-lbl').html('成果总结');
+                } else {
+                    $('.zi-nm-bef-hide').show();
+                    $('.zi-nm-bef-plan-learn').hide();
+                    $('#bef_form .zi-nm-bef-plan-lbl').html('<span style="color: red; ">*&nbsp;</span>自学时间');
+                    $('#bef_form .zi-nm-bef-target-lbl').html('<span style="color: red; ">*&nbsp;</span>自学内容');
+                    $('#res_form .zi-res-summary-lbl').html('学习心得');
+                }
+                if (_isPerson) $btn_save.show(), $btn_submit.show(), $btn_approve.remove(), $btn_reject.remove();
+                else if (_isUnit) {
+                    $btn_save.remove(), $btn_submit.remove(), $btn_approve.show(), $btn_reject.show();
+                    this.disableform('bef'), this.disableform('ing'), this.disableform('res');
+                } else $btn_save.remove(), $btn_submit.remove(), $btn_approve.remove(), $btn_reject.remove();
+                let msg = this.cansave();
+                if (msg) {
+                    $btn_save.attr('disabled', 'true').addClass('layui-btn-disabled').attr('data-tip', msg);
+                    this.disableform(gPhase);
+                } else {
+                    $btn_save.removeClass('layui-btn-disabled').removeAttr("disabled").attr('data-tip', '');
+                    this.enableform(gPhase);
+                }
+                msg = this.cansubmit();
+                if (msg) {
+                    $btn_submit.attr('disabled', 'true').addClass('layui-btn-disabled').attr('data-tip', msg);
+                    // this.disableform(gPhase);
+                } else {
+                    $btn_submit.removeClass('layui-btn-disabled').removeAttr("disabled").attr('data-tip', '');
+                    // this.enableform(gPhase);
+                }
+                msg = this.cancheck();
+                if (msg) {
+                    $btn_approve.attr('disabled', 'true').addClass('layui-btn-disabled').attr('data-tip', msg);
+                    $btn_reject.attr('disabled', 'true').addClass('layui-btn-disabled').attr('data-tip', msg);
+                } else {
+                    $btn_approve.removeClass('layui-btn-disabled').removeAttr("disabled").attr('data-tip', '');
+                    $btn_reject.removeClass('layui-btn-disabled').removeAttr("disabled").attr('data-tip', '');
+                }
+                syncNmResDynamicFields(true);
+                _bind.el_mouse();
+            },
+            file_li: function (file) {
+                let phase = file.phase, $ul;
+                if ('bef' === phase) {
+                    $ul = $('#bef_ul');
+                    befFileArr.push(file);
+                } else if ('ing' === phase) {
+                    $ul = $('#ing_ul');
+                    ingFileArr.push(file);
+                } else {
+                    $ul = $('#res_ul');
+                    resFileArr.push(file);
+                }
+                let str = `<li>
+                            <a class="layui-btn layui-btn-xs btn-normal-row js-file-name" onclick="viewfile(this)" data-url="${file.fileUrl}">${file.fileName}</a>
+                            <a class="layui-btn layui-btn-xs btn-danger-row" onclick="delfile(this)" data-action="del" data-id="${file.id}" data-timestamp="${file.timestamp}">移除</a>
+                        </li>`;
+                $ul.append(str);
+            },
+            echozixue: function (entity) {
+                gId = entity.id;
+                gBefState = entity.befState ?? 0;
+                gIngState = entity.ingState ?? 0;
+                gResState = entity.resState ?? 0;
+                gNmResEcho = {
+                    category: entity.nmResCategoryType ?? null,
+                    rank: entity.nmResRankNo ?? null,
+                    metric: entity.nmResMetricValue ?? null,
+                };
+                form.val('bef_form', entity);
+                $('textarea[name=planText]').val(entity.planText != null ? entity.planText : '');
+                $('textarea[name=studyResult]').val(entity.studyResult);
+                $('select[name=nmResCategoryType]').val(entity.nmResCategoryType != null ? String(entity.nmResCategoryType) : '');
+                $('select[name=nmResRankNo]').val(entity.nmResRankNo != null ? String(entity.nmResRankNo) : '');
+                $('input[name=nmResMetricValue]').val(entity.nmResMetricValue != null ? entity.nmResMetricValue : '');
+                (entity.zixueFileList ?? []).forEach(f => this.file_li(f));
+                this.fixform();
+            }
+        }
+        const _f = {
+            file_id: function (ts, id) {
+                $(`a[data-timestamp=${ts}]`).attr('data-id', id)
+            },
+            add_file: function (file) {
+                _echo.file_li(file);
+            },
+            remove_file: function (id, ts, elem) {
+                $(elem).parent('li').remove();
+                if ('bef' === gPhase) this.splice(befFileArr, id, ts);
+                if ('ing' === gPhase) this.splice(ingFileArr, id, ts);
+                if ('res' === gPhase) this.splice(resFileArr, id, ts);
+            },
+            splice: function (arr, id, ts) {
+                for (let i = 0; i < arr.length; ++i) {
+                    if (id === arr[i].id || ts === arr[i].timestamp) arr.splice(i, 1);
+                }
+            },
+        }
+        const _act = {
+            dosavefile: function (fileName, fileUrl, fileSize) {
+                let ts = moment().valueOf();
+                let file = {
+                    'id': '', 'zixueId': gId, 'phase': gPhase,
+                    'fileName': fileName, 'fileUrl': fileUrl, 'fileSize': fileSize,
+                    'timestamp': ts,
+                };
+                _f.add_file(file);
+                if (!gId) return;
+                postAction(`${huayi_sjwh_url}zixue/file_save`, file).then(response => {
+                    let jsonRes = response.data;
+                    if (jsonRes.success) {
+                        _f.file_id(ts, jsonRes.data);
+                    } else {
+                        lat.failMsg(jsonRes.msg);
+                    }
+                }).catch(error => {
+                    lat.errorMsg('error:save file');
+                });
+            },
+            dodelfile: function (id, ts, elem) {
+                postAction(`${huayi_sjwh_url}zixue/file_del/${id}`).then(response => {
+                    if (response.data.success) _f.remove_file(id, ts, elem);
+                    else lat.failMsg(response.data.msg);
+                }).catch(error => {
+                    lat.errorMsg('error:del file');
+                });
+            },
+            dostate: function (fields, cb) {
+                fields.userId = _userId;
+                postAction(`${huayi_sjwh_url}zixue/state`, fields).then(response => {
+                    let jsonRes = response.data;
+                    if (jsonRes.success) {
+                        lat.okMsg(_isPerson ? '已提交' : '已审核');
+                        if (fields.befState) gBefState = fields.befState;
+                        if (fields.ingState) gIngState = fields.ingState;
+                        if (fields.resState) gResState = fields.resState;
+                        _echo.fixform();
+                        cb?.();
+                    } else {
+                        lat.failMsg(jsonRes.msg);
+                    }
+                }).catch(error => {
+                    lat.errorMsg('error:state');
+                });
+            },
+            dosavezi: function (fields, fileArr, state) {
+                const that = this;
+                if (!gId) fields.zixueFileList = fileArr;
+                fields.id = gId;
+                fields.updateTime = moment().format(DateTimePattern.SECOND);
+                if (_isZhejiang) {
+                    fields.scoreLevelId = _var.zhejiang.scoreLevelId;
+                    fields.knowledgeId = _var.zhejiang.knowledgeId;
+                }
+                if (_isHenan) {
+                    fields.knowledgeId = _var.henan.knowledgeId;
+                    fields.formId = _var.henan.formId;
+                }
+                if (_isNeimeng) {
+                    fields.knowledgeId = _var.neimeng.knowledgeId;
+                    fields.formId = _var.neimeng.formId;;
+                }
+                if (!_isNeimeng) {
+                    delete fields.planText;
+                }
+                postAction(`${huayi_sjwh_url}zixue/save`, fields).then(response => {
+                    let jsonRes = response.data;
+                    if (jsonRes.success) {
+                        lat.okMsg('已保存');
+                        gId = jsonRes.data.id;
+                        let fileArr = jsonRes.data.zixueFileList;
+                        if (fileArr && fileArr.length > 0) {
+                            fileArr.forEach(f => _f.file_id(f.timestamp, f.id));
+                        }
+                        if (state) {
+                            state.id = gId;
+                            that.dostate(state);
+                        }
+                    } else {
+                        lat.failMsg(jsonRes.msg);
+                    }
+                }).catch(error => {
+                    lat.errorMsg('error:save');
+                });
+            },
+            doload: function () {
+                if (!gId) {
+                    let e = {'cmeYear': _cur_year, 'comPersonId': _pid, 'unitId': _unitId};
+                    _echo.echozixue(e);
+                    return;
+                }
+                getAction(`${huayi_sjwh_url}zixue/detail/${gId}`).then(response => {
+                    let jsonRes = response.data;
+                    if (jsonRes.success) {
+                        _echo.echozixue(jsonRes.data);
+                    } else {
+                        lat.failMsg(jsonRes.msg);
+                    }
+                }).catch(error => {
+                    lat.errorMsg('error:load');
+                });
+            },
+        };
+        function renderUploader() {
+            upload.render({
+                elem: '#btn_upload',
+                url: `${huayi_upload_url}uploadApi/upload`,
+                size: 15 * 1024,
+                accept: 'file',
+                exts: 'pdf|png|jpg|jpeg|doc|docx|xls|xlsx',
+                multi: false,
+                choose: function (obj) {
+                    gLayerIndex = lat.loadingShade();
+                },
+                before: function (obj) {
+                    let files = this.files = obj.pushFile();
+                    for (let key in files) {
+                        gFileName = files[key].name;
+                        gFileSize = (files[key].size / 1014).toFixed(1);
+                    }
+                    let fileType = isImg(gFileName) ? 'IMAGE' : 'DOC';
+                    this.data = {
+                        fileType: fileType,
+                        path: `/zixue/${_cur_year}/${_standardKindId}`,
+                    }
+                },
+                done: function (res, index, upload) {
+                    delete this.files[index];
+                    if (res.code !== 200) {
+                        lat.failMsg('上传失败');
+                    } else {
+                        let fileUrl = res.data.picUrl;
+                        _act.dosavefile(gFileName, fileUrl, gFileSize);
+                    }
+                    layer.close(gLayerIndex);
+                },
+                error: function () {
+                    lat.errorMsg('上传失败');
+                }
+            });
+        }
+    });
+</script>
+<style>
+    .file_ul {
+        width: 640px;
+        height: 90px;
+        display: flex;
+        flex-direction: column;
+    }
+    .file_ul > li {
+        height: 30px;
+    }
+    .btn_upload {
+        width: 40px;
+        transform: translateY(6px);
+    }
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none !important;
+    }
+    input[type='number'] {
+        -moz-appearance: textfield;
+    }
+</style>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>verify</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+
+    <link rel="stylesheet" href="/pages/mod/verify/css/reset.css" media="all">
+    <link rel="stylesheet" href="/pages/mod/verify/css/layout.css" media="all">
+
+    <!-- 请求路径配置-->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script><script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+    <script type="text/javascript" src="/pages/mod/verify/js/rem.js"></script>
+    <script type="text/javascript" src="/pages/mod/verify/js/mock.js"></script>
+
+</head>
+
+<div class="box">
+    <div class="main">
+        <div class="main_top_default">
+            <table class="top_tab">
+                <tr>
+                    <td>人员编号</td>
+                    <td id="person_no"></td>
+                </tr>
+                <tr>
+                    <td>姓&emsp;&emsp;名</td>
+                    <td id="person_name"></td>
+                </tr>
+                <tr class="only_zhoukou hide">
+                    <td>证&ensp;件&ensp;号</td>
+                    <td id="cert_id"></td>
+                </tr>
+            </table>
+            <div class="main_list">
+                <ul>
+                    <li>
+                        <b class="dw">单位</b>
+                        <p id="unit_name"></p>
+                    </li>
+                    <li>
+                        <b class="nd">时间范围</b>
+                        <p id="year" style="width: 8rem;font-size: 18px;"></p>
+                    </li>
+                    <li>
+                        <b class="zc">职称</b>
+                        <p id="tittle"></p>
+                    </li>
+                    <li>
+                        <b class="nd">打印日期</b>
+                        <p id="dateFormat" style="width: 8rem;font-size: 18px;"></p>
+                    </li>
+                </ul>
+            </div>
+            <div class="main_list_item">
+                <ul id="detail">
+                    <li>
+                        <b class="nd">年度学分合计</b>
+                        <p id="score_total"></p>
+                    </li>
+                    <li class="only_zhoukou hide">
+                        <b class="nd">年度学时合计</b>
+                        <p id="period_total"></p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<body>
+
+
+</body>
+
+<script>
+    const _ciphertext = getUrlParamByName('verify');
+    const _pdfType = getUrlParamByName('pdfType');
+    let gAuditPdfVo = auditPdfVoResponseData.data;
+
+    $(function () {
+        console.info('ciphertext: %s, pdfType: %s', _ciphertext, _pdfType);
+        loadAuditPdfVo();
+    });
+
+    function loadAuditPdfVo() {
+        let visit = huayi_sjwh_url + 'audit/verify/qrcodeHuBei/' + _ciphertext + '/' + _pdfType;
+        getAction(visit).then(response => {
+            let jsonRes = response.data;
+            if (jsonRes.success) {
+                gAuditPdfVo = jsonRes.data;
+            }
+        }).catch(error => {
+            console.info('error:加载AuditPdfVo');
+        }).finally(() => {
+            renderAuditPdfVo();
+        });
+    }
+
+    function renderAuditPdfVo() {
+        if (gAuditPdfVo) {
+            var jsonObject = $.parseJSON(gAuditPdfVo.detailsInfo);
+            console.info('jsonObject: %o', jsonObject);
+            $("#person_no").text(gAuditPdfVo.personNo);
+            $("#person_name").text(jsonObject.person_name);
+            $("#unit_name").text(jsonObject.unit_name);
+            $("#year").text(jsonObject.years);
+            $("#tittle").text(jsonObject.title_name);
+            $("#score_total").text(jsonObject.totalScorenum);
+            $("#period_total").text(jsonObject.totalPeriod);
+            $("#dateFormat").text(jsonObject.dateFormat);
+            //遍历scoreDetil 生成li
+            var scoreDetil = jsonObject.scoreDetil.split(',').map(function(item) {
+                var parts = item.split(':');
+                return {
+                    name: parts[0].trim(),
+                    score: parts[1].trim()
+                };
+            });
+
+            scoreDetil.forEach(function(score) {
+                var li = '<li><b class="nd">' + score.name + '</b><p>' + score.score + '</p></li>';
+                $("#detail").append(li);
+            });
+
+        }
+    }
+
+</script>
+
+<style>
+    .hide {
+        display: none;
+    }
+</style>
+
+</html>

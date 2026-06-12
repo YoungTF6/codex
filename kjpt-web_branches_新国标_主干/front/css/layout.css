@@ -1,0 +1,411 @@
+body,html{
+	width:100%;
+}
+body{
+	position:relative;
+	min-width: 1000px;
+	background: #f4f4fa !important;
+}
+img{
+	border:none;
+	}
+a,input,span,label,li,select,button,dl,div,table{
+	-webkit-tap-highlight-color:transparent;
+	/*-webkit-appearance: none;*/
+}
+textarea,button,input,select{
+	outline: none;
+	border:none;
+	background:none;
+	padding: 0;
+}
+
+
+
+
+
+/*gw 登录页*/
+/*弹层*/
+.zhezhao{
+	width:100%;
+	height:100%;
+	overflow: auto;
+	background:#000;
+	opacity:0.3;
+	filter: alpha(opacity=57);   /*ie8透明度兼容*/
+	position:fixed;
+	top:0;
+	left:0;
+	z-index: 5;
+	display: none;
+}
+
+
+
+/*主页*/
+.bigbox{
+	position: relative;
+	padding: 0;
+	width: 100%;
+	top:70px;
+}
+.leftcont_box {
+    position: relative;
+}
+.bj2{
+	width: 22px;
+	height: 90px;
+	position: fixed;
+	right:0;
+	top:50%;
+	cursor: pointer;
+	z-index: 333;
+	background: url(../img/bj_img2.png) no-repeat left center;
+	transition: all .3s;
+    -webkit-transition: all .3s;
+}
+.bianji{
+	position: absolute;
+	right: 0;
+	width: 34px;
+	z-index: 3333;
+	background: url(../img/fbj_icon.png) no-repeat center center;
+	transition: all .3s;
+    -webkit-transition: all .3s;
+	height: 34px;
+	cursor: pointer;
+}
+.curen{
+	background: url(../img/bj_icon.png) no-repeat center center;
+}
+.huanzhe_nav {
+    width: 220px;
+    height: 100%;
+    box-shadow: 0 3px 3px 3px #ddd;
+    transition: all .3s;
+    -webkit-transition: all .3s;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: absolute;
+	right: -220px;
+	z-index: 3333333;
+    background: #fff;
+}
+.huanzhe_nav ul{
+ 	display: block;
+ 	width:100%;
+ 	margin-top: 16px;
+ 	font-size: 14px;
+ }
+ .huanzhe_nav ul li{
+ 	display: block;
+ 	color: #31353b;
+ 	font-size: 14px;
+ 	margin: 12px 0;
+ 	padding: 0 10px;
+ 	position: relative;
+ 	cursor: pointer;
+ }
+.huanzhe_nav ul li i{
+  	width:22px;
+  	height: 19px;
+  	float:left;
+  	background: url(../img/jai_icon.png) no-repeat center center;
+}
+
+
+
+.box_right2{
+	overflow: auto;
+	overflow-x: hidden;
+}
+.item_body{
+	padding: 15px 8px;
+}
+.grid-stack-item-content{
+	background: #fff;
+	border-radius: 5px;
+}
+.eroe{
+	box-shadow: 0 0 8px #b8b8b8;
+}
+.ren_box{
+	padding: 10px;
+	position: relative;
+}
+.xf_tit{
+	position: absolute;
+	left:0;
+	top:0;
+	background: #1A8BF1;
+	color: #fff;
+	font-size: 14px;
+	padding: 4px 10px;
+	border-bottom-right-radius: 8px;
+	overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 85%;
+
+}
+.clo{
+	position: absolute;
+	right: 10px;
+	top:5px;
+	background: #fff;
+	width:12px;
+	height: 12px;
+	cursor: pointer;
+	display: none;
+}
+.ren_box dl{
+	display: flex;
+	height: 120px;
+	justify-content: flex-start;
+	align-items: center;
+}
+.ren_box dl dt{
+	margin: 0 20px;
+}
+.ren_box dl dt img{
+	width: 50px;
+}
+.ren_box dl dd{
+	flex: 1;
+	margin-right: 10px;
+}
+.ren_box dl dd p{
+	font-size: 14px;
+	color: #858c9b;
+}
+.ren_box dl dd h1{
+	font-size:18px;
+	color: #333333;
+}
+
+.card-header{
+	height: 42px;
+    line-height: 42px;
+    padding: 0 15px;
+    color: #333;
+    border-radius: 2px 2px 0 0;
+    font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+}
+.card-header p{
+	color:#333;
+	font-weight: bold;
+}
+.more{
+	cursor: pointer;
+}
+.card_box{
+	padding: 12px;
+}
+.echrat_box{
+	width: 100%;
+	height: 230px;
+}
+.echrat_box img{
+	height:200px;
+}
+.dzx_box{
+	width: 100%;
+	height: 710px;
+}
+.dzx_item{
+	border-bottom: 1px dashed #ddd;
+	margin-bottom: 14px;
+}
+.dzx_item dl{
+	width: 100%;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+}
+.dzx_item dl dt{
+	margin-right: 10px;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	font-size: 14px;
+	line-height: 40px;
+	color: #fff;
+	text-align: center;
+}
+.r_bg{
+	background: #ef5656;
+}
+.h_bg{
+	background: #ef9756;
+}
+.l_bg{
+	background: #5691ef;
+}
+.dzx_item dl dd{
+	flex: 1;
+}
+.dzx_item dl dd p{
+	width: 100%;
+	float:left;
+}
+.dzx_item dl dd p tit{
+	font-size: 16px;
+	color: #333;
+	float:left;
+	width: 240px;
+	overflow: hidden;
+	text-overflow:ellipsis;
+	white-space: nowrap;
+}
+.dzx_item dl dd p tishi{
+	padding: 1px 5px;
+	font-size: 14px;
+	color: #fff;
+	float:left;
+	border-radius: 3px;
+	margin-left: 10px;
+}
+.wd{
+	background: #ef5661;
+}
+.yd{
+	background: #d0d0d0;
+}
+.dzx_item dl dd p span{
+	font-size: 14px;
+	color: #b2b2b2;
+	margin-right: 20px;
+}
+
+.dzx_item label{
+	width: 100%;
+	display: block;
+	color: #808080;
+	padding: 10px 0;
+	font-size: 14px;
+}
+.daib_box{
+	width: 100%;
+	text-align: center;
+	margin-top: 10px;
+}
+.daib_box img{
+	margin-right: 10px;
+}
+.daib_box p{
+	font-size: 14px;
+}
+.daib_box p span{
+	color: #5996ef;
+	font-size: 18px;
+}
+.echrat_box2{
+	height: 230px;
+	width: 100%;
+}
+.echrat_box3{
+	height: 390px;
+	width: 100%;
+}
+.card-header p select{
+	border: 1px solid #ddd;
+	width: 100px;
+	padding:5px 10px;
+	margin-left: 10px;
+	font-size: 14px;
+}
+.card-header p{
+	width: 100%;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.icon_box{
+	width: 100%;
+	padding: 5px 0;
+	text-align: center;
+	/*margin-top: 40px;*/
+}
+.icon_box p{
+	float:left;
+	font-size: 14px;
+	width: 100%;
+	color: #808080;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

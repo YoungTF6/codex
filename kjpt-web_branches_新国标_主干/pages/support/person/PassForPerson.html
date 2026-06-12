@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>达标情况明细查询-个人</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <!-- ajax全局配置 -->
+    <!-- <script type="text/javascript" src="/js/global_ajax_setting.js"></script> -->
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <!-- <script type="text/javascript" src="/js/auth.js"></script> -->
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <script type="text/javascript" src="/js/tools/form_validation_tool.js"></script>
+    <script type="text/javascript" src="/js/common.js"></script>
+
+</head>
+
+<body style="background-color: white;">
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+
+            <!-- 查询区域 -->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area">
+
+                <!-- row1 -->
+                <div class="layui_mess">
+                    <!-- 筛选项 -->
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">选择地区</label>
+                            <div class="layui-input-block">
+                                <select id="standardSelector" name="standard" lay-filter="standardSelector">
+                                    <option value="">请选择地区</option>
+                                    <option value="6427ddba-c02f-4229-bd73-49fc1c5d21f6">青海</option>
+                                    <option value="6eec6713-670a-43cc-ad4d-9bd700a92928">海南</option>
+                                    <option value="8b1e9418-47ff-4ff7-9dd9-a9e0009a6951">福建</option>
+                                    <option value="a6280900-a9c2-11ec-84d6-fa163e9b64fb">河南</option>
+                                    <option value="08e44437-5789-44e0-8ff8-9ecb00a6348a">内蒙古</option>
+                                    <option value="4a6d91fb-8ba4-4560-a801-9c6f00e6d999">广西</option>
+                                    <option value="7068a5c0-2cd3-471a-90b9-9bf100aec95a">甘肃</option>
+                                    <option value="eee87ca0-7df1-426c-aae3-7cae782b4d6b">宁夏</option>
+                                    <option value="acd09b62-333b-4aee-934f-9ec500a9d46d">吉林</option>
+                                    <option value="190c480d-d43c-450b-8472-a6fd00a6729d">浙江</option>
+                                    <option value="289bf0ca-52cb-4b19-b737-9bd200a69ce1">广东</option>
+                                    <option value="73ba18db-33fd-4746-ab41-9beb009f69a1">湖北</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-form">
+                            <label class="layui-form-label">证件号</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="certId" name="certId" placeholder="请输入证件号" autocomplete="off"
+                                    class="layui-input " />
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">选择年度</label>
+                            <div class="layui-input-block">
+                                <select id="cmeYearSelector" name="cmeYear" lay-filter="cmeYearSelector">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-form">
+                            <!-- 职称及时间 -->
+                            <p name="titleName" style="color: #808080;"></p>
+                            <!-- <label class="layui-form-label">职称</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="titleName" placeholder="" autocomplete="off"
+                                    class="layui-input layui-disabled" disabled
+                                    style="background-color:#efefef;color:#666666" />
+                            </div> -->
+                        </div>
+                    </div>
+
+                    <div class="layui_display">
+                        <div class="layui-inline btn-search-positon">
+                            <a class="layui-btn layui-btn-sm" onclick="loadMainContent()" id="searchBtn"
+                                lay-filter="table-search" data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 显示区域 -->
+            <!-- 1.PassStandard -->
+            <div class="layui-card-body layui_body_box pass_rule">
+                <div id="person_check">
+                    <p id="check_title" style="color: red;"></p>
+                </div>
+                <div class="db_tit">
+                    <img src="/img/t_img.png">
+                    <h1>达标情况</h1>
+                </div>
+
+                <div class="db_mess">
+                    <div class="yon_node" style="display: none">
+                        <ul>
+                            <li class="text_left1 img_db">
+                                <span>张三</span>
+                                <p>230121197804024617</p>
+                            </li>
+                            <li class="xg_box_db"></li>
+                            <li class="text_left2" style="background: #E5F6E8">
+                                <h3 class="db">达标</h3>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="yon_node" style="display: none">
+                        <ul>
+                            <li class="text_left1 img_bdb">
+                                <span>李四</span>
+                                <p>230121197804024617</p>
+                            </li>
+                            <li class="xg_box_bdb"></li>
+                            <li class="text_left2">
+                                <h3 class="bdb">不达标</h3>
+                                <p class="zong_text">总学分不足25分</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="layui-fluid">
+                    <div class="layui-card">
+                        <div class="layui-card-header font-bold"><b>达标规则</b></div>
+                        <div class="dabiao_cont list_d1">
+                            <div class="dabiao_text" id="dabiao_text">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--<div class="item_text"></div>-->
+
+            </div>
+
+            <!-- 2.ScoreTotal -->
+            <div class="layui-card-body layui_body_box score_total">
+                <div class="db_tit">
+                    <img src="/img/t_img.png">
+                    <h1>学分情况概览</h1>
+                </div>
+                <div class="xuefen_box" id="score_total">
+                <ul class="xuefen_item" style="margin-bottom: 16px;">
+                    <li>
+                        <img src="/pages/mod/img/xf_img.png">
+                        <p>全部学分</p>
+                    </li>
+                    <li>
+                        <h1 data-id="total_score">-</h1><span>总学分</span></li>
+                    <li class="col">
+                        <h1 data-id="total_period">-</h1><span>总学时</span></li>
+                    <li>
+                        <h1 data-id="score1">-</h1><span data-label="score1"></span></li>
+                    <li>
+                        <h1 data-id="score2">-</h1><span data-label="score2"></span></li>
+                    <li>
+                        <h1 data-id="score3">-</h1><span data-label="score3"></span></li>
+                </ul>
+                <ul class="xuefen_item">
+                    <li class="layui-col-xs2">
+                        <img src="/pages/mod/img/db_img.png">
+                        <p>计入达标学分</p>
+                    </li>
+                    <li>
+                        <h1 data-id="total_score_y">-</h1><span>总学分</span></li>
+                    <li class="col">
+                        <h1 data-id="total_period_y">-</h1><span>总学时</span></li>
+                    <li>
+                        <h1 data-id="score1_y">-</h1><span data-label="score1"></span></li>
+                    <li>
+                        <h1 data-id="score2_y">-</h1><span data-label="score2"></span></li>
+                    <li>
+                        <h1 data-id="score3_y">-</h1><span data-label="score3"></span></li>
+                </ul>
+                </div>
+            </div>
+
+            <!-- 3.ScoreDetail -->
+            <div class="layui-card-body layui_body_box score_detail">
+                <div class="db_tit">
+                    <img src="/img/t_img.png">
+                    <h1>学分明细</h1>
+                </div>
+                <table class="layui-table" id="scoreDetailTable" lay-filter="scoreDetailTable"
+                    style="margin-top: 20px;"></table>
+            </div>
+
+
+        </div>
+    </div>
+</body>
+
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        tool: 'tool'
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'xmSelect', 'tool'], function () {
+        let table = layui.table;
+        let layer = layui.layer;
+        let form = layui.form;
+        let laydate = layui.laydate;
+        let dropdown = layui.dropdown;
+        let element = layui.element;
+        let $ = layui.jquery;
+        let xmSelect = layui.xmSelect;
+        let tool = layui.tool;
+
+        let gLayerIndex = -1;
+        let gPassStandardVoList = [];
+        let gScoreTotalList = [];
+        let gScoreDetailList = [];
+        let gPersonName = '';
+        let gCertId = '';
+        var projUrl = huayi_projectscore_url;
+
+        var cmePassStandardId, comPersonId, cmeYearId, cmeYear, unitId, titleId, datePeriod, titleName;
+
+        var urlStandardId =  getUrlParam("standardId");
+
+
+        // 年度下拉框
+        var date = new Date();
+        var year = date.getFullYear();
+        var options;
+        for (var i = 0; i < 5; i++) {
+            options += '<option value="' + year + '">' + year + '年</option>';
+            year = year - 1;
+        }
+        $('#cmeYearSelector').append(options);
+        debugger
+        $("#standardSelector").val(urlStandardId);
+
+        form.render('select');
+
+        form.on('select(cmeYearSelector)', function (data) {
+            // changeCmeYear();
+            // getPassStandard();
+        });
+
+        form.on('select(standardSelector)', function (data) {
+            var standardId = $("#standardSelector").val();
+            switch(standardId){
+                case '8b1e9418-47ff-4ff7-9dd9-a9e0009a6951':
+                    console.log('福建');
+                    // window.location='http://220.160.53.27:18021/pages/support/person/PassForPerson.html?standardId=' + standardId;
+                    window.open('https://220.160.53.27:18021/pages/support/person/PassForPerson.html?standardId=' + standardId);
+                    break;
+                case '6eec6713-670a-43cc-ad4d-9bd700a92928':
+                    console.log('海南');
+                    // window.location='http://218.77.183.146:18011/pages/support/person/PassForPerson.html?standardId=' + standardId;
+                    window.open('http://218.77.183.146:18011/pages/support/person/PassForPerson.html?standardId=' + standardId);
+                    break;
+                case 'a6280900-a9c2-11ec-84d6-fa163e9b64fb':
+                    console.log('河南');
+                    // window.location='http://222.143.64.114:8016/pages/support/person/PassForPerson.html?standardId=' + standardId;
+                    window.open('http://222.143.64.114:8016/pages/support/person/PassForPerson.html?standardId=' + standardId);
+                    break;
+                case '4a6d91fb-8ba4-4560-a801-9c6f00e6d999':
+                    console.log('广西)');
+                    window.open('http://211.97.79.16:18001/pages/support/person/PassForPerson.html?standardId=' + standardId);
+                    break;
+                case 'acd09b62-333b-4aee-934f-9ec500a9d46d':
+                    console.log('吉林)');
+                    window.open('https://jlkjpt.wsglw.net/pages/support/person/PassForPerson.html?standardId=' + standardId);
+                    break;
+                case '190c480d-d43c-450b-8472-a6fd00a6729d':
+                    console.log('浙江)');
+                    window.open('https://cme.wsjkw.zj.gov.cn/pages/support/person/PassForPerson.html?standardId=' + standardId);
+                    break;
+                case '289bf0ca-52cb-4b19-b737-9bd200a69ce1':
+                    console.log('广东)');
+                    window.open('https://gdkjpt.91huayi.com/pages/support/person/PassForPerson.html?standardId=' + standardId);
+                    break;
+                default:
+                    console.log('全国(湖北/青海/内蒙古/甘肃/宁夏)');
+                    // window.location='https://kjpt.wsglw.net/pages/support/person/PassForPerson.html?standardId=' + standardId;
+                    window.open('https://kjpt.wsglw.net/pages/support/person/PassForPerson.html?standardId=' + standardId);
+                    break;
+            }
+            // if (standardId == '8b1e9418-47ff-4ff7-9dd9-a9e0009a6951') {
+            //     layer.msg('fujian')
+            //     window.location='http://220.160.53.27:18021/pages/support/PassForPerson.html?standardId=' + standardId;
+            // } else {
+            //     window.location='https://kjpt.wsglw.net/pages/support/PassForPerson.html?standardId=' + standardId;
+            // }
+            // changeCmeYear();
+            // getPassStandard();
+        });
+
+        window.loadMainContent = function () {
+            var certId = $("#certId").val();
+            var standardId = $("#standardSelector").val();
+            if (!standardId) {
+                layer.msg("请选择地区")
+                return;
+            }
+            if (!certId) {
+                layer.msg("请输入证件号")
+                return;
+            }
+           
+            console.log('certId: ' + certId + ', cmeYear: ' + cmeYear)
+            renderScoreDetailTable();
+            renderCmeYearSelector();
+            return;
+        };
+        window.reloadPage = function () {
+            location.reload();
+        }
+
+        function renderCmeYearSelector() {
+            let cmeStandardKindId = $("#standardSelector").val();
+            // 福建修改接口地址 
+            // if (cmeStandardKindId == '8b1e9418-47ff-4ff7-9dd9-a9e0009a6951') {
+            //     projUrl = 'http://220.160.53.27:18025/projectscore/';
+            // } else {
+            //     projUrl = huayi_projectscore_url;
+            // }
+            let visit = projUrl + 'ps/cmeYearList/personForSupport/' + $("#certId").val() + '?cmeStandardKindId=' + cmeStandardKindId;
+            let jsonRes;
+            let yearIndex = -1;
+            getAction(visit).then(response => {
+                jsonRes = response.data;
+                if (jsonRes.success) {
+
+                    let cmeYearSelector = $('#cmeYearSelector');
+                    let personCmeYearVoList = jsonRes.data;
+                    if (personCmeYearVoList.length > 0) {
+                        // 判断所选年度是否存在
+                        cmeYear = $("#cmeYearSelector").val();
+                        personCmeYearVoList.forEach((personCmeYearVo, index) => {
+                            if (cmeYear == personCmeYearVo.cmeYear) {
+                                yearIndex = index;
+                            }
+                        });
+
+                        $('#cmeYearSelector').html('');
+                        personCmeYearVoList.forEach((personCmeYearVo, index) => {
+                            $(cmeYearSelector).append(new Option(personCmeYearVo.cmeYear, personCmeYearVo.cmeYear, 0 === index, 0 === index));
+                            if (index === yearIndex) {
+                                if (strTool.isNotBlank(personCmeYearVo.startDate) && strTool.isNotBlank(personCmeYearVo.endDate)) {
+                                    datePeriod = personCmeYearVo.startDate.substring(0, 10) + '—' + personCmeYearVo.endDate.substring(0, 10);
+                                } else if (strTool.isNotBlank(personCmeYearVo.datePeriod)) {
+                                    datePeriod = personCmeYearVo.datePeriod;
+                                } else {
+                                    datePeriod = '';
+                                }
+                                let selArr = personCmeYearVo.titleName.split('|');
+                                cmeYear = personCmeYearVo.cmeYear;
+                                unitId = personCmeYearVo.unitId;
+                                titleId = personCmeYearVo.titleId;
+                                // titleName = personCmeYearVo.titleName;
+                                titleName = selArr[2];
+                                $('p[name="titleName"]').val(titleName + datePeriod);
+                                $('p[name="titleName"]').html(titleName + datePeriod);
+                            }
+                        });
+                        $("#cmeYearSelector").val(cmeYear);
+                    } else {
+                        $('#cmeYearSelector').html('');
+                        $('p[name="titleName"]').val('');
+                        $('p[name="titleName"]').html('');
+                    }
+                    form.render('select', 'cmeYearSelector');
+                    if (yearIndex == -1) {
+                        layer.msg('未查到该年度信息');
+                        console.log('未查到该年度信息');
+                        clearDom();
+                        return false;
+                    }
+                } else if (jsonRes.status == 500) {
+                    return false;
+                }
+            }).catch(error => {
+                layer.msg('error:加载年度');
+            }).finally(() => {
+                if (jsonRes.status == 500) {
+                    clearDom();
+                    layer.msg(jsonRes.msg);
+                    console.log(jsonRes.msg);
+                    return false;
+                }
+                if (yearIndex != -1) {
+                    changeCmeYear();
+                }
+            });
+        }
+
+        function clearDom() {
+            // 清空信息
+            $('p[name="titleName"]').html('')
+            $('p[name="titleName"]').val('')
+            $('.xuefen_box .xuefen_item h1').html('-');
+            $('.yon_node').hide();
+            // 清空达标规则
+            $("#dabiao_text").html('');
+            renderScoreDetail();
+        }
+
+        function changeCmeYear() {
+            let cmeYearSelector = $("#cmeYearSelector");
+            let titleNameInput = $('p[name="titleName"]');
+
+            let selectedText = $(cmeYearSelector).find("option:selected").text();
+            let selectedVal = $(cmeYearSelector).val();
+            console.info('selectedText: %s, selectedVal:%s', selectedText, selectedVal);
+
+            if (!selectedVal) {
+                $(titleNameInput).html('职称')
+            } else {
+                debugger
+                // let selArr = selectedVal.split('|');
+                // cmeYear = selArr[0];
+                // unitId = selArr[1];
+                // let titleName = selArr[2] + selArr[4];
+                // titleId = selArr[3];
+                // console.info('selected cmeYear: %s, unitId: %s, titleId: %s, titleName: %s', cmeYear, unitId, titleId, titleName);
+
+                $(titleNameInput).val(titleName + '  ' + datePeriod)
+                $(titleNameInput).html(titleName + '  ' + datePeriod)
+
+                let visit = projUrl + 'ps/all/person/support';
+                let params = {
+                    cmeYear: cmeYear,
+                    // standardKindId: _standardKindId,
+                    // unitId: unitId,
+                    // comPersonId: comPersonId,
+                    // titleId: titleId,
+                    // userId: _userId,
+                    certId: $('#certId').val()
+                };
+
+                let msg = '<span style="color: #666666;">&nbsp;正在查询&nbsp;···</span>';
+                gLayerIndex = layer.msg(msg, { icon: 16, shade: 0.3, time: 0 });
+
+                postAction(visit, params).then(response => {
+                    let jsonRes = response.data;
+                    if (jsonRes.success) {
+                        let rdd = jsonRes.data;
+                        $('.text_left1 span').html(rdd.personName);
+                        $('.text_left1 p').html(rdd.certId);
+                        debugger
+                        if(rdd.checkStatus == 0){
+                            $('#check_title').html('学员信息在继教系统未审核，请学员尽快联系工作单位审核。 学员添加实际：' + rdd.addTime)
+                        }else if(rdd.checkStatus == 4){
+                            $('#check_title').html('学员信息在继教系统审核被驳回，请学员联系工作单位。 学员添加实际：' + rdd.addTime)
+                        }else{
+                            // 隐藏
+                            $('#check_title').html('')
+                        }
+                        comPersonId = jsonRes.comPersonId;
+                        gPassStandardVoList = rdd.passStandardVoList;
+                        gScoreTotalList = rdd.scoreTotalList;
+                        gScoreDetailList = rdd.scoreDetailList;
+                    }
+                }).catch(error => {
+                    layer.msg('error:加载获取达标信息');
+                }).finally(() => {
+                    renderPassStandard(gPassStandardVoList);
+                    renderScoreTotal(gScoreTotalList);
+                    renderScoreDetail(gScoreDetailList);
+                    layer.close(gLayerIndex);
+                });
+            }
+        }
+
+        function renderScoreDetailTable() {
+            table.render({
+                id: 'scoreDetailTable',
+                elem: '#scoreDetailTable',
+                defaultToolbar: [],
+                cols: [[
+                    { field: 'projName', title: '项目名称', minWidth: 260, align: 'center' },
+                    { field: 'scoreKindName', title: '学分类别', minWidth: 120, align: 'center' },
+                    { field: 'scoreLevelName', title: '学分级别', minWidth: 120, align: 'center' },
+                    { field: 'projType', title: '项目类型', minWidth: 120, align: 'center' },
+                    { field: 'score', title: '学分', minWidth: 60, align: 'center' },
+                    { field: 'period', title: '学时', minWidth: 60, align: 'center' },
+                    { field: 'passState', title: '有效状态', minWidth: 120, align: 'center' },
+                    { field: 'noPassOpinion', title: '不计入达标原因', minWidth: 260, align: 'center' },
+                    { field: 'studyDate', title: '活动日期', minWidth: 120, align: 'center' },
+                    { field: 'knowledgeName', title: '学科', minWidth: 120, align: 'center' },
+                    { field: 'checkStateText', title: '审核状态', minWidth: 120, align: 'center' }
+                ]],
+                data: [],
+                page: false,
+                limit: Number.MAX_VALUE,
+
+            });
+        }
+
+        // step-1
+        function renderPassStandard(passStandardVoList) {
+            console.info('renderPassStandard');
+            let k12List = [];
+            let k3List = [];
+            passStandardVoList.forEach((passStandardVo, index) => {
+                if (passStandardVo.kind < 3) {
+                    k12List.push(passStandardVo);
+                } else {
+                    k3List.push(passStandardVo);
+                }
+            });
+
+            // if (k12List && k12List.length > 0) {
+            //     let content = '<h4 style="color: #333333;"></h4>';
+            //     k12List.forEach(item => {
+            //         content += '<p style="text-indent:2em">' + item.standardMsg + '</p>';
+            //     });
+            //     $('.pass_rule div:eq(2)').html(content);
+            // }
+
+            if (k3List && k3List.length > 0) {
+                let msg = k3List[0].standardMsg;
+                if (msg.startsWith('不达标')) {
+                    // 不达标
+                    $('.yon_node:eq(0)').hide();
+                    $('.yon_node:eq(1)').show();
+                    $('.zong_text').html(msg.replace('不达标', '').replace('|', ''));
+                } else if (msg.startsWith('达标')) {
+                    // 达标
+                    $('.yon_node:eq(0)').show();
+                    $('.yon_node:eq(1)').hide();
+                } else if (msg.startsWith('未知')) {
+                    // 未知
+                    $('.yon_node:eq(0)').hide();
+                    $('.yon_node:eq(1)').show();
+                    $('.zong_text').html('未知');
+                }
+            } else {
+                // 未知
+                $('.yon_node:eq(0)').hide();
+                $('.yon_node:eq(1)').show();
+                $('.zong_text').html('未知');
+            }
+
+            // 达标标准
+            let passStandard;
+            // let k12List = passStandardVoList.filter(item => item.kind < 3);
+            if (k12List && k12List.length > 0) {
+                passStandard = '<div><p>';
+                k12List.forEach(passStandardVo => {
+                    passStandard += passStandardVo.standardMsg + '<br/>';
+                })
+                passStandard += '</p></div>';
+                $("#dabiao_text").show();
+            } else {
+                $("#dabiao_text").hide();
+            }
+            $("#dabiao_text").html('');
+            $("#dabiao_text").append(passStandard);
+        }
+
+        // step-2
+        function renderScoreTotal(scoreTotalList) {
+            let totalScore, totalPeriod, score1, score2, score3;
+            let totalScore_y, totalPeriod_y, score1_y, score2_y, score3_y;
+            let label1 = '', label2 = '', label3 = '';
+            scoreTotalList.forEach(item => {
+                if (item.scoreType === 1 && item.kind === 1) {
+                    // 全部学分
+                    totalScore = item.score;
+                    totalPeriod = item.period;
+                } else if (item.scoreType === 1 && item.kind === 0) {
+                    (1 === item.listOrder) && (score1 = item.score, label1 = item.scoreKindName);
+                    (2 === item.listOrder) && (score2 = item.score, label2 = item.scoreKindName);
+                    (3 === item.listOrder) && (score3 = item.score, label3 = item.scoreKindName);
+                } else if (item.scoreType === 2 && item.kind === 2) {
+                    // 计入达标学分
+                    totalScore_y = item.score;
+                    totalPeriod_y = item.period;
+                } else if (item.scoreType === 2 && item.kind === 0) {
+                    (1 === item.listOrder) && (score1_y = item.score);
+                    (2 === item.listOrder) && (score2_y = item.score);
+                    (3 === item.listOrder) && (score3_y = item.score);
+                }
+            });
+            $('h1[data-id=total_score]').text(totalScore);
+            $('h1[data-id=total_period]').text(totalPeriod);
+            $('h1[data-id=score1]').text(score1);
+            $('h1[data-id=score2]').text(score2);
+            $('h1[data-id=score3]').text(score3);
+            $('h1[data-id=total_score_y]').text(totalScore_y);
+            $('h1[data-id=total_period_y]').text(totalPeriod_y);
+            $('h1[data-id=score1_y]').text(score1_y);
+            $('h1[data-id=score2_y]').text(score2_y);
+            $('h1[data-id=score3_y]').text(score3_y);
+            $('span[data-label=score1]').text(label1);
+            $('span[data-label=score2]').text(label2);
+            $('span[data-label=score3]').text(label3);
+        }
+
+        // step-3
+        function renderScoreDetail(scoreDetailList) {
+            table.reload('scoreDetailTable', {
+                data: scoreDetailList ? scoreDetailList : []
+            })
+        }
+
+
+    });
+</script>
+
+<style>
+    .db_tit {
+        width: 100%;
+        color: #333;
+        padding-bottom: 20px;
+    }
+
+    .db_tit img {
+        margin-right: 5px;
+        float: left;
+        margin-top: 3px;
+    }
+
+    .db_tit h1 {
+        float: left;
+        font-size: 16px;
+    }
+
+
+    /* 1.PassStandard */
+    .db_mess {
+        padding: 16px 0;
+    }
+
+    .yon_node {
+        display: block;
+        width: auto;
+        background: none;
+    }
+
+    .yon_node ul {
+        display: flex;
+        width: auto;
+        justify-content: flex-start;
+    }
+
+    /* 1.1 */
+    .text_left1 {
+        display: flex;
+        flex-direction: column;
+        padding-left: 30px;
+        justify-content: space-evenly;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        width: 190px;
+        height: 72px;
+    }
+
+    .text_left1 span,
+    .text_left1 p {
+        color: #fff;
+        font-weight: 450;
+    }
+
+    /* 1.2 */
+    .xg_box_db {
+        width: 56px;
+        height: 72px;
+        background: url(/img/db_bg.png) 56% center no-repeat;
+    }
+
+    .xg_box_bdb {
+        width: 56px;
+        height: 72px;
+        background: url(/img/bdb_bg.png) 56% center no-repeat;
+    }
+
+    .img_db {
+        background: url(/img/db_bg.png) left center no-repeat;
+    }
+
+    .img_bdb {
+        background: url(/img/bdb_bg.png) left center no-repeat;
+    }
+
+    /* 1.3 */
+    .text_left2 {
+        padding-right: 20px;
+        height: 72px;
+        background: #fff0ea;
+        border-top-right-radius: 40px;
+        border-bottom-right-radius: 40px;
+    }
+
+    .yon_node ul li h3.bdb {
+        color: #ff2e2e;
+        margin: 10px 0;
+        width: 100%;
+        font-weight: bold;
+    }
+
+    .yon_node ul li h3.db {
+        color: #6dbd85;
+        height: 72px;
+        line-height: 72px;
+        width: 100%;
+        font-weight: bold;
+    }
+
+
+    .text_left2 p {
+        width: 100%;
+        text-align: right;
+        font-weight: bolder;
+    }
+
+    /* 2.ScoreTotal */
+    .xuefen_box {
+        display: flex;
+        padding: 20px 0;
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .xuefen_item {
+        background: #F8F8FF;
+        display: flex;
+        padding: 20px 14px;
+        width: 100%;
+    }
+
+    .xuefen_item li {
+        text-align: center;
+        width: 16.6%;
+    }
+
+    .col {
+        border-right: 1px solid #ddd;
+    }
+</style>
+
+</html>

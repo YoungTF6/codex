@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>人员注册</title>
+    <meta name="viewport" content="width=device-width, initial-scale=0.3, minimum-scale=0.3, maximum-scale=1.0, user-scalable=yes">
+    <link rel="stylesheet" href="../../css/person/reset.css">
+    <link rel="stylesheet" href="../../css/person/style.css">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../css/admin.css" media="all">
+    <style>
+        .require {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+    <script src="../../js/constant.js"></script>
+
+    <script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="../../js/jquery.cookie.js"></script>
+    <!-- 请求路径全局配置 -->
+    <script type="text/javascript" src="../../js/common.js"></script>
+    <!-- 工具 -->
+    <script type="text/javascript" src="../../js/tools/urlTools.js"></script>
+    <!-- 验证 -->
+    <script type="text/javascript" src="../../js/tools/verification.js"></script>
+    <script type="text/javascript" src="../../js/axios.min.js"></script>
+    <script type="text/javascript" src="../../js/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript" src="../../js/api/number.js"></script>
+    <script src="../../js/tools/aes-tool.js"></script>    
+</head>
+
+
+<body>
+
+    <div class="container">
+
+        <!-- <form class="layui-form" action=""> -->
+
+        <div class="top_box">
+            <span class="top_tit"></span>
+        </div>
+
+        <div class="cent_box">
+            <!--注册、返回登录-->
+            <div class="cent_top">
+                <span class="cent_tit">注册</span>
+
+                <a href="javascript:void(0)" onclick="tologin()"><span class="cent_return">返回登录</span></a>
+            </div>
+
+            <div class="cent_content">
+                <!--进度条-->
+                <ul class="cent_ul">
+                    <!-- <li class="cent_lis ">
+                        <span class="cent_text01">1 身份验证</span>
+                    </li> -->
+                    <li class="cent_lis ">
+                        <span class="cent_text01">1 身份验证</span>
+                    </li>
+                    <li class="cent_lis set_img02">
+                        <span class="cent_text02">2 注册账号</span>
+                    </li>
+                    <li class="cent_lis set_img02">
+                        <span class="cent_text02">3 个人信息</span>
+                    </li>
+                    <li class="cent_lis set_img03">
+                        <span class="cent_text02">4 完成</span>
+                    </li>
+                </ul>
+
+                <!--身份验证-->
+                <div class="cent_foot div_content" style="display: none;">
+
+                    <p class="foot_tit">身份验证（ <span>*</span>为必填）</p>
+
+
+                    <!--证件类型-->
+                    <div class="cent_con">
+                        <p class="con_text"><span>*</span>证件类型：</p>
+                        <select class="con_sel" id="tab0_select_cert_type">
+                            <option value="">请选择</option>
+                            <option value="9fcb08ce-ee86-4e4c-9611-9d430101cea4">身份证</option>
+                            <option value="3444541a-9703-44ed-aae6-9d8b01574916">港澳台居民居住证</option>
+                            <option value="a85da857-fd72-4e9a-8657-afa900a0f569">台湾居民来往大陆通行证</option>
+                            <option value="031d0bdc-8cd0-11ee-9c60-005056a64c01">港澳居民来往内地通行证</option>
+                            <option value="d681a2b3-df10-421a-8279-afa900a0f569">其他法定有效证件</option>
+                        </select>
+                    </div>
+                    <!--证件号码-->
+                    <div class="cent_con">
+                        <p class="con_text"><span>*</span>证件号码：</p>
+                        <input type="text" placeholder="请输入" class="con_user cert-id-x" id="tab0_text_cert_id" value="" readonly onfocus="this.removeAttribute('readonly')"
+                            autocomplete="off">
+                    </div>
+
+                    <!--姓名-->
+                    <div class="cent_con">
+                        <p class="con_text"><span>*</span>姓名：</p>
+                        <input type="text" placeholder="请输入" class="con_user" id="tab0_text_person_name" readonly onfocus="this.removeAttribute('readonly')"
+                            autocomplete="off">
+                    </div>
+                </div>
+
+                <!--注册账号-->
+                <div class="cent_foot div_content" style="display: none;">
+
+                    <p class="foot_tit">注册账号（ <span>*</span>为必填）</p>
+
+                    <!--手机号码-->
+                    <div class="cent_con">
+                        <p class="con_text"><span>*</span>手机号码：</p>
+                        <input type="text" placeholder="请输入手机号码" class="con_tes" style="width: calc(73% - 203px)" id="tab1_text_phone" value="" autocomplete="off">
+
+                        <input type="button" value="获取验证码" class="con_obt" id="tab1_btn_phone_code" value="" autocomplete="off">
+                    </div>
+                    <!--验证码-->
+                    <div class="cent_con">
+                        <p class="con_text"><span>*</span>验证码：</p>
+                        <input type="text" placeholder="请输入验证码" class="con_user" id="tab1_text_input_code">
+                    </div>
+                    <!--设置密码-->
+                    <div class="cent_con">
+                        <p class="con_text"><span>*</span>设置密码：</p>
+                        <input type="password" placeholder="请输入密码" class="con_user" id="tab1_text_password1">
+                    </div>
+                    <!--重复密码-->
+                    <div class="cent_con">
+                        <p class="con_text"><span>*</span>重复密码：</p>
+                        <input type="password" placeholder="请再次输入密码" class="con_user" id="tab1_text_password2">
+                    </div>
+                </div>
+
+                <!--填写个人信息-->
+                <div class="news_container div_content" style="display: none;">
+
+                    <p class="news_tit" style="margin-top: 20px;">个人信息（ <span>*</span>为必填）</p>
+
+                    <div class="input_cent_box" style="display: flex;flex-wrap: wrap;width:94%;margin:0 auto;">
+                        <!--姓名-->
+                        <div class="news_box">
+                            <p class="con_text"><span>*</span>姓名：</p>
+                            <input type="text" placeholder="请输入姓名" class="con_urs" id='tab2_text_person_name'>
+
+                        </div>
+                        <!--证件类型-->
+                        <div class="news_box">
+                            <p class="con_text"><span>*</span>证件类型：</p>
+                            <select class="con_sel" id="tab2_select_cert_type_id">
+                                <option value="">请选择</option>
+                                <option value="9fcb08ce-ee86-4e4c-9611-9d430101cea4">身份证</option>
+                                <option value="3444541a-9703-44ed-aae6-9d8b01574916">港澳台居民居住证</option>
+                                <option value="a85da857-fd72-4e9a-8657-afa900a0f569">台湾居民来往大陆通行证</option>
+                                <option value="031d0bdc-8cd0-11ee-9c60-005056a64c01">港澳居民来往内地通行证</option>
+                                <option value="d681a2b3-df10-421a-8279-afa900a0f569">其他法定有效证件</option>
+                            </select>
+                        </div>
+                        <!--证件号码-->
+                        <div class="news_box">
+                            <p class="con_text"><span>*</span>证件号码：</p>
+                            <input type="text" placeholder="请输入证件号码" class="con_urs" id="tab2_text_cert_id" maxlength="30">
+                        </div>
+                        <!--手机号-->
+                        <div class="news_box">
+                            <p class="con_text"><span>*</span>手机号：</p>
+                            <input type="text" placeholder="请输入手机号" class="con_urs" id="tab2_text_mobile" maxlength="30">
+                        </div>
+                        <!--性别-->
+                        <div class="news_box">
+                            <p class="con_text"><span>*</span>性别：</p>
+                            <select class="con_sel" id="tab2_select_sex">
+                                <option value=''>请选择</option>
+                                <option value='男'>男</option>
+                                <option value='女'>女</option>
+                            </select>
+                        </div>
+                        <!--出生日期-->
+                        <div class="news_box">
+                            <p class="con_text"><span>*</span>出生日期：</p>
+                            <input type="text" class="con_urs" readonly onClick="WdatePicker({el:this,dateFmt:'yyyy-MM-dd'})" id='tab2_date_birthday'>
+                        </div>
+                        <!--所在单位-->
+                        <div class="news_box">
+                            <div class="layui-inline layui-form" lay-filter="unitSelectArea">
+                                <p class="con_text">
+                                    <span class="require">*</span>所在单位：
+                                </p>
+                                <div class="layui-input-block" style="margin-left: 130px;min-height: 32px;width: 223px;">
+                                    <select lay-search lay-verify="required" lay-filter="unitSelect" id="unitSelect" name="unitId">
+                                        <option value="">请输入关键字</option>
+                                    </select>
+                                </div>
+                                <input type="hidden" id="tab2_hidden_unit_id" />
+                                <input type="hidden" id="tab2_hidden_cme_standard_kind_id" />
+                            </div>
+                        </div>
+                        <!--所在科室-->
+                        <div class="news_box">
+                            <div class="layui-inline layui-form" lay-filter="deptSelectArea">
+                                <p class="con_text">
+                                    <span class="require">* </span>所在科室：
+                                </p>
+                                <div class="layui-input-block" style="margin-left: 130px;min-height: 32px;width: 223px;">
+                                    <input type="text" autocomplete="off" class="layui-input" disabled lay-filter="deptSelect" id="deptSelect" name="deptId"
+                                        placeholder="请选择">
+                                </div>
+                                <input type="hidden" id="tab2_hidden_dept_id" />
+                            </div>
+                        </div>
+                        <!--当前职称-->
+                        <div class="news_box">
+                            <p class="con_text"><span>*</span>当前职称：</p>
+                            <input type="text" placeholder="请输入当前职称：" autocomplete="off" class="con_urs" id="tab2_text_title" />
+                            <input type="hidden" id="tab2_hidden_title_id" />
+                        </div>
+                        <!--职称评定时间-->
+                        <div class="news_box">
+                            <p class="con_text"><span>*</span>职称评定时间：</p>
+                            <input type="text" class="con_urs" readonly onClick="WdatePicker({el:this,dateFmt:'yyyy-MM-dd',maxDate:'%y-%M-%d'})" id="tab2_date_grant_date">
+                        </div>
+                        <!--职称聘任年度-->
+                        <div class="news_box zhejiang_hide">
+                            <p class="con_text"><span>*</span>职称聘任年度：</p>
+                            <input type="text" class="con_urs con_answer" onClick="WdatePicker({el:this,dateFmt:'yyyy',maxDate:'%y',isShowToday :false,isShowClear:false,readOnly:true})"
+                                id="tab2_date_job_date" />
+
+                            <label class="answer_label con_answer" style="width: 8%;">
+                                <input type="checkbox" name="Select1" class="select" id="tab2_select_does_engage">
+                                <span class="answer_span">未聘任</span>
+                            </label>
+                        </div>
+                        <!--人员状态-->
+                        <div class="news_box">
+                            <p class="con_text"><span>*</span>人员状态：</p>
+                            <select class="con_sel" id="tab2_select_person_state_id">
+                                <option value="">请选择</option>
+                            </select>
+
+                            <label class="answer_label con_answer jilin_show" style="width: 8%;">
+                                <span style="color:#31BDEC;cursor:pointer" id="jilinPersonStateMemo">说明</span>
+                            </label>
+                        </div>
+                        <!--在编状态-->
+                        <div class="news_box zhejiang_hide">
+                            <p class="con_text"><span>*</span>在编状态：</p>
+                            <select class="con_sel" id="tab2_select_is_intheseries">
+                                <option value="">请选择</option>
+                                <option value="0">在编</option>
+                                <option value="1">不在编</option>
+                            </select>
+                        </div>
+                        <!--专业-->
+                        <div class="news_box">
+                            <div class="layui-inline layui-form" lay-filter="specSelectArea">
+                                <p class="con_text">
+                                    <span class="require">* </span>专业：
+                                </p>
+                                <div class="layui-input-block" style="margin-left: 130px;min-height: 32px;width: 223px;">
+                                    <input type="text" autocomplete="off" class="layui-input" disabled lay-filter="specSelect" id="specSelect" name="specId"
+                                        placeholder="请选择">
+                                </div>
+                            </div>
+                            <input type="hidden" id="tab2_hidden_spec">
+                        </div>
+                        <!--医学类型-->
+                        <div class="news_box zhejiang_show">
+                            <p class="con_text"><span>*</span>人员类型：</p>
+                            <select class="con_sel" id="tab2_select_medical_type">
+                                <option value="">请选择</option>
+                                <option value="1">西医</option>
+                                <option value="2">中医</option>
+                                <option value="3">疾控</option>
+                            </select>
+                        </div>
+
+                        <!--上传照片-->
+                        <div class="news_box" id="tab2_div_upload_photo">
+                            <p class="con_text"><span class="require" id="photo_required_span">*</span>个人免冠照片:</p>
+                            <!--上传图片按钮-->
+                            <div class="upload_box" style="width: 50%;">
+                                <label for="upload">
+                                    <span class="upload_span" id="photo_placeholder_span">请输入</span>
+                                    <span class="upload_btn" id="tab2_btn_img">上传照片</span>
+                                </label>
+                                <input type="hidden" id="tab2_hidden_photo" />
+                                <!-- <input type="file" id="upload"> -->
+                            </div>
+                            <div class="upload_box" style="width: 10%; text-align: center;justify-content:center;align-items:center;display:-webkit-flex;border: 0px;">
+                                <img alt="头像" id="tab2_div_show_photo" src="../../img/person/touxiang.jpg" width="30" height="30" style="cursor:pointer; display: none;"
+                                />
+                            </div>
+                        </div>
+
+                        <!--联系方式-->
+                        <div class="news_box">
+                            <p class="con_text">联系方式：</p>
+                            <input type="text" placeholder="请输入联系方式" class="con_urs" id="tab2_text_telephone" maxlength="30">
+                        </div>
+                        <!--电子邮箱-->
+                        <div class="news_box">
+                            <p class="con_text">电子邮箱：</p>
+                            <input type="text" placeholder="请输入电子邮箱" class="con_urs" id="tab2_text_email" maxlength="50">
+                        </div>
+                        <div class="news_box" id="photo_tips_div">
+                            <span class="upload_tips">您的照片将用于电子学分证书</span>
+                        </div>
+                        <!--毕业院校-->
+                        <div class="news_box">
+                            <p class="con_text">毕业院校：</p>
+                            <input type="text" placeholder="请输入毕业院校" class="con_urs" id="tab2_text_university" maxlength="50">
+                        </div>
+                        <!--学历-->
+                        <div class="news_box">
+                            <p class="con_text">学历：</p>
+                            <select class="con_sel" id="tab2_select_education">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                        <!--学位-->
+                        <div class="news_box">
+                            <p class="con_text">学位：</p>
+                            <select class="con_sel" id="tab2_select_degree">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                        <!--民族-->
+                        <div class="news_box">
+                            <p class="con_text">民族：</p>
+                            <select class="con_sel" id="tab2_select_nation">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+
+                        <!--行政职务-->
+                        <div class="news_box shanxi_hide">
+                            <p class="con_text">行政职务：</p>
+                            <select class="con_sel" id="tab2_select_administratorduty">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                        <!--行政级别-->
+                        <div class="news_box shanxi_hide">
+                            <p class="con_text">行政级别：</p>
+                            <select class="con_sel" id="tab2_select_administratorlevel">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+
+                        <!--院内职务-->
+                        <div class="news_box">
+                            <p class="con_text">院内职务：</p>
+                            <select class="con_sel" id="tab2_select_hospital_duty">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                        <!--执业资格证书号-->
+                        <div class="news_box">
+                            <p class="con_text">执业资格证书号：</p>
+                            <input type="text" placeholder="请输入执业资格证书号" class="con_urs" id="tab2_text_prof_cert_id" maxlength="50">
+                        </div>
+                        <!--备注-->
+                        <div class="news_box">
+                            <p class="con_text">备注：</p>
+                            <input type="text" placeholder="请输入" class="con_urs" id="tab2_text_remark" value=" " maxlength="30">
+                        </div>
+                        <!--内部编号-->
+                        <div class="news_box">
+                            <p class="con_text">内部编号：</p>
+                            <input type="text" placeholder="请输入内部编号" class="con_urs" id="tab2_text_internals" maxlength="20">
+                        </div>
+
+                    </div>
+
+                    <div style="margin-left:60px;margin-top:25px;">
+                        <input type="checkbox" name="apply_yinsi" id="apply_yinsi" style="width: 15px;height: 15px;-webkit-appearance: checkbox;border:1px solid #ddd"
+                            style="-webkit-appearance: checkbox" />
+                        <span class="answer_span">我已仔细阅读并同意</span>
+                        <a href="https://www.91huayi.com/privacy.html" target="_blank" style="color: #0082cb; font-size: 14px;">《隐私政策》</a>
+                    </div>
+                    <div style="margin-left:60px;margin-top:15px;">
+                        <input type="checkbox" name="apply_mingan" id="apply_mingan" style="width: 15px;height: 15px;-webkit-appearance: checkbox;border:1px solid #ddd"
+                            style="-webkit-appearance: checkbox" />
+                        <span class="answer_span">我已仔细阅读并同意</span>
+                        <a href="https://cdn.91huayi.com/hywupload/appsendmessage/privacyAgreement/sensitive.html" target="_blank" style="color: #0082cb; font-size: 14px;">《敏感个人信息授权书》</a>
+                    </div>
+                </div>
+                <!--注册成功-->
+                <div class="cent_foot div_content" style="display: none;">
+                    <img src="../../img/person/finish_icon.png" alt="" class="con_fin" style="margin-top: 20px;">
+
+                    <span class="con_tips" style="margin-top: 10px;">注册成功</span>
+
+                    <span class="con_accept">请您耐心等待注册单位接收，被接收后可正常使用全部功能。</span>
+                </div>
+
+
+
+                <div class="com_btn" style="width: 100%;display: flex;justify-content: center;">
+                    <input type="button" value="下一步" class="con_btn" id="btn_next">
+                </div>
+
+            </div>
+
+
+
+
+
+        </div>
+
+        <span class="ind_tips"></span>
+
+        <!-- </form> -->
+
+    </div>
+
+
+
+
+    <!--温馨提示弹窗-->
+    <div class="tips_hidden" style="display:none;" id="div_certId_personName_mch">
+
+        <div class="tips_layer">
+            <div class="tips_top">
+                <span class="tips_tit">温馨提示</span>
+                <!--关闭按钮-->
+                <img src="../../img/person/close_img.png" alt="" class="close_img">
+            </div>
+
+            <img src="../../img/person/tips_img.png" alt="" class="tips_img">
+
+            <p class="tips_text">您的身份信息已存在于单位【<span id="span_div_certId_personName_mch"></span>】请您直接登录，或找回用户名密码。</p>
+
+            <div class="tips_btn">
+                <input type="button" value="忘记密码" class="tips_left" id="btn_certId_personName_mch_forget">
+                <input type="button" value="去登录" class="tips_right" id="btn_certId_personName_mch_login">
+            </div>
+
+        </div>
+
+    </div>
+
+    <!--温馨提示弹窗-->
+    <div class="tips_hidden" style="display:none;" id="div_certId_personName_notmch">
+
+        <div class="tips_layer">
+            <div class="tips_top">
+                <span class="tips_tit">温馨提示</span>
+                <!--关闭按钮-->
+                <img src="../../img/person/close_img.png" alt="" class="close_img">
+            </div>
+
+            <img src="../../img/person/tips_img.png" alt="" class="tips_img">
+            <p class="tips_text">您的证件号在系统中已存在，但姓名不符合，请您联系所在单位【<span id="span_div_certId_personName_notmch"></span>】继教管理员进行信息更新。</p>
+
+            <div class="tips_btn">
+                <input type="button" value="好的，知道了" class="tips_left" id="btn_certId_personName_mch_know">
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div id="titleArea" style="padding: 20px;display:none; ">
+    </div>
+
+</body>
+
+
+<div id="layer_notice" style="display: none;">
+    <img id="show_img" src="" height="400" />
+</div>
+
+<script id="lx">
+    var unitId = getQueryString('unitId');
+    // 优先从 sessionStorage 获取省份代码，没有则从 URL 获取（兼容旧方式）
+    var provinceRoot = sessionStorage.getItem('provinceRoot') || getQueryString('root');
+
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        treeSelect: 'treeSelect'
+    });
+
+    /** 全局配置及引入相关的模块 */
+    layui.use(['table', 'form', 'jquery', 'layer', 'xmSelect', 'treeSelect'], function () {
+
+        var table = layui.table,
+            form = layui.form,
+            $ = layui.jquery,
+            layer = layui.layer,
+            xmSelect = layui.xmSelect,
+            treeSelect = layui.treeSelect;
+        
+
+        /** 单位选择下拉列表初始化 */
+        $.ajax({
+            url: huayi_personorg_url + 'comunit/getUnitChilds',
+            type: 'get',
+            dataType: 'json',
+            data: {
+                unitId: provinceRoot
+            },
+            success: function (res) {
+                if (res.status == 200) {
+                    const datas = res.data;
+                    var options = '';
+                    for (var i = 0; i < datas.length; i++) {
+                        options += '<option value="' + datas[i].value + '">' + datas[i].name+'('+datas[i].value+')' + '</option>';
+                    }
+                    $('#unitSelect').append(options);
+                    form.render('select', 'unitSelectArea');
+                } else {
+                    console.log('单位选择下拉列表初始化失败');
+                }
+            },
+            error: function () {
+                console.log('单位选择下拉列表初始化失败');
+            }
+        });
+
+
+
+        /** 科室选择下拉列表初始化 */
+        var deptTreeSelect;
+
+        /** 触发事件：选择单位 */
+        form.on('select(unitSelect)', function (data) {
+            treeSelect.destroy('deptSelect');
+            console.log("unit_id:" + data.value);
+            unitId = data.value;
+            $("#tab2_hidden_unit_id").val(data.value);
+            $("#tab2_hidden_dept_id").val("");
+            //加载科室树
+            deptTreeSelect = treeSelect.render({
+                elem: '#deptSelect',
+                data: huayi_personorg_url + 'comdept/tree/unit?unitId=' + data.value,
+                type: 'get',
+                search: true,
+                style: {
+                    folder: {     // 父节点图标
+                        enable: true   // 是否开启：true/false
+                    },
+                    line: {     // 连接线
+                        enable: true   // 是否开启：true/false
+                    }
+                },
+                click: function (data) {
+                    $("#tab2_hidden_dept_id").val(data.current.id);
+                }
+            });
+
+            //通过单位编号获取套
+            $.ajax({
+                async: false,
+                url: huayi_personorg_url + "comunit/detail?unitId=" + data.value,
+                type: "get",
+                success: function (result) {
+                    if (result.success == true) {
+                        if (result.data != null) {
+                            $("#tab2_hidden_cme_standard_kind_id").val(result.data.cmeStandardKindId);
+                            var cmeStandardKindId = result.data.cmeStandardKindId;
+                            //初始化人员状态下拉框  
+                            $.ajax({
+                                async: false,
+                                url: huayi_personorg_url + "comperson/getPersonStateListByCmeStandardKindId",
+                                type: "post",
+                                data: { cmeStandardKindId: cmeStandardKindId, kind: 1 },
+                                success: function (result) {
+                                    if (result.success == true) {
+                                        // var personStateList = result.data;
+                                        // var personState = {};
+                                        // $("#tab2_select_person_state_id").find("option").remove();
+                                        // $("<option value=''>请选择</option>").appendTo($("#tab2_select_person_state_id"));
+                                        // for (var i = 0; i < personStateList.length; i++) {
+                                        //     personState = personStateList[i];
+                                        //     $("<option value=" + personState.person_state_id + ">" + personState.person_state_name + "</option>").appendTo($("#tab2_select_person_state_id"));
+                                        // }
+                                        var personStateList = result.data;
+                                        var $select = $("#tab2_select_person_state_id");
+                                        var targetId = ""; // 用来存“正常”状态的ID
+
+                                        // 1. 清空旧数据
+                                        $select.empty();
+
+                                        // 2. 遍历生成选项，并找到“正常”的ID
+                                        for (var i = 0; i < personStateList.length; i++) {
+                                            var item = personStateList[i];
+                                            $select.append("<option value='" + item.person_state_id + "'>" + item.person_state_name + "</option>");
+
+                                            if (item.person_state_name === "正常") {
+                                                targetId = item.person_state_id;
+                                            }
+                                        }
+
+                                        // 3. 直接赋值并锁定
+                                        $select.val(targetId);                // 选中“正常”
+                                        $select.attr("disabled", "disabled"); // 禁用交互
+                                        $select.addClass("layui-disabled");   // 增加灰色样式
+
+                                        // 4. 刷新 Layui 渲染
+                                        form.render('select');
+                                    }
+                                    else {
+                                        layer.msg("加载人员状态下拉框出现问题");
+                                    }
+                                }
+                            });
+                        }
+
+
+                    }
+                }
+
+            });
+        });
+
+
+        /* 专业树初始化 */
+        var specTreeSelect = treeSelect.render({
+            elem: '#specSelect',
+            data: huayi_sjwh_url + 'comPersonSpec/tree',
+            type: 'get',
+            search: true,
+            style: {
+                folder: {   // 父节点图标
+                    enable: true   // 是否开启：true/false
+                },
+                line: {     // 连接线
+                    enable: true   // 是否开启：true/false
+                }
+            },
+            click: function (data) {
+                $("#tab2_hidden_spec").val(data.current.id);
+            }
+        });
+
+
+        /* 职称选择初始化 */
+        $(function () {
+            $.ajax({
+                url: huayi_sjwh_url + 'comTitle/list/all',
+                type: 'get',
+                data: {
+                    titleKind: 2
+                },
+                dataType: 'json',
+                success: function (res) {
+                    if (res.status == '200') {
+                        var titleStr = '';
+                        for (var i = 0; i < res.data.length; i++) {
+                            titleStr += '<div>' +
+                                '<a onclick="getTiteList(this, \'' + res.data[i].titleId + '\')">' +
+                                res.data[i].titleName + '</a><br><sapn style="display:none;"></sapn></div>';
+                        }
+                        $('#titleArea').html(titleStr);
+                    } else {
+                        console.log('职称列表初始化失败');
+                    }
+                },
+                error: function () {
+                    console.log('职称列表初始化失败');
+                }
+            });
+        });
+
+
+        $("#tab2_text_title").focus(function () {
+            layer.open({
+                type: 2,
+                content: "../controls/selectTitle/selectTitle.html",
+                area: ['610px', '380px'],
+                scrollbar: false
+            });
+        });
+
+    });
+
+    function getChildTitle(titleId, titleName, type_id, list_order) {
+        $("#tab2_hidden_title_id").val(titleId);
+        $("#tab2_text_title").val(titleName);
+
+        //如果选择无职称，职称聘任时间和职称聘任年度应该为空且不能选择。职称聘任年度默认未聘任
+        if (titleId.toLowerCase() == "35208e7a-f827-498e-997d-9b2f0124b233" && titleName == "无职称") {
+            $("#tab2_date_grant_date").val("").addClass("layui-disabled").attr("disabled", "disabled");
+            $("#tab2_select_does_engage").prop("checked", true).addClass("layui-disabled").attr("disabled", "disabled");
+            $("#tab2_date_job_date").val("").addClass("layui-disabled").attr("disabled", "disabled");
+        } else {
+            $("#tab2_date_grant_date").removeClass("layui-disabled").removeAttr("disabled");
+            $("#tab2_select_does_engage").prop("checked", false).removeClass("layui-disabled").removeAttr("disabled");
+            $("#tab2_date_job_date").val("").removeClass("layui-disabled").removeAttr("disabled");
+        }
+    }
+
+    function getTiteList(item, titleType) {
+        $.ajax({
+            url: huayi_sjwh_url + 'comTitle/list/all',
+            type: 'get',
+            data: {
+                titleType: titleType
+            },
+            dataType: 'json',
+            success: function (res) {
+                if (res.status == '200') {
+                    console.log(res.data);
+                    var titleStr = '';
+                    for (var i = 0; i < res.data.length; i++) {
+                        titleStr += '<div><input type="radio" name="title" value="'
+                            + res.data[i].titleId + '">' + res.data[i].titleName + '</div>';
+                    }
+                    var $sapn = $(item).parent().find('sapn');
+                    $sapn.css('display', 'block');
+                    $sapn.css('padding', '10px 20px');
+                    $sapn.css('webkit-appearance', '10px 20px');
+                    $sapn.html(titleStr);
+                } else {
+                    console.log('职称列表获取失败');
+                }
+            },
+            error: function () {
+                console.log('职称列表获取失败');
+            }
+        });
+    }
+
+
+
+    /* 标签切换 */
+    // $('.cent_text01').on('click', function () {
+    //     $('.cent_content').children('div:lt(4)').hide();
+    //     $('.cent_content').children('div:eq(0)').show();
+    // });
+    // $('.cent_text02:eq(0)').on('click', function () {
+    //     $('.cent_content').children('div:lt(4)').hide();
+    //     $('.cent_content').children('div:eq(1)').show();
+    // });
+    // $('.cent_text02:eq(1)').on('click', function () {
+    //     $('.cent_content').children('div:lt(4)').hide();
+    //     $('.cent_content').children('div:eq(2)').show();
+    // });
+    // $('.cent_text02:eq(2)').on('click', function () {
+    //     $('.cent_content').children('div:lt(4)').hide();
+    //     $('.cent_content').children('div:eq(3)').show();
+    // });
+
+
+    $(".close_img").click(function () {
+        $(".tips_hidden").hide();
+    })
+
+</script>
+
+
+<script id="ypf">
+    //#region  ypf
+
+    var active = {};
+    var display_tab_index = 0;
+    var password = "";
+    var cert_type_id;
+    var cert_id;
+    var person_name;
+    var mobile;
+    var fun_person_photo_required;
+
+    const IS_JILIN =  provinceRoot == "080000";
+    const IS_ZHEJIANG = provinceRoot == "330000";
+    const IS_SHANXI =  provinceRoot == "050000";
+    const IS_GUANGDONG = provinceRoot == "190000";
+
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        tool: 'tool'
+    });
+
+    layui.use(['table', 'form', 'jquery', 'layer','tool'], function () {
+        var $ = layui.$;
+        var layer = layui.layer;
+        var tool  = layui.tool;
+
+        var InterValObj; //timer变量，控制时间
+        var count = 60; //间隔函数，1秒执行
+        var curCount;//当前剩余秒数
+
+        //页面切换css样式
+        active.activate_tab_css = function (tab_index) {
+
+            $(".div_content").eq(tab_index).show();
+            $(".div_content").eq(tab_index).siblings().find('.div_content').hide();
+
+            if (tab_index == 0) {
+                $("#btn_certId_personName_mch_forget").click(function () {
+                    location.href = "resetPwd.html";
+                });
+
+                $("#btn_certId_personName_mch_login").click(function () {
+                    window.tologin();
+                });
+                $("#btn_certId_personName_mch_know").click(function () {
+                    $("#div_certId_personName_notmch").hide();
+                });
+            }
+
+            //进入第 2 页
+            if (tab_index == 1) {
+                $(".cent_content").find(".cent_ul").find("li").eq(1).removeClass("set_img02").addClass("set_img04");
+
+                $("#tab1_btn_phone_code").click(function () {
+                    var phone = $("#tab1_text_phone").val();
+                    if (checkMobileExists(phone)) {
+                        layer.msg("您输入的手机号在系统中已存在，请直接去登录");
+                        return;
+                    }
+
+                    if (checkPhone(phone) == false) {
+                        layer.msg("请输入正确的手机号码");
+                        return;
+                    }
+                    var data = { "msgCodeType": "PERSON_REGISTER", "phone": encodeAesString(phone).toString() };
+                    //发送短信验证码
+                    $.ajax({
+                        type: "post",
+                        url: huayi_mcenter_url + "message/code/send",
+                        contentType: "application/json",
+                        data: JSON.stringify(data),
+                        success: function (result) {
+                            if (result.success == true) {
+                                layer.msg('验证码已发送,请注意查收');
+                                // 验证码倒计时
+                                curCount = count;
+                                document.getElementById("tab1_btn_phone_code").setAttribute("disabled", "true");//设置按钮为禁用状态
+                                $('#tab1_btn_phone_code').addClass('layui-btn-disabled');
+                                $('#tab1_btn_phone_code').val(curCount + "秒后重获");
+                                InterValObj = window.setInterval(SetRemainTime, 1000); // 启动计时器timer处理函数，1秒执行一次
+                            } else {
+                                layer.alert(result.msg);
+                            }
+                        }
+                    });
+                });
+
+
+                //timer处理函数
+                var SetRemainTime = function () {
+                    debugger
+                    if (curCount == 0) {
+                        $('#tab1_btn_phone_code').removeClass('layui-btn-disabled');
+                        $('#tab1_btn_phone_code').val("重获验证码");
+                        window.clearInterval(InterValObj);// 停止计时器
+                        document.getElementById("tab1_btn_phone_code").removeAttribute("disabled");//移除禁用状态改为可用
+                    } else {
+                        curCount--;
+                        $('#tab1_btn_phone_code').val(curCount + "秒后重获");
+                    }
+                }
+
+
+            }
+
+            //进入第 3 页
+            if (tab_index == 2) {
+                
+                $(".cent_content").find(".cent_ul").find("li").eq(1).removeClass("set_img02").addClass("set_img04");
+                $(".cent_content").find(".cent_ul").find("li").eq(2).removeClass("set_img02").addClass("set_img04");
+
+                //是否必须上传人员照片
+                fun_person_photo_required = getConfig("fun_person_photo_required");
+                if (fun_person_photo_required == "1") {
+                    $("#photo_required_span").show();
+                } else {
+                    $("#photo_required_span").hide();
+                }
+
+                //山西隐藏行政职务和行政级别
+                if (IS_SHANXI) {
+                    $(".shanxi_hide").hide();
+                } else {
+                    $(".shanxi_hide").show();
+                }
+
+                if (IS_JILIN) {
+                    $(".jilin_show").show();
+                } else {
+                    $(".jilin_show").hide();
+                }
+
+                if (IS_ZHEJIANG) {
+                    $(".zhejiang_show").show();
+                    $(".zhejiang_hide").hide();
+                } else {
+                    $(".zhejiang_show").hide();
+                    $(".zhejiang_hide").show();
+                }
+
+                //广东隐藏照片栏"请输入"和照片提示
+                if (IS_GUANGDONG) {
+                    $("#photo_placeholder_span").hide();
+                    $("#photo_tips_div").hide();
+                }
+
+
+                //上传图片
+                $("#tab2_btn_img").click(function () {
+                    let unitId = $("#tab2_hidden_unit_id").val();
+                    let cmeStandardKindId = $("#tab2_hidden_cme_standard_kind_id").val();
+
+                    if (unitId == "" || unitId == undefined || unitId == null
+                        || cmeStandardKindId == "" || cmeStandardKindId == undefined || cmeStandardKindId == null) {
+                        layer.msg("请先选择单位");
+                        return false;
+                    }
+                    layer.open({
+                        title: "上传头像",
+                        type: 2,
+                        area: ['800px', '550px'],
+                        fixed: false, //不固定
+                        maxmin: true,
+                        content: 'cropHtml/cropPhoto.html?unitId=' + unitId + "&cmeStandardKindId=" + cmeStandardKindId,
+                        closeBtn: 1
+                    });
+                });
+
+                window.getPhotoUrl = function (photoUrl, winName) {
+                    layer.msg("上传成功");
+                    $("#tab2_div_show_photo").show();
+                    $("#tab2_hidden_photo").val(photoUrl); 
+
+                    var index = layer.getFrameIndex(winName);
+                    layer.close(index);
+                }
+
+                $("#tab2_div_show_photo").click(function () {
+                    layer.open({
+                        type: 1,
+                        shade: false,
+                        title: false,
+                        content: $('#layer_notice'),
+                        success: function(){
+                            let photoUrl = $("#tab2_hidden_photo").val();
+                            photoUrl = tool.getComAliyunUrl(photoUrl.replace(/"/g, '')); 
+                            $("#show_img").attr("src", photoUrl).show();
+                        }
+                    });
+                });
+
+                let memoIndex ;
+                $("#jilinPersonStateMemo").click(function() {
+                    memoIndex != null && layer.close(memoIndex);
+                    memoIndex = layer.open({
+                        type: 2,
+                        shade: false,
+                        title: "说明",
+                        area: ['550px', '220px'],
+                        content: "./jilinPersonStateMemo.html"
+                    });
+                });
+
+
+                //未聘任勾选，无法录入聘任时间
+                $("#tab2_select_does_engage").change(function () {
+                    var doesChecked = $(this).prop("checked");
+                    console.log("tab2_select_does_engage:" + doesChecked);
+                    if (doesChecked == true) {
+                        $("#tab2_date_job_date").val("");
+                        $("#tab2_date_job_date").attr("disabled", "disabled");
+                    } else {
+
+                        $("#tab2_date_job_date").removeAttr("disabled");
+                    }
+                });
+
+                //初始化学历下拉框
+                active.initSelect("tab2_select_education", 1, "初始化学位下拉框失败");
+
+                //初始化学位下拉框
+                active.initSelect("tab2_select_degree", 2, "初始化学位下拉框失败");
+
+                //初始化民族下拉框
+                active.initSelect("tab2_select_nation", 3, "初始化民族下拉框失败");
+
+                //初始化民族行政职务
+                active.initSelect("tab2_select_administratorduty", 10, "初始化行政职务下拉框失败");
+
+                //初始化院内职务
+                active.initSelect("tab2_select_hospital_duty", 6, "初始化院内职务下拉框失败");
+
+                //初始化行政级别
+                active.initSelect("tab2_select_administratorlevel", 9, "初始化行政级别下拉框失败");
+
+
+                $("#tab2_text_person_name").val(person_name).prop("disabled", "disabled");
+                $("#tab2_select_cert_type_id").val(cert_type_id).prop("disabled", "disabled");
+                $("#tab2_text_cert_id").val(cert_id.toUpperCase()).prop("disabled", "disabled");
+                $("#tab2_text_mobile").val(mobile);
+
+                //如果是身份证,提取性别和出生日期
+                if (cert_type_id == "9fcb08ce-ee86-4e4c-9611-9d430101cea4") {
+                    console.log(cert_id);
+                    if (cert_id.length == 18) {
+                        var birthday = cert_id.substring(6, 14);
+                        var gender = cert_id.substring(16, 17);
+                        var year = birthday.substring(0, 4);
+                        var month = birthday.substring(4, 6);
+                        var day = birthday.substring(6, 8);
+                        $("#tab2_date_birthday").val(year + "-" + month + "-" + day);
+                        var gender_value = (gender % 2 == 0) ? "女" : "男";
+                        $("#tab2_select_sex").val(gender_value);
+                    }
+                }
+
+            }
+
+            //进入第 4 页
+            if (tab_index == 3) {
+                $(".cent_content").find(".cent_ul").find("li").eq(1).removeClass("set_img02").addClass("set_img04");
+                $(".cent_content").find(".cent_ul").find("li").eq(2).removeClass("set_img02").addClass("set_img04");
+                $(".cent_content").find(".cent_ul").find("li").eq(3).removeClass("set_img02").addClass("set_img05");
+                $("#btn_next").val("登录").addClass("tips_right").removeClass("con_btn");
+            }
+
+            //tab页面的显示和隐藏
+            $(".cent_content").find(".cent_ul").find("li:lt(" + (tab_index + 1) + ")").find("span").removeClass("cent_text02").addClass("cent_text01");
+            $('.cent_content').children('.div_content:lt(3)').hide();
+            $('.cent_content').children('.div_content:eq(' + tab_index + ')').show();
+
+            display_tab_index = tab_index;
+
+        };
+
+        //初始化各种下拉框
+        active.initSelect = function (select_id, kind_id, errorStr) {
+            $.ajax({
+                url: huayi_sjwh_url + "comdictionary/getDicsByKindId",
+                data: { kindId: kind_id },
+                success: function (result) {
+                    if (result.success == true) {
+                        var objList = result.data;
+                        var obj = {};
+                        for (var i = 0; i < objList.length; i++) {
+                            obj = objList[i];
+                            $("<option value=" + obj.dict_id + ">" + obj.dict_name + "</option>").appendTo($("#" + select_id))
+
+                        }
+                    }
+                    else {
+                        layer.msg(errorStr);
+                    }
+                }
+            });
+        }
+
+        //第 2 页各种输入检查
+        active.checkPagePerson = function () {
+            if ($("#tab2_text_person_name").val() == "") {
+                layer.msg("请填写姓名");
+                return false;
+            }
+            if ($("#tab2_select_cert_type_id").val() == "") {
+                layer.msg("请选择证件类型");
+                return false;
+            }
+            if ($("#tab2_text_cert_id").val() == "") {
+                layer.msg("请填写证件号码");
+                return false;
+            }
+            if ($("#tab2_text_mobile").val() == "") {
+                layer.msg("请填写手机号");
+                return false;
+            }
+            if (checkPhone($("#tab2_text_mobile").val()) == false) {
+                layer.msg("请填写正确的手机号");
+                return false;
+            }
+            //限制手机号唯一
+            let mobile = $("#tab2_text_mobile").val();
+            if (checkMobileExists(mobile)) {
+                layer.msg("系统中已存在您输入的手机号,请更换");
+                return false;
+            }
+
+            if ($("#tab2_select_sex").val() == "") {
+                layer.msg("请选择性别");
+                return false;
+            }
+            if ($("#tab2_date_birthday").val() == "") {
+                layer.msg("请填写出生日期");
+                return false;
+            }
+            if ($("#tab2_hidden_unit_id").val() == "") {
+                layer.msg("请选择所在单位");
+                return false;
+            }
+            if ($("#tab2_hidden_dept_id").val() == "") {
+                layer.msg("请选择所在科室");
+                return false;
+            }
+            if ($("#tab2_hidden_title_id").val() == "") {
+                layer.msg("请选择当前职称");
+                return false;
+            }
+
+            //当选择无职称的时候，不用判断职称评定时间和聘任年度
+            if ($("#tab2_hidden_title_id").val().toLowerCase() != "35208e7a-f827-498e-997d-9b2f0124b233") {
+                if ($("#tab2_date_grant_date").val() == "") {
+                    layer.msg("请选择职称评定时间");
+                    return false;
+                }
+                if (!IS_ZHEJIANG) {
+                    if ($("#tab2_date_job_date").val() == "" && $("#tab2_select_does_engage").prop("checked") == false) {
+                        layer.msg("请选择职称聘任年度");
+                        return false;
+                    }
+                }
+            }
+
+            if ($("#tab2_select_medical_type").val() == "") {
+                if(IS_ZHEJIANG) {
+                    layer.msg("请选择人员类型");
+                    return false;
+                }
+            }
+
+            if ($("#tab2_select_person_state_id").val() == "") {
+                layer.msg("请选择人员状态");
+                return false;
+            }
+            if (!IS_ZHEJIANG) { 
+                if ($("#tab2_select_is_intheseries").val() == "") {
+                    layer.msg("请选择在编状态");
+                    return false;
+                }
+            }
+            
+            if ($("#tab2_hidden_spec").val() == "") {
+                layer.msg("请选择专业");
+                return false;
+            }
+
+            if ($("#tab2_text_email").val() != "" && checkEmail($("#tab2_text_email").val()) == false) {
+                layer.msg("请输入正确的邮箱");
+                return false;
+            }
+            if (fun_person_photo_required == "1") {
+                if ($("#tab2_hidden_photo").val() == "") {
+                    layer.msg("请上传人员照片");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        var canNext;
+        //下一步或者登录按钮点击
+        $("#btn_next").click(function () {
+            canNext = true;
+            //第 0 页的按钮点击
+            if (display_tab_index == 0) {
+                console.log($("#tab0_select_cert_type").val());
+                cert_type_id = $("#tab0_select_cert_type").val();
+                cert_id = $("#tab0_text_cert_id").val();
+                person_name = $("#tab0_text_person_name").val();
+                if (cert_type_id == "") {
+                    layer.msg("请选择证件类型");
+                    return;
+                }
+
+                if (cert_id == "") {
+                    layer.msg("请输入证件号码");
+                    return;
+                }
+                if(checkCertInfo() == false) return ;
+                if (person_name == "") {
+                    layer.msg("请输入姓名");
+                    return;
+                }
+                $.ajax({
+                    url: huayi_permission_url + "comuser/doesCertIdExistsAndPersonNameMatches",
+                    data: { certId: cert_id, personName: person_name },
+                    success: function (result) {
+                        if (result.success == true) {
+                            if (result.data.CertIdExists == false) {  //不在人员库，继续注册
+                                active.activate_tab_css(1);
+                                canNext = false;
+                            }
+                            else if (result.data.PersonNameMatches == true) {  //在人员库，且姓名匹配，提示登录或者修改密码
+                                $("#span_div_certId_personName_mch").text(result.data.unitName);
+                                $("#div_certId_personName_mch").show();
+
+                            }
+                            else {  //在人员库，且姓名不匹配，提示去单位改信息
+                                $("#div_certId_personName_notmch").show();
+                                $("#span_div_certId_personName_notmch").text(result.data.unitName);
+                            }
+                        } else {
+                            layer.alert(result.msg);
+                            canNext = false;
+                        }
+                    }
+                });
+
+            }
+
+            //第 1 页的按钮点击
+            if (display_tab_index == 1 && canNext == true) {
+                var password1 = $("#tab1_text_password1").val();
+                var passowrd2 = $("#tab1_text_password2").val();
+                if (password1 == "") {
+                    layer.msg("密码不能为空");
+                    return;
+                }
+                if (password1.length > 25 || password1.length < 8) {
+                    layer.msg("密码位数应该大于等于8位，小于等于25位");
+                    return;
+                }
+                if (isNumberAndLetterAndSpecialCh(password1) == false) {
+                    layer.msg("密码应该由字母+数字+特殊符号组成");
+                    return;
+                }
+                if (password1 != passowrd2) {
+                    layer.msg("重复密码和密码应该一致");
+                    return;
+                }
+                mobile = $("#tab1_text_phone").val();
+                if (checkMobileExists(mobile)) {
+                    layer.msg("您输入的手机号在系统中已存在，请直接去登录");
+                    return;
+                }
+
+                var phoneCodeInput = $("#tab1_text_input_code").val();
+
+                if (phoneCodeInput == "999999") {
+                    active.activate_tab_css(2);
+                    canNext = false;
+                } else {
+                    var data = {
+                        "msgCodeType": "PERSON_REGISTER",
+                        "phone": encodeAesString(mobile).toString(),
+                        "code": encodeAesString(phoneCodeInput).toString()
+                    };
+                    $.ajax({
+                        async: false,
+                        type: "post",
+                        url: huayi_mcenter_url + "message/code/check",
+                        contentType: "application/json",
+                        dataType: "json",
+                        data: JSON.stringify(data),
+                        success: function (result) {
+                            if (result.success == true) {
+                                active.activate_tab_css(2);
+                                canNext = false;
+                            }
+                            else {
+                                layer.alert(result.msg);
+                                canNext = false;
+                                return;
+                            }
+                        }
+                    });
+                }
+
+
+            }
+
+            //第 2 页的按钮点击
+            if (display_tab_index == 2 && canNext == true) {
+
+                let checkYinsi = $("#apply_yinsi").prop("checked");
+                if (!checkYinsi) {
+                    layer.msg("请阅读并同意《隐私政策》");
+                    return false;
+                }
+                let checkMingan = $("#apply_mingan").prop("checked");
+                if (!checkMingan) {
+                    layer.msg("请阅读并同意 《敏感个人信息授权书》");
+                    return false;
+                }
+
+                var checkResult = active.checkPagePerson();
+                if (checkResult == true) {
+
+                    var obj = {
+                        userName: $("#tab2_text_cert_id").val(),//传入后台后，userName会换成后台生成的personNo
+                        userPwd: encodeAesString($("#tab1_text_password1").val()).toString(),
+                        personName: encodeAesString($("#tab2_text_person_name").val()).toString(),
+                        certType: $("#tab2_select_cert_type_id").val(),
+                        certId: encodeAesString($("#tab2_text_cert_id").val().toString().toUpperCase()).toString(),
+                        mobile: encodeAesString($("#tab2_text_mobile").val()).toString(),
+                        telephone: encodeAesString($("#tab2_text_telephone").val()).toString(),
+                        sex: $("#tab2_select_sex").val(),
+                        birthday: $("#tab2_date_birthday").val(),
+                        unitId: $("#tab2_hidden_unit_id").val(),
+                        deptId: $("#tab2_hidden_dept_id").val(),
+                        nation: ($("#tab2_select_nation").val() == "") ? null : $("#tab2_select_nation").val(),
+                        university: $("#tab2_text_university").val(),
+                        email: $("#tab2_text_email").val(),
+                        spec: ($("#tab2_hidden_spec").val() == "") ? null : $("#tab2_hidden_spec").val(),
+                        personStateId: $("#tab2_select_person_state_id").val(),
+                        jobDate: $("#tab2_date_job_date").val(),
+                        titleId: $("#tab2_hidden_title_id").val(),
+                        grantDate: $("#tab2_date_grant_date").val(),
+                        education: ($("#tab2_select_education").val() == "") ? null : $("#tab2_select_education").val(),
+                        degree: ($("#tab2_select_degree").val() == "") ? null : $("#tab2_select_degree").val(),
+                        hospitalDuty: ($("#tab2_select_hospital_duty").val() == "") ? null : $("#tab2_select_hospital_duty").val(),
+                        photo: $("#tab2_hidden_photo").val(),
+                        remark: $("#tab2_text_remark").val(),
+                        internals: $("#tab2_text_internals").val(),
+                        administratorlevel: ($("#tab2_select_administratorlevel").val() == "") ? null : $("#tab2_select_administratorlevel").val(),
+                        administratorduty: ($("#tab2_select_administratorduty").val() == "") ? null : $("#tab2_select_administratorduty").val(),
+                        isIntheseries: $("#tab2_select_is_intheseries").val(),
+                        profCertId: $("#tab2_text_prof_cert_id").val(),
+                        medicalType: $("#tab2_select_medical_type").val()
+                    };
+                    //数据来源
+                    obj.source = 0;
+                    $.ajax({
+                        async: false,
+                        url: huayi_personorg_url + "comperson/register",
+                        type: "post",
+                        data: JSON.stringify(obj),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (result) {
+                            if (result.success == true) {
+                                console.log(result.data);
+                                var photoUrl = $("#tab2_hidden_photo").val();
+                                var personNo = result.data.personNo;
+                                //changePhotoName(photoUrl, personNo);
+                                active.activate_tab_css(3);
+                                canNext = false;
+                                return;
+                            }
+                            else {
+                                layer.msg("添加人员失败,失败原因:" + result.msg);
+                                canNext = false;
+                                return;
+
+                            }
+                        },
+                        error: function () {
+                            layer.msg("请求失败");
+                        }
+                    });
+                }
+
+
+            }
+
+            //第 3 页的按钮点击
+            if (display_tab_index == 3 && canNext == true) {
+                window.tologin();
+                return;
+            }
+        });
+
+
+        $().ready(function () {
+            active.activate_tab_css(0);
+        });
+
+
+        //获取当前日期的 yyyy-MM-dd 格式
+        active.getNowDate = function () {
+            var myDate = new Date;
+            var year = (myDate.getFullYear()).toString(); //获取当前年
+            var mon = (myDate.getMonth() + 1).toString(); //获取当前月
+            var date = (myDate.getDate()).toString(); //获取当前日
+            if (mon < 10) mon = "0" + mon;
+            if (date < 10) date = "0" + date;
+            return year + "-" + mon + "-" + date;
+        }
+
+
+        //添加人员成功后，修改图片名臣
+        window.changePhotoName = function (photoUrl, personNo) {
+            if (personNo === "") {
+                return;
+            }
+            //photoPath newName
+            var photoUrl = photoUrl.replace(/"/g, "");
+            var start = photoUrl.indexOf("/photo");
+            var end = photoUrl.length;
+            var photoPath = photoUrl.substring(start + 1, end);
+
+            $.ajax({
+                async: false,
+                type: "post",
+                url: huayi_personorg_url + "uploadApi/ChangeImageName",
+                // headers: {
+                //     'Authorization': localStorage.getItem('token'),
+                //     'KJPT-USER-ID': localStorage.getItem('user-id')
+                // },
+                data: { photoPath: photoPath, newName: personNo },
+                success: function (result) {
+                    if (result.success == true) {
+                        layer.msg("图片名称修改成功");
+                    } else {
+                        layer.msg("图片名称修改失败:" + result.msg);
+                    }
+                },
+                error: function () {
+                    //layer.msg("请求报错");
+                }
+            });
+        }
+
+        function checkCertInfo() {
+            let certType = $("#tab0_select_cert_type").val();
+            let certId = $("#tab0_text_cert_id").val();
+
+            if (certType == "9fcb08ce-ee86-4e4c-9611-9d430101cea4") {
+                if (isCertId(certId) == false) {
+                    layer.msg('请输入正确的身份证号', { icon: 5 });
+                    return false;
+                }
+            }
+            if (certType == "3444541a-9703-44ed-aae6-9d8b01574916") {
+                if (isGATCertId(certId) == false) {
+                    layer.msg('请输入正确的港澳台居民居住证', { icon: 5 });
+                    return false;
+                }
+            }
+            return true;
+        } 
+
+        // 判断手机号是否已经存在
+        window.checkMobileExists = function (mobile) {
+            mobile = encodeAesString(mobile).toString();
+            var check1 = false;
+            var check2 = false;
+            $.ajax({
+                async: false,
+                type: "get",
+                url: huayi_personorg_url + "comperson/doesMobileExists",
+                data: { "mobile": mobile },
+                success: function (result) {
+                    if (result.success == true) {
+                        check1 = result.data > 0 ? true : false;
+                    }
+                },
+                error: function () {
+                    layer.msg("请求报错");
+                }
+            });
+
+            $.ajax({
+                async: false,
+                type: "get",
+                url: huayi_permission_url + "comuser/doesMobileExists",
+                data: { "mobile": mobile },
+                success: function (result) {
+                    if (result.success == true) {
+                        check2 = result.data > 0 ? true : false;
+                    }
+                },
+                error: function () {
+                    layer.msg("请求报错");
+                }
+            });
+
+            return check1 || check2;
+        }
+
+        $("#tab2_text_mobile").blur(function () {
+            let mobile = $("#tab2_text_mobile").val();
+            if (checkMobileExists(mobile)) {
+                layer.msg("系统中已存在您输入的手机号,请更换");
+                return false;
+            }
+        });
+
+        //获取配置的值
+        window.getConfig = function (config_name) {
+            var config_value = "";
+            $.ajax({
+                async: false,
+                type: "post",
+                url: huayi_sjwh_url + "cmeCommonConfig/getConfigByUnitFromRedis",
+                data: { unitId: provinceRoot, configNames: "fun_person_photo_required" },
+                success: function (res) {
+                    if (res.success == true) {
+                        if (config_name == "fun_person_photo_required") {
+                            config_value = res.data.fun_person_photo_required;
+                        }
+                    } else {
+                        layer.msg("获取配置出错");
+                    }
+                },
+                error: function () {
+                    layer.msg("获取配置出错");
+                }
+            });
+            return config_value;
+        }
+
+        window.tologin = function () {
+            let login_url = localStorage.getItem("login-url");
+            if (login_url == "" || login_url == undefined || login_url == null) {
+                location.href = "/login.html";
+            }
+            else {
+                location.href = login_url;
+            }
+        }
+
+
+
+    });
+
+     //#endregion
+</script>
+
+
+</html>

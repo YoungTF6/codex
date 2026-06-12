@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>二维码考勤</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=0.3, minimum-scale=0.3, maximum-scale=1.0, user-scalable=yes">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="../../../css/font.css">
+
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="../../../js/qrcode.js"></script>
+    <script type="text/javascript" src="../../../js/qrcode/jquery.qrcode.js"></script>
+    <script type="text/javascript" src="../../../js/qrcode/jquery.qrcode.min.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <script src="../../../js/common.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+    <style>
+        .cent_tit{
+            float: none;
+        }
+        .cont_box{
+            width: 90%;
+            max-width: 480px;
+            margin: 20px auto 5px;
+            float: none;
+        }
+        .square-box{
+            width: 90%;
+            height: 0px;
+            padding-bottom: 90%;
+            position: relative;
+        }
+        .square-box>#qrCodeForTeach{
+            position: absolute;
+            top: 0px;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+        }
+        #qrCodeForTeach>canvas{
+            width: 100%;
+            height: 100%;
+        }
+        #downloadLink>img{
+            width: 100%;
+            height: 100%;
+        }
+        .layui-layer-setwin .layui-layer-close2 {
+            right: -15px !important;
+            top: -15px !important;
+        }
+        @media all and (max-width: 1366px) {
+            .cent_box img{
+                width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="check_container">
+<!--    课程信息-->
+    <div class="left_box bigbox" style="width: 30%;">
+        <div class="left_cent">
+            <div class="left_detail">
+                <span class="detail_tit">课程详情</span>
+            </div>
+            <ul class="left_ul">
+                <li class="left_lis">
+                    <span class="left_top">课程名称</span>
+                    <p class="left_news" id="teachSubject"></p>
+                </li>
+
+                <li class="left_lis">
+                    <span class="left_top">授课老师</span>
+                    <span class="left_news" id="teacherName"></span>
+                </li>
+
+                <li class="left_lis">
+                    <span class="left_top">开始时间</span>
+                    <span class="left_news" id="startDate"></span>
+                </li>
+                <li class="left_lis">
+                    <span class="left_top">结束时间</span>
+                    <span class="left_news" id="endDate"></span>
+                </li>
+                <li class="left_lis">
+                    <span class="left_top">考勤人数上限</span>
+                    <span class="left_news" id="limitPerson"></span>
+                </li>
+                <li class="left_lis" >
+                    <span class="left_top">授课地点</span>
+                    <p class="place_icon" id="studyAddress"></p>
+                </li>
+                <li class="left_lis" >
+                    <span class="left_top">考勤范围(米)</span>
+                    <p class="left_news" id="fanwei"></p>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+
+    <!--中间二维码-->
+    <div class="cent_box bigbox" style="flex: 2;">
+        <div class="download-icon place-box"><i></i></div>
+        <p class="cent_tit">实时考勤人数 <span id="total">0</span> 人</p>
+
+        <div class="cont_box">
+            <div class="square-box">
+                <div id="qrCodeForTeach" style="border: 10px solid #fff;"></div>
+            </div>
+        </div>
+        <div class="cent_foot">
+            <div class="cent_lines"></div>
+            <select id="selectForTime" class="cent_text" onchange="selectChange()"></select>
+            <div class="cent_lines"></div>
+        </div>
+    </div>
+
+<!--    右侧实时考勤信息-->
+    <div class="right_box bigbox" style="width: 30%">
+
+        <div class="right_cent">
+            <div class="right_top">
+                <span class="right_tit">考勤人员</span>
+            </div>
+
+            <div id="slide">
+                <div class="right_container" id="slide1">
+                    <ul class="right_ul" id="listForAttendance"></ul>
+                </div>
+                <div class="right_container" id="slide2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="downloadAppBox" style="display: none;">
+    <div id="downloadLink"><img src="../../../img/app_link.png"></div>
+</div>
+</body>
+<script>
+    var speed = 10;
+    var slide = document.getElementById("slide");
+    var slide2 = document.getElementById("slide2");
+    var slide1 = document.getElementById("slide1");
+    slide2.innerHTML = slide1.innerHTML
+
+    function Marquee() {
+        if (slide2.offsetTop <= slide.scrollTop)
+            slide.scrollTop -= slide1.offsetHeight
+        else {
+            slide.scrollTop++
+        }
+    }
+
+    var MyMar = setInterval(Marquee, speed)
+    slide.onmouseover = function () {
+        clearInterval(MyMar)
+    };
+    slide.onmouseout = function () {
+        MyMar = setInterval(Marquee, speed)
+    }
+// 全局配置及引入相关的模块
+layui.config({
+    base: '/js/layui/ext/'
+}).extend({
+    tool: 'tool'
+});
+
+layui.use(['table', 'form','tool'], function () {
+    var layer=layui.layer,$=layui.jquery,tool=layui.tool;
+    let teachId,refreshTime=1;
+    // let codeParam={"projectType":2};
+    let codeIndex,personTime=3000,isBeginAtt=false;;
+    let timeUrl = "https://gettime.91huayi.com/GetTimeTicks.aspx";
+    let personLists = [];
+    let configName1 = "range_qrcode_valid_duration";
+    let downloadIndex;
+    
+
+    let getTeachInfo = function() {
+        let tempUrl = `${huayi_projectscore_url}attendance/getTeachInfo?teachId=${teachId}&projectType=2`;
+        $.ajax({
+            type: 'get',
+            url: tempUrl,
+            contentType: 'application/json;charset=UTF-8',
+            dataType: 'json',
+            success: function (res) {
+                if(res.status!=200) return;
+                if(res.data==null || res.data.length==0) return;
+                let obj = res.data;
+                $("#teachSubject").html(obj.teachName);
+                $("#teacherName").html(obj.teacherName);
+                $("#startDate").html(obj.startDate);
+                $("#endDate").html(obj.endDate);
+                setTeachInfo();
+            },
+            error: function () {
+                layer.msg("失败");
+            }
+        })
+    }
+
+
+
+    //设置课程信息
+    let setTeachInfo = function() {
+        var teachInfo = layui.data('attendanceInfo');
+        let address = tool.isEmpty(teachInfo.address) ? "没有设置考勤地址" : teachInfo.address;
+        $("#studyAddress").html(address);//授课地址
+        let score = teachInfo.scope === "0" || tool.isEmpty(teachInfo.scope) ? "无限制" : teachInfo.scope;
+        $("#fanwei").html(score);
+        let online = tool.isEmpty(teachInfo.online) ? '无上限' : teachInfo.online;
+        $("#limitPerson").html(online);//考勤上线
+    }
+
+    let addSelect = function(configMap) {
+        if(!configMap.hasOwnProperty(configName1)) {
+            return;
+        }
+        let configValue = configMap[configName1];
+        if(tool.isEmpty(configValue)) {
+            return;
+        }
+        let configArr = configValue.split(",");
+        let options = '';
+        for(let tempConfig of configArr){
+            if(tempConfig<=300) {
+                options += `<option value="${tempConfig}">二维码时效时间：${tempConfig}秒</option>`;
+            }
+            if(tempConfig>300&&tempConfig<=60*60){
+                let minute = tempConfig/60;
+                options += `<option value="${tempConfig}">二维码时效时间：${minute}分钟</option>`;
+            }
+            if(tempConfig>60*60&&tempConfig<=60*60*24){
+                let hour = tempConfig/(60*60);
+                options += `<option value="${tempConfig}">二维码时效时间：${hour}小时</option>`;
+            }
+            if(tempConfig>60*60*24){
+                let day = tempConfig/(60*60*24);
+                options += `<option value="${tempConfig}">二维码时效时间：${day}天</option>`;
+            }
+        }
+        $("#selectForTime").html(options);
+        refreshTime= configArr[0];
+        getTimeSecond(true);
+        
+    }
+
+    //获取时间戳
+    let getTimeSecond = function(isBegin=false) {
+        // codeParam["effectiveTime"] = refreshTime;
+        layui.data('attendanceInfo',{key: 'effectiveTime',value: refreshTime})
+        $.ajaxSettings.async = false;
+        $.getJSON(`${timeUrl}?callback=?`, function (data) {
+            // codeParam["time"]=data.miao;
+            layui.data('attendanceInfo',{key: 'time', value: data.miao})
+            getCode(isBegin);
+        })
+    }
+    //获取二维码
+    let getCode = function(isBegin=false) {
+        let tempUrl = huayi_projectscore_url + 'attendance/getAttendanceCode';
+        if(isBegin) tempUrl += `?isBegin=true`;
+        $.ajax({
+            type: 'post',
+            url: tempUrl,
+            contentType: 'application/json;charset=UTF-8',
+            data: JSON.stringify(layui.data('attendanceInfo')),
+            //JSON.stringify(codeParam),
+            async: false,
+            dataType: 'json',
+            success: function (res) {
+                if(res.status != 200) {
+                    if(res.status == 10007) {
+                        layer.msg(res.msg);
+                        return;
+                    }
+                    layer.msg("获取二维码失败");
+                    return;
+                }
+                erweima=res.data;
+                $("#qrCodeForTeach").empty();
+                $('#qrCodeForTeach').qrcode({
+                    text: erweima, //根据此串生成一个二维码
+                    correctLevel: QRErrorCorrectLevel.L, //纠错等级
+                });
+                if(isBegin) {
+                    isBeginAtt=true;
+                    codeIndex = setInterval(getTimeSecond,refreshTime*1000);
+                }
+                
+            },
+            error: function () {
+                layer.msg("二维码生成失败");
+                clearInterval(codeIndex);
+            }
+        })
+    }
+
+    //获取右侧人员数据
+    let getPersonList = function() {
+        let num = personLists.length;
+        let tempUrl = huayi_projectscore_url + `attendance/getAttendancePersons?teachId=${teachId}&projectType=2&startIndex=${num}`;
+        $.ajax({
+            type: 'post',
+            url: tempUrl,
+            contentType: 'application/json;charset=UTF-8',
+            success: function (res) {
+                if(res.status != 200) {
+                    layer.msg("获取人员失败");
+                }
+                document.getElementById("total").innerHTML=res.data.total;
+                createPersons(res.data.list);
+            },
+            error: function () {
+                layer.msg("获取人员失败");
+            }
+        })
+    }
+
+    //创建用户
+    let createPersons = function(persons){
+        if(persons.size == 0) {
+            return;
+        }
+        outer:for(let obj of persons){
+            for(let exitPerson of personLists) {
+                if(exitPerson.attendanceDate==obj.attendanceDate){
+                    continue outer;
+                }
+            }
+            personLists.push(obj);
+            let tempHtml = `<li class="right_lis">
+                <img src="images/head_img.png" alt="" class="right_img">
+                <div class="right_cont">
+                    <p class="right_news">姓名： <span>${obj.personName}</span></p>
+                    <p class="right_text">考勤时间：<span>${obj.attendanceDate}</span></p>
+                    <img src="images/prove_img.png" alt="" class="right_prove">
+                </div>
+                </li>`;
+            $("#listForAttendance").append(tempHtml);
+        }
+    }
+
+    window.selectChange = function() {
+        if(!isBeginAtt) return;
+        clearInterval(codeIndex);
+        refreshTime = $('select  option:selected').val();
+        getTimeSecond();
+        codeIndex = setInterval(getTimeSecond,refreshTime*1000);
+    }
+
+    //增加选项
+    let getConfig = function() {
+        $.ajax({
+            async   : false,
+            type    : 'post',
+            url     : huayi_sjwh_url + 'cmeCommonConfig/getConfigByUnitFromRedis',
+            data    : { 
+                unitId       : localStorage.getItem("unit-id"), 
+                configNames  : configName1
+            },
+            success : function (res) {
+                if (res.success == true) {
+                    addSelect(res.data);
+                } else {
+                    layer.msg('获取配置失败');
+                }
+            },
+            error   : function () {
+                layer.msg('获取配置失败');
+            }
+        });
+    }
+
+    //监听按钮点击
+    let bindBtn = function() {
+        $('.download-icon').click(function () {
+            if(downloadIndex) {
+                layer.close(downloadIndex);
+                downloadIndex = null;
+            } else {
+                downloadIndex = layer.open({
+                    type:1,
+                    title: false,
+                    offset: "r",
+                    shade: 0,
+                    moveOut: true,
+                    move:"#downloadAppBox",
+                    content: $('#downloadAppBox'),
+                    cancel: function(index, layero){ 
+                        downloadIndex = null;
+                        return true;
+                    }
+                });
+            }
+        })
+    }
+
+    //页面初始化
+    let htmlInit = function() {
+        teachId = tool.getParamFromUrl("teachId");
+        if(tool.isEmpty(teachId)) {
+            layer.msg("课程id为空");
+        }
+        bindBtn();
+        getConfig();
+        getTeachInfo();
+        setInterval(getPersonList,personTime);
+        layui.data('attendanceInfo',{key: 'projectType',value: 2});
+        layui.data('attendanceInfo',{key: 'cmeStandardKindId',value: localStorage.getItem("standardkind-id")});
+    }
+
+    htmlInit();
+})
+</script>
+</html>

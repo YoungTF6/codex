@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>考试</title>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no, viewport-fit=cover"/>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <!-- <script src="../js/rem.js"></script> -->
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <!-- <script src="../js/jquery-migrate-3.4.0.js"></script> -->
+    <script src="/js/constant.js"></script>
+    <!-- <script src="../js/tool.js"></script> -->
+    <script src="/js/common.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <!-- <script type="text/javascript" src="../js/tool/url_tools.js"></script> -->
+</head>
+<body>
+
+<div class="head_box">
+    <!-- <a href="#" class="return js-return"></a> -->
+    <span class="js-exam-name">考试名称</span>
+</div>
+<div class="placeholder"></div>
+
+<div class="assess_container">
+    <!--考试是否通过提示-->
+    <div class="adopt_box hidden_elem js_pass_box" id="passBox">
+        <div class="adopt_sub">
+            <img src="css/adopt_icon.png" alt="" class="adopt_icon">
+            <span class="adopt_tit">恭喜你,考试通过!
+                <br>
+				<!-- <span class="js-time">3</span> -->
+            </span>
+            <!--完成并返回-按钮-->
+            <!-- <input type="button" value="完成并返回" class="return_btn js_pass_btn"> -->
+        </div>
+    </div>
+    <!--考试未通过提示-->
+    <div class="cont_cent hidden_elem js_nopass_box"> 
+        <div class="adopt_sub">
+            <img src="css/fail_icon.png" alt="" class="adopt_icon">
+            <span class="fail_tit">很遗憾，考试未通过。</span>
+            <p class="fail_text js_fail_text">您有1道题答案错误，请继续努力！</p>
+            <!--重新考试-按钮-->
+            <input type="button" value="重新考试" class="return_btn js_replace_exam">
+        </div>
+    </div>
+    <div class="cont_cent js_question_box">
+        <form id="questionForm">
+            <ul class="ass_ul js-exam-questions">
+            </ul>
+        </form>
+    </div>
+    <!--提交-按钮-->
+    <input type="button" value="提交" class="submit_btn hidden_elem js-btn">
+    
+</div>
+</body>
+</html>
+<script>
+    function bakUrl() {
+        var u = navigator.userAgent, app = navigator.appVersion;
+        var isAndroid = u.indexOf('Android_HuaYi') > -1; //g
+        var isIOS = u.indexOf('iOS_HuaYi') > -1; //ios终端
+        if (isAndroid) {
+            //安卓   参数如果c为1则app关闭当前页,参数如果为2则app刷新当前页
+            MoblieScriptImpl.flush(1);
+        }
+        if (isIOS) {
+            //IOS
+            window.webkit.messageHandlers.flush.postMessage(1);
+        }
+    }
+
+    function changeTime(){
+        var time;
+        time = $(".js-time").text();  
+        time = parseInt(time);
+        if (time <= 0) {
+            bakUrl();
+        } else {
+            time--;
+            $(".js-time").text(time);
+        }
+    }
+
+     // 全局配置及引入相关的模块
+    layui.config({
+        base : '/js/layui/ext/'
+    }).extend({
+        tool        :   'tool'
+    });
+    // 全局配置及引入相关的模块
+    layui.use(['table', 'form','tool'], function () {
+        let layer = layui.layer,tool=layui.tool;
+        let itemArr = ["itemA","itemB","itemC","itemD","itemE","itemF","itemG","itemH"];
+        let objItem = {"itemA":"A","itemB":"B","itemC":"C","itemD":"D","itemE":"E","itemF":"F","itemG":"G","itemH":"H"};
+        let allAnswere = "ABCDEFGH";
+        let questionData = null;
+        let nowProjectId = "",nowIsExam = 0;
+        let nowPaperId = "",nowProjectType=1, nowCertId = '';
+        let loading;
+
+        //创建试题
+        let createQuestions = function(status=200,data,msg="系统错误"){
+            if(status != 200){
+                $(".js-btn").addClass("hidden_elem");
+                $(".js-exam-name").html("考试试题");
+                $(".js-exam-questions").html(`<div class='error_text'>${msg}</div>`);
+                return;
+            }
+            if(data==null || data.length == 0){
+                $(".js-btn").addClass("hidden_elem");
+                $(".js-exam-name").html("考试试题");
+                $(".js-exam-questions").html("<div class='error_text'>无数据</div>");
+                return;
+            }
+            nowPaperId = data.paperId;
+            $(".js-exam-name").html(data.paperName);
+            let htmlText = "";
+            questionData = data.questions;
+            const attrInput = (nowIsExam ==1)? " disabled " : "";
+            for (let i = 0; i < questionData.length; i++) {
+                htmlText += `<li class="ass_lis">`+
+                    `<p class="ass_tit">${i+1}、${questionData[i]["questionText"]}</p>`+
+                    `<div class="ass_cent">`;
+                const questionType = (questionData[i]["questionType"] == 1) ? "radio" : "checkbox";
+                const questionTypeClass = (questionData[i]["questionType"] == 1) ? "b-radio" : "c-radio";
+                for(let attr of itemArr){
+                    const element = questionData[i];
+                    if(element.hasOwnProperty(attr) && !tool.isEmpty(element[attr])) {
+                        const isCheck = (nowIsExam!=0 && element["answer"].indexOf(objItem[attr])>=0) ? " checked ":"";
+                        htmlText += `<label class="ass_label">`+
+                            `<input type="${questionType}" name="${element['questionId']}" value="${objItem[attr]}" class="a-radio" ${isCheck} ${attrInput}>`+
+                            `<span class="${questionTypeClass}"></span>`+
+                            `<span class="radio_span">${objItem[attr]}.${element[attr]}</span>`+
+                            `</label>`;
+                    }
+                }
+                htmlText +=`</div></li>`;
+            }
+            $(".js-exam-questions").html(htmlText);
+            nowIsExam!=0 && $(".js-btn").addClass("hidden_elem");
+            nowIsExam==0 && $(".js-btn").removeClass("hidden_elem");
+        }
+
+        //获取试题
+        let getQuestion = function(projectId){
+            $.ajax({
+                url: huayi_projectscore_url + "cmeExamQuestion/getExamPaper",
+                type:'post',
+                data:{projectId   :   projectId},
+                success:function(res){
+                    createQuestions(res.status,res.data,res.msg);
+                },
+                error:function(res){
+                    createQuestions(301);
+                },
+                // beforeSend:function(xhr){
+                //     xhr.setRequestHeader("Authorization",token);
+                // }
+            });
+        }
+
+        
+
+        //监听提交按钮
+        let bindBtn = function(){
+            $(".js-btn").click(function(){
+                // 有些手机不支持ES6，导致这个方法有些手机失败
+                // let formElem = document.getElementById("questionForm");
+                // const formData = new FormData(formElem);
+                if(tool.isEmpty(questionData) || questionData.length == 0){
+                    return;
+                }
+                let errorNum = 0;
+                for(let data of questionData){
+                    // const answer = formData.getAll(data["questionId"]);
+                    let elems = $(`#questionForm input[name="${data["questionId"]}"]:checked`);
+                    let answer = [];
+                    for (let i = 0; i < elems.length; i++) {
+                        answer.push(elems[i].value);
+                    }
+                    !checkAnswer(answer,data["answer"]) && errorNum ++;
+                }
+                if(errorNum != 0){
+                    $(".js-btn").addClass("hidden_elem");
+                    $(".js_nopass_box").removeClass("hidden_elem");
+                    $(".js_question_box").addClass("hidden_elem");
+                    $(".js_fail_text").html(`您有${errorNum}道题答案错误，请继续努力！`);
+                    return;
+                }
+                examPass();
+            })
+
+            //重新考试
+            $(".js_replace_exam").click(function(){
+                $(".js_nopass_box").addClass("hidden_elem");
+                $(".js_question_box").removeClass("hidden_elem");
+                $(".js-btn").removeClass("hidden_elem");
+                getQuestion(nowProjectId);
+            })
+
+            //完成并返回
+            $(".js_pass_btn").click(function(){
+                bakUrl();
+            })
+
+            // $(".js-return").click(function(){
+            //     window.location.href  = `joinProject.html?token=${token}`;
+            // })
+        }
+
+        //检查答案是否正确
+        let checkAnswer = function(answer,relAnswer){
+            let relAnswerArr = [];
+            for(let i=0;i<relAnswer.length;i++){
+                if(allAnswere.indexOf(relAnswer[i]) < 0) continue;
+                relAnswerArr.push(relAnswer[i]);
+            }
+            if(answer.length != relAnswerArr.length) return false;
+            for(let a of answer){
+                if(relAnswerArr.toString().indexOf(a) < 0) return false;
+            }
+            return true;
+        }
+
+        
+
+        //考试通过请求
+        let examPass = function(){
+            loading = layer.msg('加载中', { icon: 16, shade: 0.3, time: 0 });
+            $.ajax({
+                url: huayi_projectscore_url + "cmeExamResult/save/browser",
+                type:'get',
+                data:{
+                    projectId:nowProjectId,
+                    paperId:nowPaperId,
+                    projectType:nowProjectType,
+                    certId: nowCertId
+                },
+                contentType: 'application/json;charset=UTF-8',
+                success:function(res){
+                    layer.close(loading);
+                    if(res.status ==200){
+                        $(".js-btn").addClass("hidden_elem");
+                        $(".js_pass_box").removeClass("hidden_elem");
+                        scroll(0,0);
+                        setInterval("changeTime()", 1000);
+                    }else{
+                        layer.msg("提交失败");
+                    }
+                },
+                error:function(res){
+                    layer.close(loading);
+                    layer.msg("提交失败");
+                },
+                // beforeSend:function(xhr){
+                //     xhr.setRequestHeader("Authorization",token);
+                // }
+            });
+        }
+
+        let htmlInit = function(){
+            nowProjectId = getUrlParam("proj_id");
+            // nowIsExam = getUrlParam("isExam");
+            nowProjectType = getUrlParam("type_id");
+            nowCertId = getUrlParam("cert_id");
+            if(tool.isEmpty(nowProjectId)  || tool.isEmpty(nowCertId)  || tool.isEmpty(nowProjectType)){
+                layer.msg("缺少必要参数");
+                return;
+            }
+            getQuestion(nowProjectId);
+            bindBtn();
+        }
+        htmlInit();
+    })
+    
+</script>

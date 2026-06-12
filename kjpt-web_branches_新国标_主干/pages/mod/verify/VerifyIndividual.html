@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>verify.individual</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+
+    <link rel="stylesheet" href="/pages/mod/verify/css/reset.css" media="all">
+    <link rel="stylesheet" href="/pages/mod/verify/css/layout.css" media="all">
+
+    <!-- 请求路径配置-->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script><script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+    <script type="text/javascript" src="/pages/mod/verify/js/rem.js"></script>
+    <script type="text/javascript" src="/pages/mod/verify/js/mock.js"></script>
+
+</head>
+
+<div class="box">
+    <div class="main">
+        <div class="main_top_default">
+            <table class="top_tab">
+                <tr>
+                    <td>姓&emsp;&emsp;名</td>
+                    <td id="person_name">王磊</td>
+                </tr>
+                <tr>
+                    <td>性&emsp;&emsp;别</td>
+                    <td id="gender">男</td>
+                </tr>
+                <tr>
+                    <td>年  龄</td>
+                    <td id="age">30</td>
+                </tr>
+                <tr>
+                    <td>身份证号</td>
+                    <td id="cert_id" style="font-size: 0.8em;">130681198511221419</td>
+                </tr>
+            </table>
+            <div class="main_list_item">
+                <ul>
+                    <li id="cert_no_li">
+                        <b class="db">证书编号</b>
+                        <p id="cert_no">202200987650000001</p>
+                    </li>
+                    <li>
+                        <b class="db">项目名称</b>
+                        <p id="proj_name">2018</p>
+                    </li>
+                    <li>
+                        <b class="db">项目编号</b>
+                        <p id="proj_no">20220505130029</p>
+                    </li>
+                    <li><b class="db">学期日期</b>
+                        <p id="holdDate">2022050513</p>
+                    </li>
+                    <li>
+                        <b class="db">主办单位</b>
+                        <p id="teach_unit_name">演示单位</p>
+                    </li>
+                    <li>
+                        <b class="db">学&emsp;&emsp;分</b>
+                        <p id="score">2.00</p>
+                    </li>
+                    <li>
+                        <b class="db">学&emsp;&emsp;时</b>
+                        <p id="period">6.0</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<body>
+
+
+</body>
+
+<script>
+
+    const _ciphertext = getOrDefault(getUrlParamByName('verify'), 'a7da1622-1f3d-4215-9d66-ff85f23c06d8');
+    const _pdfType = getOrDefault(getUrlParamByName('pdfType'), 2);
+    let gAuditPdfVo = auditPdfVoResponseData.data;
+
+    $(function () {
+        console.info('ciphertext: %s, pdfType: %s', _ciphertext, _pdfType);
+        loadAuditPdfVo();
+    });
+
+    function loadAuditPdfVo() {
+        let visit = huayi_sjwh_url + 'audit/verify/qrcode/' + _ciphertext + '/' + _pdfType;
+        getAction(visit).then(response => {
+            let jsonRes = response.data;
+            if (jsonRes.success) {
+                gAuditPdfVo = jsonRes.data;
+            }
+        }).catch(error => {
+            console.info('error:加载AuditPdfVo');
+        }).finally(() => {
+            renderAuditPdfVo();
+        });
+    }
+
+    function renderAuditPdfVo() {
+        let gender = gAuditPdfVo.gender;
+        if ('1' === gender) {
+            gender = '男';
+        } else if ('2' === gender) {
+            gender = '女';
+        }
+        if (gAuditPdfVo) {
+            // 内蒙套隐藏证书编号
+            if ('08e44437-5789-44e0-8ff8-9ecb00a6348a' === gAuditPdfVo.standardKindId) {
+                $('#cert_no_li').css('display', 'none');
+            }
+            let unitName = gAuditPdfVo.scoreVoList[0].unitName;
+            let teachUnitText = gAuditPdfVo.scoreVoList[0].teachUnitText;
+            $("#person_name").text(gAuditPdfVo.personName);
+            $("#age").text(gAuditPdfVo.age);
+            $('#gender').text(gender);
+            $("#cert_id").text(gAuditPdfVo.certId);
+            $("#cert_no").text(gAuditPdfVo.certNo);
+            $("#proj_name").text(gAuditPdfVo.scoreVoList[0].projName);
+            $("#proj_no").text(gAuditPdfVo.scoreVoList[0].projNo);
+            $("#holdDate").text(gAuditPdfVo.scoreVoList[0].startDate + '至' + gAuditPdfVo.scoreVoList[0].endDate);
+            $("#teach_unit_name").text(teachUnitText ? teachUnitText : unitName);
+            $("#score").text(gAuditPdfVo.scoreVoList[0].score);
+            $("#period").text(gAuditPdfVo.scoreVoList[0].period);
+        }
+    }
+
+</script>
+
+<style>
+
+</style>
+</html>

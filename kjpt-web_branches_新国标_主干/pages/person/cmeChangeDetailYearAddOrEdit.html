@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>人员信息变更日志详情</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <script type="text/javascript" src="../../js/constantPage/projectConstant.js"></script>
+    <!-- 工具 -->
+    <script type="text/javascript" src="../../js/tools/urlTools.js"></script>
+    <script type="text/javascript" src="../../js/base64.js"></script>
+
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="../../js/axios.min.js"></script>
+    <script type="text/javascript" src="../../js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+
+    <style type="text/css">
+        .width250 {
+            width: 250px !important;
+        }
+
+
+        .layui-form-select dl {
+            max-height: 200px;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body style="background: #fff;">
+
+    <div class="layui-fluid">
+        <div class="layui-card" style="margin:0 auto;">
+            <!-- 表格区域 -->
+            <div class="layui-card-body">
+                <div class="layui-form" lay-filter="cmeDetail" style="text-align:center;">
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline marginRight80" style="text-align: left;">
+                            <label class="layui-form-label"><span style="color: red;">*</span>年度</label>
+                            <div class="layui-input-inline width250">
+                                <select id="select_cme_year" lay-filter="select_cme_year" style="height: 30px;">
+                                    <option value="">请选择</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline marginRight80" style="text-align: left;">
+                            <label class="layui-form-label">单位名称</label>
+                            <div class="layui-input-inline width250">
+                                <input type="text" id="text_unit_name" autocomplete="off" class="layui-input layui-disabled" disabled style="display: inline; width: 170px;">
+                                <button class="layui-btn  layui-btn-sm layui-btn-disabled" id="btn_select" disabled >选择单位</button>
+                                <input type="hidden" id="hidden_unit_id">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline" style="text-align: left;">
+                            <label class="layui-form-label">单位级别</label>
+                            <div class="layui-input-inline width250">
+                                <select id="select_cme_unit_level" disabled>
+                                    <option value="">请选择</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" id="is_gl_div" style="display: none;">
+                        <div class="layui-inline" style="text-align: left;">
+                            <label class="layui-form-label"><span style="color: red;">*</span>是否为管理人员</label>
+                            <div class="layui-input-inline width250">
+                                <select id="select_is_gl" lay-verify="required">
+                                    <option value="">请选择</option>
+                                    <option value="1">是</option>
+                                    <option value="0">否</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline" style="text-align: left;">
+                            <label class="layui-form-label"><span style="color: red;">*</span>人员状态</label>
+                            <div class="layui-input-inline width250">
+                                <select id="select_person_state" lay-filter="select_person_state">
+                                    <option value="">请选择</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline marginRight80">
+                            <label class="layui-form-label"><span style="color: red;">*</span>职称</label>
+                            <div class="layui-input-inline width250">
+                                <input id="text_title_name" autocomplete="off" class="layui-input">
+                                <input type="hidden" id="hidden_title_id" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><span style="color: red;">*</span>评定时间</label>
+                            <div class="layui-input-inline width250">
+                                <input type="text" id='text_grant_date' autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item zhejiang-hide">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">备注</label>
+                            <div class="layui-input-inline width250">
+                                <input type="text" id='remark' autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <div class="layui-btn-container">
+                                <button type="button" class="layui-btn" id="btn_save">保存</button>
+                                <button type="button" class="layui-btn layui-btn-primary layui-border-green" id="btn_close">取消</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</body>
+
+
+
+
+</html>
+
+
+<script>
+    /* 全局配置及引入相关的模块 */
+    layui.use(['table', 'form', 'laydate'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var laydate = layui.laydate;
+
+
+        window.getCmeStandardKindId = function () {
+            return localStorage.getItem("standardkind-id");
+        }
+        if(getCmeStandardKindId() == StandardKind.ZHE_JIANG) {
+            $(".zhejiang-hide").hide();
+        }
+
+        window.getComPersonId = function () {
+            return getQueryString("comPersonId");
+        }
+
+        window.layClose = function () {
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //再执行关闭
+        }
+
+        window.initUnitLevelSelect = function () {
+            var cmeStandardKindId = window.getCmeStandardKindId();
+            $.ajax({
+                async: false,
+                url: huayi_sjwh_url + "cmeUnitLevel/listNoPage",
+                data: { cmeStandardKindId: cmeStandardKindId },
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                dataType: "json",
+                success: function (result) {
+                    if (result.success == true) {
+                        var cmeUnitLeveList = result.data;
+                        var unitLevelId = "";
+                        var unitLevelName = "";
+                        for (var i = 0; i < cmeUnitLeveList.length; i++) {
+                            unitLevelId = cmeUnitLeveList[i].unitLevelId.toUpperCase();
+                            unitLevelName = cmeUnitLeveList[i].unitLevelName;
+                            var $option = $("<option value='" + unitLevelId + "'>" + unitLevelName + "</option>");
+                            $("#select_cme_unit_level").append($option);
+                        }
+                    }
+                    else {
+                        layer.msg(result.msg);
+                    }
+                }
+            });
+        }
+
+        window.initPersonState = function () {
+            var cmeStandardKindId = window.getCmeStandardKindId();
+            $.ajax({
+                async: false,
+                url: huayi_sjwh_url + "cmePersonState/getPersonStateListByCmeStandardKindId",
+                data: { cmeStandardKindId: cmeStandardKindId},
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                dataType: "json",
+                success: function (result) {
+                    if (result.success == true) {
+                        var personStateList = result.data;
+                        if(cmeStandardKindId == StandardKind.ZHE_JIANG) {
+                            personStateList = personStateList.filter(e =>
+                                e.person_state_name == "正常" ||
+                                e.person_state_name == "注销" ||
+                                e.person_state_name == "不计达标"
+                            );
+                         }
+                        personStateList.forEach(e => {
+                            $("<option value=" + e.person_state_id + ">" + e.person_state_name + "</option>").appendTo($("#select_person_state"));
+                        });
+                        form.render();
+                    } else {
+                        layer.msg(result.msg);
+                    }
+                }
+            });
+        }
+
+        // 判断是否为吉林大学下属单位（080017	吉林大学医院管理处）
+        window.checkIsJiLinUniversity = function () {
+            var unitId = localStorage.getItem('unit-id');
+            var isJiLinUniversity = false;
+            $.ajax({
+                async:false,
+                url: huayi_personorg_url + "comunit/parentUnits?unitId="+unitId,
+                success: function(data){
+                    for (var i = 0; i < data.length; i++) {
+                        if(data[i].unitId=='080017'){
+                            isJiLinUniversity = true;
+                            // 显示”是否为管理人员下拉框“，并添加必选
+                            $("#is_gl_div").show();
+                            $("#is_gl").attr("lay-verify","required");
+                            form.render();
+                            break;
+                        }
+                    }
+                }
+            })
+
+        }
+
+        window.initUnit = function (operate) {
+
+            var unitId = getQueryString("unitId");
+            $("#hidden_unit_id").val(unitId);
+
+            $.ajax({
+                async: false,
+                url: huayi_personorg_url + "comunit",
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                dataType: "json",
+                data: { unitId: unitId },
+                success: function (result) {
+                    if (result.success == true) {
+                        if (result.data != null && result.data != undefined && result.data != "" && result.data.length > 0) {
+
+                            var unitObj = result.data[0];
+                            var unitName = unitObj.unitName;
+                            var hospitalLevel = unitObj.hospitalLevel;
+                            $("#text_unit_name").val(unitName);
+                            $("#select_cme_unit_level").val(hospitalLevel.toUpperCase());
+                            form.val("cmeDetail", {
+                                "select_cme_unit_level": hospitalLevel.toUpperCase()
+                            });
+                            form.render();
+
+                        }
+                    } else {
+                        layer.msg(result.msg);
+                    }
+                }
+            });
+
+        }
+
+        window.initCmeYear = function () {
+            var curYear = (new Date()).getFullYear();
+            var $option = null;
+            //判断是否已存在当前年的职位变动，是去掉本年
+            curYear = getQueryString("newyear")==curYear?(curYear-1):curYear;
+            for (var i = curYear; i >= curYear - 14; i--) {
+                $option = $("<option value='" + i + "'>" + i + "</option>");
+                $("#select_cme_year").append($option);
+            }
+        }
+
+        window.getChildUnitMsg = function (unitId, unitName, hospitalLevelId, unitLevelName) {
+            $("#hidden_unit_id").val(unitId);
+            $("#text_unit_name").val(unitName);
+            console.log(hospitalLevelId);
+            $("#select_cme_unit_level").val(hospitalLevelId.toUpperCase());
+            form.val("cmeDetail", {
+                "select_cme_unit_level": hospitalLevelId
+            });
+            form.render('select');
+        }
+
+        window.getChildTitle = function (titleId, titleName) {
+            $("#text_title_name").val(titleName);
+            $("#hidden_title_id").val(titleId);
+        }
+
+        window.checkInput = function () {
+
+            if ($("#hidden_unit_id").val() == "" || $("#text_unit_name").val() == "") {
+                layer.msg("请选择单位");
+                return false;
+            }
+
+            if ($("#select_cme_unit_level").val() == "") {
+                layer.msg("页面加载出错");
+                return false;
+            }
+
+            if ($("#select_cme_year").val() == "") {
+                layer.msg("请选择年度");
+                return false;
+            }
+
+            var isGlValue = $("#select_is_gl").val();
+            if ($("#is_gl_div").is(":visible") && (isGlValue === "" || isGlValue === null)) {
+                layer.msg("请选择是否为管理人员");
+                return false;
+            }
+
+            if ($("#select_person_state").val() == "") {
+                layer.msg("请选择人员状态");
+                return false;
+            }
+
+            if ($("#hidden_title_id").val() == "" || $("#text_title_name").val() == "") {
+                layer.msg("请选择人员职称");
+                return false;
+            }
+
+
+            if ($("#hidden_title_id").val().toLowerCase() != "35208e7a-f827-498e-997d-9b2f0124b233" && $("#text_grant_date").val() == "") {
+                layer.msg("请输入评定时间");
+                return false;
+            }
+
+            if($("#remark").val().length > 50) {
+                layer.msg("备注最多包含50个字符");
+                return false;
+            }
+
+            return true;
+
+
+        }
+
+        window.checkCmeYearExists = function (comPersonId, cmeYear) {
+            var exists;
+            $.ajax({
+                async: false,
+                url: huayi_personorg_url + "cmePerson/existsByComPersonIdAndCmeYear",
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                data: { comPersonId: comPersonId, cmeYear: cmeYear },
+                success: function (result) {
+                    if (result.success == true) {
+                        exists = result.data;
+                    } else {
+                        layer.msg("系统出现问题，请联系管理员");
+                    }
+                },
+                error: function () {
+                    layer.msg("系统出现问题，请联系管理员");
+                }
+
+            });
+            return exists;
+        }
+
+        window.getDataBeforeUpdate = function (keyId) {
+            var data = null;
+            var data = { keyId: keyId };
+            $.ajax({
+                type: "get",
+                url: huayi_personorg_url + "cmePerson/getOne",
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                async: false,
+                data: (data),
+                contentType: "application/json",
+                success: function (result) {
+                    if (result.success == true) {
+                        data = result.data;
+                    } else {
+                        layer.msg(result.msg);
+                    }
+                },
+                error: function () {
+                    layer.msg("系统出现问题,请联系管理员");
+                }
+            });
+            return data;
+        }
+
+        $(function () {
+            laydate.render({
+                elem: '#text_grant_date' //指定元素
+                , trigger: 'click'
+            });
+            window.initUnitLevelSelect();
+            window.checkIsJiLinUniversity();
+            window.initCmeYear();
+
+            window.initPersonState();
+
+
+            if (getQueryString("operate") == "add") {
+                window.initUnit();
+            }
+            console.log(getQueryString("operate"));
+            if (getQueryString("operate") == "edit") {
+
+                var data = getDataBeforeUpdate(getQueryString("keyId"));
+                var hospitalLevel = data.hospitalLevel;
+                var hospitalLevelName = data.hospitalLevelName;
+                var personStateId = data.personStateId;
+                var personStateName = data.personStateName;
+                var personStateId = data.personStateId;
+                var unit = data.unit;
+                var unitName = data.unitName;
+                var titleId = data.titleId;
+                var titleName = data.titleName;
+                var cmeYear = data.cmeYear;
+                var grantDate = data.grantDate;
+                var maxYear = data.maxYear;
+                var remark = data.remark;
+                var isGl = data.isGl;
+
+                $("#hidden_unit_id").val(unit);
+                $("#text_unit_name").val(unitName);
+
+                var upper_hospitalLevel = hospitalLevel.toUpperCase();
+                $("#select_cme_unit_level").val(upper_hospitalLevel);
+                $("#select_cme_year").val(cmeYear);
+                $("#select_person_state").val(personStateId);
+                $("#hidden_title_id").val(titleId);
+                $("#text_title_name").val(titleName);
+                if (grantDate != null && grantDate != undefined) {
+                    $("#text_grant_date").val(grantDate.substring(0, 11));
+                }
+
+                $("#select_cme_year").attr("disabled", "disabled");
+                //如果是最高年度,不允许修改一些列
+                if (maxYear == cmeYear) {
+                    $('#btn_select').addClass("layui-btn-disabled").attr("disabled", true);
+                }else{
+                    $('#btn_select').removeClass("layui-btn-disabled").removeAttr("disabled");
+                }
+                $("#remark").val(remark);
+                $("#select_is_gl").val(isGl);
+
+            }
+            form.render();
+
+
+
+
+        });
+
+
+        //选择单位按钮点击
+        $("#btn_select").click(function () {
+            let inputCmeYear = $("#select_cme_year").val();
+            layer.open({
+                area: ['90%', '450px'],
+                type: 2,
+                title: '选择单位',
+                content: '../controls/unit/unitsMessage.html?resource=cmeChangeDetailYearAddOrEdit&inputCmeYear='+inputCmeYear
+            });
+        });
+
+        //选择职称的时候点击
+        $("#text_title_name").focus(function () {
+            layer.open({
+                type: 2,
+                content: "../controls/selectTitle/selectTitle.html",
+                area: ['610px', '450px'],
+                scrollbar: false
+            });
+        });
+
+        $("#btn_save").click(function () {
+            if (checkInput() == true) {
+                var operate = getQueryString("operate");
+                var comPersonId = window.getComPersonId();
+                var cmeYear = $("#select_cme_year").val();
+                var titleId = $("#hidden_title_id").val();
+                var isGl = $("#select_is_gl").val();
+                var personStateId = $("#select_person_state").val();
+                var unit = $("#hidden_unit_id").val();
+                var hospitalLevel = $("#select_cme_unit_level").val();
+                var grantDate = $("#text_grant_date").val();
+                var remark = $("#remark").val();
+                var data = {
+                    comPersonId: comPersonId, cmeYear: cmeYear, titleId: titleId, personStateId: personStateId, unit: unit,
+                    hospitalLevel: hospitalLevel, grantDate: grantDate,operateSource:"1",remark:remark,isGl: isGl
+                };
+                data.operateUser = localStorage.getItem("user-name");
+                data.operateUnit = localStorage.getItem("unit-id");
+
+                //新增
+                if (operate == "add") {
+                    if (!checkCmeYearExists(comPersonId, cmeYear) == true) {
+                        layer.confirm('确认添加吗?', function () {
+                            $.ajax({
+                                type: "post",
+                                headers: {
+                                    'Authorization': localStorage.getItem('token'),
+                                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                                },
+                                url: huayi_personorg_url + "cmePerson/save",
+                                data: JSON.stringify(data),
+                                contentType: "application/json",
+                                dataType: "json",
+                                success: function (result) {
+                                    if (result.success == true) {
+                                        layer.msg("添加成功");
+                                        parent.initTable();
+                                        window.layClose();
+                                    } else {
+                                        if (result.status == 10001) {
+                                            layer.msg(result.msg);
+                                        } else {
+                                            layer.msg("操作失败");
+                                        }
+                                    }
+                                }
+                            });
+                        });
+                    }
+                    else {
+                        layer.msg("该人在该年度已经有一条变动记录，请更改");
+                    }
+                    return;
+                }
+
+                //修改
+                if (operate == "edit") {
+                    data.keyId = getQueryString("keyId");
+                    console.log(data);
+                    layer.confirm('确认修改吗?', function () {
+                        $.ajax({
+                            type: "post",
+                            headers: {
+                                'Authorization': localStorage.getItem('token'),
+                                'KJPT-USER-ID': localStorage.getItem('user-id')
+                            },
+                            url: huayi_personorg_url + "cmePerson/update",
+                            data: JSON.stringify(data),
+                            contentType: "application/json",
+                            dataType: "json",
+                            success: function (result) {
+                                if (result.success == true) {
+                                    layer.msg("修改成功");
+                                    parent.initTable();
+                                    window.layClose();
+                                } else {
+                                    if (result.status == 10001) {
+                                        layer.msg(result.msg);
+                                    } else {
+                                        layer.msg("操作失败");
+                                    }
+
+                                }
+                            }
+                        });
+                    });
+                    return;
+
+                }
+
+            }
+        });
+
+        $("#btn_close").click(function () {
+            window.layClose();
+        });
+
+        form.on('select(select_cme_year)', function(data){
+            console.log(data.value); //得到被选中的值
+            let selectedYear = data.value;
+            let newYear = getQueryString("newyear");
+
+            if(parseInt(selectedYear) >= parseInt(newYear)){
+                window.initUnit();
+                $("#btn_select").prop("disabled","disabled").addClass("layui-btn-disabled");
+                $("#text_unit_name").prop("disabled","disabled").addClass("layui-disabled");
+            }else{
+                $("#btn_select").removeAttr("disabled").removeClass("layui-btn-disabled");
+                $("#text_unit_name").val("");
+                $("#select_cme_unit_level").val("");
+                form.render();
+            }
+
+        });
+
+
+
+
+
+    });
+
+
+
+</script>

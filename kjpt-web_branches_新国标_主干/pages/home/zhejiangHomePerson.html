@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+	<title>个人版首页</title>
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no, viewport-fit=cover" />
+	<link rel="stylesheet" href="/css/home/unit/bslayout.css">
+	<link rel="stylesheet" href="/css/home/unit/reset.css">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <!-- layui的css样式 -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <!--    ajax全局配置-->
+	<script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+	<script type="text/javascript" src="/js/constant.js"></script>
+    <!-- 添加首页悬浮框 -->
+    <script src="/js/tools/dict_tool.js"></script>
+    <link rel="stylesheet" href="/css/home/zjHome.css">
+    
+
+</head>
+<style>
+ .text_box {
+    color: #f6f6f6;
+}
+</style>
+<body style="background: #eaeff5;">
+
+    <div>
+        <div id="scorePrintPop" style="display: none;">
+            <!-- 学分打印 -->
+            <div class="modal_box"></div>
+            <div class="modal_item"> 
+                <div class="modal">
+                    <h2>请选择</h2>
+                        <div class="option-container">
+                            <div class="option" data-title="多年度学分验证表" data-url="pages/mod/audit/zhejiangPerson.html">多年度学分验证表</div>
+                            <div class="option" data-title="学分登记表" data-url="pages/mod/audit/zhejiang1.html">学分登记表</div>
+                            <div class="option" data-title="学分证书" data-url="pages/mod/audit/zhejiang3.html">学分证书</div>
+                            
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="home-box" style="display: none;">
+        
+        <div class="top-buttons">
+            <div class="button" id="personInfo">
+                <img src="/img/home/unit/icon9.png">
+                <span class="text_box">个人信息</span>
+            </div>
+            <div class="button" id="personScoreInput">
+                <img src="/img/home/unit/icon10.png">
+                <span class="text_box">学分录入</span>
+            </div>
+            <div class="button" id="zixue">
+                <img src="/img/home/unit/icon11.png">
+                <span class="text_box">可验证自学</span>
+            </div>
+            <div class="button"  id="scorePrint">
+                <img src="/img/home/unit/icon12.png">
+                <span class="text_box">学分打印</span>
+            </div>
+            <div class="button" id="scoreStandard">
+                <img src="/img/home/unit/icon13.png">
+                <span class="text_box">学分授予要求</span>
+            </div>
+            <div class="button" id="scoreRecord">
+                <img src="/img/home/unit/icon14.png">
+                <span class="text_box">学分补学报备</span>
+            </div>
+            <div class="button" id="scoreQuery">
+                <img src="/img/home/unit/icon15.png">
+                <span class="text_box">学分查询</span>
+            </div>
+            <div class="button" id="systemSet">
+                <img src="/img/home/unit/icon8.png">
+                <span class="text_box">系统设置</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script>
+
+    layui.config({
+        base : '/js/layui/ext/'
+    }).extend({
+        tool    :   'tool',
+        homeTool:   'homeTool'
+    });
+
+    layui.use(['tool','homeTool'], function () {
+        let homeTool = layui.homeTool;
+        //创建首页悬浮框
+        // homeTool.createFloatingBox();
+
+        const unitId = localStorage.getItem("unit-id");
+        const unitUserType = localStorage.getItem("unit-user-type");
+        const standardId = localStorage.getItem("standardkind-id");
+        const userInfo = localStorage.getItem("current-user-info");
+
+        let menuList = [];
+        // 判断是否审核通过
+        debugger
+        let getPersonInfo = function() {
+            $.ajax({
+                type: "get",
+                url: huayi_personorg_url + "comperson/getPersonByUserId",
+                data:{userId:localStorage.getItem("user-id")},
+                success: function (res) {
+                    if(res.status == 200){
+                        if(res.data.checkState == "1"){
+                            $(".home-box").show();
+                        }else{
+                            $(".home-box").hide();
+                        }
+                    }else{
+                        layer.msg("查询人员信息失败");
+                    }
+                }
+            });
+        }
+        getPersonInfo();
+
+        setTimeout(() => {
+            menuList = JSON.parse(userInfo).menuTree;
+        }, 1000);
+
+        // menuList为菜单树，menuUrl为菜单url，递归判断menuUrl是否在menuList中
+        function checkMenu(menuUrl, menuList){
+            debugger
+            for(let i = 0; i < menuList.length; i++){
+                if(menuList[i].menuUrl == menuUrl){
+                    return true;
+                }
+                if(menuList[i].children && menuList[i].children.length > 0){
+                    if(checkMenu(menuUrl, menuList[i].children)){
+                        return true;
+                    }
+                }
+            }
+            console.log("menuUrl", menuUrl);
+            return false;
+        }
+
+        $('#scorePrint').click(function(){
+            $("#scorePrintPop").show();
+        })
+    
+
+        $(".modal_box").click(function(e) {
+            $(e.currentTarget.parentElement).hide();
+        })
+
+        $(".option").click(function(e){
+            let tempTitle = e.target.getAttribute("data-title");
+            let tempUrl = e.target.getAttribute("data-url");
+            // if(!checkMenu(tempUrl, menuList)){
+            //     layer.msg("暂无权限",{time:1000})
+            //     return;
+            // }
+            if(tempTitle && tempUrl && tempTitle!= "" && tempUrl != "" ) {
+                let tempId =  tempUrl.split("?")[0];
+                debugger
+                $(e.currentTarget.parentElement.parentElement.parentElement.parentElement).hide();
+                window.parent.addNewTab('layadmin-layout-tabs', {id:tempId,title: tempTitle,attr: tempUrl,content: tempUrl});
+                
+            } else {
+                layer.msg("正在开发中",{time:1000})
+            }
+        })
+// [
+//   {
+//     "menuId": "591a2176-8973-3999-7766-64ab0b570c1e",
+//     "parentMenuId": "-",
+//     "listOrder": 10,
+//     "name": "学分授予标准浏览",
+//     "menuUrl": "pages/score/CmeGrantscoreStandard.html",
+//     "menuName": "学分授予标准浏览",
+//     "menuType": 1
+//   },
+//   {
+//     "menuId": "b0d34aed-8a8b-eef6-0ee0-a865c3d56e0a",
+//     "parentMenuId": "-",
+//     "listOrder": 12,
+//     "name": "个人信息查看",
+//     "menuUrl": "pages/person/personalInfo.html",
+//     "menuName": "个人信息查看",
+//     "menuType": 2
+//   },
+//   {
+//     "menuId": "c296ba3f-4016-d23c-4f12-085e67a75475",
+//     "parentMenuId": "-",
+//     "listOrder": 13,
+//     "name": "个人学分录入管理",
+//     "menuUrl": "pages/score/cme_individual_score/individual_score_manage.html",
+//     "menuName": "个人学分录入管理",
+//     "menuType": 2
+//   },
+//   {
+//     "menuId": "1c8c26fd-c04a-211a-fdde-c4b21470fdc9",
+//     "parentMenuId": "-",
+//     "listOrder": 40,
+//     "name": "学分管理",
+//     "menuUrl": "",
+//     "menuName": "学分管理",
+//     "menuType": 1,
+//     "children": [
+//       {
+//         "menuId": "d11c7a15-a633-4e93-a25a-14af865faba2",
+//         "parentMenuId": "1c8c26fd-c04a-211a-fdde-c4b21470fdc9",
+//         "listOrder": 99,
+//         "name": "年度上报审核",
+//         "menuUrl": "pages/mod/audit/hunan.html",
+//         "menuName": "年度上报审核",
+//         "menuType": 2
+//       },
+//       {
+//         "menuId": "9790d966-be3f-4020-a933-cd497d08339a",
+//         "parentMenuId": "1c8c26fd-c04a-211a-fdde-c4b21470fdc9",
+//         "listOrder": 99,
+//         "name": "可验证自学申请及填写",
+//         "menuUrl": "pages/mod/zixue/listz.html",
+//         "menuName": "可验证自学申请及填写",
+//         "menuType": 2
+//       },
+//       {
+//         "menuId": "9788a70a-6679-4212-8b65-d69595bf0af9",
+//         "parentMenuId": "1c8c26fd-c04a-211a-fdde-c4b21470fdc9",
+//         "listOrder": 99,
+//         "name": "补办年度合格证书申请",
+//         "menuUrl": "pages/mod/zixue/listb.html",
+//         "menuName": "补办年度合格证书申请",
+//         "menuType": 2
+//       }
+//     ]
+//   },
+//   {
+//     "menuId": "3af26d56-7d3f-e342-ed7d-ad0fc1624322",
+//     "parentMenuId": "-",
+//     "listOrder": 61,
+//     "name": "学分审验及打印",
+//     "menuUrl": "",
+//     "menuName": "学分审验及打印",
+//     "menuType": 1,
+//     "children": [
+//       {
+//         "menuId": "8df3b648-76a5-4fff-a19b-06a94d8d699a",
+//         "parentMenuId": "3af26d56-7d3f-e342-ed7d-ad0fc1624322",
+//         "listOrder": 98,
+//         "name": "年度学分审验",
+//         "menuUrl": "pages/mod/audit/gansu.html",
+//         "menuName": "年度学分审验",
+//         "menuType": 2
+//       },
+//       {
+//         "menuId": "ade05400-2f26-4aa7-890b-d71ad446afb4",
+//         "parentMenuId": "3af26d56-7d3f-e342-ed7d-ad0fc1624322",
+//         "listOrder": 98,
+//         "name": "多年度学分审验",
+//         "menuUrl": "pages/mod/audit/zhejiang2.html",
+//         "menuName": "多年度学分审验",
+//         "menuType": 2
+//       },
+//       {
+//         "menuId": "3e9388b5-6486-41e1-8e98-a886a22ffdb1",
+//         "parentMenuId": "3af26d56-7d3f-e342-ed7d-ad0fc1624322",
+//         "listOrder": 98,
+//         "name": "学分证书",
+//         "menuUrl": "pages/mod/audit/zhejiang3.html",
+//         "menuName": "学分证书",
+//         "menuType": 2
+//       },
+//       {
+//         "menuId": "e780c10f-2509-4d28-9d24-dbe1ebc9ed9a",
+//         "parentMenuId": "3af26d56-7d3f-e342-ed7d-ad0fc1624322",
+//         "listOrder": 98,
+//         "name": "年度学分审验",
+//         "menuUrl": "pages/mod/audit/zhejiang1.html",
+//         "menuName": "年度学分审验",
+//         "menuType": 2
+//       },
+//       {
+//         "menuId": "5c610c26-dc90-4eb6-8d03-0948e11a6081",
+//         "parentMenuId": "3af26d56-7d3f-e342-ed7d-ad0fc1624322",
+//         "listOrder": 98,
+//         "name": "年度学分审验",
+//         "menuUrl": "pages/mod/audit/gansuperson.html",
+//         "menuName": "年度学分审验",
+//         "menuType": 2
+//       },
+//       {
+//         "menuId": "2e083cb9-cd5b-4f9e-9272-8dbda73becb4",
+//         "parentMenuId": "3af26d56-7d3f-e342-ed7d-ad0fc1624322",
+//         "listOrder": 99,
+//         "name": "人员学分证书打印",
+//         "menuUrl": "pages/mod/audit/ScoreAuditGuangXi3.html",
+//         "menuName": "人员学分证书打印",
+//         "menuType": 2
+//       },
+//       {
+//         "menuId": "eb28c236-bd51-4eaf-8dc7-326ed8a6f2bc",
+//         "parentMenuId": "3af26d56-7d3f-e342-ed7d-ad0fc1624322",
+//         "listOrder": 99,
+//         "name": "年度学分审验",
+//         "menuUrl": "pages/mod/audit/ScoreAuditNeiMeng.html",
+//         "menuName": "年度学分审验",
+//         "menuType": 2
+//       }
+//     ]
+//   },
+//   {
+//     "menuId": "f4266a1a-272b-e162-1572-a87a82fce8f3",
+//     "parentMenuId": "-",
+//     "listOrder": 81,
+//     "name": "系统设置",
+//     "menuUrl": "",
+//     "menuName": "系统设置",
+//     "menuType": 1,
+//     "children": [
+//       {
+//         "menuId": "4adb5fe8-4c8a-0a0e-83b8-99f62f9ac7b9",
+//         "parentMenuId": "f4266a1a-272b-e162-1572-a87a82fce8f3",
+//         "listOrder": 1,
+//         "name": "修改密码",
+//         "menuUrl": "pages/ChangeThePassword.html",
+//         "menuName": "修改密码",
+//         "menuType": 2
+//       }
+//     ]
+//   },
+//   {
+//     "menuId": "c3b71d16-a7ae-1597-b5ca-a17ccaeba56a",
+//     "parentMenuId": "-",
+//     "listOrder": 83,
+//     "name": "达标情况明细查询",
+//     "menuUrl": "pages/mod/criteria/PassForPerson.html",
+//     "menuName": "达标情况明细查询",
+//     "menuType": 2
+//   },
+//   {
+//     "menuId": "2f38166e-5912-f1bb-8f81-151ee0be45da",
+//     "parentMenuId": "-",
+//     "listOrder": 8300,
+//     "name": "人社反馈结果查询",
+//     "menuUrl": "pages/score/scoreSubmit/scoreSubmitPStatistics.html",
+//     "menuName": "人社反馈结果查询",
+//     "menuType": 2
+//   }
+// ]
+        $("#personInfo").click(function(e){
+            let tempTitle = "个人信息";
+            let tempUrl = "pages/person/personalInfo.html";
+            window.parent.addNewTab('layadmin-layout-tabs', {id:tempUrl,title: tempTitle,attr: tempUrl,content: tempUrl});
+        })
+
+        $("#personScoreInput").click(function(e){
+            let tempTitle = "学分录入";
+            let tempUrl = "pages/score/cme_individual_score/individual_score_manage.html";
+            window.parent.addNewTab('layadmin-layout-tabs', {id:tempUrl,title: tempTitle,attr: tempUrl,content: tempUrl});
+        })
+
+        $("#zixue").click(function(e){
+            let tempTitle = "可验证自学";
+            let tempUrl = "pages/mod/zixue/listz.html";
+            window.parent.addNewTab('layadmin-layout-tabs', {id:tempUrl,title: tempTitle,attr: tempUrl,content: tempUrl});
+        })
+
+        $("#scoreStandard").click(function(e){
+            let tempTitle = "学分授予要求";
+            let tempUrl = "pages/score/CmeGrantscoreStandard.html";
+            window.parent.addNewTab('layadmin-layout-tabs', {id:tempUrl,title: tempTitle,attr: tempUrl,content: tempUrl});
+        })
+
+        $("#scoreRecord").click(function(e){
+            let tempTitle = "学分补录报备";
+            let tempUrl = "pages/person/cmePersonMiddleSub.html";
+            window.parent.addNewTab('layadmin-layout-tabs', {id:tempUrl,title: tempTitle,attr: tempUrl,content: tempUrl});
+        })
+
+        $("#scoreQuery").click(function(e){
+            let tempTitle = "学分查询";
+            let tempUrl = "pages/mod/criteria/PassForPerson.html";
+            window.parent.addNewTab('layadmin-layout-tabs', {id:tempUrl,title: tempTitle,attr: tempUrl,content: tempUrl});
+        })
+
+        $("#systemSet").click(function(e){
+            let tempTitle = "系统设置";
+            let tempUrl = "pages/ChangeThePassword.html";
+            window.parent.addNewTab('layadmin-layout-tabs', {id:tempUrl,title: tempTitle,attr: tempUrl,content: tempUrl});
+        })
+
+
+    })
+</script>
+</html>

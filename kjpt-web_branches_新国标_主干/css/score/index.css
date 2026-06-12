@@ -1,0 +1,191 @@
+body,html{
+	width:100%;
+}
+body{
+	position:relative;
+	min-width: 1200px;
+	background: #f5f5f7;
+}
+img{
+	border:none;
+	}
+a,span,label,li,button,dl,div,table{
+	-webkit-tap-highlight-color:transparent;
+	-webkit-appearance: none;
+}
+textarea,button,input{
+	outline: none;
+	border:none;
+	background:none;
+	padding: 0;
+	margin: 0;
+}
+ 
+
+ 
+
+/*弹层*/
+.zhezhao{
+	width:100%;
+	height:100%;
+	overflow: auto;
+	background:#000;
+	opacity:0.3;
+	filter: alpha(opacity=57);   /*ie8透明度兼容*/
+	position:fixed;
+	top:0;
+	left:0;
+	z-index: 5;
+	/*display: none;*/
+}
+
+.box_main{
+	width: 1000px;
+	margin: 0 auto;
+}
+.box_item{
+	padding: 30px 0 30px 0;
+}
+.retu_box a{
+	display: flex;
+	align-items: center;
+	color: #333;
+	padding-bottom: 30px;
+}
+.cont_box{
+	background: #fff;
+	border-radius: 10px;
+	padding: 40px 20px;
+}
+.btn_box{
+	display: flex;
+	padding: 20px 0;
+	justify-content: center;
+}
+.theBtn {
+	width: 350px;
+	height: 50px;
+	margin: 0 10px;
+	font-size: 16px;
+	cursor: pointer;
+	line-height: 50px;
+	background: #200f3b;
+	text-align: center;
+	border-radius: 50px;
+	color: #fff;
+}
+.ht_tit{
+	text-align: center;
+	color: #200f3b;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.ht_tit h1{
+	font-size: 30px;
+	padding-bottom: 10px;
+}
+.t_box{
+	width: 100px;
+	background: #200f3b;
+	height: 6px;
+	border-radius: 6px;
+}
+.mess_box{
+	width: 800px;
+	margin: 0 auto;
+	padding: 30px 0;
+}
+.mess_box ul li{
+	display: flex;
+	padding: 10px 0;
+	flex-direction: column;
+}
+.mess_box ul li p{
+	color: #333;
+	font-size: 20px;
+}
+.mess_box ul li p b{
+	color: red;
+}
+.inp_box{
+	padding-top: 10px;
+	display: flex;
+}
+.inp_box select,.inp_box input{
+	flex: 1;
+	padding: 10px 15px;
+	font-size: 14px;
+	border-radius: 5px;
+}
+.inp_box input{
+	border: 1px solid #333;
+	border-radius: 5px;
+}
+
+/* 弹框 */
+.dialog{
+	position:fixed;
+	top: 0;
+	left:0;
+	width: 100%;
+	height: 100%;
+	z-index: 2;
+	background: rgba(0,0,0,0.5);
+}
+.dialog_box{
+	display: flex;
+	width: 100%;
+	height: 100%;
+	justify-content: center;
+	align-items: center;
+}
+.dialog_item{
+	
+}
+.tb_card{
+	background: #fff;
+	border-radius: 10px;
+}
+.tit_box{
+	padding: 15px 0;
+	text-align: center;
+	font-size: 20px;
+	color: #200f3b;
+	border-bottom: 1px solid #ddd;
+}
+.table_box{
+	position: relative;
+	padding: 20px;
+	width: 600px;
+}
+.table_box table{
+	width: 100%;
+}
+.table_box table tr td{
+	vertical-align: top;
+	font-size: 16px;
+	color: #6e6e6e;
+	padding: 10px;
+}
+.table_box table tr td span{
+	color: #333;
+	display: inline-block;
+}
+.close_box{
+	padding-bottom: 30px;
+	text-align: center;
+}
+.close_box img{
+	width: 40px;
+	cursor: pointer;
+}
+.tg_img{
+	position: absolute;
+	right:30px;
+	bottom: 0;
+	z-index: 22;
+}
+.tg_img img{
+	width: 120px;
+}

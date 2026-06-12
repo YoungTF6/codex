@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>listb</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
+    <!-- base -->
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <script type="text/javascript" src="/js/api/base64.min.js"></script>
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+</head>
+<body style="background-color: white;">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!-- 查询区域 -->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" id="queryArea" style="background-color: #f5f5f5;">
+            <div class="layui_mess">
+                <div class="layui_display">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">年度</label>
+                        <div class="layui-input-block">
+                            <select name="cmeYear" id="cmeYearSelect">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline only_gov hide">
+                        <label class="layui-form-label">单位</label>
+                        <div class="layui-input-block">
+                            <div id="unit_tree_sel" data-name="" style="width: 168px;"></div>
+                        </div>
+                    </div>
+                    <div class="layui-inline only_unit only_gov hide">
+                        <label class="layui-form-label">人员编号</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="personNo" placeholder="" autocomplete="off" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline only_unit only_gov hide">
+                        <label class="layui-form-label">姓名</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="personName" placeholder="" autocomplete="off" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline only_unit only_gov hide">
+                        <label class="layui-form-label">补打证书</label>
+                        <div class="layui-input-block">
+                            <select name="blCert">
+                                <option></option>
+                                <option value="1">是</option>
+                                <option value="0">否</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline only_unit only_gov hide">
+                        <label class="layui-form-label">补录学分</label>
+                        <div class="layui-input-block">
+                            <select name="blScore">
+                                <option></option>
+                                <option value="1">是</option>
+                                <option value="0">否</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline only_unit only_gov hide">
+                        <label class="layui-form-label">审核状态</label>
+                        <div class="layui-input-block">
+                            <select name="qst">
+                                <option></option>
+                                <option value="0">待审核</option>
+                                <option value="3">审核通过</option>
+                                <option value="2">审核不通过</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui_display">
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-sm btnRounded" lay-submit onclick="refreshTable({page: {curr: 1}})">
+                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 数据表格 -->
+        <div class="layui-card-body layui_body_box" style="padding-left: 0;padding-right: 0">
+            <table class="layui-table" id="table_id" lay-filter="table_id" style="margin: 0;"></table>
+        </div>
+    </div>
+</div>
+<div id="log_modal" style="display: none;">
+    <div style="width: fit-content; margin: auto;">
+        <table class="layui-table" id="log_table" lay-filter="log_table"></table>
+    </div>
+</div>
+</body>
+<script type="text/html" id="table_toolbar">
+    <div class="">
+        <a class='layui-btn layui-btn-sm' lay-event='newbulu'>申请</a>
+        <a class="layui-btn layui-btn-sm layui-btn-normal" lay-event="download">申请材料模版下载</a>
+    </div>
+</script>
+<script type="text/javascript">
+    layui.config({
+        base: '/js/layui/ext/',
+    }).extend({
+        xmSelect: 'xm-select',
+        lat: 'lat',
+        tool: 'tool'
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'xmSelect', 'lat','tool'], function () {
+        let table = layui.table, layer = layui.layer, form = layui.form, laydate = layui.laydate;
+        let dropdown = layui.dropdown, element = layui.element, $ = layui.jquery, xmSelect = layui.xmSelect;
+        let  lat = layui.lat, tool = layui.tool;
+        let gLayerIndex = -1, gPageNum = 1, gunittreedata, gunittreesel;
+        
+        
+        window.refreshTable = refreshTable;
+        window.viewupldfile = function (url) {
+            lat.previewThumb(url);
+        }
+        layer.ready(function () {});
+        $(function () {
+            // lat.renderCmeYear('select[name=cmeYear]');
+            tool.createHainanYear('cmeYearSelect');
+            renderlogtable();
+            if (_isGov) {
+                $('.only_gov').show();
+                getUnitTreeData('210000').then(response => {
+                    let jsonRes = response.data;
+                    if (jsonRes.success) {
+                        gunittreedata = jsonRes.data;
+                        gunittreesel = lat.renderUnitTreeSelector('#unit_tree_sel', gunittreedata);
+                    }
+                });
+            }
+            if (_isPerson) {
+                renderTable();
+            } else {
+                _isUnit && $('.only_unit').css('display', 'inline-block');
+                _isGov && $('.only_gov').css('display', 'inline-block');
+                renderTable();
+            }
+            form.render('select');
+        });
+        table.on('tool(table_id)', function (obj) {
+            let rowData = obj.data;
+            if ('approve' === obj.event) {
+                _blact.state(rowData.buluId, _blnxt.state('approve'), _blnxt.stx('approve', rowData.statex), '-', '已审核通过');
+            } else if ('reject' === obj.event) {
+                layer.prompt({
+                    title: '不通过原因',
+                    yes: function (index, layero) {
+                        let value = layero.find(".layui-layer-input").val();
+                        if (!value) {
+                            lat.failMsg('请输入不通过原因');
+                        } else if (value.length > 200) {
+                            lat.failMsg('最多200字');
+                        } else {
+                            _blact.state(rowData.buluId, _blnxt.state('reject'), _blnxt.stx('reject', rowData.statex), value, '已审核不通过');
+                            layer.close(index);
+                        }
+                    }
+                });
+            } else if ('submit' === obj.event) {
+                if (1 === rowData.blCert && (!rowData.buluFile || '[]' === rowData.buluFile || '' === rowData.buluFile)) {
+                    lat.failMsg('未上传补打证书证明材料');
+                } else if (1 === rowData.blScore && rowData.scoreCnt < 1) {
+                    lat.failMsg('未补录学分');
+                } else if (!issameyear(rowData)) {
+                    lat.failMsg('所选年度和授分日期所在年度不一致');
+                } else {
+                    _blact.state(rowData.buluId, 20, _blnxt.stx('submit', rowData.statex), null, '已提交');
+                }
+            } else if ('recall' === obj.event) {
+                _blact.state(rowData.buluId, 0, _blnxt.stx('recall', rowData.statex), null, '已撤回');
+            } else if ('viewbulu' === obj.event) {
+                layer.open({
+                    type: 2,
+                    shade: 0.4,
+                    shadeClose: false,
+                    title: '补录',
+                    content: `./modals/bulu.html?id=${rowData.buluId}&pid=${_pid}&action=view`,
+                    area: ['100%', '100%'],
+                });
+            } else if ('editbulu' === obj.event) {
+                layer.open({
+                    type: 2,
+                    shade: 0.4,
+                    shadeClose: false,
+                    title: '补录',
+                    content: `./modals/bulu.html?id=${rowData.buluId}&pid=${_pid}&action=`,
+                    area: ['100%', '100%'],
+                    end: function () {
+                        _isPerson && refreshTable();
+                    }
+                });
+            } else if ('checkstep' === obj.event) {
+                _blact.log(rowData.buluId);
+            }
+        });
+        table.on('toolbar(table_id)', function (obj) {
+            let checkStatus = table.checkStatus(obj.config.id);
+            let selectedRowArr = checkStatus.data;
+            if ('newbulu' === obj.event) {
+                layer.open({
+                    type: 2,
+                    shade: 0.4,
+                    shadeClose: false,
+                    title: '补录',
+                    content: `./modals/bulu.html?id=&pid=${_pid}`,
+                    area: ['100%', '100%'],
+                    end: function () {
+                        refreshTable();
+                    }
+                });
+            } else if ('download' === obj.event) {
+                window.open('https://testkjpt.wsglw.net/file/继教合格证补办申请.doc', '_blank');
+            }
+        });
+        function issameyear(bl) {
+            let y = bl.cmeYear;
+            let sds = bl.scoreStudyDate;
+            if (sds) {
+                let arr = sds.split('#');
+                for (let i = 0; i < arr.length; ++i) {
+                    if (!arr[i].startsWith(y)) return false;
+                }
+                return true;
+            } else {
+                return true;
+            }
+        }
+        const _blnxt = {
+            step: function () {
+                if (_isUnit) {
+                    if (_isPhUnit) return 3;
+                    return 2;
+                } else return 1;
+            },
+            state: function (oper) {
+                if ('approve' === oper) return Math.min(53, (_uut + this.step()) * 10);
+                if ('reject' === oper) return _uut * 10 + 2;
+            },
+            stx: function (oper, curstx) {
+                let arr = curstx.split('');
+                let cidx = _uut - 2;
+                let nidx = Math.min(cidx + this.step(), 3);
+                if ('submit' === oper) {
+                    arr[0] = 0;
+                }
+                if ('recall' === oper) {
+                    arr[0] = 'x'
+                }
+                if ('approve' === oper) {
+                    arr[nidx] = 0;
+                    arr[cidx] = 3;
+                }
+                if ('reject' === oper) {
+                    arr[cidx] = 2;
+                }
+                return arr.join('');
+            },
+        };
+        const _blact = {
+            log: function (id) {
+                postAction(`${huayi_sjwh_url}zixue/bulu/log/${id}`).then(response => {
+                    let jsonRes = response.data;
+                    if (jsonRes.success) {
+                        table.reload('log_table', {data: jsonRes.data});
+                        layer.open({
+                            type: 1,
+                            shadeClose: true,
+                            title: '审核记录',
+                            content: $('#log_modal'),
+                            area: ['900px', '400px'],
+                        });
+                    }
+                })
+            },
+            state: function (id, state, statex, opinion, msg) {
+                const that = this;
+                postAction(`${huayi_sjwh_url}zixue/bulu/save`, {
+                    'buluId': id,
+                    'state': state,
+                    'statex': statex,
+                    'checkUnitId': _isPerson ? '' : _unitId,
+                    'checkUnitName': _isPerson ? '' : _unitName,
+                    'opinion': opinion,
+                }).then(response => {
+                    let jsonRes = response.data;
+                    if (jsonRes.success) {
+                        lat.okMsg(msg);
+                        // if (53 === state) {
+                        //     that.toscore(id);
+                        // } else {
+                        //     refreshTable();
+                        // }
+                        refreshTable();
+                    } else {
+                        lat.failMsg(jsonRes.message);
+                    }
+                }).catch(error => {
+                    lat.errorMsg('error');
+                });
+            },
+            toscore: function (id) {
+                postAction(`${huayi_sjwh_url}zixue/bulu/toscore/${id}`).then(response => {
+                }).finally(() => {
+                    refreshTable();
+                });
+            },
+        }
+        function yon(v) {
+            if (0 === v) return `否`;
+            else if (1 === v) return `是`;
+            else return '';
+        }
+        function renderTable() {
+            table.render({
+                id: 'table_id',
+                elem: '#table_id',
+                height: 'full-100',
+                toolbar: _isPerson ? '#table_toolbar' : '',
+                defaultToolbar: [],
+                url: `${huayi_sjwh_url}zixue/bulu/page`,
+                method: 'POST',
+                contentType: 'application/json',
+                loading: true,
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                where: getSifter(),
+                request: {
+                    pageName: 'pageNum', // 页码的参数名称，默认：page
+                    limitName: 'pageSize' // 每页数据量的参数名，默认：limit
+                },
+                parseData: function (res) {
+                    let page = res.data || {};
+                    gPageNum = page.pageNum;
+                    return {
+                        'code': 200 === res.status ? 0 : res.status, // 解析接口状态
+                        'msg': res.message || res.msg, // 解析提示文本
+                        'count': page.recordsTotal, // 解析数据长度
+                        'data': page.records, // 解析数据列表
+                        'page': page.pageNum, // 当前页
+                        'limit': page.pageSize // 每页条数
+                    }
+                },
+                done: function (res, curr, count) {
+                    gPageNum = curr;
+                },
+                error: function (error, msg) {
+                    let a = error.status, b = error.statusText, c = error.responseText;
+                    $('.layui-table-main').html(`<div class="layui-none">${a}-${b}</div>`);
+                },
+                cols: [[
+                    {
+                        field: '', title: '操作', minWidth: 200, align: 'center', sort: false, templet: data => {
+                            let st = data.state || 0;
+                            if (_isPerson) {
+                                let e = `<a class="layui-btn layui-btn-sm btn-row" lay-event="editbulu">编辑</a>`;
+                                if ([0, 22, 32, 42, 52].includes(st)) return `${e}<a class="layui-btn layui-btn-sm btn-row" lay-event="submit">提交</a>`;
+                                if (20 === st) return `<a class="layui-btn layui-btn-sm btn-row layui-btn-danger btn-danger-row" lay-event="recall">撤回</a>`;
+                                else return ``;
+                            } else {
+                                let a = _uut * 10
+                                if (st > a)
+                                    return `<a class="layui-btn layui-btn-sm btn-row layui-btn-disabled btn-disabled-row">已审核</a>`;
+                                else if (a === st) {
+                                    return `<a class="layui-btn layui-btn-sm btn-row" lay-event="approve">审核通过</a>
+                                        <a class="layui-btn layui-btn-sm btn-row layui-btn-danger btn-danger-row" lay-event="reject">审核不通过</a>`;
+                                } else return '';
+                            }
+                        }
+                    },
+                    {field: 'cmeYear', title: '年度', minWidth: 120, align: 'center', sort: true,},
+                    {field: 'personNo', title: '人员编号', minWidth: 120, align: 'center', sort: true, hide: _isPerson},
+                    {field: 'personName', title: '姓名', minWidth: 120, align: 'center', sort: true, hide: _isPerson},
+                    {field: 'unitName', title: '所在单位', minWidth: 120, align: 'center', sort: true, hide: _isPerson},
+                    {field: 'blCert', title: '补打证书', minWidth: 120, align: 'center', sort: true, templet: data => yon(data.blCert)},
+                    {field: 'blScore', title: '补录学分', minWidth: 120, align: 'center', sort: true, templet: data => yon(data.blScore)},
+                    {field: '', title: '查看明细', minWidth: 120, align: 'center', sort: true, templet: () => `<a class="layui-btn layui-btn-sm btn-row" lay-event="viewbulu">查看</a>`,},
+                    {field: 'submitDate', title: '提交日期', minWidth: 140, align: 'center', sort: true,},
+                    {field: '', title: '审核进度', minWidth: 120, align: 'center', sort: true, templet: () => `<a class="layui-btn layui-btn-sm btn-row" lay-event="checkstep">查看</a>`},
+                    {field: 'state', title: '审核状态', minWidth: 120, align: 'center', sort: true, templet: data => stateTxt(data)},
+                    {field: 'checkUnitName', title: '审核用户', minWidth: 200, align: 'center', sort: true,},
+                    {field: 'opinion', title: '审核意见', minWidth: 200, align: 'center', sort: true, templet: data => opiniontxt(data)},
+                    {field: 'createTime', title: '创建时间', minWidth: 140, align: 'center', sort: true,},
+                ]],
+                data: [{
+                    personNo: "123"
+                }],
+            });
+        }
+        function opiniontxt(data) {
+            return '-' === data.opinion ? '' : data.opinion || '';
+        }
+        function renderlogtable() {
+            table.render({
+                id: 'log_table',
+                elem: '#log_table',
+                cols: [[
+                    {field: 'unitId', title: '单位编号', width: 100, align: 'center',},
+                    {field: 'unitName', title: '单位名称', width: 240, align: 'center',},
+                    {field: 'state', title: '审核状态', width: 110, align: 'center', templet: data => stateTxt(data)},
+                    {field: 'opinion', title: '审核意见', width: 220, align: 'center', templet: data => opiniontxt(data)},
+                    {field: 'createTime', title: '时间', width: 180, align: 'center',},
+                ]],
+            });
+        }
+        function stateTxt(row) {
+            let state = row.state;
+            let uut = row.uut;
+            if (0 === state) return '撤回';
+            if (20 === state) return '提交';
+            if ([29, 30, 40, 50].includes(state)) return '审核通过';
+            if ([21, 31, 41, 51].includes(state)) return '退回';
+            if ([22, 32, 42, 52].includes(state)) return '审核不通过';
+            if ([23, 33, 43, 53].includes(state)) return '审核通过';
+            return '';
+        }
+        function refreshTable(ec, pageNum) {
+            let c = {where: getSifter()};
+            ec ? $.extend(true, c, ec) : '';
+            table.reload('table_id', c);
+        }
+        function getSifter() {
+            let tuid = gunittreesel?.getValue('valueStr');
+            let qst = $('select[name=qst]').val();
+            let state;
+            let state1 = _isPerson ? null : (_uut * 10);
+            let state2 = _isPerson ? null : 60;
+            if (qst) state = +(_uut + qst);
+            if ('3' === qst) {
+                state = null; // Math.min((_uut + 1) * 10, 53);
+                state1 = _uut * 10 + 3;
+                state2 = 60;
+            }
+            return {
+                'unitId': tuid ? tuid : _unitId,
+                'depth': tuid ? 9 : _depth,
+                'comPersonId': _pid,
+                'cmeYear': $('select[name=cmeYear]').val(),
+                'personNo': $('input[name=personNo]').val(),
+                'personName': $('input[name=personName]').val(),
+                'blCert': $('select[name=blCert]').val(),
+                'blScore': $('select[name=blScore]').val(),
+                'state': state,
+                'state1': state1,
+                'state2': state2,
+            };
+        }
+    });
+</script>
+<style>
+    .layui_mess {
+        display: flex;
+        justify-content: space-between;
+    }
+    .layui-form-select .layui-input {
+        padding-right: 0;
+    }
+    .layui-table-tool-temp {
+        padding-right: 0;
+    }
+</style>
+</html>

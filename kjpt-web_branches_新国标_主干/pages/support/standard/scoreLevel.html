@@ -1,0 +1,478 @@
+
+<!DOCTYPE html>
+<html >
+<head>
+    <meta charset="UTF-8">
+    <title>学分级别管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+	<link rel="stylesheet" href="/js/layui-v2.6.4/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <!--<script src="/js/layui-v2.6.4/layui/layui.js"></script>-->
+
+	<script type="text/javascript" src="https://v8.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <blockquote class="layui-form layui-form-item layui-elem-quote one-btn" lay-filter="query-form">
+				<!-- <div class="layui-inline">
+					<select name="cmeStandardKindId" id ="score-level-query-standard" lay-search >
+					</select>
+				</div> -->
+				<div class="layui-inline">
+				    <input type="text" name="levelName" placeholder="学分级别名称关键字" autocomplete="off" class="layui-input">
+				</div>
+                <div class="layui-inline">
+                    <a class="layui-btn layui-btn-sm" id="searchBtn"
+						lay-submit onclick="loaderTable()"
+                       lay-filter="score_level_query"
+                       data-type="reload">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                    </a>
+                </div>
+            </blockquote>
+        </div>
+        <div class="layui-card-body layui_body_box">
+            <table class="layui-table" lay-filter= "table_score_level" id="table_score_level" style="margin: 0px 0px;">
+            </table>
+        </div>
+    </div>
+</div>
+
+<!--列表工具栏-->
+<script type="text/html" id="rawBar">
+    <a class="layui-btn layui-btn-xs" lay-event="score-level-edit" data-fun="editPos"
+		 style="color: #27b1a2;background-color: transparent;">编辑</a>
+    <a class="layui-btn layui-btn-xs" lay-event="score-level-del" data-fun="delPos"  
+		style="color: #f25643;background-color: transparent;">删除</a>
+</script>
+
+<!--头工具栏-->
+<script type="text/html" id="toolHeaderBar">
+    <a class="layui-btn layui-btn-xs" lay-event="score-level-add" style="min-width: 58px;  height: 26px;border-radius: 4 px;"><i class="layui-icon layui-icon-addition"></i>新增</a>
+	<span style="padding-left: 40%; color: blue;font-size: larger;">当前套: {{localStorage.getItem("choose-standard-name")}}</span>
+</script>
+
+<!-- 弹框内容 -->
+<div id="score-level-alert" style=" display:none">
+	<form class="layui-form" style = "padding: 20px;" lay-filter = 'score_level_form_alert' id="score_level_form_alert" >
+	  <div class="layui-form-item">
+		<div class="layui-inline">
+			<label class="layui-form-label"><font color="red">*&nbsp;</font>学分类别</label>
+			<div class="layui-input-block">
+			  <select name="kindId" id = "score-level-alert-kind" lay-verify="notBlank" lay-search="">
+			  </select>
+			</div>
+		</div>
+	  </div>
+	  <div class="layui-form-item">
+	  		<div class="layui-inline">
+	  			<label class="layui-form-label"><font color="red">*&nbsp;</font>选择国家标准学分级别</label>
+	  			<div class="layui-input-block">
+	  			  <select id = "score-level-alert-dic" lay-filter = 'score-level-alert-dic' name="comDictionaryDictId"  lay-verify="notBlank" lay-search>
+	  			  </select>
+	  			</div>
+	  		</div>
+	  </div>
+	  <div class="layui-form-item">
+	  		<div class="layui-inline">
+	  			<label class="layui-form-label">学分级别</label>
+				<div class="layui-input-block">
+				  <input type="text" name="scoreLevelName" placeholder="请输入学分级别" autocomplete="off" class="layui-input">
+				</div>
+	  		</div>
+	  </div>
+	  <div class="layui-form-item">
+		 <div class="layui-inline">
+			<label class="layui-form-label"><font color="red">*&nbsp;</font>显示顺序</label>
+			<div class="layui-input-block">
+			  <input type="text" name="listOrder" required  lay-verify="required|number" placeholder="请输入排序值" autocomplete="off" class="layui-input">
+			</div>
+		</div>
+	  </div>
+	  <div class="layui-form-item" style=" display:none">
+		 <div class="layui-inline">
+			<div class="layui-input-block">
+				<button type="submit" id = "score_level_alert_confirm"  class="layui-btn" lay-filter = 'score_level_form_alert_submit' lay-submit>提交</button>
+				<input type="text" name="scoreLevelId" placeholder="学分等级id" />
+				<input type="text" name="cmeStandardKindId" placeholder="套id" />
+				<input type="text" name="optType" placeholder="操作类型" />
+				<!-- <input type="text" name="scoreLevelName" placeholder="等级名称" /> -->
+			</div>
+		</div>
+	  </div>
+	</form>
+</div>
+
+<script src="/js/constant.js"></script>
+<script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+<script type="text/javascript" src="js/standard.js"></script>
+<script>
+
+	var format_url=/\\|\/$/gi;
+	var serverUrl =huayi_sjwh_url.replace(format_url,"");
+	var listUrl = serverUrl + '/cmecomscorelevel/list';
+	var addUrl = serverUrl + '/cmecomscorelevel/add';
+	var editUrl = serverUrl + '/cmecomscorelevel/edit';
+	var delUrl = serverUrl + '/cmecomscorelevel/del';
+	var kindListUrl = serverUrl + '/cmecomscorekind/list';
+	var levelDicListUrl = serverUrl + '/cmecomscorelevel/list/base';
+	var standardKindListUrl = serverUrl + '/cmestandardkind/list/all';
+
+	var currentTao = localStorage.getItem("choose-standard-id");;
+	var isTableLoaded = false;
+	var nextOrderIndex = 0;
+	//默认的学分类别
+	var defaultScoreKindId ='';
+	//默认的学分级别
+	var defaultScoreLevelDicId = '';
+	//学分级别字典
+	var scoreLevelDictionary = {};
+	//表单快照
+	var formSnapShot = '';
+	//防止表单重复提交
+	var noRepeatLock = true;
+	var noRepeat = function(fun){
+		if(noRepeatLock){
+			noRepeatLock = false;
+			try {
+				fun();
+			} catch (e) {
+				console.log(e);
+			}
+			setTimeout(function(){
+				noRepeatLock = true;
+			},3000);
+		}
+	}
+
+	var formValue = function(formId){
+		var formObj = {};
+		var dataArr = $(formId).serializeArray();
+		if(dataArr == null || dataArr.length == 0){
+			return formObj;
+		}
+		for (var i = 0 ; i <  dataArr.length; i++){
+			formObj[dataArr[i].name] = dataArr[i].value;
+		}
+		return formObj;
+	}
+
+	//加载table前校验环境
+	// var checkParam = function(){
+
+	// 	if(currentTao == '' || currentTao == null){
+	// 		layer.msg('请先选择套！', {
+	// 		        time: 1500, //1s后自动关闭
+	// 		      });
+	// 		return false;
+	// 	}
+	// 	return true;
+	// };
+
+	//初始化学分级别字典
+	$.ajax({
+		url:levelDicListUrl,
+		type:'get',
+		success:function(res){
+			var levelDirArray = res.data;
+			if(levelDirArray != null && levelDirArray.length > 0){
+				defaultScoreLevelDicId = levelDirArray[0].dictId;
+				$("#score-level-alert-dic").children("option").remove();
+				var options = '';
+				for(var i =0; i< levelDirArray.length; i++){
+					scoreLevelDictionary[levelDirArray[i].dictId] = levelDirArray[i].dictName;
+					options += '<option value="' + levelDirArray[i].dictId + '">'+levelDirArray[i].dictName+'</option>';
+				}
+				$('#score-level-alert-dic').append(options);
+			}else{
+				console.log('score level dictionary is null!');
+			}
+		}
+	});
+
+	// //监听查询按钮,如果套改变或table未加载 则重新加载table ，否则刷新table
+	// layui.use(['form','table'],function () {
+
+	// 	layui.form.on('submit(score_level_query)', function(data){
+	// 		var lastTao = currentTao;
+	// 		if(checkParam()){
+	// 			// loaderTable();
+	// 			layui.table.reload('table_score_level',{where:{"cmeStandardKindId":currentTao,'levelName':data.field.levelName}});
+	// 		}
+	// 		return false;
+	// 	});
+	// });
+
+	//更新学分类别列表，当套发生改变时
+	var updateScoreKinds = function () {
+		// 初始化弹框内容#学分类型选择框
+		$.ajax({
+			url:kindListUrl+'?cmeStandardKindId='+currentTao,
+			type:'get',
+			success:function(res){
+				var levelKindArray = res.data;
+				if(levelKindArray != null && levelKindArray.length > 0){
+					defaultScoreKindId = levelKindArray[0].kindId;
+					$("#score-level-alert-kind").children("option").remove();
+					var options = '';
+					for(var i =0; i< levelKindArray.length; i++){
+						options += '<option value="' + levelKindArray[i].kindId + '">'+levelKindArray[i].kindName+'</option>';
+					}
+					$('#score-level-alert-kind').append(options);
+				}else{
+					console.log('score kind is null!');
+				}
+			}
+		});
+	};
+
+	//初始化加载table
+	window.loaderTable = function(){
+		if(!chooseStandard()) return;
+		updateScoreKinds();
+
+		//初始化table,设置table监听，设置form监听
+		layui.use(['table','layer','form'], function(){
+			var form = layui.form;
+			var table = layui.table;
+			var layer = layui.layer;
+			table.render({
+				elem: '#table_score_level',
+				url: listUrl, //数据接口
+				where:{"cmeStandardKindId":currentTao},
+				limit:200,
+				height: 'full-155',
+				defaultToolbar: [],
+				page: false ,//开启分页
+				cols: [[ //表头
+					{type:'numbers', title: '序号'},
+					{field: 'scoreLevelId', title: '学分级别id', sort: true, fixed: 'left', hide: true},
+					{field: 'kindId', title: '学分类别id', sort: true, fixed: 'left', hide: true}
+					,{field: 'scoreLevelName', title: '级别名称',}
+					,{field: 'kindName', title: '类别名称', }
+					,{field: 'scoreLevelShortName', title: '当前套级别', hide: true}
+					,{field: 'cmeStandardKindId', title: '套',hide: true}
+					,{field: 'listOrder', title: '显示顺序',}
+					// ,{field: 'addTime', title: '添加时间',},
+					,{align: 'center', toolbar: '#rawBar', title: '操作'}
+				]],
+				error:function(obj,content){
+					console.log('请求失败！');
+					console.log(obj);
+				},
+				toolbar: '#toolHeaderBar' ,
+				parseData: function(res){ //res 即为原始返回的数据
+					return {
+						"code": res.status == 200? 0:res.status, //解析接口状态
+						"msg": res.msg, //解析提示文本
+						"data": res.data//解析数据列表
+					};
+				},
+				done: function(res){
+					if(res.data != null && res.data.length > 0){
+						nextOrderIndex = res.data[res.data.length-1].listOrder +1 ;
+					}else{
+						nextOrderIndex = 1;
+					}
+				}
+			});
+		});
+	};
+
+	//table各种监听事件
+	layui.use(['table','form','layer'],function () {
+
+		var form = layui.form;
+		var table = layui.table;
+		var layer = layui.layer;
+
+		//监听table行编辑按钮
+		table.on('tool(table_score_level)',function(ev) {
+			if(ev.event === 'score-level-edit'){
+				//回显
+				form.val('score_level_form_alert',{
+					'listOrder':ev.data.listOrder,
+					'comDictionaryDictId':ev.data.comDictionaryDictId,
+					'kindId':ev.data.kindId,
+					'scoreLevelShortName':ev.data.scoreLevelShortName,
+					'scoreLevelName':ev.data.scoreLevelName,
+					'scoreLevelId':ev.data.scoreLevelId,
+					'cmeStandardKindId':currentTao,
+					'optType':'edit'
+				});
+
+				formSnapShot = JSON.stringify(formValue('#score_level_form_alert'));
+				layer.open({
+					type:1,
+					title:'编辑',
+					area: ['450px','70%'],
+					btnAlign: 'c',
+					content:$('#score-level-alert'),
+					btn: ['确定', '取消'],
+					yes: function(index, layero){
+						var c = $('#score_level_alert_confirm').click();
+					}
+				});
+			}else if(ev.event === 'score-level-del'){
+				layer.confirm('您确认要删除【'+ev.data.scoreLevelName+'】吗？',
+						function(index){
+							$.ajax({
+								url:delUrl+'?scoreLevelId='+ev.data.scoreLevelId,
+								type:'post',
+								dataType:'json',
+								contentType:'application/json;charset=UTF-8',
+								success:function(res){
+									if(res.status == 200){
+										layui.layer.msg('删除成功！', {
+											time: 1000, //1s后自动关闭
+											end:function(o){
+												layui.layer.closeAll();
+												$('#searchBtn').click();
+											}
+										});
+									}else{
+										layui.layer.msg(res.msg || '系统繁忙，请稍后重试', {
+											time: 1000, //1s后自动关闭
+											end:function(o){
+												layui.layer.closeAll();
+											}
+										});
+									}
+								},
+								error:function(req,msg){
+									layui.layer.msg('系统繁忙，请稍后重试', {
+										time: 1000, //1s后自动关闭
+										end:function(o){
+											layui.layer.closeAll();
+										}
+									});
+								}
+							});
+						}
+				);
+			}
+		});
+
+		//监听table表头新增按钮
+		table.on('toolbar(table_score_level)',function(ev) {
+
+			if(ev.event === 'score-level-add'){
+				//回显
+				form.val('score_level_form_alert',{
+					'listOrder':nextOrderIndex,
+					'comDictionaryDictId':defaultScoreLevelDicId,
+					'kindId':defaultScoreKindId,
+					'scoreLevelShortName':scoreLevelDictionary[defaultScoreLevelDicId],
+					'scoreLevelName':scoreLevelDictionary[defaultScoreLevelDicId],
+					'scoreLevelId':'',
+					'cmeStandardKindId':currentTao,
+					'optType':'add'
+				});
+				layer.open({
+					type:1,
+					title:'新增',
+					area: ['450px','70%'],
+					btnAlign: 'c',
+					content:$('#score-level-alert'),
+					btn: ['确定', '取消'],
+					yes: function(index, layero){
+						$('#score_level_alert_confirm').click();
+					}
+				});
+			}
+		});
+
+		// layer.ready(function () {
+
+		// 	if(checkParam()){
+		// 		// loaderTable();
+		// 	}
+		// })
+	})
+
+	//form各种监听事件
+	layui.use('form',function () {
+
+		var form = layui.form;
+
+		//自定义FORM 校验规则
+		form.verify({
+			notBlank: function(value, item){ //value：表单的值、item：表单的DOM对象
+				if(value == null || value ==""){
+					return '必填项不能为空';
+				}
+			}
+		});
+
+		//监听学分等级选择框
+		form.on('select(score-level-alert-dic)', function(data){
+			form.val('score_level_form_alert',{
+				'scoreLevelShortName':scoreLevelDictionary[data.value],
+				'scoreLevelName':scoreLevelDictionary[data.value]
+			});
+		});
+
+		//监听新增、修改
+		form.on('submit(score_level_form_alert_submit)', function(data){
+			noRepeat(function(){
+				var formParam = data.field;
+				if(formSnapShot == JSON.stringify(formParam)){
+					layui.layer.msg('没有需要更新的内容！', {
+						time: 1000, //1s后自动关闭
+						end:function(o){
+							layui.layer.closeAll();
+						}
+					});
+				}else{
+					$.ajax({
+						url:formParam.optType == 'edit' ? editUrl:addUrl,
+						type:'post',
+						dataType:'json',
+						contentType:'application/json;charset=UTF-8',
+						data:JSON.stringify(formParam),
+						success:function(res){
+							if(res.status == 200){
+								layui.layer.msg('操作成功！', {
+									time: 1000, //1s后自动关闭
+									end:function(o){
+										layui.layer.closeAll();
+										$('#searchBtn').click();
+									}
+								});
+							}else{
+								layui.layer.msg(res.msg || '系统繁忙，请稍后重试', {
+									time: 1000, //1s后自动关闭
+									end:function(o){
+										layui.layer.closeAll();
+									}
+								});
+							}
+						},
+						error:function(req,msg){
+							layui.layer.msg('系统繁忙，请稍后重试', {
+								time: 1000, //1s后自动关闭
+								end:function(o){
+									layui.layer.closeAll();
+								}
+							});
+						}
+					});
+				}
+				formSnapShot = null;
+			})
+			return false;
+		});
+	})
+
+	</script>
+</body>
+</html>

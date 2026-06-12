@@ -1,0 +1,483 @@
+/**
+ * 广西套省厅 · 执行情况反馈审批扩展样式
+ * 仅用于 CmeProjFeedbackApproval 弹窗（现场照 AI 识别人数 + AI 审核参考意见）
+ */
+
+/* 方舟现场照 AI 识别人数 */
+.js-ark-title-row {
+    display: inline-flex !important;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    position: absolute;
+    left: 30px;
+    top: -11px;
+    background: #fff;
+    padding: 0 4px;
+    z-index: 2;
+    margin-right: 0 !important;
+    max-width: calc(100% - 40px);
+}
+.meeting-notice > .js-ark-title-row .file-title {
+    position: static !important;
+    left: auto;
+    top: auto;
+    display: inline !important;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.meeting-notice > .js-ark-title-row .js-ark-head-count-actions {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    flex: 0 1 auto;
+    max-width: 100%;
+}
+.meeting-notice > .js-ark-title-row .js-ark-head-count-btn {
+    display: inline-block;
+    margin: 0;
+    vertical-align: middle;
+    flex-shrink: 0;
+    height: 22px;
+    line-height: 22px;
+    padding: 0 8px;
+    white-space: nowrap;
+}
+.meeting-notice > .js-ark-title-row .js-ark-head-count-hint-title {
+    font-size: 12px;
+    color: #999;
+    line-height: 22px;
+    white-space: nowrap;
+}
+.meeting-notice > ul > li .js-ark-head-count {
+    margin-left: 6px;
+    color: #d9001b;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* AI 审核参考意见 */
+#implementationFeedback .gx-ai-audit-tab {
+    width: auto;
+    min-width: 110px;
+    padding: 0 8px;
+}
+.gx-ai-audit-wrap {
+    width: 96%;
+    margin: 0 auto 20px;
+    padding: 10px 0 20px;
+}
+.gx-ai-audit-regenerated-hint {
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background: #e6f7ff;
+    border: 1px solid #91d5ff;
+    border-radius: 4px;
+    color: #096dd9;
+    font-size: 13px;
+    text-align: center;
+}
+.gx-ai-audit-empty {
+    text-align: center;
+    color: #999;
+    padding: 60px 20px;
+    font-size: 16px;
+}
+.gx-ai-audit-summary {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+.gx-ai-audit-summary-card {
+    flex: 1;
+    border-radius: 6px;
+    padding: 14px 18px;
+    border: 1px solid #e7eaee;
+    background: #f7f8fa;
+}
+.gx-ai-audit-summary-normal {
+    border-top: 3px solid #22b07d;
+}
+.gx-ai-audit-summary-abnormal {
+    border-top: 3px solid #ef6b6b;
+}
+.gx-ai-audit-summary-main {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.gx-ai-audit-summary-icon-wrap {
+    width: 48px;
+    height: 34px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    flex: 0 0 auto;
+}
+.gx-ai-audit-icon-wrap-ok {
+    background: linear-gradient(135deg, #2fd493, #18b776);
+}
+.gx-ai-audit-icon-wrap-warn {
+    background: linear-gradient(135deg, #ff7575, #f24545);
+}
+.gx-ai-audit-summary-num {
+    margin-top: 3px;
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1;
+}
+.gx-ai-audit-summary-normal .gx-ai-audit-summary-num {
+    color: #1f2329;
+}
+.gx-ai-audit-summary-abnormal .gx-ai-audit-summary-num {
+    color: #d93030;
+}
+.gx-ai-audit-summary-icon {
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 1;
+}
+.gx-ai-audit-summary-text {
+    min-width: 0;
+}
+.gx-ai-audit-summary-label {
+    color: #1f2329;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+.gx-ai-audit-summary-hint {
+    margin-top: 2px;
+    font-size: 12px;
+    color: #818a95;
+}
+.gx-ai-audit-rule-desc {
+    font-size: 13px;
+    color: #888;
+    line-height: 1.5;
+    margin-bottom: 12px;
+    text-align: left;
+}
+.gx-ai-audit-inner-panel {
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+}
+.gx-ai-audit-inner-panel-normal {
+    background: #f6ffed;
+    border: 1px solid #b7eb8f;
+}
+.gx-ai-audit-inner-panel-abnormal {
+    background: #fff1f0;
+    border: 1px solid #ffa39e;
+}
+.gx-ai-audit-inner-panel .gx-ai-audit-progress-wrap {
+    margin-bottom: 0;
+}
+.gx-ai-audit-inner-panel .gx-ai-audit-alert {
+    margin-bottom: 10px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    align-items: flex-start;
+}
+.gx-ai-audit-inner-panel .gx-ai-audit-placeholder {
+    margin-bottom: 0;
+    background: transparent;
+    border: none;
+    text-align: left;
+}
+.gx-ai-audit-principal-list {
+    margin-top: 4px;
+}
+.gx-ai-audit-principal-line {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.8;
+}
+.gx-ai-audit-progress-wrap {
+    margin-bottom: 12px;
+}
+.gx-ai-audit-progress-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+.gx-ai-audit-progress-title-normal {
+    color: #52c41a;
+}
+.gx-ai-audit-progress-title-abnormal {
+    color: #f5222d;
+}
+.gx-ai-audit-progress-scale {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #999;
+}
+.gx-ai-audit-threshold-label {
+    position: absolute;
+    top: -18px;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: #f5222d;
+    white-space: nowrap;
+}
+.gx-ai-audit-metrics {
+    display: flex;
+    gap: 12px;
+    margin-top: 4px;
+}
+.gx-ai-audit-metric {
+    flex: 1;
+    min-width: 0;
+    background: #f5f5f5;
+    border-radius: 6px;
+    padding: 10px 12px;
+}
+.gx-ai-audit-metric-label {
+    display: block;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 4px;
+}
+.gx-ai-audit-metric-value {
+    display: block;
+    font-size: 15px;
+    color: #333;
+    font-weight: bold;
+}
+.gx-ai-audit-metric-value-normal {
+    color: #52c41a;
+}
+.gx-ai-audit-metric-value-abnormal {
+    color: #f5222d;
+}
+.gx-ai-audit-alert {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    background: #fff5f5;
+    border: 1px solid #ffccc7;
+    border-radius: 4px;
+    color: #cf1322;
+    font-size: 13px;
+}
+/* 红色三角 + 白色叹号 */
+.gx-ai-audit-warn-triangle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 16px;
+    flex-shrink: 0;
+}
+.gx-ai-audit-warn-triangle::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-bottom: 16px solid #f5222d;
+}
+.gx-ai-audit-warn-triangle-mark {
+    position: relative;
+    z-index: 1;
+    margin-top: 5px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #fff;
+    line-height: 1;
+}
+.gx-ai-audit-inner-panel .gx-ai-audit-warn-triangle {
+    margin-top: 1px;
+}
+.gx-ai-audit-alert-text {
+    flex: 1;
+    color: #cf1322;
+}
+.gx-ai-audit-alert-extra {
+    margin-left: auto;
+    color: #cf1322;
+    font-weight: bold;
+}
+.gx-ai-audit-placeholder {
+    text-align: left;
+    padding: 12px 0;
+    background: transparent;
+    border: none;
+    color: #999;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+.gx-ai-audit-boundary-hint {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #999;
+    text-align: left;
+}
+.gx-ai-audit-principals-more {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #f5222d;
+}
+.gx-ai-audit-items {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.gx-ai-audit-card {
+    border: 1px solid #e6e6e6;
+    border-radius: 6px;
+    padding: 14px 16px;
+    background: #fff;
+    text-align: left;
+}
+.gx-ai-audit-card-abnormal {
+    border: 1px solid #ffa39e;
+    background: #fff;
+}
+.gx-ai-audit-card-head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.gx-ai-audit-card-icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.gx-ai-audit-card-icon-wrap .layui-icon {
+    font-size: 16px;
+    line-height: 1;
+}
+.gx-ai-audit-card-icon-wrap-normal .layui-icon,
+.gx-ai-audit-card-icon-wrap-normal .gx-ai-audit-card-icon-text {
+    color: #52c41a;
+}
+.gx-ai-audit-card-icon-wrap-abnormal .layui-icon,
+.gx-ai-audit-card-icon-wrap-abnormal .gx-ai-audit-card-icon-text {
+    color: #f5222d;
+}
+.gx-ai-audit-card-icon-wrap-pending .layui-icon,
+.gx-ai-audit-card-icon-wrap-pending .gx-ai-audit-card-icon-text {
+    color: #8c8c8c;
+}
+.gx-ai-audit-card-icon-text {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+}
+.gx-ai-audit-card-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: #333;
+}
+.gx-ai-audit-card-status {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+.gx-ai-audit-card-normal .gx-ai-audit-card-status {
+    background: #f6ffed;
+    color: #52c41a;
+}
+.gx-ai-audit-card-abnormal .gx-ai-audit-card-status {
+    background: #fff1f0;
+    color: #f5222d;
+}
+.gx-ai-audit-tag {
+    font-size: 12px;
+    color: #f5222d;
+    background: #fff1f0;
+    border: 1px solid #ffa39e;
+    border-radius: 3px;
+    padding: 1px 6px;
+}
+.gx-ai-audit-detail {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.6;
+}
+.gx-ai-audit-principals > div {
+    margin-top: 4px;
+    color: #f5222d;
+}
+.gx-ai-audit-progress {
+    position: relative;
+    height: 10px;
+    background: #f0f0f0;
+    border-radius: 5px;
+    margin-top: 10px;
+    overflow: visible;
+}
+.gx-ai-audit-progress-thick {
+    height: 14px;
+    border-radius: 7px;
+    margin-top: 8px;
+}
+.gx-ai-audit-progress-thick .gx-ai-audit-bar {
+    border-radius: 7px;
+}
+.gx-ai-audit-progress-thick .gx-ai-audit-threshold-tick {
+    height: 20px;
+    top: -4px;
+}
+.gx-ai-audit-bar {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.3s;
+}
+.gx-ai-audit-bar-normal {
+    background: #52c41a;
+}
+.gx-ai-audit-bar-abnormal {
+    background: #f5222d;
+}
+.gx-ai-audit-threshold-tick {
+    position: absolute;
+    top: -3px;
+    width: 2px;
+    height: 16px;
+    background: #faad14;
+    transform: translateX(-50%);
+}
+.gx-ai-audit-generated-at {
+    margin-top: 16px;
+    text-align: right;
+    font-size: 12px;
+    color: #999;
+}
+.gx-ai-audit-card-pending .gx-ai-audit-card-status {
+    color: #8c8c8c;
+}
+.gx-ai-audit-attendance-pending {
+    padding: 12px 14px;
+    font-size: 14px;
+    color: #595959;
+    text-align: center;
+}
+.gx-ai-audit-attendance-failed {
+    padding: 12px 14px;
+    font-size: 14px;
+    color: #8c8c8c;
+    border-radius: 4px;
+}

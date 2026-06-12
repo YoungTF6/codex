@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>人员变动</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <!--    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script> -->
+
+    <!-- 工具 -->
+    <script type="text/javascript" src="../../js/tools/urlTools.js"></script>
+</head>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+
+            <!-- 表格区域-->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="cmePerson" lay-filter="cmePerson" style="margin: 0px 0px;"></table>
+            </div>
+
+        </div>
+    </div>
+
+
+    <script type="text/html" id="bar">
+        <a class="layui-btn layui-btn-sm layui-btn-normal" lay-event="back">返回</a>
+    </script>
+    <script>
+        // 全局配置及引入相关的模块
+        layui.use([ 'table', 'form', 'layer' ], () => {
+            let { table, form, layer } = layui;
+
+
+            /* 表格相关操作 */
+            // 表格配置
+            window.loaderTable = () => {
+                table.render({
+                    elem            : '#cmePerson',
+                    url             : huayi_personorg_url + 'cmePerson/list',
+                    headers         : {
+                        'Authorization' : localStorage.getItem('token'),
+                        'KJPT-USER-ID'  : localStorage.getItem('user-id')
+                    },
+                    title           : '人员变动表',
+                    defaultToolbar  : [],
+                    toolbar         : '#bar',
+                    where           : { comPersonId : getQueryString('personid') },
+                    cols            : [ [
+                        { field: 'personNo', title: '人员编号', align: 'center',  width: 120, sort: true },
+                        { field: 'personName', title: '姓名', align: 'center',  width: 100, sort: true },
+                        { field: 'cmeYear', title: '年度', align: 'center',  width: 80, sort: true },
+                        { field: 'titleName', title: '职称', align: 'center',  minWidth: 150, sort: true },
+                        { field: 'personStateName', title: '人员状态', align: 'center',  minWidth: 100, sort: true },
+                        { field: 'unit', title: '单位编号', align: 'center',  width: 100, sort: true },
+                        { field: 'unitName', title: '单位名称', align: 'center',  minWidth: 200, sort: true },
+                        { field: 'hospitalLevelName', title: '单位级别', align: 'center',  minWidth: 120, sort: true },
+                        { field: 'remark', title: '备注', align: 'left',  minWidth: 200, sort: true,hide:true }
+                    ] ],
+                    cellMinWidth    : 100,
+                    id              : 'cmePerson',
+                    height          : 'full-55',
+                    page            : true,
+                    limit           : 10,
+                    limits          : [ 10, 50, 100, 150, 200 ],
+                    parseData       : res => {
+                        return {
+                            'code'  : res.status === 200 ? 0 : res.status, // 解析接口状态
+                            'msg'   : res.message, // 解析提示文本
+                            'count' : res.data.recordsTotal, // 解析数据长度
+                            'data'  : res.data.records, // 解析数据列表
+                            'page'  : res.data.pageNum, // 当前页
+                            'limit' : res.data.pageSize, // 每页条数
+                        }
+
+                    },
+                    request         : {
+                        pageName    : 'pageNum', //页码的参数名称，默认：page
+                        limitName   : 'pageSize' //每页数据量的参数名，默认：limit
+                    }
+                });
+            };
+
+            // 初始化表格
+            loaderTable();
+
+            // 监听头部新增按钮
+            table.on('toolbar(cmePerson)', obj => {
+                let datas = obj.data;
+
+                if (obj.event === 'back') parent.layer.closeAll();
+
+            });
+
+        });
+    </script>
+</body>
+</html>

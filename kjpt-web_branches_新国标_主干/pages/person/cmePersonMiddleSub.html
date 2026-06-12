@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>补学申请(个人)</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css">
+
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+
+    <!-- 工具 -->
+    <script type="text/javascript" src="../../js/base64.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="../../js/axios.min.js"></script>
+    <script type="text/javascript" src="../../js/auth.js"></script>
+    <script  type="text/javascript"  src="../../js/layui-v2.6.8/layui/layui.js"></script>
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <style>
+        .layui-icon-ok {
+            color: green;
+            font-weight: bold;
+        }
+
+        .layui-icon-close.notok,
+        .require,
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+
+
+        .layui-table-tool-temp {
+            padding-right: 0;
+        }
+    </style>
+</head>
+
+<body class="body-area">
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <!-- 搜索框区域 -->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area">
+                <!-- <blockquote class="layui-form layui-form-item layui-elem-quote one-btn" lay-filter="query-form"> -->
+                <div class="layui_mess">
+                    <div class="layui_display">
+
+                        <div class="layui-inline layui-form">
+                            <label class="layui-form-label">审核状态</label>
+                            <div class="layui-input-block">
+                                <select class="con_sel" id="isPass">
+                                    <option value="">请选择</option>
+                                    <option value="0">待审核</option>
+                                    <option value="2">不通过</option>
+                                    <option value="3">审核通过</option>
+                                </select>
+                            </div>
+                            <input type="hidden" id="hidden_person_state_id" />
+                        </div>
+
+                    </div>
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" id="searchBtn" lay-filter="table-search" data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+
+            <!-- 表格区域 -->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="comPerson" lay-filter="comPerson" style="margin: 0px 0px;">
+                </table>
+            </div>
+
+            <!-- 申请补学弹窗 -->
+            <div id="stuApplyModal" style="display:none; padding: 24px 32px 8px 32px; background: #fafbfc; border-radius: 8px;">
+                <div style="margin-bottom: 20px;">
+                    <div style="margin-bottom: 14px;">
+                        <label id="supMsgLab" style="font-size: 16px; color: #333; font-weight: bold;"></label>
+                    </div>
+                    <div style="margin-bottom: 14px;">
+                        <span id="makeUpTimeHint" style="font-size: 16px; color: #FF0000; font-weight: bold; display: none;"></span>
+                    </div>
+                    <div class="layui-form-item" style="margin-bottom: 18px;">
+                        <a style="color: red; ">*</a>
+                        <span style="font-weight: bold;">申请说明：</span>
+                        <textarea id="applyContent" class="layui-textarea" placeholder="请输入申请说明" style="width: 100%; margin-top: 8px;" rows="3" maxlength="300" draggable="false"></textarea>
+                    </div>
+                    <div class="layui-form-item" style="margin-bottom: 18px;">
+                        <a style="color: red;" id="fileReqStar">*</a>
+<!--                        <a style="color: red;">*</a>-->
+                        <span style="font-weight: bold;">附件上传：</span>
+                        <span style="color: #888; margin-left: 8px;">支持PDF和图片文件格式，单个文件不超过10MB</span>
+                        <div class="layui-upload" style="margin-top: 8px;">
+                            <button type="button" class="layui-btn layui-btn-sm" id="uploadFile">
+                                <i class="layui-icon">&#xe67c;</i> 上传附件
+                            </button>
+                            <div class="layui-upload-list" style="margin-top: 10px;">
+                                <ul id="fileList" class="layui-clear" style="padding-left: 0; list-style: none;"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 40px;">
+                    <button class="layui-btn layui-btn-primary" id="stuApplyClose" style="margin-right: 12px;">关闭</button>
+                    <button class="layui-btn layui-btn-normal" id="stuApplySubmit">提交申请</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
+
+<!--表格内数据编辑、删除按钮 -->
+<script type="text/html" id="rowBar">
+    <a class="layui-btn layui-btn-sm btn-row" lay-event="edit">状态/职称维护</a>
+</script>
+
+<!-- 表格头部工具栏 -->
+<script type="text/html" id="toolbarBtns">
+    <div class="layui-form" style="padding: 5px;">
+        <div class="layui_mess">
+            <div class="layui_display" style="width: 400px;">
+                    <input type="button" class="layui-btn layui-btn-sm" style="margin-left: 20px;" lay-event="btnMakeStudy" value="补学申请">
+            </div>
+        </div>
+    </div>
+</script>
+
+
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        xmSelect: 'xm-select',
+        treeSelect: 'treeSelect'
+    });
+
+    /* 全局配置及引入相关的模块 */
+    layui.use(['table', 'form', 'jquery', 'layer', 'xmSelect', 'upload'], function () {
+        var table = layui.table,
+            form = layui.form,laydate = layui.laydate,
+            $ = layui.jquery,
+            layer = layui.layer,
+            xmSelect = layui.xmSelect,
+            treeSelect = layui.treeSelect, 
+            upload = layui.upload;
+        var ZHENGJIANG = "190c480d-d43c-450b-8472-a6fd00a6729d";
+        var now = new Date();
+        var year = now.getFullYear();
+        let standardkindId = localStorage.getItem("standardkind-id");
+        let unitId = localStorage.getItem("unit-id");
+
+
+        var applyYear = now.getFullYear();
+
+
+        if (standardkindId === ZHENGJIANG) {
+            $("#fileReqStar").hide();
+        }
+
+
+        $("#supMsgLab").html("您正在申请<a style=\"color: red; font-weight: bold;\">" + year + "</a>年度的补学");
+        $.ajax({
+            url: huayi_personorg_url + 'cmeUnitConfig/getByStandardKindId',
+            type: 'GET',
+            data: { cmeStandardKindId: standardkindId },
+            success: function(response) {
+                if (response.status === 200 && response.data && response.data.configValue) {
+                    // 如果有配置，覆盖显示的年度
+                    var configYear = response.data.configValue;
+
+                    applyYear = configYear;
+                    $("#supMsgLab").html("您正在申请<a style=\"color: red; font-weight: bold;\">" + configYear + "</a>年度的补学");
+                }
+            }
+        });
+        var curDeptId;
+        window.getUnitId = function () {
+            return localStorage.getItem("unit-id");
+        }
+        window.getCmeStandardKindId = function () {
+            return localStorage.getItem("standardkind-id");
+        }  
+        //---------------------------------初始化------------------------
+
+        /* 表格初始化 */
+        window.initTable = function () {
+            table.render({
+                elem: '#comPerson',
+                url: huayi_personorg_url + 'comperson/getMakeStudyByPersonId',
+                toolbar: '#toolbarBtns', //开启头部工具栏，并为其绑定左侧模板
+                title: '用户表',
+                defaultToolbar: [],
+                where: {
+                    userId: localStorage.getItem("user-id"),
+                    isPass: $("#isPass").val()
+                },
+                cols: [
+                    [{
+                        field: 'applyYear',
+                        title: '申请年度',
+                        align: 'center',
+                        minWidth: 100,
+                        sort: true
+                    }, {
+                        field: 'applyTime',
+                        title: '申请时间',
+                        align: 'center',
+                        minWidth: 200,
+                        sort: true,
+                        templet: function(d) {
+                            if (!d.applyTime) return '';
+                            var date = new Date(d.applyTime);
+                            var y = date.getFullYear();
+                            var m = (date.getMonth() + 1).toString().padStart(2, '0');
+                            var day = date.getDate().toString().padStart(2, '0');
+                            return y + '-' + m + '-' + day;
+                        }
+                    }, {
+                        field: 'content',
+                        title: '申请说明',
+                        align: 'center',
+                        minWidth: 120,
+                        sort: true
+                    },{
+                        //相关附件
+                        field: 'aplyFile',
+                        title: '相关附件',
+                        align: 'center',
+                        minWidth: 120,
+                        templet: function (data) {
+                            return '<a class="layui-btn layui-btn-xs" lay-event="seachFile">查看</a>';
+                        }
+                    }, {
+                        field: 'isPass',
+                        title: '审核状态',
+                        align: 'center',
+                        minWidth: 80,
+                        sort: true,
+                        templet: function (d) {
+                            const map = {
+                                0: '<span style="color:#FFB800;">待审核</span>',
+                                1: '<span style="color:#FF5722;">退回</span>',
+                                2: '<span style="color:#FF0000;">不通过</span>',
+                                3: '<span style="color:#009688;">审核通过</span>'
+                            };
+                            return map[d.isPass] || d.isPass || '';
+                        }
+                    }
+                    , {
+                        field: 'checkUnitName',
+                        title: '审核用户',
+                        align: 'center',
+                        minWidth: 110,
+                        sort: true
+                    }, {
+                        field: 'unitContent',
+                        title: '审核意见',
+                        align: 'center',
+                        minWidth: 110,
+                        sort: true
+                    }, {
+                        //补学明细 暂未确定学分如何处理
+                        field: 'cmePersonId',
+                        title: '补学明细',
+                        align: 'center',
+                        minWidth: 100,
+                        templet: function (data) {
+                            return '<a class="layui-btn layui-btn-xs" lay-event="edit">查看</a>';
+                        },
+                        hide: true
+
+                    }]
+                ],
+                cellMinWidth: 100,
+                id: 'comPerson',
+                height: 'full-155',
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    return {
+                        'code': res.status === 200 ? 0 : res.status, // 解析接口状态
+                        'msg': res.message, // 解析提示文本
+                        'count': res.data.recordsTotal, // 解析数据长度
+                        'data': res.data.records, // 解析数据列表
+                        'page': res.data.pageNum, // 当前页
+                        'limit': res.data.pageSize, // 每页条数
+                    }
+                },
+                request: {
+                    pageName: 'pageNum', // 页码的参数名称，默认：page
+                    limitName: 'pageSize' // 每页数据量的参数名，默认：limit
+                },
+                done: function () {
+                    $(':checkbox[lay-filter="layTableAllChoose"]+').hide();
+                    $(':checkbox[lay-filter="layTableAllChoose"]+').next().hide();
+                    $(':checkbox[lay-filter="layTableAllChoose"]+').parent().append('选择');
+                }
+            });
+        };
+
+
+        $(function () {
+            window.initTable();
+        });
+        $("#searchBtn").click(function () {
+            window.initTable();
+        })
+
+        // 监听头部批量修改按钮
+        table.on('toolbar(comPerson)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+
+            if (obj.event === 'btnMakeStudy') {
+                // 判断是否是允许申报的时间
+                $.ajax({
+                    url: huayi_personorg_url + 'makeUpScoreRecord/isAllowMakeStudy',
+                    type: 'post',
+                    data: { cmeStandardKindId: standardkindId },
+                    success: function (res) {
+                        if (res.status === 200) {
+                            // 先查询补录时间段
+                            $.ajax({
+                                url: huayi_personorg_url + 'makeUpScoreRecord/getByStandardKindId',
+                                type: 'GET',
+                                data: { cmeStandardKindId: standardkindId },
+                                success: function(res) {
+                                    if (res.success && res.data && res.data.startTime && res.data.endTime) {
+                                        $('#makeUpTimeHint').text('补学申请时间：' + res.data.startTime + ' - ' + res.data.endTime).show();
+                                    } else {
+                                        $('#makeUpTimeHint').hide();
+                                    }
+                                },
+                                error: function() {
+                                    $('#makeUpTimeHint').hide();
+                                }
+                            });
+
+                            // 打开补学申请弹窗
+                            layer.open({
+                                type: 1,
+                                title: '补学申请',
+                                area: ['600px', '500px'],
+                                content: $('#stuApplyModal'),
+                                success: function () {
+                                    // 清空之前的内容
+                                    $('#fileList').empty();
+                                    $('#applyContent').val('');
+                                    $("#hidden_person_state_id").val("");
+                                    $("#hidden_title_id_to_change").val("");
+                                }
+                            });
+                        } else {
+                            layer.msg(res.msg);
+                        }
+                    },
+                    error: function () {
+                        layer.msg("网络异常，请稍后再试");
+                    }
+                });
+                
+            }
+
+        });
+        
+  
+
+        // 监听行内按钮
+        table.on('tool(comPerson)', function (obj) {
+            console.log(obj)
+            var data = obj.data;
+            // 监听行内按钮
+            if (obj.event === 'seachFile') {
+                axios.get(huayi_personorg_url + 'comperson/getPersonMakeFileList', {
+                    params: {
+                        makeId: data.makeId
+                    }
+                })
+                .then(function (response) {
+                    if (response.data.status === 200) {
+                        var fileList = response.data.data;
+                        if (fileList.length === 0) {
+                            layer.msg("没有相关附件");
+                            return;
+                        }
+                        var contentHtml = `
+                            <table class="layui-table" style="margin:0;">
+                                <thead>
+                                    <tr>
+                                        <th>名称</th>
+                                        <th>预览</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                        `;
+                        fileList.forEach(function (file) {
+                            var fileUrl = file.fileUrl || '';
+                            var fileName = file.fileName || '';
+                            var fileExt = fileName.split('.').pop().toLowerCase();
+                            var previewHtml = '';
+                            if (fileExt === 'pdf') {
+                                previewHtml = `<a onclick="window.open('${fileUrl}')" style="color:#1E9FFF;">预览</a>`;
+                            } else if (['jpg', 'jpeg', 'png'].includes(fileExt)) {
+                                previewHtml = `<a onclick="window.open('${fileUrl}')" style="color:#1E9FFF;" onclick="event.preventDefault();layer.open({type:1,area:['80%','80%'],title:'图片预览',content:'<img src=\\'${fileUrl}\\' style=\\'max-width:100%;max-height:100%\\'/>'});">预览</a>`;
+                            } else {
+                                previewHtml = `<a onclick="window.open('${fileUrl}')" style="color:#1E9FFF;">预览</a>`;
+                            }
+                            contentHtml += `
+                                <tr>
+                                    <td title="${fileName}">${fileName}</td>
+                                    <td>${previewHtml}</td>
+                                </tr>
+                            `;
+                        });
+                        contentHtml += `
+                                </tbody>
+                            </table>
+                        `;
+                        layer.open({
+                            type: 1,
+                            title: '相关附件',
+                            area: ['600px', '400px'],
+                            content: contentHtml
+                        });
+                    } else {
+                        layer.msg(response.data.message || "获取附件失败");
+                    }
+                })
+            }
+
+        });
+
+        var loadingIndex; // 用于存储等待层索引
+        var fileName; // 用于存储上传文件名
+        let lastFiles = {}; // 1. 定义文件缓存
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#uploadFile' //绑定元素
+            , url: huayi_upload_url + 'uploadApi/upload'
+            , exts: 'jpg|png|jpeg|pdf'
+            , accept: 'file'
+            , auto: true
+            ,size: 10*1024
+            ,number: 2
+            ,choose: function(obj){
+                if ($('#fileList li').length >= 2) {
+                    layer.msg('最多只能上传2个文件');
+                    // 关键：重置 input 的 value，确保下次选同一个文件也能触发 choose
+                    $(this.elem).val('');
+                    return false;
+                }
+                lastFiles = obj.pushFile();
+                // 也可以在这里重置，防止后续问题
+                $(this.elem).val('');
+            },
+            before: function(obj){
+                if ($('#fileList li').length >= 2) {
+                    layer.msg('最多只能上传2个文件');
+                    return false; // 阻止上传
+                }
+                loadingIndex = layer.load(2, {shade: 0.2}); // 显示loading
+                fileName = obj.pushFile()[Object.keys(obj.pushFile())[0]].name; // 获取上传的文件名
+                let fileTypeObj = getFileType(lastFiles);
+                let fileKey = Object.keys(fileTypeObj)[0];
+                let fileTypeData = fileTypeObj[fileKey];
+                this.data = fileTypeData;
+            },
+            done: function (res) {
+                if (res.code === 200 ) {
+                    var fileUrl = res.data.picUrl || res.data.url || '';
+                    // 优先用后端返回的name，没有就用choose时保存的
+                    //var fileName =fileName;
+                    var fileExt = fileName.split('.').pop().toLowerCase();
+                    var previewHtml = '';
+                    if (fileExt === 'pdf') {
+                        previewHtml = `<a data-fileurl="${fileUrl}" onclick="window.open('${fileUrl}')" style="color:#1E9FFF;" title="${fileName}">${fileName}</a>`;
+                    } else if (['jpg', 'jpeg', 'png'].includes(fileExt)) {
+                        previewHtml = `<a data-fileurl="${fileUrl}" onclick="window.open('${fileUrl}')" style="color:#1E9FFF;" title="${fileName}" onclick="event.preventDefault();layer.open({type:1,area:['80%','80%'],title:'图片预览',content:'<img src=\\'${fileUrl}\\' style=\\'max-width:100%;max-height:100%\\'/>'});">${fileName}</a>`;
+                    } else {
+                        previewHtml = `<a data-fileurl="${fileUrl}" onclick="window.open('${fileUrl}')" style="color:#1E9FFF;" title="${fileName}">${fileName}</a>`;
+                    }
+                    var removeBtn = `<a href="javascript:void(0);" class="remove-file" style="color:red;margin-left:10px;">移除</a>`;
+                    $('#fileList').append(`<li style="margin-bottom:6px;">${previewHtml}${removeBtn}</li>`);
+                    
+                    // 移除缓存
+                    for (let key in lastFiles) {
+                        if (lastFiles[key].name === fileName) {
+                            delete lastFiles[key];
+                            break;
+                        }
+                    }
+                    
+                    layer.msg('上传成功');
+                    layer.close(loadingIndex);
+                } else {
+                    // 移除缓存
+                    for (let key in lastFiles) {
+                        if (lastFiles[key].name === fileName) {
+                            delete lastFiles[key];
+                            break;
+                        }
+                    }
+                    layer.msg('文件格式有误');
+                    layer.close(loadingIndex);
+                }
+            },
+            error: function () {
+                // 移除缓存
+                for (let key in lastFiles) {
+                    if (lastFiles[key].name === fileName) {
+                        delete lastFiles[key];
+                        break;
+                    }
+                }
+                layer.msg('系统出现错误,请联系管理员');
+                layer.close(loadingIndex);
+            }
+        });
+        // 事件委托，移除文件
+        $('#fileList').on('click', '.remove-file', function(){
+            var rmFileName = $(this).data('filename');
+            for (let key in lastFiles) {
+                if (lastFiles[key].name === rmFileName) {
+                    delete lastFiles[key];
+                    break;
+                }
+            }
+            $(this).parent().remove();
+        })
+        //点击关闭
+        $("#stuApplyClose").click(function () {
+            //清空 申请说明和附件列表
+            $('#fileList').empty();
+            $('#applyContent').val('');
+            layer.closeAll();
+        });
+        //获取文件类型
+        let getFileType = function(filesObj) {
+            let tempDatas = {};
+            let year = new Date().getFullYear();
+            let path = `/individualScoreManage/${standardkindId}/${year}/${unitId}`;
+            for(let key in filesObj){
+                let fileData = {path:path,scale:0.6,outputQuality:0.6};
+                // 判断文件大小, 超过3M压缩比例改为0.3
+                if(filesObj[key].size > 3000000 ){
+                    fileData = {path:path,scale:0.3,outputQuality:0.3};
+                }
+                const tempType = filesObj[key].type;
+                if(tempType.indexOf("image") >= 0){
+                    fileData.fileType = "IMAGE";
+                } else if(tempType.indexOf("application/pdf") >= 0){
+                    fileData.fileType = "DOC";
+                } else {
+                    fileData.fileType = "OTHER";
+                }
+                tempDatas[key] = fileData;
+            }
+            return tempDatas;
+        }
+        // 提交申请
+        $("#stuApplySubmit").click(function () {
+            var applyContent = $("#applyContent").val();
+            if (applyContent.trim() === "") {
+                layer.msg("申请说明不能为空");
+                return;
+            }
+            if (applyContent.length > 1000) {
+                layer.msg("申请说明不能超过500字");
+                return;
+            }
+            if (standardkindId !== ZHENGJIANG) {
+                if ($('#fileList li').length === 0) {
+                    layer.msg("请至少上传一个附件");
+                    return;
+                }
+            }
+            var fileList = [];
+            $('#fileList li').each(function () {
+                var $a = $(this).find('a');
+                var fileUrl = $a.attr('data-fileurl');
+                var fileName = $a.attr('title');
+                fileList.push({
+                    fileName: fileName,
+                    fileUrl: fileUrl
+                });
+            });
+            var data = {
+                userId:  localStorage.getItem("user-id"),
+                content: applyContent,
+                fileList: fileList,
+                unitId: unitId,
+                applyYear: applyYear,
+                isPass: 0
+            };
+                axios.post(huayi_personorg_url + 'comperson/submitPersonMakeStudy', data)
+            .then(function (response) {
+                if (response.data.status === 200) {
+                    layer.msg("申请提交成功");
+                    layer.closeAll();
+                    window.initTable();
+                } else if (response.data.status === 500) {
+                    layer.msg(response.data.msg);
+                }
+                else {
+                    layer.msg(response.data.msg || "申请提交失败");
+                }
+            })
+            .catch(function (error) {
+                console.error(error);
+                layer.msg("系统出现错误,请联系管理员");
+            });
+        });
+
+
+    });
+  
+</script>

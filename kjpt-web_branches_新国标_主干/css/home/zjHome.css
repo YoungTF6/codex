@@ -1,0 +1,146 @@
+/* `XHTML, HTML4, HTML5 Reset
+----------------------------------------------------------------------------------------------------*/
+html,body{
+	height:99%;
+}
+.floating-container {
+  position: fixed;
+  left: 50%;
+  bottom: 0px;
+  transform: translate(-50%, 0%);
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  background: #c7c6c6;
+  border-radius: 3px;
+  justify-content: center;
+}
+.floating-container div{
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+}
+.floating-container div:nth-child(1){
+  padding: 10px 10px;
+}
+.floating-container div:nth-child(2){
+  padding: 0px 10px 10px 10px;
+}
+.floating-container img{
+  width: 90px;
+  height: 90px;
+}
+.layui-icon{
+    font-size: 30px;
+    color: #16b777;
+}
+
+#mapBox{
+  height: 100%;
+  display: flex;
+  align-items: center;
+  /* justify-content: center; */
+  background-color: #060606;
+}
+#mapChart{
+  width: 70%;
+  margin-left: 25%;
+  height: 85%;
+  background-color: #f0f2f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+canvas{
+  background-color: #060606;
+}
+.map-back {
+  color: #fff; 
+  font-size: 14px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  z-index: 1000;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.3s;
+}
+.map-name-div {
+  position: absolute;
+  top: 10px;
+  left: 6%;
+  color: #FFF;
+  font-size: 16px;
+  font-weight: bold;
+  border: 1px solid #cac5c5cc;
+  padding: 4px 12px;
+  border-radius: 4px;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+#statisticsBox{
+  position: absolute;
+  left: 6%;
+  top: 50px;
+  width: 37%;
+  height: calc(98% - 50px);
+  color: #fff;
+}
+#statisticsData{
+  margin-top: 30px;
+  width: 200px;
+  height: 250px;
+}
+.left-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+}
+.left-item>div:nth-child(2){
+  width: 50px;
+}
+#statisticsType{
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  color: #000;
+}
+#statisticsType a{
+  cursor: pointer;
+  padding: 4px 15px;
+  margin-top: 12px;
+  font-size: 16px;
+  width: 160px;
+  text-align: center;
+  border-radius: 5px;
+  background-color: #FFF;
+}
+.st-active {
+  background-color: #4da6ff !important;
+  color: #fff !important;
+}
+.directly-under-checkbox {
+  width: 100px;
+  height: 40px;
+  position: absolute;
+  top: 529px;
+  left: 6%;
+}
+#exportBtn {
+  display: inline-block;
+  font-size: 16px;
+  background-color: #FFF;
+  padding: 4px 15px;
+  text-align: center;
+  position: absolute;
+  top: 580px;
+  right: 6%;
+  border-radius: 4px;
+  cursor: pointer;
+}

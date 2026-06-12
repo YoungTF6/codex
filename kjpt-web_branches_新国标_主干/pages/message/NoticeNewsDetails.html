@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script type="text/javascript" src="../../js/api/cpt.js"></script>
+    <script type="text/javascript" src="../../js/axios.min.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script type="text/javascript" src="../../js/common.js"></script>
+    <style>
+        .layui-table-cell {
+            height:auto;
+        }
+        .layui-layer-content {
+            overflow: visible !important;
+        }
+
+        .tab_others {
+            width: 100px !important;
+        }
+
+        .tab_this {
+            width: 100px !important;
+        }
+
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .layui_display {
+            flex: 1 auto;
+        }
+
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+        .tab_others {
+            background-color: #009688;
+            color: #ffffff;
+            margin-left: 6px;
+        }
+
+        .tab_this {
+            background-color: #f5f5f5;
+            color: #404040;
+            margin-left: 6px;
+            border-bottom: 1px solid #F5F5F5;
+        }
+        .layui-table-tool-temp {
+            padding-right: 10px;
+        }
+    </style>
+</head>
+
+<body style="background-color: white;">
+
+    <div class="layui-fluid">
+        <div class="layui-card"> 
+            <!--        搜索框区域-->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="background-color: #f5f5f5;">
+                <div class="layui_mess">
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">是否已读</label>
+                            <div class="layui-input-block">
+                                <select name="isread" id="isread">
+                                    <option value="">全部</option>
+                                    <option value="1">已读</option>
+                                    <option value="0">未读</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">用户名称</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="realname" id="realname" placeholder="请填写用户名称" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" id="searchBtn" lay-submit lay-filter="LAY-app-order-search">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!--        表格区域-->
+            <div class="layui-card-body layui_body_box">
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <table class="layui-table" id="project" lay-filter="project" style="margin: 0px 0px;"></table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局配置及引入相关的模块
+        layui.use(['table', 'form', 'element'], function() {
+            var table = layui.table;
+            var form = layui.form;
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var userid= localStorage.getItem("unit-id");
+            var noticeId = getUrlParam('noticeId');
+            // 表格相关操作
+            // 表格配置
+            function loaderTable() {
+                window.mainTable = table.render({
+                    elem: '#project',
+                    url: huayi_mcenter_url + 'noticeNews/getNoticeNewsUser',
+                    title: '用户表',
+                    defaultToolbar: [],
+                    where: {
+                        noticeId: noticeId,
+                        isread: $('#isread').val(),
+                        realname: $('#realname').val()
+                    },
+
+                    cols: [[
+                        { field: 'realname', title: '名称', sort: true, align: "center" },
+                        {
+                            field: 'isread', title: '是否已读', sort: true, align: "center",
+                            templet: function (data) {
+                                let noticeImportanceText = '未读';
+                                if (data.isread == 1) {
+                                    noticeImportanceText = "已读";
+                                }
+                                return noticeImportanceText;
+                            }
+                        }
+                    ]],
+                    toolbar: '#bar',
+                    cellMinWidth: 100,
+                    id: "project",
+                    height: 'full-200',
+                    page: true,
+                    limit: 10,
+                    limits: [10, 50, 100, 150, 200],
+                    done: function () {
+                        // layui表格单元格设置高度自适应后, 设置为fixed的表格列的高度无法自适应的处理
+                        $(".layui-table-main tr").each(function(index, val) {
+                            $($(".layui-table-fixed .layui-table-body tbody tr")[index]).height($(val).height());
+                        });
+                    },
+                    parseData: function(res) {
+                        return {
+                            "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                            "msg": res.message, //解析提示文本
+                            "count": res.data.recordsTotal, //解析数据长度
+                            "data": res.data.records, //解析数据列表
+                            "page": res.data.pageNum, //当前页
+                            "limit": res.data.pageSize, //每页条数
+                        }
+
+                    },
+                    request: {
+                        pageName: 'pageNum', //页码的参数名称，默认：page
+                        limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                    }
+                });
+            };
+            $(function() { 
+                loaderTable(); 
+
+            });  
+             
+            table.on('sort(project)', function(obj){ //sort 是工具条事件名
+                //如果你的表格列表里有设置排序sort, 需要添加一个sort监听事件, 根据单元格内容的高度重新计算表格的行高
+                $(".layui-table-main tr").each(function(index, val) {
+                    $($(".layui-table-fixed .layui-table-body tbody tr")[index]).height($(val).height());
+                });
+            });
+
+ 
+            window.addEventListener('message', event => {
+                let fromFr = event.origin.indexOf('kjptfr.wsglw.net') !== -1;
+                let fromFrTest = event.origin.indexOf('121.36.86.74') !== -1;
+                if ('declare' === event.data.sender || fromFr || fromFrTest) {
+                    // console.info('Project.message');
+                    // console.info(JSON.stringify(event.data));
+                    if(event.data.closeModal){
+                        layui.layer.closeAll();
+                    }
+                    table.reload('project');
+                }
+            });
+     
+            //点击查询按钮，重载表格
+            $('#searchBtn').on('click', function() {
+                loaderTable();
+            });
+
+
+        });
+    </script>
+
+</body>
+
+</html>

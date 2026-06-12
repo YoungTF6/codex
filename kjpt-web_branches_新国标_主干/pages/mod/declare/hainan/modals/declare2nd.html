@@ -1,0 +1,190 @@
+<div id="projectDetailPage2">
+    <form class="page-form layui-form" action="" id="page2-form" lay-filter="page2-form">
+        <input type="hidden" name="pageNum" value=2>
+        <input type="hidden" name="cstate" value="1">
+
+        <!-- row1 -->
+        <div class="layui-form-item">
+            <!-- `cme_cme_proj`.`proj_name` -->
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>姓名:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="personName" lay-verify="required|personName" autocomplete="off"
+                           class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span
+                        style="color:red">*&nbsp;</span>性别:</label>
+                <div class="layui-input-block">
+                    <select name="gender" lay-filter="genderSel" lay-verify="required" lay-search="">
+                        <option value="F">女</option>
+                        <option value="M">男</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>年龄:</label>
+                <div class="layui-input-block">
+                    <input type="number" name="age" min="0" max="99" lay-verify="required|age" placeholder="请输入"
+                           autocomplete="off" class="layui-input number_ph">
+                </div>
+            </div>
+
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>电话:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="phone" min="0" lay-verify="required|myPhone" placeholder="请输入"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+        </div>
+
+        <!-- row2 -->
+        <div class="layui-form-item">
+
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span
+                        style="color:red">*&nbsp;</span>职称:</label>
+                <div class="layui-input-block">
+                    <div id="titleTreeSelector" data-name="titleId" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span
+                        style="color:red">*&nbsp;</span>职务:</label>
+                <div class="layui-input-block">
+                    <select name="business" lay-filter="" lay-verify="required">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span
+                        style="color:red">*&nbsp;</span>最高学历:</label>
+                <div class="layui-input-block">
+                    <select name="education" lay-filter="" lay-verify="required" lay-search="">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>工作单位:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="workUnit" lay-verify="required|workUnit" autocomplete="off"
+                           class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+        </div>
+
+        <!-- row3 -->
+        <div class="layui-form-item">
+
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>证件类型:</label>
+                <div class="layui-input-block">
+                    <select name="certType" lay-filter="certType" lay-verify="required">
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>证件号:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="idCardNo" lay-verify="required|idCardNo" placeholder="请输入"
+                           autocomplete="off" class="layui-input cert-id-x">
+                </div>
+            </div>
+
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>地址:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="address" lay-verify="required|address" autocomplete="off"
+                           class="layui-input" placeholder="请输入">
+                </div>
+            </div>
+
+            <div class="layui-col-md3">
+                <label class="layui-form-label"><span style="color:red">*&nbsp;</span>邮编:</label>
+                <div class="layui-input-block">
+                    <input type="number" name="postcode" lay-verify="required|postcode" autocomplete="off" min="0"
+                           class="layui-input number_ph" placeholder="请输入">
+                </div>
+            </div>
+        </div>
+
+        <!-- row4 -->
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <label><span style="color:red">*&nbsp;</span>工作简历（最多不能超过1000个汉字）:</label>
+                <div>
+                    <textarea name="resume" lay-verify="required|resume" placeholder="请输入内容"
+                              class="layui-textarea"></textarea>
+                </div>
+            </div>
+            <!--<div class="page-row-item">-->
+            <!--    <label><span style="color:red">*&nbsp;</span>教育经历（最多不能超过1000个汉字）:</label>-->
+            <!--    <div>-->
+            <!--        <textarea name="experience" placeholder="请输入内容" class="layui-textarea" lay-verify="required|experience"></textarea>-->
+            <!--    </div>-->
+            <!--</div>-->
+            <div class="page-row-item">
+                <label><span style="color:red">*&nbsp;</span>本人曾开展过哪些相近的培训（最多不能超过1000个汉字）:</label>
+                <div>
+                    <textarea name="training" placeholder="请输入内容" class="layui-textarea"
+                              lay-verify="required|training"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- row5 -->
+        <div class="layui-form-item">
+            <div class="page-row-item">
+                <label><span style="color:red">*&nbsp;</span>本人曾开展过哪些相近的研究（最多不能超过1000个汉字）:</label>
+                <div>
+                    <textarea name="study" placeholder="请输入内容" class="layui-textarea"
+                              lay-verify="required|study"></textarea>
+                </div>
+            </div>
+
+            <div class="page-row-item">
+                <label><span style="color:red">*&nbsp;</span>本人曾发表过哪些相近的文章（最多不能超过1000个汉字）:</label>
+                <div style="width: 101%">
+                    <textarea name="article" lay-verify="required|article" placeholder="请输入内容"
+                              class="layui-textarea"></textarea>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- row6 -->
+        <!--<div class="layui-form-item">-->
+        <!--    <div class="page-row-item" style="width: calc(98% - 5px)">-->
+        <!--        <label><span style="color:red">*&nbsp;</span>本人曾发表过哪些相近的文章（最多不能超过1000个汉字）:</label>-->
+        <!--        <div style="width: 101%">-->
+        <!--            <textarea name="article" lay-verify="required|article" placeholder="请输入内容" class="layui-textarea"></textarea>-->
+        <!--        </div>-->
+        <!--    </div>-->
+        <!--</div>-->
+
+        <!-- row7 -->
+        <div class="layui-form-item">
+            <div class="layui-col-sm12">
+                <div style="text-align: center;">
+                    <button class="layui-btn" type="submit" lay-submit lay-filter="save">保存</button>
+                    <button class="layui-btn" type="submit" lay-submit lay-filter="saveToNext">保存并进入下一页</button>
+                </div>
+            </div>
+        </div>
+
+
+    </form>
+
+</div>
+

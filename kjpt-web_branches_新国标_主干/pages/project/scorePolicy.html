@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>考试结果查看</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="../../js/tools/dict_tool.js"></script>
+    <script type="text/javascript" src="../../js/common.js"></script>
+    <style>
+        .layui-fluid {
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+            /* 使用视窗单位确保全屏高度 */
+        }
+
+        .layui-card {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            /* 让card灵活扩展以填充剩余空间 */
+        }
+
+        /* 自定义checkbox容器的样式 */
+        .checkbox-container {
+            padding-left: 45px;
+            /* 根据需要调整这个值，控制距离左边的距离 */
+            box-sizing: border-box;
+            /* 确保padding不会影响整体宽度 */
+            flex: 1;
+            /* 让表单灵活扩展以填充剩余空间 */
+            overflow-y: auto;
+            /* 如果内容超出范围，则允许滚动 */
+        }
+
+        /* 保证checkboxes左对齐 */
+        .checkbox-container .layui-form-item {
+            text-align: left;
+            margin-bottom: 10px;
+            /* 控制checkbox之间的间距 */
+        }
+
+        .checkbox-container .layui-form-item:first-child {
+            margin-top: 20px;
+        }
+
+        /* 保存按钮的样式 */
+        .save-button-container {
+            display: flex;
+            justify-content: center;
+            padding: 15px 0px 0px 0px;
+            background-color: #f2f2f2;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        .save-button-container .layui-btn {
+            width: 150px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <!--  表格区域-->
+            <form class="layui-form checkbox-container">
+                <!-- <div class="layui-form-item">
+                    <input type="checkbox" name="range_give_score_policy" value="6" title="按考勤次数授分"></div>
+                <div class="layui-form-item">
+                    <input type="checkbox" name="range_give_score_policy" value="4" title="有考勤就授予全部学分"> </div>
+                <div class="layui-form-item">
+                    <input type="checkbox" name="range_give_score_policy" value="7" title="按考勤有效人员授分"> </div> -->
+
+            </form>
+            <div class="save-button-container">
+                <button onclick="save()" class="layui-btn">保存</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // 全局配置及引入相关的模块
+        layui.use(['form'], function () {
+            var form = layui.form,
+                $ = layui.jquery,
+                layer = layui.layer;
+            let asstrCommon = AwardScoreStrategy.common;
+            let asstrTao =  AwardScoreStrategy.tao;
+
+            const taoId = dictTool.getStandardKindId(),
+                unitId = dictTool.getUnitId();
+            let projectId = getUrlParam("projectId");
+            let scoreLevelId = getUrlParam("scoreLevelId");
+            var extendDataJsonObj;
+
+
+
+            let renderCheckbox = function () {
+                let boxs = [];
+                let taoboxs = [];
+                let value_qrcode_attend_mode = window["value_qrcode_attend_mode"];
+                if (value_qrcode_attend_mode == 1 || value_qrcode_attend_mode == 2) {
+                    boxs = asstrCommon.filter(x => x.value_qrcode_attend_mode.split(',').includes(value_qrcode_attend_mode.toString()));
+                    taoboxs = asstrTao.filter(x => x.tao == taoId && x.value_qrcode_attend_mode.split(',').includes(value_qrcode_attend_mode.toString()));
+                } else {
+                    boxs = asstrCommon.filter(x => x.value_qrcode_attend_mode.split(',').includes('1'));
+                }
+                let allBox = [...boxs, ...taoboxs];
+                console.log(allBox);
+
+                for (let i = 0; i < allBox.length; i++) {
+                    let div = `<div class="layui-form-item"><input type="checkbox" name="range_give_score_policy" 
+                        value="${allBox[i].value}" title="${allBox[i].title}"></div>`;
+                    $(".checkbox-container").append(div);
+                }
+
+                //查找
+                let url = huayi_projectscore_url + 'cmeCmeProj/getOne';
+                let data = { projId: projectId };
+                $.ajax({
+                    async: false,
+                    url: url,
+                    type: 'post',
+                    data: JSON.stringify(data),
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    success: (res) => {
+                        if (res.success) {
+                            let extendData = res.data.extendData;
+                            extendDataJsonObj = JSON.parse(extendData);
+                            if (extendDataJsonObj != null) {
+                                let values = extendDataJsonObj["range_give_score_policy"];
+                                if (values != null) {
+                                    values.split(',').forEach(x => {
+                                        $(".checkbox-container").find(":checkbox[value='" + x + "']").prop('checked', 'checked');
+                                    });
+                                }
+                            }
+
+                            form.render();
+                        }
+                    },
+                });
+
+                form.render();
+            }
+
+            window.save = function () {
+                let cheds = $("input:checkbox[name='range_give_score_policy']:checked")
+                let values = "";
+                for (let i = 0; i < cheds.length; i++) {
+                    values = values + $(cheds[i]).val() + ',';
+                }
+                values = values.substring(0, values.length - 1);
+                if (extendDataJsonObj != null) {
+                    extendDataJsonObj["range_give_score_policy"] = values;
+                } else {
+                    extendDataJsonObj = { "range_give_score_policy": values };
+                }
+
+                let data = { projId: projectId, extendData: JSON.stringify(extendDataJsonObj) };
+                let url = huayi_projectscore_url + 'cmeCmeProj/update';
+                $.ajax({
+                    async: false,
+                    url: url,
+                    type: 'post',
+                    data: JSON.stringify(data),
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    success: (res) => {
+                        if (res.success) {
+                            layer.msg("保存成功",{icon:1,time:1000},close)
+                        }
+                    },
+                });
+            }
+
+            function close() {
+                var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index); 
+            }
+
+            let htmlInit = function () {
+                dictTool.getConfigByUnitAndScoreLevelFromRedis(scoreLevelId, "value_qrcode_attend_mode");
+                renderCheckbox();
+
+            }
+
+            htmlInit();
+
+        });
+
+    </script>
+</body>
+
+</html>

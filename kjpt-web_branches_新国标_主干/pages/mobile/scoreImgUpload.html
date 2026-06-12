@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>个人学分手机上传图片</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="../../js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script src="../../js/layui-v2.6.8/layui/layui.js"></script>
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <!-- <script type="text/javascript" src="../../js/global_ajax_setting.js"></script> -->
+    <style>
+        html,body{
+            height: 100%;
+        }
+        .mobile-box{
+            padding: 0px;
+            margin: 0px;
+            height: 100%;
+            background: white;
+        }
+        .mobile-btn{
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        .layui-upload{
+            width: 90%;
+            height: 100%;
+            margin: 0px auto;
+            position: relative;
+        }
+        .mobile-upload-tip{
+            margin: 10px 0px;
+        }
+        .mobile-upload-tip>dl{
+            line-height: 30px;
+            font-size: 18px;
+            color: #c2c2c2;
+        }
+        #fileList{
+            margin: 15px 0px;
+            list-style: none;
+            display: flex;
+        }
+
+        #fileList li{
+            margin-left: 10px;
+            width: 110px;
+            height: 110px;
+            background-color: #FAFAFA;
+            flex-wrap: wrap;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        #fileList li:first-child  {
+            margin-left: 0px;
+        }
+        .remove-img {
+            width: 25px;
+            height: 25px;
+            position: absolute;
+            right: -5px;
+            top: -5px;
+            background: url(/img/red-clo-icon.png) no-repeat center center;
+            background-size: 100%;
+        }
+        .layui-upload button:last-child{
+            position: absolute;
+            max-width: 150px;
+            left: 0px;
+            right: 0px;
+            bottom: 50px;
+            margin: auto;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="mobile-box">
+        <div class="layui-upload">
+            <button type="button" class="layui-btn mobile-btn" id="chooseFileBtn">选择证明材料</button>
+            <div class="mobile-upload-tip">
+                <h1>提示</h1>
+                <dl>
+                    <dd id="uploadTip"></dd>
+                </dl>
+            </div>
+            <ul id="fileList"></ul>
+            <button type="button" class="layui-btn layui-btn-disabled mobile-btn" id="submitFileBtn" disabled="true">开始上传</button>
+        </div>
+    </div>
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+        tool:'tool'
+    });
+    // 全局配置及引入相关的模块
+    layui.use(['table', 'form','tool','upload'], function () {
+        let $ = layui.jquery,table = layui.table,form = layui.form,upload = layui.upload;
+        let layer = layui.layer,tool = layui.tool;
+        let ajaxNum=0,loading,fileUrls = [];
+        let userId,standardkindId,unitId,timestamp;
+
+        // 上传文件大小限制 河南限制3M
+        let fileSize = 10*1024;
+        //关闭closeLoading的判断
+        let closeLoading = function(){
+            ajaxNum--;
+            if(ajaxNum<=0 && loading) layer.close(loading);
+        }
+        //打开加载
+        let openLoading = function(){
+            if(ajaxNum == 0) loading = layer.msg('加载中', {icon: 16, shade: 0.3, time:0});
+            ajaxNum ++;
+        }
+        //公共ajax
+        let commonAjax = function(type="get",url,data,failFun,successFun){
+            openLoading();
+            $.ajax({
+                type    :   type,
+                url     :   url,
+                data    :   data,
+                success :   function (res) {
+                    closeLoading();
+                    successFun(res);
+                },
+                error    :   function(res){
+                    closeLoading();
+                    failFun();
+                }
+            });
+        }
+
+        //改变选择按钮状态，可以选择图片是可以点击
+        let canChooseFile = function(canChoose = true) {
+            if(canChoose){
+                $("#chooseFileBtn").removeClass("layui-btn-disabled");
+                $("#chooseFileBtn").attr("disabled", false);
+            } else {
+                $("#chooseFileBtn").addClass("layui-btn-disabled");
+                $("#chooseFileBtn").attr("disabled", true);
+            }
+        }
+
+        //改变提交按钮状态，可以提交时可以点击
+        let canSubmitBtn = function(canUpload  = true){
+            if(canUpload)  {
+                $("#submitFileBtn").removeClass("layui-btn-disabled");
+                $("#submitFileBtn").attr("disabled", false);
+            } else {
+                $("#submitFileBtn").addClass("layui-btn-disabled");
+                $("#submitFileBtn").attr("disabled", true);
+            }
+        }
+
+        //上传文件
+        let uploadFile = function(num){
+            let uploadListIns = upload.render({
+                elem: "#chooseFileBtn",
+                elemList: $("#fileList"),
+                url: huayi_upload_url + 'uploadApi/upload',
+                exts: 'jpg|png|bmp|jpeg|pdf',
+                size: fileSize,//大小小于10M
+                accept: 'file',
+                number: num,
+                auto:false,
+                bindAction: '#submitFileBtn',
+                before: function(obj){
+                    let year = new Date().getFullYear();
+                    this.data = {
+                        scale:0.3,
+                        outputQuality:0.3,
+                        fileType:"IMAGE",
+                        path:`/individualScoreManage/${standardkindId}/${year}/${unitId}`,
+                    }
+                    openLoading();
+                },
+                choose: function(obj){
+                    canSubmitBtn(true);
+                    var that = this;
+                    var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                    // 文件上传数量限制
+                    (Object.keys(files).length + fileUrls.length) >= num && canChooseFile(false);
+                    //读取本地文件
+                    obj.preview(function (index, file, result) {
+                        let liElem = $([`<li><b class="remove-img"></b></li>`].join(''));
+                        createImg(result,index,liElem);//创建图片
+                        liElem.find('.remove-img').on('click', function () {
+                            delete files[index]; //删除对应的文件
+                            liElem.remove();
+                            uploadListIns.config.elem.next()[0].value = ''; //清空input file值,以免删除后出现同名文件不可选
+                            canChooseFile(true);
+                            Object.keys(files).length == 0 && canSubmitBtn(false);
+                        });
+                        $("#fileList").append(liElem);
+                    })
+                },
+                done: function(res,index,upload){
+                    let that = this;
+                    let imgElem = that.elemList.find('img#upload-' + index);
+                    if(res.code != 200) {
+                        this.error(index, upload);
+                        return;
+                    }
+                    fileUrls.push({
+                        fileName:this.files[index].name,
+                        scorePhotoUrl:res.data.picUrl,
+                        photoSize:(this.files[index].size/1014).toFixed(1),
+                        timestamp:timestamp,
+                        userId:userId,
+                        tempId:index
+                    })
+                    // imgElem.siblings().remove();
+                    delete this.files[index];
+                    if(Object.keys(this.files).length == 0){
+                        canSubmitBtn(false);
+                        saveImg();
+                    }
+                },
+                error: function(index,upload){
+                    layer.msg("上传失败");
+                    closeLoading();
+                }
+            })
+        }
+
+        let createImg = function(imgSrc,index,elem){
+            var img = new Image();
+            img.src = imgSrc;
+            img.onload = function () {
+                var preW = this.width;
+                var preH = this.height;
+                if (preW >= preH) {
+                    img.width = 100;
+                    img.height = 100 / (preW / preH);
+                } else {
+                    img.height = 100;
+                    img.width = 100 * (preW / preH);
+                }
+                $(img).attr("id", "upload-"+index);
+            }
+            elem.append($(img));
+        }
+
+        //图片已经保存到服务器，需要上传到服务器
+        let saveImg = function(){
+            openLoading();
+            $.ajax({
+                type: 'post',
+                url: huayi_projectscore_url + 'cmeSingleprojScoreMobilePhoto/saveBatch',
+                data: JSON.stringify(fileUrls),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    closeLoading();
+                    if (res.status === 200) {
+                        //直接保存
+                        layer.msg("保存成功");
+                        for (let i = 0; i < fileUrls.length; i++) {
+                            const element = fileUrls[i];
+                            $(`#upload-${element.tempId}`).siblings().remove();
+                        }
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                },
+                error: function () {
+                    closeLoading();
+                    layer.msg("保存失败");
+                }
+            })
+            return false;
+        }
+
+        //提示
+        let createUploadTip = function(configFileNum,uploadFileNum){
+            const tempToop = `1、上传时照片格式可以为jpg、jpeg、bmp、png<br/>
+                        2、请勿上传动画文件<br/>
+                        3、电脑端已添加${uploadFileNum}张照片，手机端最多可上传${configFileNum-uploadFileNum}张照片`;
+            $("#uploadTip").html(tempToop);
+        }
+
+        //页面初始化
+        let htmlInit = function(){
+            let configFileNum = tool.getParamFromUrl("configFileNum");
+            let uploadFileNum = tool.getParamFromUrl("uploadFileNum");
+            userId = tool.getParamFromUrl("userId");
+            standardkindId = tool.getParamFromUrl("standardkindId");
+            unitId = tool.getParamFromUrl("unitId");
+            timestamp = tool.getParamFromUrl("timestamp");
+            if(tool.isEmpty(userId) || tool.isEmpty(configFileNum) ||
+                tool.isEmpty(uploadFileNum)|| tool.isEmpty(standardkindId)||
+                tool.isEmpty(unitId)|| tool.isEmpty(timestamp)){
+                layer.msg("缺少必要参数");
+            }
+            createUploadTip(configFileNum,uploadFileNum);
+            fileSize = standardkindId == 'a6280900-a9c2-11ec-84d6-fa163e9b64fb' ? 3*1024 : 10*1024;
+            uploadFile(configFileNum-uploadFileNum);
+        }
+
+        htmlInit();
+
+    });
+
+</script>
+</body>
+</html>

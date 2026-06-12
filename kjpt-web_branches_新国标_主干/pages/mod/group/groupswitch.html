@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>group.switch</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
+    <!-- base -->
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <!--<script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>-->
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+</head>
+<body style="background-color: white;">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!-- 查询区域 -->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="background-color: #f5f5f5;">
+            <div class="layui_mess">
+                <div class="layui_display">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">单位编号</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="unitId" placeholder="" autocomplete="off" class="layui-input" value=""/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">单位名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="unitName" placeholder="" autocomplete="off" class="layui-input"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui_display">
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-sm btnRounded" lay-submit onclick="refreshTable({page: {curr: 1}})">
+                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 数据表格 -->
+        <div class="layui-card-body layui_body_box" style="padding-left: 0;padding-right: 0">
+            <table class="layui-table" id="table_id" lay-filter="table_id" style="margin: 0;"></table>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    layui.config({
+        base: '/js/layui/ext/',
+    }).extend({
+        xmSelect: 'xm-select',
+        lat: 'lat'
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'xmSelect', 'lat'], function () {
+        let table = layui.table, layer = layui.layer, form = layui.form, laydate = layui.laydate, dropdown = layui.dropdown, element = layui.element, $ = layui.jquery, xmSelect = layui.xmSelect, lat = layui.lat;
+        let gLayerIndex = -1, gPageNum = 1;
+        window.refreshTable = refreshTable;
+        $(function () {
+            renderTable();
+        });
+        form.on('switch(groupswitch)', function (data) {
+            let uid = data.elem.attributes['data-unit-id'].nodeValue;
+            let f = data.elem.checked;
+            if (uid) {
+                // comunit/unitToggleOpenGroupproj
+                let conf = {
+                    'unitId': uid,
+                    'flag': f,
+                    'menuIds': 'bdc228e5-9f3e-98f0-7d81-13f96afd86ca,a336eaae-6b2e-e32c-00f0-d263b60e4062',
+                };
+                postAction(`${huayi_sjwh_url}unit/file/groupswitch`, conf).then(response => {
+                    let jr = response.data;
+                    if (jr.success && jr.data) {
+                    }
+                }).catch(e => {
+                });
+            }
+        });
+        function renderTable() {
+            table.render({
+                id: 'table_id',
+                elem: '#table_id',
+                height: 'full-100',
+                toolbar: '#table_toolbar',
+                defaultToolbar: [],
+                url: `${huayi_sjwh_url}unit/file/switch/unitpage`,
+                method: 'POST',
+                contentType: 'application/json',
+                loading: true,
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                where: getSifter(),
+                request: {
+                    pageName: 'pageNum', // 页码的参数名称，默认：page
+                    limitName: 'pageSize' // 每页数据量的参数名，默认：limit
+                },
+                parseData: function (res) {
+                    let page = res.data || {};
+                    gPageNum = page.pageNum;
+                    return {
+                        'code': 200 === res.status ? 0 : res.status,
+                        'msg': res.message || res.msg,
+                        'count': page.recordsTotal, // total
+                        'data': page.records,
+                        'page': page.pageNum, // pageNum
+                        'limit': page.pageSize // pageSize
+                    }
+                },
+                done: function (res, curr, count) {
+                    gPageNum = curr;
+                },
+                error: function (error, msg) {
+                    let a = error.status, b = error.statusText, c = error.responseText;
+                    $('.layui-table-main').html(`<div class="layui-none">${a}-${b}</div>`);
+                },
+                cols: [[
+                    {field: 'unitId', title: '单位编号', minWidth: 120, align: 'center', sort: true,},
+                    {field: 'unitName', title: '单位名称', minWidth: 120, align: 'center', sort: true,},
+                    {field: 'unitPropertyName', title: '单位层级', minWidth: 120, align: 'center', sort: true,},
+                    {
+                        field: '', title: '内部培训状态', minWidth: 120, align: 'center', sort: true, templet: data => {
+                            let checked = data.fnFlag ? 'checked="checked"' : '';
+                            let disabled = false ? 'disabled' : '';
+                            return `<div class="layui-form"><input type="checkbox" ${checked} ${disabled} data-unit-id="${data.unitId || ''}" lay-filter="groupswitch" lay-skin="switch" lay-text="开启|关闭"></div>`;
+                        }
+                    },
+                ]],
+                data: [{
+                    personNo: "123"
+                }],
+            });
+        }
+        function refreshTable(ec, pageNum) {
+            let c = {where: getSifter()};
+            ec ? $.extend(true, c, ec) : '';
+            table.reload('table_id', c);
+        }
+        function getSifter() {
+            let arr = ['23b00081-503e-49a3-8d05-7f1f933a3282', // 社区卫生服务站
+                'be9477f0-c8d1-45e8-9bdd-ef1aedc68fcb', // 社区卫生服务中心
+                'd21466a1-1e38-4cbb-a05b-939320b44f4e', // 乡镇卫生院
+                'bae7ceaa-5274-4f95-a015-410fb3369e4d', // 村卫生室
+                '82a5f60e-5e16-4c81-9a37-9e19eba48445', // 其他
+            ];
+            return {
+                'unitId': _unitId,
+                'unitUserType': 2,
+                'depth': '330000' === _unitId ? 3 : 2,
+                'upids': arr.join(','),
+                'seUnitId': $('input[name=unitId]').val(),
+                'unitName': $('input[name=unitName]').val(),
+            };
+        }
+    });
+</script>
+<style>
+    .layui_mess {
+        display: flex;
+        justify-content: space-between;
+    }
+    .layui-form-select .layui-input {
+        padding-right: 0;
+    }
+    .layui-table-tool-temp {
+        padding-right: 0;
+    }
+</style>
+</html>

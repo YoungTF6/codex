@@ -1,0 +1,219 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科教管理平台</title>
+    
+    <link href="css/login.css" rel="stylesheet"/>
+
+    <link rel="stylesheet" href="css/layui.css" media="all" />
+
+</head>
+<body>
+    <div class="container body-content">
+        
+
+
+
+    
+    <div class="box" style="">
+        <div style="z-index:10;width:100%;height:100%;position: absolute;">
+        </div>
+        <div class="login_box">
+            <ul class="tit_tab">
+                <li class="login_x">密码登录</li>
+            </ul>
+            <div class="s" style="display:block;z-index:11;position: absolute;  ">
+                <ul class="list_0220">
+                    <li>
+                        <img src="picture/2-login_03.png" class="img_icon" />
+                        <input type="text" id="user_name" name="user_name" placeholder="请输入用户名" />
+                    </li>
+                    <li>
+                        <img src="picture/2-login_06.png" class="img_icon" />
+                        <input type="password" id="password" name="password" placeholder="请输入密码" />
+                    </li>
+                    <li class="yzm_0228">
+                        <img src="picture/2-login_08.png" class="img_icon" />
+                        <input type="text" id="checkCode" name="checkCode" placeholder="验证码" />
+                        <img alt="验证码" id="codeImg">
+                        <a>换一张</a>
+                    </li>
+                </ul>
+                <input type="button" value="登录" class="login_btn">
+                
+            </div>
+        </div>
+        <p class="text_p">如果您忘记用户名或者密码，请点击 <a id="getPwd" href="javascript:void(0)" style="color:orange;">个人用户名密码找回</a></p>
+        <div class="text_bottom">
+            <p>
+                行政管理部门、学（协）会、医疗卫生机构及其他机构管理员服务电话：400-888-1052（9:00-18:00 X 5天）
+            </p>
+            <p>
+                个人用户服务电话：400-888-0052（8:00-21:00 X  7天）
+            </p>
+            <p>
+                华医网提供技术支持服务
+            </p>
+            <p>推荐使用显示器分辨率：1366*768或更高分辨率，谷歌浏览器或IE 11及以上版本</p>
+            
+        </div>
+    </div>
+
+<!--弹窗-->
+<div class="popup_window" id="popup_window">
+    <div class="popup_main">
+        <div class="popup_tit">
+            <h1>查询用户名密码</h1>
+            <a onclick="document.getElementById('popup_window').style.display='none';"></a>
+        </div>
+        <ul>
+            <li>
+                <label>证件号码</label>
+                <input type="text" placeholder="请输入证件号码">
+            </li>
+            <li>
+                <label>手机号码</label>
+                <input type="text" class="phone" placeholder="请输入手机号码">
+                <input type="button" value="获取短信验证码" class="getcode popup_btn">
+            </li>
+            <li>
+                <label>短信验证码</label>
+                <input type="text" placeholder="请输入验证码">
+            </li>
+            <li>
+                <label></label>
+                <input type="button" value="确定" class="popup_btn">
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div>
+    <div id="systemSelect" style="padding:10px">
+
+    </div>
+</div>
+    </div>
+
+    
+    <script type="text/javascript" src="js/layui.js"></script>
+    <script type="text/javascript" src="js/browser.js"></script>
+    <script type="text/javascript">
+        layui.config({
+            base: "js/"
+        }).use(['form', 'element', 'layer', 'jquery', 'carousel'], function () {
+            var form = layui.form,
+                layer = layui.layer,
+                element = layui.element,
+                $ = layui.jquery;
+            GetCheckCode();
+            broserCheck();
+            document.onkeydown = function (object, sender) {
+                if (event.keyCode == '13') //->Enter
+                {
+                    $(".login_btn").click();
+                }
+            }
+
+            $("#checkCode").parent().find("[id='codeImg'],a").click(function () {
+                GetCheckCode();
+            });
+
+
+
+            function layerOpen (url) {
+                layer.open({
+                    title: false,
+                    area:['580px','352px'],
+                    type: 2,
+                    content: url
+                })
+            };
+
+            function GetCheckCode() {
+                $("#codeImg").attr("src", "../Home/CheckCode?r=" + Math.random());
+            }
+            function broserCheck() {
+                var hyBrowser = HUAYI.browser();
+                var broVersion = hyBrowser.broVersion.toString().split(".")[0];
+                if (hyBrowser.isIE && broVersion < 11) {
+                    window.location.href = "../Home/BrowserUpdate";
+                }
+            }
+
+            $(".login_btn").on("click", function () {
+                var hyBrowser = HUAYI.browser();
+                var formData = {
+                    user_name: $("#user_name").val(),
+                    password: $("#password").val(),
+                    checkCode: $("#checkCode").val(),
+                    browser: hyBrowser.broName,
+                    version: hyBrowser.broVersion,
+                    width: screen.width,
+                    height:screen.height
+
+                }
+                if (!(formData.user_name && formData.password && formData.checkCode)) {
+                    layer.alert("请将用户名，密码，验证码填写完整");
+                    return false;
+                }
+
+                $.post("../Secure/Login", formData, function (response) {
+                    var j = response;
+                    if (typeof response === "string")
+                        j = eval('(' + unescape(response) + ')');
+                    if (j.IsSuccess) {
+                        var data = j.Result;
+                        if (data[0].statu) {
+                            layerOpen(data[0].value);
+                        }
+                        else if (data.length > 1) {
+                            for (var i in data) {
+                                var key = data[i].key;
+                                var value = data[i].value;
+                                $("<a>").attr("target", "_self").attr("href", value).attr("class", "layui-btn layui-btn-normal").text(key).appendTo($("#systemSelect"));
+                            }
+                            layer.open({
+                                title: '角色选择',
+                                type: 1,
+                                content: $('#systemSelect')//捕获的元素，注意：最好该指定的元素要存放在body最外层，否则可能被其它的相对元素所影响
+                            });
+                        }
+                        else if (data.length === 1) {
+                            location.href = data[0].value;
+                        }
+
+                    } else {
+                        layer.alert(j.Message);
+                    }
+                })
+            })
+            $("#getPwd").click(function () {
+                layer.open({
+                    title: false,
+                    type: 2,
+                    content: "../Secure/PersonChangePwd",
+                    area: ['800px', '423px'],
+                    closeBtn: 0
+                })
+            })
+
+            $(".go_old_gov").click(function () {
+                var url = '//gov.kjpt1.91huayi.com?old_version=1';
+                window.location.href = url;
+            })
+
+            $(".go_old_unit").click(function () {
+                var index = Math.ceil(Math.random() * 10); //取1-10下标
+                //var url = '//kjpt' + index + '.91huayi.com?old_version=1';
+                var url = '//kjpt2.91huayi.com?old_version=1';
+                window.location.href = url;
+            })
+        })
+    </script>
+
+</body>
+</html>

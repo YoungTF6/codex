@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>院内活动-举办周期-课程</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+
+    <!-- 请求路径配置-->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <!-- ajax全局配置-->
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/tools/verification.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+    <script type="text/javascript" src="/js/faker.min.js"></script>
+    <style>
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+        /* 去掉时间选择器里的秒 start */
+        .layui-laydate-content .laydate-time-list>li {
+            width: 50%;
+        }
+        .layui-laydate-content .laydate-time-list>li:last-child {
+            display: none;
+        }
+        .layui-laydate-content .laydate-time-list >li{
+            text-align: center;
+        }
+        .layui-laydate-content .laydate-time-list>li {
+            width: 50%;
+        }
+        .laydate-time-list ol {
+            width: 100%;
+            padding-right: 20px; /* 预留滚动条的空间 */
+            box-sizing: border-box;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        .laydate-time-list ol li {
+            width: 100% !important; 
+            padding-left: 20px  !important;
+            text-align: center !important;
+        }
+        /* 去掉时间选择器里的秒 end */
+    </style>
+</head>
+
+<body style="background-color: white;">
+
+<div class="layui-fluid">
+    <div class="layui-card" style="padding: 15px 0;">
+
+        <form class="layui-form" id="courseForm" lay-filter="courseForm">
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="background-color: #f5f5f5;">
+                <!-- row1 -->
+                <input type="hidden" name="projId"/>
+                <input type="hidden" name="downId"/>
+                <input type="hidden" name="teachId"/>
+                <div class="layui_mess">
+                    <div class="layui_display">
+                        <div class="layui-inline guangdong-hide-time" style="margin-bottom: 4px;">
+                            <label class="layui-form-label">开始时间</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="startDay" class="layui-input" id="startDaySelector"
+                                       autocomplete="off" placeholder="选择开始日期">
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" name="startTime" class="layui-input" id="startTimeSelector"
+                                       autocomplete="off" placeholder="选择开始时间">
+                            </div>
+                        </div>
+                        <div class="layui-inline guangdong-hide-time" style="margin-bottom: 4px;">
+                            <label class="layui-form-label">结束时间</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="endDay" class="layui-input" id="endDaySelector"
+                                       autocomplete="off"
+                                       placeholder="选择结束日期">
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" name="endTime" class="layui-input" id="endTimeSelector"
+                                       autocomplete="off"
+                                       placeholder="选择结束时间">
+                            </div>
+                        </div>
+                        <div class="layui-inline" style="margin-bottom: 4px;">
+                            <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>讲授题目</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="teachSubject" id="teachSubjectInput" placeholder=""
+                                       autocomplete="off" class="layui-input" lay-verify="required"/>
+                            </div>
+                        </div>
+                        <div class="layui-inline" style="margin-bottom: 4px;">
+                            <label class="layui-form-label" name="coursePeriod" style="padding:9px 0px; width:100px;"><span style="color: red; ">*&nbsp;</span>时长</label>
+                            <div class="layui-input-block">
+                                <input type="number" name="period" min="0" id="periodInput" placeholder=""
+                                       lay-verify="required|coursePeriod" autocomplete="off"
+                                       class="layui-input"/>
+                            </div>
+                        </div>
+                        <!--<div class="layui-inline" style="margin-bottom: 4px;">-->
+                        <!--    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>学分</label>-->
+                        <!--    <div class="layui-input-block">-->
+                        <!--        <input type="number" name="score" min="0" id="scoreInput" placeholder=""-->
+                        <!--               lay-verify="required"-->
+                        <!--               autocomplete="off" class="layui-input"/>-->
+                        <!--    </div>-->
+                        <!--</div>-->
+                    </div>
+                </div>
+            </div>
+            <!-- row3 -->
+            <div class="layui-card-body layui_body_box">
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <table class="layui-table" id="lecturerTable" lay-filter="lecturerTable" style="margin: 0;">
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- row4 -->
+            <div class="layui-form-item">
+                <div class="layui-col-sm12">
+                    <div style="text-align: center;">
+                        <!-- <button class="layui-btn layui-btn-primary" lay-filter="atpfCancel" onclick="javascript:;">取消</button>-->
+                        <a class="layui-btn layui-btn-primary layui-layer-close" style="position: relative"
+                           onclick="closeCurrModal()">取消</a>
+                        <button class="layui-btn" type="submit" lay-submit lay-filter="courseFormSubmit">保存</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+
+<div style="display: none">
+    <!-- educationCell  -->
+    <div type="text/html" id="educationTpl">
+        <select name="education" id="educationSelector{{d.LAY_TABLE_INDEX}}" idx="{{d.LAY_TABLE_INDEX}}"
+                lay-filter="educationSelector"
+                data-value={{d.education}}>
+            <option value=""></option>
+        </select>
+    </div>
+
+    <!-- dutyCell: 职务,来源于[com_dictionary]中[kind=10] -->
+    <div type="text/html" id="dutyTpl">
+        <select name="duty" id="dutySelector{{d.LAY_TABLE_INDEX}}" idx="{{d.LAY_TABLE_INDEX}}" lay-filter="dutySelector"
+                data-value="{{d.duty}}">
+            <option value=""></option>
+        </select>
+    </div>
+
+    <div type="text/html" id="needScoreTpl">
+        <select name="needScore" id="needScoreSelector{{d.LAY_TABLE_INDEX}}" idx="{{d.LAY_TABLE_INDEX}}"
+                lay-filter="needScoreSelector">
+            <option value="true">是</option>
+            <option value="false">否</option>
+        </select>
+    </div>
+
+    <div type="text/html" id="genderTpl">
+        <select name="gender" id="genderSelector{{d.LAY_TABLE_INDEX}}" idx="{{d.LAY_TABLE_INDEX}}"
+                lay-filter="genderSelector">
+            <option value="1">男</option>
+            <option value="0">女</option>
+        </select>
+    </div>
+
+    <!-- titleCell: 职称,来源于职称表[com_title]中[kind=3] -->
+    <div type="text/html" id="titleTpl">
+        <div class="titleTreeSelector" id="titleTreeSelector{{d.LAY_TABLE_INDEX}}"
+             lay-filter="titleTreeSelector{{d.LAY_TABLE_INDEX}}" idx="{{d.LAY_TABLE_INDEX}}"></div>
+    </div>
+
+    <!-- deptCell: 表[com_person_spec] -->
+    <div type="text/html" id="deptTpl">
+        <div class="specTreeSelector" id="specTreeSelector{{d.LAY_TABLE_INDEX}}"
+             lay-filter="specTreeSelector{{d.LAY_TABLE_INDEX}}" idx="{{d.LAY_TABLE_INDEX}}"></div>
+    </div>
+
+</div>
+
+</body>
+
+
+<!-- toolbar -->
+<script type="text/html" id="lecturerTableToolbar">
+    <a class='layui-btn layui-btn-sm' lay-event='addLecturer'>添加教师</a>
+    <a class='layui-btn layui-btn-sm layui-btn-danger' lay-event='deleteLecturer'>删除</a>
+</script>
+
+<script type="text/html" id="personNoTpl">
+    <input type="text" name="personNo" class="layui-input teacher-no-input" data-field="personNo"
+           idx="{{d.LAY_TABLE_INDEX}}" value="{{d.personNo || ''}}" placeholder="{{ d.teachNo ? '' : '输入医通卡号' }}"
+           {{ d.teachNo ? 'disabled' : '' }}>
+</script>
+
+<script type="text/html" id="teachNoTpl">
+    <input type="text" name="teachNo" class="layui-input teacher-no-input" data-field="teachNo"
+           idx="{{d.LAY_TABLE_INDEX}}" value="{{d.teachNo || ''}}" placeholder="{{ d.personNo ? '' : '输入教师证件号' }}"
+           {{ d.personNo ? 'disabled' : '' }}>
+</script>
+
+<!-- ifProjManagerCell:  0:否 1:是 -->
+<script type="text/html" id="ifProjManagerTpl">
+    <input type="checkbox" name="ifProjManager" value="{{d.ifProjManager}}" idx="{{d.LAY_TABLE_INDEX}}"
+           lay-skin="switch" lay-text="是|否" lay-filter="ifProjManagerSwitch"
+           {{ d.ifProjManager=== 1 ? 'checked' : '' }}>
+</script>
+
+<!-- birthdayCell -->
+<script type="text/html" id="birthdayTpl">
+    <input type="text" name="birthday" class="birthdayTpl" id="birthdaySelector{{d.LAY_TABLE_INDEX}}"
+           placeholder="出生日期"
+           autocomplete="off" class="layui-input">
+</script>
+
+<script type="text/javascript" src="/js/constantPage/projectConstant.js"></script>
+<script type="text/javascript" src="/pages/mod/group/js/course_modal.js"></script>
+
+<script>
+    renderLables();
+</script>
+
+<style>
+    body:not(.is-guangdong-teacher-card) .layui-table-header .laytable-cell-1-0-2:before,
+    body:not(.is-guangdong-teacher-card) .layui-table-header .laytable-cell-1-0-3:before {
+        content: '* ';
+        color: red;
+    }
+
+    /* 1.date-cell */
+    td .layui-input {
+        border: none !important;
+    }
+
+    td .teacher-no-input {
+        border: none !important;
+        text-align: center;
+        background-color: transparent;
+    }
+
+    td .teacher-no-input:disabled {
+        background-color: transparent;
+        color: inherit;
+    }
+
+    .birthdayTpl {
+        width: 100%;
+        height: 38px;
+        margin-top: -5px;
+        border: none;
+        text-align: center;
+    }
+
+    td .layui-form-select {
+        margin-top: -10px;
+        margin-left: -15px;
+        margin-right: -15px;
+    }
+
+    .layui-table-cell {
+        overflow: visible !important;
+    }
+
+    .layui-table-view .layui-table th {
+        overflow: hidden;
+    }
+
+    .layui-form-selectup dl {
+        top: auto;
+        bottom: auto !important;
+    }
+
+    td .titleTreeSelector,
+    .specTreeSelector {
+        margin-top: -10px;
+        margin-left: -15px;
+        margin-right: -15px;
+    }
+
+    td xm-select {
+        border: none;
+        padding: 0 !important;
+        height: 38px !important;
+        line-height: 38px !important;
+    }
+
+    td xm-select .xm-select-default {
+        width: 20% !important;
+    }
+
+    xm-select > .xm-body .xm-search > i {
+        right: 20px;
+    }
+
+    xm-select[size='small'] .xm-label .scroll .label-content {
+        line-height: 32px !important;
+    }
+    .layui-treeSelect .ztree li span.button.switch {
+        position: relative;
+        top: -9px;
+    }
+
+</style>
+
+</html>

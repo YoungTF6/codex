@@ -1,0 +1,438 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no, viewport-fit=cover" />
+    <title></title>
+    <link rel="stylesheet" href="../../css/dabiaonew/reset.css">
+    <link rel="stylesheet" href="../../css/dabiaonew/bslayout.css">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+<script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script src="../../js/jquery.table2excel.js" type="text/javascript"></script>
+    <script>
+        $(function () {
+            $("#score_detail_table").hide();
+            $.ajax({
+                type: "post",
+                url: "handler/newdabiao.ashx",
+                data: { ot: "year" },
+                dataType: "json",
+                success: function (obj) {
+                    $.each(obj.data, function (index, item) {
+                        $('#years').append(new Option(item.cme_year, item.titleName)); //往下拉菜单里添加元素
+                    })
+                    //form.render('select');
+                }
+            })
+
+            $.ajax({
+                type: "get",
+                url: "handler/personInfo.ashx",
+                data: { ot: "year" },
+                dataType: "text",
+                success: function (obj) {
+
+                    var per = '';
+                    var arry = obj.split('|');
+                    per = '<span>' + arry[0] + '</span>';
+                    per += ' <p>' + arry[1] + '</p>';
+                    $("#personInfo").append(per)
+
+                    //form.render('select');
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown)
+                }
+            })
+
+            $("#years").change(function () {
+                var strval = $('#years').val();
+                var stryear = strval.split('|');
+                $("#date_perid").html(stryear[2] + stryear[4])
+            })
+        })
+        //达标标准、是否达标
+        function dabiaobiaozhun(strval) {
+            if (strval != "") {
+                $.ajax({
+                    type: "post",
+                    url: "handler/newdabiao.ashx",
+                    data: { ot: "rulelist", strval: strval },
+                    dataType: "json",
+                    success: function (obj) {
+                        if (obj.data.length > 0) {
+                            $("#dabiao_txt").empty()
+                            $("#is_dabiao").empty()
+                            var div = "";
+                            var is_dabiao = "";
+                            div = ' <h4 style="color: #333333;"> 达标要求：</h4>';
+                            for (var i = 0; i < obj.data.length; i++) {
+                                if (obj.data[i]["kind"].toString() == "1") {
+                                    div += '<label>' + obj.data[i]["standardmsg"].toString() + '</label><br>';
+                                } else if (obj.data[i]["kind"].toString() == "2") {
+                                    div += '  <span style="color: #808080;">' + obj.data[i]["standardmsg"].toString() + '</span><br>';
+                                } else if (obj.data[i]["kind"].toString() == "3") {
+                                    var result = obj.data[i]["standardmsg"].toString().split('|')
+                                    is_dabiao += '<span class="bdb">' + result[0] + '</span>';
+                                    is_dabiao += ' <label class="zong_text">' + result[1] + '</label>'
+                                }
+                            }
+                            $("#dabiao_txt").append(div);
+                            $("#is_dabiao").append(is_dabiao)
+                        } else {
+                            $("#dabiao_txt").empty()
+                            $("#is_dabiao").empty()
+                        }
+                    }
+                })
+            }
+        }
+
+        //总学分、总学时
+        function scoreTotal(strval) {
+            if (strval != "") {
+                $.ajax({
+                    type: "post",
+                    url: "handler/newdabiao.ashx",
+                    data: { ot: "scoretotal", strval: strval },
+                    dataType: "json",
+                    success: function (obj) {
+                        if (obj.data.length > 0) {
+                            //alert(obj.data)
+                            $("#score_total").empty()
+
+                        } else {
+                            $("#score_total").empty();
+
+                        }
+                        var ul1 = "";
+                        var ul2 = "";
+                        ul1 = '<ul class="xuefen_item" style="margin-bottom: 16px;"><li><img src="images/xf_img.png" /><p>全部学分</p></li>';
+                        ul2 = '<ul class="xuefen_item"><li class="layui-col-xs2"><img src="images/db_img.png"><p>计入达标学分</p></li>';
+                        for (var i = 0; i < obj.data.length; i++) {
+                            /// 总学分、总学时
+                            if (obj.data[i]["score_type"].toString() == "1" && obj.data[i]["kind"].toString() == "1") {
+                                ul1 += '<li><h1>' + obj.data[i]["score"].toString() + '</h1><span>总学分</span> </li>'
+                                ul1 += '<li class="col" ><h1>' + obj.data[i]["period"].toString() + '</h1><span>总学时</span></li>'
+                            } else if (obj.data[i]["score_type"].toString() == "1" && obj.data[i]["kind"].toString() == "0") {
+                                ul1 += '<li><h1>' + obj.data[i]["score"].toString() + '</h1>'
+                                ul1 += '<span>' + obj.data[i]["kind_name"].toString() + '</span> </li>'
+                            } else if (obj.data[i]["score_type"].toString() == "2" && obj.data[i]["kind"].toString() == "2") {
+                                ul2 += '<li><h1>' + obj.data[i]["score"].toString() + '</h1><span>总学分</span></li>'
+                                ul2 += '<li class="col" ><h1>' + obj.data[i]["period"].toString() + '</h1><span>总学时</span></li>'
+                            } else if (obj.data[i]["score_type"].toString() == "2" && obj.data[i]["kind"].toString() == "0") {
+                                ul2 += ' <li><h1>' + obj.data[i]["score"].toString() + '</h1>'
+                                ul2 += '<span>' + obj.data[i]["kind_name"].toString() + '</span> </li>'
+                            }
+                        }
+                        ul1 += "</ul>";
+                        ul2 += "</ul>";
+                        //alert(ul1)
+                        //alert(ul2)
+                        $("#score_total").append(ul1)
+                        $("#score_total").append(ul2)
+
+                    }
+                })
+            } else {
+                $("#score_total").empty()
+                //$("#dabiao_text").hide();
+            }
+        }
+
+        //未计入达标学分及原因
+        function noPassScoretext(strval) {
+            if (strval != "") {
+                $.ajax({
+                    type: "post",
+                    url: "handler/newdabiao.ashx",
+                    data: { ot: "nopassscore", strval: strval, kind: "2" },
+                    dataType: "json",
+                    success: function (obj) {
+                        $("#nodabiao_text").empty();
+                        var noPassScore = '';
+                        for (var i = 0; i < obj.data.length; i++) {
+                            if (obj.data[i]["kind"].toString() == "1") {
+                                noPassScore += '<b style="color: #333333;">' + obj.data[i]["content"].toString() + '</b><br /><span style="color: #808080;">'
+                            } else {
+                                noPassScore += obj.data[i]["content"].toString();
+                            }
+                        }
+                        noPassScore += '</span>';
+                        $("#nodabiao_text").append(noPassScore)
+                    }
+                })
+            }
+        }
+
+        function scoreDetail(strval) {
+            var year = $("#years").find("option:selected").text();
+            if (strval != "") {
+                $.ajax({
+                    type: "post",
+                    url: "handler/newdabiao.ashx",
+                    data: { ot: "scoredetail", strval: strval, kind: "1" },
+                    dataType: "json",
+                    success: function (obj) {
+
+                        $("#score_detail").empty()
+                        var tr = "";
+                        var body = '';
+                        if (obj.data.length > 0) {
+                            $("#btnExecl").show();
+                            $("#score_detail_table").show();
+                            body = '<thead><tr><th>项目名称</th><th>学分类别</th> <th>学分级别</th><th>项目类型</th><th> 学分 </th> <th>学时 </th> <th> 有效状态</th> <th>不计入达标原因</th><th> 活动日期 </th> <th>学科  </th>  <th>审核状态</th></tr> </thead>'
+                            tr = ' <tbody>'
+                        } else {
+                            $("#btnExecl").hide();
+                            $("#score_detail_table").hide();
+                        }
+                        for (var i = 0; i < obj.data.length; i++) {
+                            tr += '<tr><td>' + obj.data[i]["proj_name"].toString() + '</td>';
+                            tr += '<td>' + obj.data[i]["kind_name"].toString() + '</td>';
+                            tr += '<td>' + obj.data[i]["level_name"].toString() + '</td>';
+                            tr += '<td>' + obj.data[i]["proj_type"].toString() + '</td>';
+                            tr += '<td>' + obj.data[i]["score"].toString() + '</td>';
+                            tr += '<td>' + obj.data[i]["period"].toString() + '</td>';
+                            tr += '<td>' + obj.data[i]["pass_state"].toString() + '</td>';
+                            tr += '<td>' + obj.data[i]["noPassOpinon"].toString() + '</td>';
+                            //tr += '<td> 该类别学分部分超过本省现行《学分管理办法》（达标标准）最高限分' + '</td>';
+
+                            tr += '<td>' + obj.data[i]["study_date"].toString() + '</td>';
+                            tr += '<td>' + obj.data[i]["knowledge_name"].toString() + '</td>';
+                            tr += '<td>' + obj.data[i]["check_state"].toString() + '</td></tr>';
+                        }
+                        tr += '</tbody>'
+                        $("#score_detail_table").html(body + tr)
+                        //$("#score_detail_table").html(tr)
+
+                    }
+                })
+            }
+        }
+        function onSearch() {
+            var strval = $("#years").find("option:selected").val();
+            if (strval != "") {
+                dabiaobiaozhun(strval);
+                scoreTotal(strval)
+                noPassScoretext(strval)
+                scoreDetail(strval)
+            } else {
+                $("#dabiao_txt").empty()
+                $("#is_dabiao").empty()
+                $("#date_perid").html('')
+                $("#score_total").empty()
+                $("#nodabiao_text").empty()
+                $("#score_detail").empty();
+                $("#score_detail_table").hide();
+            }
+        }
+        function onexcel() {
+            var strval = $("#years").find("option:selected").val();
+
+
+            $("#score_detail_table").table2excel({
+                exclude: ".noExl",
+                name: "Excel Document Name",
+                filename: "学分明细"
+            });
+            //            if (strval != "") {
+            //                $.ajax({
+            //                    type: "post",
+            //                    url: "handler/newdabiaoExcel.ashx",
+            //                    data: { ot: "expert", strval: strval, kind: "1" },
+            //                    dataType: "json",
+            //                    success: function (obj) {
+            //                    }
+            //                })
+            //            }
+        }
+    </script>
+</head>
+<body style="background: #f4f3f9;">
+    <div class="fulid">
+        <div class="table_box">
+            <div class="search_box item">
+                <div class="input_box">
+                    <label class="form-label">
+                        统计年度：</label>
+                    <div class="input-inline">
+                        <select name="nd" id="years">
+                            <option value="">请选择年度</option>
+                        </select>
+                    </div>
+                    <p id="date_perid">
+                    </p>
+                </div>
+            </div>
+            <div class="but_node item">
+                <div class="input_box">
+                    <button onclick="onSearch()">
+                        查询</button>
+                </div>
+            </div>
+        </div>
+        <div class="dabiao_box">
+            <div class="top_box">
+                <div class="db_tit">
+                    <img src="images/t_img.png">
+                    <h1>
+                        达标情况及标准预览
+                    </h1>
+                </div>
+                <div class="db_mess">
+                    <div class="db_node bdb_node">
+                        <ul>
+                            <li id="personInfo"></li>
+                            <li id="is_dabiao"></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="ps_mess">
+                    <div class="item_text" id="dabiao_txt">
+                    </div>
+                </div>
+                <div class="db_tit">
+                    <img src="images/t_img.png" />
+                    <h1>
+                        学分情况预览</h1>
+                </div>
+                <div class="xuefen_box" id="score_total">
+                </div>
+                <div class="ps_mess">
+                    <div class="item_text" id="nodabiao_text">
+                    </div>
+                </div>
+            </div>
+            <div style='float: right; margin-bottom: 10px;'>
+                <button onclick="onexcel()" id="btnExecl" style='float: right; border: 1px solid #5b8bf4;
+                    color: #5b8bf4; padding: 5px 10px; cursor: pointer; display: none;'>
+                    导出Excel</button>
+            </div>
+            <div class="bote">
+                <div class="tab_box">
+                    <table id="score_detail_table">
+                        <!--<thead>
+                            <tr>
+                                <th>
+                                    项目名称
+                                </th>
+                                <th>
+                                    类型
+                                </th>
+                                <th>
+                                    学分
+                                </th>
+                                <th>
+                                    学时
+                                </th>
+                                <th>
+                                    有效状态
+                                </th>
+                                <th>
+                                    不计入达标原因
+                                </th>
+                                <th>
+                                    活动日期
+                                </th>
+                                <th>
+                                    学科
+                                </th>
+                                <th>
+                                    审核状态
+                                </th>
+                            </tr>
+                        </thead>-->
+                        <!--<tbody id="score_detail">
+                            <!--       <tr>
+                                <td>
+                                    妊娠合并糖尿病的治疗方法
+                                </td>
+                                <td>
+                                    II类
+                                </td>
+                                <td>
+                                    5分
+                                </td>
+                                <td>
+                                    5.0
+                                </td>
+                                <td>
+                                    计入达标
+                                </td>
+                                <td>
+                                    无
+                                </td>
+                                <td>
+                                    2021-10-13
+                                </td>
+                                <td>
+                                    内科
+                                </td>
+                                <td>
+                                    已审核
+                                </td>
+                            </tr>
+                        </tbody>-->
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            //			$('.dabiao_box').height($(window).height()-$('.table_box').height()-80+'px')
+            //			$('.tab_box').height($('.dabiao_box').height()-$('.top_box').height()-60+'px')
+            //			$(window).resize(function() {
+            //				$('.dabiao_box').height($(window).height()-$('.table_box').height()-80+'px')
+            //				$('.tab_box').height($('.dabiao_box').height()-$('.top_box').height()-60+'px')
+            //			})
+
+
+
+            var $table = $('.bote table');
+            var currentPage = 0; //当前页默认值为0  
+            var pageSize = 3; //每一页显示的数目  
+            $table.bind('paging', function () {
+                $table.find('tbody tr').hide().slice(currentPage * pageSize, (currentPage + 1) * pageSize).show();
+            });
+            var sumRows = $table.find('tbody tr').length;
+            var sumPages = Math.ceil(sumRows / pageSize); //总页数  
+
+            var $pager = $('<div class="page_box"></div>');  //新建div，放入a标签,显示底部分页码  
+            for (var pageIndex = 0; pageIndex < sumPages; pageIndex++) {
+                $('<a href="###" class="pageStyle" onclick="changCss(this)"><span>' + (pageIndex + 1) + '</span></a>').bind("click", { "newPage": pageIndex },
+	             function (event) {
+	                 currentPage = event.data["newPage"];
+	                 $table.trigger("paging");
+	                 //触发分页函数  
+	             }).appendTo($pager);
+                $pager.append(" ");
+            }
+            $pager.insertAfter('.bote');
+            $table.trigger("paging");
+
+            //默认第一页的a标签效果  
+            var $pagess = $('.pageStyle');
+            $($pagess).eq(0).addClass('act');
+        });
+        function changCss(obj) {
+            //      var arr = document.getElementsByTagName("a");  
+            //      for(var i=0;i<arr.length;i++){     
+            //       if(obj==arr[i]){       //当前页样式  
+            //        obj.style.backgroundColor="#019cdc";  
+            //        obj.style.color="#ffffff";  
+            //      }  
+            //       else  
+            //       {  
+            //         arr[i].style.color="";  
+            //         arr[i].style.backgroundColor="";  
+            //       }  
+            //      }  
+            $(obj).addClass('act').siblings().removeClass('act')
+        }    
+    </script>
+</body>
+</html>

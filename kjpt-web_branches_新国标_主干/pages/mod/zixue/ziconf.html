@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ziconf</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js"></script>
+    <script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+</head>
+<body style="background-color: white;">
+<div class="layui-fluid">
+    <div class="layui-card" style="box-shadow: none;">
+        <form class="layui-form" id="conf_form" lay-filter="conf_form" style="width: 60%; margin: 200px auto;">
+            <blockquote class="layui-elem-quote layui-quote-nm" id="dynamic_tips">
+            </blockquote>
+            <div class="layui-form-item zi-cme-year-neimeng hide">
+                <div class="layui-inline">
+                    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>年度</label>
+                    <div class="layui-input-inline">
+                        <select name="cmeYear"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label zi-label-apply"><span style="color: red; ">*&nbsp;</span>开始日期</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="startTime" lay-verify="required|date" placeholder="请选择" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label zi-label-apply-end"><span style="color: red; ">*&nbsp;</span>截止日期</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="endTime" lay-verify="required|date" placeholder="请选择" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item zi-res-window-neimeng hide">
+                <div class="layui-inline">
+                    <label class="layui-form-label">结果填报开始</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="resStartTime" placeholder="可选，与截止同时填" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">结果填报截止</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="resEndTime" placeholder="可选，与开始同时填" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn layui-btn-sm" lay-submit="" lay-filter="save_conf">保存</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    layui.config({
+        base: '/js/layui/ext/',
+    }).extend({
+        xmSelect: 'xm-select',
+        lat: 'lat'
+    }).use(['table', 'layer', 'jquery', 'form', 'laydate', 'element', 'xmSelect', 'lat'], function () {
+        let {table, layer, form, laydate, dropdown, element, $, xmSelect, lat} = layui;
+        layer.ready(function () {
+
+            initTips();
+            renderCmeYearOptions();
+            render();
+            bindYearChange();
+            doload();
+            echoconf();
+        });
+
+        function initTips() {
+            let tipsHtml = "";
+            if (typeof _isZhejiang !== 'undefined' && _isZhejiang) {
+                // 浙江专用文案
+                tipsHtml = `自学申请由行政机构设定可申请时间，如未设定申请时间则不限制自学申请的时间。`;
+            } else if (typeof _isNeimeng !== 'undefined' && _isNeimeng) {
+                tipsHtml = `第一组为「自学申请」可申请时间，未配置则不限制新增自学申请。第二组为「事后-自学结果」填报时间窗，开始与截止需同时填写才生效；均不填则不限制学员填写自学结果。`;
+            } else if (typeof _isHenan !== 'undefined' && _isHenan) {
+                // 默认/河南文案
+                tipsHtml = `自学申请由行政机构设定可申请时间（市、省），以直接上级设定的时间为准，如未设定申请时间则不限制自学申请的时间。<br/>
+            例如：省级行政机构设定<span style="color: lightcoral;">2025年1月1日至2025年3月3日</span>可以进行自学申请，郑州市设定<span
+            style="color: lightcoral">2025年1月1日至2025年5月31日</span>可以申请，则郑州市下属单位的人员可以在<span
+            style="color: lightcoral;">5月31日</span>前进行自学申请，其他地市单位包括省直单位只能在<span
+            style="color: lightcoral;">3月31日</span>前进行自学申请。`;
+            }
+            $('#dynamic_tips').html(tipsHtml);
+            if (typeof _isNeimeng !== 'undefined' && _isNeimeng) {
+                $('.zi-cme-year-neimeng').removeClass('hide');
+                $('.zi-res-window-neimeng').removeClass('hide');
+                $('.zi-label-apply').html('<span style="color: red; ">*&nbsp;</span>申请开始日期');
+                $('.zi-label-apply-end').html('<span style="color: red; ">*&nbsp;</span>申请截止日期');
+            }
+        }
+
+        /**
+         * 内蒙套支持手选年度：当前年前三年至后一年，默认当前年；非内蒙仍走 _cur_year。
+         */
+        function renderCmeYearOptions() {
+            if (!(typeof _isNeimeng !== 'undefined' && _isNeimeng)) return;
+            let y = parseInt(_cur_year, 10);
+            let years = [y - 3, y - 2, y - 1, y, y + 1];
+            let $sel = $('select[name=cmeYear]');
+            $sel.empty();
+            years.forEach(function (year) {
+                let selected = year === y ? ' selected' : '';
+                $sel.append('<option value="' + year + '"' + selected + '>' + year + '</option>');
+            });
+            form.render('select');
+        }
+
+        function getSelectedCmeYear() {
+            if (typeof _isNeimeng !== 'undefined' && _isNeimeng) {
+                return $('select[name=cmeYear]').val() || _cur_year;
+            }
+            return _cur_year;
+        }
+
+        form.on('submit(save_conf)', function (data) {
+            let fields = data.field;
+            let conf = {
+                'cmeYear': getSelectedCmeYear(),
+                'unitId': _unitId,
+                'startTime': fields.startTime + ' 00:00:00',
+                'endTime': fields.endTime + ' 23:59:59',
+                'userId': _userId,
+            };
+            if (typeof _isNeimeng !== 'undefined' && _isNeimeng) {
+                let r1 = (fields.resStartTime || '').trim(), r2 = (fields.resEndTime || '').trim();
+                if ((r1 && !r2) || (!r1 && r2)) {
+                    lat.failMsg('自学结果填报开始、截止日期需同时填写或同时留空');
+                    return false;
+                }
+                if (r1 && r2) {
+                    conf.resStartTime = r1 + ' 00:00:00';
+                    conf.resEndTime = r2 + ' 23:59:59';
+                }
+            }
+            dosave(conf);
+            return false;
+        });
+
+        function echoconf(arr) {
+            if (arr && arr.length > 0) {
+                arr.forEach(c => {
+                    if (c.unitUserType === _uut) {
+                        let a = c.startTime, b = c.endTime;
+                        let vals = {'startTime': a.substring(0, 10), 'endTime': b.substring(0, 10)};
+                        if (c.resStartTime) {
+                            vals.resStartTime = String(c.resStartTime).substring(0, 10);
+                        }
+                        if (c.resEndTime) {
+                            vals.resEndTime = String(c.resEndTime).substring(0, 10);
+                        }
+                        form.val('conf_form', vals);
+                    }
+                })
+            }
+        }
+
+        function dosave(conf) {
+            postAction(`${huayi_sjwh_url}zixue/conf/save`, conf).then(resp => {
+                let jsres = resp.data;
+                if (jsres.success) {
+                    lat.okMsg('已保存');
+                }
+            }).catch(error => {
+                lat.errorMsg('保存失败')
+            });
+        }
+
+        function doload() {
+            // 630085-630001-630000
+            // 630054-630000
+            postAction(`${huayi_sjwh_url}zixue/conf`, {'unitId': _unitId, 'cmeYear': getSelectedCmeYear()}).then(resp => {
+                let jsonRes = resp.data;
+                if (jsonRes.success) {
+                    echoconf(jsonRes.data);
+                } else {
+                    lat.failMsg('加载配置数据');
+                }
+            }).catch(error => {
+                lat.errorMsg('加载配置数据');
+            });
+        }
+
+        function bindYearChange() {
+            if (!(typeof _isNeimeng !== 'undefined' && _isNeimeng)) return;
+            form.on('select(cmeYearSelect)', function () {
+                doload();
+                return false;
+            });
+            $('select[name=cmeYear]').attr('lay-filter', 'cmeYearSelect');
+            form.render('select');
+        }
+
+        function renderDateSelectors() {
+            lat.renderDaySelector('input[name=startTime]', null, {
+                done: function (val) {
+                    let end = $('input[name=endTime]').val();
+                    if (!verify(val, end)) {
+                        lat.failMsg('开始日期需在截止日期之前');
+                        $('input[name=startTime]').val('');
+                    }
+                }
+            });
+            lat.renderDaySelector('input[name=endTime]', null, {
+                done: function (val) {
+                    let start = $('input[name=startTime]').val();
+                    if (!verify(start, val)) {
+                        lat.failMsg('开始日期需在截止日期之前');
+                        $('input[name=endTime]').val('');
+                    }
+                }
+            });
+            if (typeof _isNeimeng !== 'undefined' && _isNeimeng) {
+                lat.renderDaySelector('input[name=resStartTime]', null, {
+                    done: function (val) {
+                        let end = $('input[name=resEndTime]').val();
+                        if (!verify(val, end)) {
+                            lat.failMsg('结果填报开始日期需在截止日期之前');
+                            $('input[name=resStartTime]').val('');
+                        }
+                    }
+                });
+                lat.renderDaySelector('input[name=resEndTime]', null, {
+                    done: function (val) {
+                        let start = $('input[name=resStartTime]').val();
+                        if (!verify(start, val)) {
+                            lat.failMsg('开始日期需在结果填报截止日期之前');
+                            $('input[name=resEndTime]').val('');
+                        }
+                    }
+                });
+            }
+        }
+
+        function render() {
+            renderDateSelectors();
+        }
+
+        function verify(start, end) {
+            if (start && end) {
+                return moment(start).isBefore(end);
+            }
+            return true;
+        }
+    });
+</script>
+<style>
+</style>
+</html>

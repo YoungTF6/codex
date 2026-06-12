@@ -1,0 +1,79 @@
+﻿/* 初始化定义 */
+* { padding: 0; margin: 0;}
+h1,h2,h3,h4 { padding: 0; margin: 0;}
+ul,li { list-style: none;}
+
+a { text-decoration: none;color: #6086B5;} /*
+a:hover { text-decoration: underline; color: #0937B1;}*/
+body { padding: 0; margin: 0; font-family:Arial, Helvetica, sans-serif,"宋体"; font-size: 12px;background: #f2f2f2;}
+.clear { clear: both; height: 0; line-height: 0; margin: 0; padding: 0; border: 0; overflow: hidden;}
+/*Top Page*/
+#header { height: 44px;margin: 10px 50px 0 70px; overflow: hidden; overflow:hidden; }
+#headerkeishi { height: 44px;margin: 10px 50px 0 70px; overflow: hidden; overflow:hidden; }
+#Sdheader { height: 44px;margin: 10px 50px 0 70px; overflow: hidden; background:url(images/logoyl.jpg) no-repeat 0 0; overflow:hidden; }
+#headerxueyuan { height: 44px;margin: 10px 50px 0 70px; overflow: hidden; overflow:hidden; }
+#Sdheaderxueyuan { height: 44px;margin: 10px 50px 0 70px; overflow: hidden; background:url(images/logowl.jpg) no-repeat 0 0; overflow:hidden; }
+#userinfo { float: right;}
+#userinfo span { color: #069; font-weight: bold; margin-right: 2em;}
+#userinfo span a { font-weight: normal; color: #393939;}
+#userinfo span a:hover { color: #FF7101;}
+.help{ background:url(images/header_help.gif) no-repeat left top; padding-left: 15px;}
+.exit{ background:url(images/header_close.gif) no-repeat left top; padding-left: 15px;}
+/*Menu*/
+#content_left{ border: #7D9ECB solid 1px;background: #fff;  border-width: 1px 0px 1px 1px; padding: 1px 0px 1px 1px; margin-left: 50px;  }
+#nav { width: 179px; background:url(images/nav_bj.gif) repeat-y;  margin-right: 1px; overflow:auto;}
+#menu {width:179px;line-height: 32px;margin:0px;padding:0px;text-align:left;list-style:none; overflow:auto;}
+#menu .item {margin:0px;padding:0px;list-style:none; text-align:left; font-size:12px; text-decoration:none; text-indent:2em;}
+a.title:link, a.title:visited{ color:#6086B5; font-size:12px;display:block;height:32px;line-height:32px;background: url(images/nav_li_bj.gif);font-weight:bold; text-decoration:none;}
+/*a.title:hover {display:block;height:32px;line-height:32px;background: url(images/nav_li_hover_bj.gif);font-weight:bold; color:#FF7200;}*/
+ul, li{margin:0px;padding:0px;list-style:none;list-style-position:outside;}
+#menu .item ul {margin:0;list-style:none;display:none;text-align:center; }
+#menu .item ul li {background:url(images/menu_sub_icon.gif) no-repeat 7px 8px; text-align:left; line-height:28px;text-decoration: none; border-bottom: #6086B5 dashed 1px;}
+#menu .item ul li a:link,#menu .item ul li a:visited,#menu .item ul li a:active{ color:#6085B2; font-size:12px; text-decoration:none; height:32px;line-height:32px;display:block}
+#menu .item ul li a:hover{ background : url(images/menu_sub_icon.gif) no-repeat  10px 8px #FFF6C2;text-decoration: none;}
+/*Hide menu*/
+#display { padding: 1px 0 1px 0; background:#fff;  border: #7D9ECB solid 1px;   border-width: 1px 0 1px 0; padding: 1px 0 1px 0;}
+#display_pic {  height: 370px; background:url(images/display_bj.jpg) #FFF repeat-y; padding-top: 160px; width: 17px;}
+/*Middle */
+#sidebar_wrapper {border: #7D9ECB solid 1px; padding:1px 0 1px 1px;border-width: 1px 0 1px 1px; overflow:auto; height:100%;}
+#sidebar { padding: 1px 11px 10px 10px; color: #595959; background:#F0F3F8;font-size: 14px; }
+
+/*Login Page*/
+#warpper{ background:url(images/login_bj.jpg) no-repeat; margin:0 auto 1px auto;width:1002px;height:534px; position:relative;}
+#copyRight{background:url(images/login_bj_b.jpg) repeat-x; margin:0 auto;width:1002px; height:49px; line-height:20px; text-align:center; padding-top:20px}
+#copyRight span{margin:0 16px;}
+
+.login_title{ background:url(images/login_title.gif) no-repeat; position:absolute;}
+.sdlogin_title{ background:url(images/login_titleyl.gif) no-repeat; position:absolute;}
+.logo{background-position:0 0;top:49px;left:75px;width:363px;height:55px;}
+.news{width:280px;color:#000;top:169px;left:153px; position:absolute;}
+.news h4.news1{width:66px;height:18px;background-position:0 -60px;margin:0 0 10px 0;}
+.news h4.news2{width:66px;height:18px;background-position:0 -80px;margin:-25px 0 10px 0;}
+.news ul.news1_text{margin:30px 0 50px 0;}
+.news ul.news1_text li{width:267px;overflow:hidden; text-overflow:ellipsis; white-space:nowrap;background: url(images/arrow.gif) no-repeat 0 50%; padding-left:13px;line-height:180%;}
+.news li span{color:#FF0B13; font-weight:bold;}
+.news li strong{position:absolute;top:22px;left:220px;background:url(images/new_icon.gif) no-repeat;width:28px;height:14px;}
+.login_body{width:247px; position:absolute;top:233px;left:588px;}
+.lgtitle{background-position:0 -100px;width:105px;height:20px;margin-top:-50px;}
+.name{width:45px;height:15px;background-position:0 -120px; margin-top:4px;}
+.password{width:45px;height:15px;background-position:0 -136px; margin-top:6px;}
+.verification{width:45px;height:15px;background-position:0 -151px; margin-top:9px;vertical-align:middle; }
+.inputsytle{background:url(images/inputstyle_bj.gif) no-repeat;width:137px;height:32px;border:0;margin-left:55px;line-height:29px;padding-left:5px;vertical-align:middle; }
+.inputsytle_s{background:url(images/inputstyle_bj_s.gif) no-repeat;width:58px;height:32px;border:0;margin-left:55px;line-height:29px;padding-left:5px;vertical-align:middle; }
+.btn_login{width:87px;height:28px; background:url(images/login.gif) no-repeat; border:0;margin-left:65px;margin-top:5px;}
+.btn_chafen{width:229px;height:39px; background:url(images/chafen.gif) no-repeat;border:0;margin-left:2px;margin-top:40px; display:block;}
+.btn_chafensd{width:229px;height:39px; background:url(images/chafen-01.gif) no-repeat;border:0;margin-left:2px;margin-top:40px; display:block;}
+/* 头部样式 */
+#header { height:70px;margin: 10px 50px; overflow: hidden;  }
+#headerkeishi{ height: 70px;margin:10px 50px 0 50px; overflow: hidden;  }
+#Sdheader { height: 95px;margin:10px 50px 0 50px; overflow: hidden; }
+#header_01{ height:40px; line-height:40px;float:left;width:100%;}
+#header_01 span { color: #006699; font-weight: bold; font-family:"宋体"; font-size:16px; margin-right:10px;}
+#header_01 span a { font-weight: normal; color: #393939;}
+#header_01 span a:hover { color: #FF7101;}
+#header_02{ line-height: 37px;height:37px; background:url(images/kjpt_logo.png) no-repeat 0 0; margin: 0 0 2px 0; text-align:right;}
+#header_02 span{  margin-right:8px; }
+#header_03{ height:24px; overflow: hidden;float:left;
+            width:100%; }
+#header_03 span{ color:#006699; margin-right:8px;}
+#header_03_middle_right{ float:right; height:13px; width:324px; padding:4px 24px 4px 36px; margin-top:1px; background:url(images/kjpt_sousuo.png) no-repeat 0 0; overflow:hidden;}

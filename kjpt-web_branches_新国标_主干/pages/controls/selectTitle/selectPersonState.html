@@ -1,0 +1,227 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0075)https://newkjpt21.91huayi.com/controls/SelectTitle.aspx?mode=2&callback=ff4 -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="css/base.css" type="text/css" rel="stylesheet">
+    <link href="css/content.css" type="text/css" rel="stylesheet">
+    <link href="css/layout.css" type="text/css" rel="stylesheet">
+    <!-- <link href="./无标题页_files/popdiv.css" type="text/css" rel="stylesheet"> -->
+
+    <title>
+        无标题页
+    </title>
+
+    <style type="text/css">
+        .tab td {
+            text-align: left;
+            padding: 2px 5px;
+        }
+
+        .show {
+            width: 150px;
+            height: auto;
+            overflow: auto;
+            position: absolute;
+            display: block;
+            background-color: #fff;
+            z-index: 1000;
+            padding: 4px;
+        }
+
+        .select {
+            margin-right: 10px;
+        }
+    </style>
+   <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+<script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+</head>
+
+<body>
+    <form name="form1" id="form1">
+
+        <div style="height: 350px; width: 600px;">
+            <div style="height: 100%; overflow:visible; width: 100%; overflow-x: hidden;">
+                <div id="for1" style="margin: 9px;">
+                </div>
+                <div id="for2" style="margin: 9px; line-height: 200%">
+                </div>
+                <div>
+                    <table id="dltitle2" class="tab" cellspacing="0" border="0"
+                        style="border-collapse:collapse;margin: 9px; width: 580px">
+                        <tbody>
+                            <tr>
+                                <td colspan="4">
+                                    <input type="button" class="btn72_mouseout" id="btnok1" value="确定" style="float: right;
+                            margin: 5px 10px;">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+<script>
+
+    loadTitleTypes();
+
+    function loadTitleTypes() {
+        $.ajax({
+            url: huayi_personorg_url + 'comperson/getPersonStateListByCmeStandardKindId',
+            type:'post',
+            async: false,
+            data: { "cmeStandardKindId": localStorage.getItem("standardkind-id") },
+            dataType: "json",
+            success: function (result) {
+                var personStates = result.data;
+                if (personStates.length > 0) {
+                    var personState = null;
+                    for (var i = 0; i < personStates.length; i++) {
+                        personState = personStates[i];
+                        var $tr;
+                        if (i % 4 == 0) {
+                            $tr = $("<tr></tr>");
+                        }
+                        if ($tr != null) {
+                            var $td = $('<td id="' + personState.person_state_id + '"><div>'+
+                                '<input class="cb2" type="checkbox" name="" title="'+personState.person_state_name+'" value="'+personState.person_state_id+'">' +
+                                personState.person_state_name+'</div></td>');
+                            $tr.append($td);
+                        }
+                        if (i % 4 == 2) {
+                            $("#dltitle2 tbody").append($tr);
+                        }
+                    }
+
+
+                }
+            }
+
+        });
+    }
+
+    // function loadTitlesByTitleType() {
+    //     $.ajax({
+    //         url: huayi_sjwh_url + 'comTitle/list/all',
+    //         async: false,
+    //         data: { titleKind: 3 },
+    //         dataType: "json",
+    //         success: function (result) {
+    //             var titles = result.data;
+
+    //             $("#dltitle2").find("tr:gt(0)").find("td").each(function () {
+    //                 var title = null;
+    //                 var $div1 = $('<div class="nn">' +
+    //                     '<table class="tab" style="margin-top: 0px;">' +
+    //                     '<tbody>' +
+    //                     '<tr>' +
+    //                     '<td style="text-align: left; padding-left: 30px;">' +
+    //                     '<a href="" class="cls">关闭</a>' +
+    //                     '</td>' +
+    //                     '</tr>' +
+    //                     '</tbody>' +
+    //                     '</table>' +
+    //                     '</div>');
+    //                 for (var j = 0; j < titles.length; j++) {
+    //                     title = titles[j];
+    //                     if (title.titleType == $(this).attr("id")) {
+    //                         var $tr1 = $('<tr><td>' +
+    //                             '<input type="checkbox">' +
+    //                             '<a tid="' + title.titleId + '" class="tt3"href="" pid="' + title.titleType + '">' + title.titleName + '</a>' +
+    //                             '</td></tr>');
+    //                         $div1.find("tbody").append($tr1);
+    //                     }
+    //                 }
+    //                 $(this).append($div1);
+
+    //             });
+
+
+    //         }
+    //     });
+
+    // }
+
+
+
+
+
+
+</script>
+
+<script type="text/javascript">
+
+    function Arrcontains(ele, source) {
+        for (i = source.length - 1; i >= 0; i--)
+            if (ele == source[i])
+                return true;
+        return false;
+    }
+
+    function viewport() {
+        return {
+            x: $(window).scrollLeft(),
+            y: $(window).scrollTop(),
+            cx: $(window).width(),
+            cy: $(window).height()
+        };
+    }
+
+        $(function () {
+
+        //确定 按钮
+        $('#btnok1').click(function () {
+            var arr_box = [];
+            var personStateIds =$('input[type=checkbox]:checked').map(function() {
+                return $(this).val()
+            }).get();
+            //数组
+            var personStateNames =$('input[type=checkbox]:checked').map(function() {
+                    return $.trim($(this).text());   
+            }).get();
+            personStateIds = personStateIds.join(',');
+            personStateNames = personStateNames.join(',');
+            window.parent.getChildPersonStates(personStateIds,personStateNames);
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //再执行关闭 
+        });
+    });
+</script>
+
+<!-- <script type="text/javascript">
+    $(function () {
+        $('a.cls').click(function () {
+            $('a.tt2[current]').click(); //.find('a').click();
+            //alert(ms);
+            return false;
+        });
+    });
+    function checkifall() {
+        $('.cb2').each(function () {
+
+            var div = $(this).parent().next();
+            if ($('input:checked', div).size() != $(':checkbox', div).size()) {
+                $(this).removeAttr('checked');
+            }
+
+        });
+        setTimeout(checkifall, 1000);
+    }
+    setTimeout(checkifall, 1000);
+</script> -->

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>请选择单位信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+        media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- 工具 -->
+    <script type="text/javascript" src="/js/tools/urlTools.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+</head>
+
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="layui-form">
+                    <div class="layui-form-item" style="margin-bottom: 0px;">
+                        <label class="layui-form-label">关键字:</label>
+                        <div class="layui-input-inline" style="width: 40%;">
+                            <input type="text" id="text_fieldValue" lay-verify="text_fieldValue" autocomplete="off"
+                                placeholder="请输入单位名称" class="layui-input">
+                        </div>
+                        <button type="button" class="layui-btn" id="btn_find">查找</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-card">
+            <!-- <span id="checkedUnit" style="padding-left: 20px;">已选中(0)个单位</span> -->
+            <div class="layui-card-body">
+                <table class="layui-table" id="com_unit" lay-filter="com_unit" style="margin: 0px 0px;">
+                </table>
+            </div>
+        </div>
+
+        <div class="layui-btn-container" style="text-align: center;">
+            <button class="layui-btn" id="btn_confirm">确 定</button>
+            <button class="layui-btn layui-btn-primary layui-border-green" id="btn_close" style="margin-left: 40px;">关
+                闭</button>
+        </div>
+
+
+
+    </div>
+</body>
+
+<script>
+
+    layui.use(['table', 'form', 'jquery', 'layer'], function () {
+        var table = layui.table,
+            form = layui.form,
+            $ = layui.jquery,
+            layer = layui.layer;
+
+
+        window.getUnitId = function () {
+            return localStorage.getItem("unit-id");
+        }
+        window.getCmeStandardKindId = function () {
+            if (localStorage.getItem("choose-standard-id")) {
+                return localStorage.getItem("choose-standard-id")
+            }
+            return localStorage.getItem("standardkind-id");
+        }
+
+        window.initTable = function () {
+            table.render({
+                elem: '#com_unit',
+                url: huayi_personorg_url + 'comunit/list',
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID': localStorage.getItem('user-id')
+                },
+                // toolbar: '#toolbarBtns', //开启头部工具栏，并为其绑定左侧模板
+                title: '用户表',
+                defaultToolbar: [],
+                where: {
+                    cmeStandardKindId: window.getCmeStandardKindId(),
+                    fieldValue: $("#text_fieldValue").val(),
+                    urlSource: ""
+                },
+                cols: [[
+                    // { type: 'radio', fixed: 'left', title: '选择' },
+                    {align: 'center', type: 'checkbox', title: '选择'},
+                    // { field: 'unitId', title: '单位编号', align: 'center' },
+                    { field: 'unitName', title: '单位名称', align: 'center', minWidth: 100 },
+                    { field: 'unitLevelName', title: '单位级别', align: 'center', minWidth: 200 }
+                ]],
+                cellMinWidth: 100,
+                id: 'com_unit',
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    return {
+                        'code': res.status === 200 ? 0 : res.status,  // 解析接口状态
+                        'msg': res.message,                          // 解析提示文本
+                        'count': res.data.recordsTotal,                // 解析数据长度
+                        'data': res.data.records,                     // 解析数据列表
+                        'page': res.data.pageNum,                     // 当前页
+                        'limit': res.data.pageSize,                    // 每页条数
+                    }
+                },
+                request: {
+                    pageName: 'pageNum',  // 页码的参数名称，默认：page
+                    limitName: 'pageSize'  // 每页数据量的参数名，默认：limit
+                },
+                done : function(res, curr, count){
+                    if(checkedUnitIds){
+                        //遍历集合
+                        layui.each(res.data, function(index,item){
+                            //将获取的选中行数据进行遍历
+                            if( checkedUnitIds.indexOf('' + item.unitId + '') > -1 ){ 
+                                //点击去属性 lay-id='表格id'； index：要回显的行数下标，从0开始
+                                $("div[lay-id='com_unit'] td .layui-form-checkbox").eq(index).click();
+                            } 
+                        });
+
+                        // 隐藏全选按钮
+                        document.querySelectorAll('thead .layui-form-checkbox')[0].style.display = "none";
+                    }
+                }
+            });
+        };
+
+
+        $(function () {
+            window.initTable();
+        });
+
+
+        var selectData = {};
+        var unitIds = '', unitNames = '';
+        var checkedUnitIds = [], checkedUnitNames = []
+            , checkedTableInfo = new Map();
+        table.on('radio(com_unit)', function (obj) { //com_unit 是 table 标签对应的 lay-filter 属性
+            selectData = obj.data;
+        });
+        table.on('checkbox(com_unit)', function (obj) { //com_unit 是 table 标签对应的 lay-filter 属性
+            unitIds += obj.data.unitId;
+            unitIds += ',';
+            unitNames += obj.data.unitName;
+            unitNames += ',';
+        });
+         //以复选框事件为例
+         table.on('checkbox(com_unit)', function(obj){
+            debugger
+            // 全选
+            if(obj.type == 'all'){
+               
+            }else{
+                let indx =  checkedUnitIds.indexOf(obj.data.unitId);
+                let indxOfName =  checkedUnitIds.indexOf(obj.data.unitName);
+                if(obj.checked){
+                    if(indx < 0 ){ 
+                        checkedUnitIds.push(obj.data.unitId);
+                    }
+                    if(indxOfName < 0 ){ 
+                        checkedUnitNames.push(obj.data.unitName);
+                    }
+                }else{
+                    if(indx >= 0){ 
+                        checkedUnitIds.splice(indx, 1);
+                        checkedUnitNames.splice(indx, 1);
+                    }
+                }
+            }
+        
+            // var chooseBtn = $("#checkedUnit");
+            // chooseBtn[0].innerHTML = '已选中(' + checkedUnitIds.length + ')个单位: ' + checkedUnitNames;
+        });
+
+        $("#btn_find").click(function () {
+            window.initTable();
+        });
+
+        $("#btn_confirm").click(function () {
+            var unitId = selectData.unitId;
+            var unitName = selectData.unitName;
+            var hospitalLevel = selectData.hospitalLevel;
+            var unitLevelName = selectData.unitLevelName;
+            window.layClose();
+            parent.getChildUnitMsg2(checkedUnitIds, checkedUnitNames);
+
+        });
+
+        $("#btn_close").click(function () {
+            window.layClose();
+        });
+
+        window.layClose = function () {
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //再执行关闭
+        }
+
+                //解析url参数
+        let getParamFromUrl = function (paramName) {
+            let urlStr = location.search;
+            if (urlStr.indexOf(paramName) < 0 || urlStr.indexOf("?") < 0) return;
+            let paramKV = urlStr.substr(1).split("&");
+            for (let i = 0; i < paramKV.length; i++) {
+                if (paramKV[i].indexOf(paramName) >= 0) {
+                    return paramKV[i].split("=")[1];
+                }
+            }
+        }
+        checkedUnitIds = getParamFromUrl("unitIds") ? getParamFromUrl("unitIds").split(',') : [];
+
+    });
+
+</script>

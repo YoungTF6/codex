@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>项目预审</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <!--    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script> -->
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+
+</head>
+<body style="background-color: white;">
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-tab" lay-filter="tabcheck">
+            <ul class="layui-tab-title">
+                <li class="tab_others tab_this tabsRounded" id="loaderTable" >全部</li>
+                <li id ="loadNoReport" class="tab_others tabsRounded"></li>
+                <li id ="loadhasReported"  class="tab_others tabsRounded"></li>
+                <li id ="loadsendBack" class="tab_others tabsRounded"></li>
+              </ul>
+
+          </div>
+
+        <!--        搜索框区域-->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="background-color: #f5f5f5;">
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">申报年度</label>
+                    <div class="layui-input-inline">
+                        <select name="holdYear" id="holdYear"  lay-filter="loadReport">
+                        </select>
+                      </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">项目级别</label>
+                    <div class="layui-input-inline">
+                        <select name="CmeComScoreLevel" id="CmeComScoreLevel">
+                            <option value="">全部</option>
+                        </select>
+                      </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">申报代码</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="projectCode" id="projectCode" placeholder="请填写申报代码" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">项目名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="projectName" id="projectName" placeholder="请填写项目名称关键字" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">项目负责人</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="PrincipalName" id="PrincipalName" placeholder="请填写项目负责人" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">举办形式</label>
+                    <div class="layui-input-inline">
+                        <select name="holdType" id="holdType">
+                            <option value="">全部</option>
+                        </select>
+                      </div>
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn layuiadmin-btn-order btnRounded" lay-submit lay-filter="LAY-app-order-search"
+                    onclick="loaderTable()">
+                      <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </button>
+                  </div>
+
+                <div class="layui-inline" style="float: right">
+                    <div class="layui-input-block">
+                        <a class="layui-icon" id="hint"><span style="color: red;">&#xe60b;</span></a>
+                    </div>
+                </div>
+
+        </div>
+
+
+        <!--        表格区域-->
+        <div class="layui-card-body layui_body_box">
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <table class="layui-table" id="project" lay-filter="project" style="margin: 0px 0px;"></table>
+                </div>
+              </div>
+
+        </div>
+    </div>
+</div>
+
+<!--表格内数据编辑、删除按钮-->
+<script type="text/html" id="rowBar">
+
+    <a class="layui-btn layui-btn-xs" lay-event="submitProj" style="color: #ffb82e;background-color: transparent;">上报</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit" style="color: #27b1a2;background-color: transparent;">编辑</a>
+    <a class="layui-btn layui-btn-xs" lay-event="del" style="color: #f25643;background-color: transparent;">删除</a>
+</script>
+<script type="text/html" id="uploadDecl">
+    <a class="layui-btn layui-btn-xs view-btn" name="viewBtn" style="color: #27b1a2;background-color: transparent; display: none; ">预览</a>
+    <input type="hidden" class="file-url" value="">
+</script>
+<script type="text/html" id="bar">
+    <!-- <a class="layui-btn layui-btn-xs layui-btn-normal" ><i class="layui-icon">&#xe654;</i>新增</a> -->
+    <button class="layui-btn layui-btn-sm btnRounded" lay-event="visbale">设置显示列</button>
+    <button class="layui-btn layui-btn-sm btnRounded" lay-event="add">新增项目申报</button>
+    <button class="layui-btn layui-btn-sm btnRounded" lay-event="excel">导出Excel</button>
+</script>
+
+<style type="text/css">
+    .tab_others {
+        background-color: #009688;color:#ffffff;margin-left: 6px;
+        width: 173px;
+    }
+    .tab_this {
+
+        background-color: #f5f5f5;color:#404040;margin-left: 6px;
+        width: 173px; border-bottom: 1px solid #F5F5F5;
+    }
+</style>
+<script>
+
+    // 全局配置及引入相关的模块
+    layui.use(['table', 'form','element'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var element = layui.element;
+        var year = document.getElementById("holdYear");
+        var my = new Date();
+        var status=-1;
+        var cmeStandardKindId = localStorage.getItem("standardkind-id");
+        const _isZheJiang = cmeStandardKindId === '190c480d-d43c-450b-8472-a6fd00a6729d';
+        const _isGuangdong = cmeStandardKindId === "289bf0ca-52cb-4b19-b737-9bd200a69ce1";
+
+        function buildBaseColumns() {
+            var columns = [{field: 'center', width: 160, toolbar: '#rowBar', title: '操作', fixed: 'left'}];
+            if (_isZheJiang) {
+                columns.push({field:'center', title:'项目负责人课件', width:173, templet: '#uploadDecl', align: 'center'});
+            }
+            // if (_isGuangdong) {
+            //     columns.push({field:'center', title:'承诺书', width:173, templet: '#uploadDecl', align: 'center'});
+            // }
+            return columns;
+        }
+
+        function bindDeclPreviewButtons(rows) {
+            if (!_isZheJiang && !_isGuangdong) {
+                return;
+            }
+            for (var i = 0; i < rows.length; i++) {
+                var tr = $(".layui-table-body tr[data-index=" + i + "]");
+                var declUrl = rows[i].declUrl;
+                if (declUrl) {
+                    tr.find('.view-btn').show();
+                }
+                tr.find('.file-url').val(declUrl || '');
+            }
+            $('.view-btn').off('click').on('click', function(){
+                var url = $(this).siblings('.file-url').val();
+                if(url){
+                    window.open(url);
+                }else{
+                    layer.msg('暂无附件');
+                }
+            });
+        }
+
+        window.colArray = buildBaseColumns();
+
+        $.ajax({
+                type:"POST",
+                headers: {
+                        "Accept": 'application/json',
+                        "Authorization": localStorage.getItem("token"),
+                        "KJPT-USER-ID": localStorage.getItem("user-id"),
+                        "cmestandard-id": "190c480d-d43c-450b-8472-a6fd00a6729d"
+                    },
+                async:false,
+                url: huayi_projectscore_url +"project/comcolumnList",
+                //url:'http://localhost:20004/permission/feign/getDisplayList',
+                data:JSON.stringify({"module_name": "projectReport"}),
+                contentType:"application/json",
+                success:function(data){
+                    $.each(data.data,function(index,item){
+                        let column={field: item.columnCamelCase, title: item.columnName, sort: item.orderable};
+                        window.colArray.push(column);
+                    })
+                },
+                error: function (data, xhr,  stus) {
+                    layer.msg("响应失败");
+                }
+            })
+
+
+// 表格相关操作
+        // 表格配置
+        function loaderTable() {
+            window.mainTable = table.render({
+                elem: '#project',
+                url: huayi_projectscore_url + 'project/list',
+                //本地先写死
+                //url:'http://localhost:10005/project/list',
+                title: '用户表',
+                defaultToolbar: [],
+                where: {
+                    HoldYear: $('#holdYear').val(),
+                    CmeComScoreLevel: $('#CmeComScoreLevel').val(),
+                    ProjectName: $('#projectName').val(),
+                    ProjectCode: $('#projectCode').val(),
+                    DictId: $('#holdType').val(),
+                    personName: $('#PrincipalName').val(),
+                    //TODO 做登录之后从缓存读所属地区
+                    cmeStandardKindId:'',
+                    status:status
+                },
+
+                cols:[
+                    //{field: 'center', width: 160, toolbar: '#rowBar', title: '操作', fixed: 'left'},
+                    window.colArray
+                ],
+                done: function(res) {
+                    bindDeclPreviewButtons(res.data || []);
+                },
+                toolbar: '#bar',
+                cellMinWidth: 100,
+                id: "project",
+                height: 'full-255',
+                page: true,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "count": res.data.recordsTotal, //解析数据长度
+                        "data": res.data.records, //解析数据列表
+                        "page": res.data.pageNum, //当前页
+                        "limit": res.data.pageSize, //每页条数
+                    }
+
+                },
+                request: {
+                    pageName: 'pageNum', //页码的参数名称，默认：page
+                    limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                }
+            });
+        };
+        function reloadTabletitle() {
+            window.mainTable.reload({
+                url: huayi_projectscore_url + 'project/list',
+                //本地先写死
+                //url:'http://localhost:10005/project/list',
+                defaultToolbar: [],
+                where: {
+                    HoldYear: $('#holdYear').val(),
+                    CmeComScoreLevel: $('#CmeComScoreLevel').val(),
+                    ProjectName: $('#projectName').val(),
+                    ProjectCode: $('#projectCode').val(),
+                    DictId: $('#holdType').val(),
+                    personName: $('#PrincipalName').val(),
+                    //TODO 做登录之后从缓存读所属地区
+                    cmeStandardKindId:'',
+                    status:status
+                },
+
+                cols:[
+                    //{field: 'center', width: 160, toolbar: '#rowBar', title: '操作', fixed: 'left'},
+                    window.colArray
+                ],
+                done: function(res) {
+                    bindDeclPreviewButtons(res.data || []);
+                },
+                parseData: function (res) {
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "count": res.data.recordsTotal, //解析数据长度
+                        "data": res.data.records, //解析数据列表
+                        "page": res.data.pageNum, //当前页
+                        "limit": res.data.pageSize, //每页条数
+                    }
+
+                },
+                request: {
+                    pageName: 'pageNum', //页码的参数名称，默认：page
+                    limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                }
+            }, true);
+        };
+        window.colSettingClaaback = function( obj){
+            var str={"module_name":"projectReport"};
+            $.ajax({
+                type:"POST",
+                headers: {
+                        "Accept": 'application/json',
+                        "Authorization": localStorage.getItem("token"),
+                        "KJPT-USER-ID": localStorage.getItem("user-id"),
+                        "cmestandard-id": "190c480d-d43c-450b-8472-a6fd00a6729d"
+                    },
+                async:false,
+                url: huayi_projectscore_url +"project/comcolumnList",
+                //url:'http://localhost:20004/permission/comcolumn/getDisplayList',
+                //data:{"module_name": "projectReport"},
+
+                data:JSON.stringify(str),
+                contentType:"application/json",
+                success:function(data){
+                    window.colArray = buildBaseColumns();
+                    $.each(data.data,function(index,item){
+                        let column={field: item.columnCamelCase, title: item.columnName, sort: item.orderable};
+                        window.colArray.push(column);
+                    })
+                    reloadTabletitle();
+                    if(obj && obj.success){
+                        layer.close(window.colLayerIndex);
+                    }
+                    else{
+                        layui.msg(obj.msg);
+                    }
+                },
+                error: function (data, xhr,  stus) {
+                    layer.msg("响应失败");
+                }
+            })
+        }
+
+
+        $(function () {
+            var endYear = my.getFullYear()+1;// 获取当前年份
+            for (var i = endYear; i > endYear-6; i--) {
+                $('#holdYear').append(new Option(i,i));//往下拉菜单里添加元素
+            }
+            form.render('select'); //刷新select选择框渲染
+            loaderTable();
+            ddlList();
+            loadReport();
+
+        });
+        $(".tab_others").on("click", function () {
+            var index = $(this).index();
+             $(this).addClass("tab_this").siblings().removeClass("tab_this");
+
+        });
+
+
+        function ddlList(){
+            //加载项目级别
+            $.ajax({
+                type: "get",
+                url: huayi_projectscore_url +"projectDDL/scoreLevelList",
+                data: {cmeStandardKindId:"190c480d-d43c-450b-8472-a6fd00a6729d"},
+                dataType: 'json',
+                success: function (data) {
+                    $.each(data.data,function(index,item){
+                        $('#CmeComScoreLevel').append(new Option(item.scoreLevelName,item.scoreLevelId));//往下拉菜单里添加元素
+                    })
+                    form.render('select'); //刷新select选择框渲染
+                },
+                error: function (data) {
+                    layer.msg("响应失败");
+                }
+            });
+            //加载举办方式
+            $.ajax({
+                type: "get",
+                url: huayi_projectscore_url +"projectDDL/holdTypeList/" + localStorage.getItem('standardkind-id'),
+                dataType: 'json',
+                success: function (data) {
+                    $.each(data.data,function(index,item){
+                        $('#holdType').append(new Option(item.dictName,item.dictId));//往下拉菜单里添加元素
+                    })
+                    form.render('select'); //刷新select选择框渲染
+                },
+                error: function (data) {
+                    layer.msg("响应失败");
+                }
+            });
+        }
+        function loadReport(){
+            //加载ProjectTabsNum
+            $.ajax({
+                type:"get",
+                url: huayi_projectscore_url +"projectDDL/projectTabsNum",
+                dataType:"json",
+                data:{year: $('#holdYear').val()},
+                success:function(data){
+                    $('#loadNoReport').html('未上报('+data.data[0]['noReport']+')');
+                    $('#loadhasReported').html('已上报('+data.data[0]['hasReported']+')');
+                    $('#loadsendBack').html('退回修改('+data.data[0]['sendBack']+')');
+                },
+                error: function (data) {
+                    layer.msg("响应失败");
+                }
+            })
+        }
+
+
+
+
+        // 监听头部新增按钮
+        table.on('toolbar(project)', function (obj) {
+            var datas = obj.data;
+            //document.getElementById("form-Project").reset();
+            if (obj.event === 'add') {
+                layer.open({
+                    title: '选择您要申报的项目级别',
+                    content:"AddProject.html",
+                    type: 2,
+                    area: ['400px', '270px']
+                })
+            }
+            else if(obj.event === 'excel'){
+                //导出excel
+                $.ajax({
+                    type:"get",
+                    url: huayi_projectscore_url +"project/excelExportProj",
+                    dataType:"json",
+                    data:{year: $('#holdYear').val()},
+                    success:function(data){
+                        $('#loadNoReport').html('未上报('+data.data[0]['noReport']+')');
+                        $('#loadhasReported').html('已上报('+data.data[0]['hasReported']+')');
+                        $('#loadsendBack').html('退回修改('+data.data[0]['sendBack']+')');
+                    },
+                    error: function (data) {
+                        layer.msg("响应失败");
+                    }
+                })
+            }else if (obj.event === 'visbale') {
+                window.colLayerIndex = layer.open({
+                    content:"../../column_setting.html?module_name=projectReport&callBack=colSettingClaaback",
+                    type: 2,
+                    area: ['600px', '600px']
+
+                })
+            }
+        });
+
+        // 监听行内按钮
+        table.on('tool(project)', function (obj) {
+            var datas = obj.data;
+            if (obj.event === 'edit') {
+                form.val('add-filter', datas);
+                layer.open({
+                    type: 1,
+                    title: '修改',
+                    content: $('#add-project'),
+                    skin: '',
+                    area: ['400px', '400px'],
+                })
+            } else if (obj.event === 'del') {
+                layer.confirm('确定要删除吗', {icon: 3, title: '提示'}, function () {
+                    $.ajax({
+                        type: 'get',
+                        url: kjpt_url + 'project/delete',
+                        data: {
+                            projectId: datas.projectId
+                        },
+                        contentType: 'application/json;charset=UTF-8',
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.status === 200) {
+                                layer.msg("删除成功");
+                                table.reload('project');
+                            }
+                        }
+                    });
+                    layer.msg("删除成功");
+                })
+            }else if(obj.event==='submitProj'){
+                layer.confirm('确定要上报吗', {icon: 3, title: '提示'}, function () {
+                    $.ajax({
+                        type: 'get',
+                        url: kjpt_url + 'project/submitProj',
+                        data: {
+                            projectId: datas.projectId,
+                            projStatus:1
+
+                        },
+                        contentType: 'application/json;charset=UTF-8',
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.status === 200) {
+                                layer.msg("提交成功");
+                                table.reload('project');
+                            }
+                        }
+                    });
+                })
+            }
+        });
+
+        // form表单相关操作
+        // 新增/修改表单提交
+        form.on('submit(submit)', function (data) {
+            // 用于判断是新增还是修改
+            var formTableId = $("#add-project input[name='projectId']").val();
+            var datas = JSON.stringify(data.field);
+            var URL;
+            if (formTableId === '' || formTableId === null) {
+                // 走新增逻辑
+                URL = kjpt_url + 'project/save';
+            } else {
+                // 走修改逻辑
+                URL = kjpt_url + 'project/update';
+            }
+            $.ajax({
+                type: 'post',
+                url: URL,
+                data: datas,
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                success: function (res) {
+                    layer.msg("修改成功");
+                },
+                error: function () {
+                    layer.msg("发送请求失败");
+                }
+            })
+        });
+        //下拉框值改变
+        form.on('select(loadReport)', function (data) {
+            loadReport();
+            loaderTable();
+        })
+        //鼠标悬停提示特效
+        $("#hint").hover(function () {
+            openMsg();
+        }, function () {
+            layer.close(subtips);
+        });
+        function openMsg() {
+            subtips = layer.tips('提示信息', '#hint', {tips: [1, '#ff6700'], time: 30000});
+        }
+        element.on('tab(tabcheck)', function(data){
+            var nums=data.index;
+            status=nums;
+            loaderTable();
+        });
+
+
+    });
+
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,56 @@
+.place-box{
+    position: absolute;
+    right: 5%;
+    top: 20px;
+}
+#downloadAppBox{
+    width: 250px;
+    height: 250px;
+    background-color: #FFF;
+    position: relative;
+}
+#downloadLink{
+    position: absolute;
+    border: 15px solid #fff;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+}
+.download-icon{
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+.download-icon>i{
+    color: #FFF;
+    position: absolute;
+    top: 15px;
+    width: 0px;
+    height: 0px;
+    border-top: 12px solid currentColor;
+    border-bottom: 12px solid transparent;
+    border-right: 8px solid transparent;
+    border-left: 8px solid transparent;
+}
+.download-icon>i::before{
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: -4px;
+    width: 7px;
+    height: 8px;
+    background-color: currentColor;
+}
+.download-icon>i::after{
+    content: '';
+    position: absolute;
+    left: -14px;
+    width: 22px;
+    height: 1px;
+    border: 3px solid currentColor;
+    background-color: currentColor;
+}

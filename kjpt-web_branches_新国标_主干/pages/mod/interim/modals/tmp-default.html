@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>tmp-default</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
+    <!-- 1.2.1 -->
+    <!--<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">-->
+    <!--<script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>-->
+    <!-- 2.6.8 -->
+    <link rel="stylesheet" href="/js/layui-v2.6.8/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="/js/layui-v2.6.8/layui/layui.js"></script>
+    <!-- admin.css -->
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="/css/communal.css" media="all">
+    <!-- base -->
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="/js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="/pages/mod/libs/netflix.mng.min.js?a=a"></script>
+    <script type="text/javascript" src="/pages/mod/js/kjpt.js"></script>
+</head>
+<body style="background-color: white;">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div id="tempProjModal" style="margin-top:8px; width: 100%;">
+            <form class="layui-form" id="tempProjForm" lay-filter="tempProjForm" style="margin: 25px">
+                <!-- row0 --><!-- layui-col-space5 -->
+                <input type="hidden" name="projId">
+                <!--<div class="layui-inline">-->
+                <!--    <label class="layui-form-label"><span style="color: red; " data-id2="">*&nbsp;</span>项目类型</label>-->
+                <!--    <div class="layui-input-block">-->
+                <!--        <select name="medicalType" id="medicalTypeSelector" lay-verify="required">-->
+                <!--            <option value=""></option>-->
+                <!--            <option value="1">西医</option>-->
+                <!--            <option value="2">中医</option>-->
+                <!--        </select>-->
+                <!--    </div>-->
+                <!--</div>-->
+                <!--<div class="layui-inline">-->
+                <!--    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span><span data-id2="">项目级别</span></label>-->
+                <!--    <div class="layui-input-block">-->
+                <!--        <select name="scoreLevel" id="scoreLevelSelector2" lay-verify="required" lay-filter="scoreLevel2">-->
+                <!--            <option value=""></option>-->
+                <!--        </select>-->
+                <!--    </div>-->
+                <!--</div>-->
+                <!--<div class="layui-inline">-->
+                <!--    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span><span data-id2=">举办方式</span></label>-->
+                <!--    <div class="layui-input-block">-->
+                <!--        <select name="holdType" id="holdTypeSelector" lay-verify="required">-->
+                <!--            <option value=""></option>-->
+                <!--        </select>-->
+                <!--    </div>-->
+                <!--</div>-->
+                <!--<div class="layui-inline">-->
+                <!--    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span><span data-id2=">举办形式</span></label>-->
+                <!--    <div class="layui-input-block">-->
+                <!--        <select name="holdForm" id="holdFormSelector" lay-verify="required">-->
+                <!--            <option value=""></option>-->
+                <!--        </select>-->
+                <!--    </div>-->
+                <!--</div>-->
+                <!--<div class="layui-inline">-->
+                <!--    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>二级学科</label>-->
+                <!--    <div class="layui-input-block">-->
+                <!--        <select name="twoKnowledgeId" lay-filter="twoKnowledgeIdSelector" id="twoKnowledgeIdSelector"-->
+                <!--                lay-verify="required" lay-search="true">-->
+                <!--            <option value=""></option>-->
+                <!--        </select>-->
+                <!--    </div>-->
+                <!--</div>-->
+                <!--<div class="layui-inline">-->
+                <!--    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>三级学科</label>-->
+                <!--    <div class="layui-input-block">-->
+                <!--        <select name="knowledgeId" lay-filter="knowledgeIdSelector" id="knowledgeIdSelector"-->
+                <!--                lay-verify="required" lay-search="">-->
+                <!--            <option value=""></option>-->
+                <!--        </select>-->
+                <!--    </div>-->
+                <!--</div>-->
+                <!--<div class="layui-inline">-->
+                <!--    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>举办年度</label>-->
+                <!--    <div class="layui-input-block">-->
+                <!--        <select name="cmeYear" id="cmeYearSelector" lay-verify="required" lay-filter="cmeYear">-->
+                <!--            <option value=""></option>-->
+                <!--        </select>-->
+                <!--    </div>-->
+                <!--</div>-->
+                <!-- row1 -->
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span data-id="lblYear" data-name="cmeYear" data-required="1" data-next-year="0">年度</span></label>
+                        <div class="layui-input-block"></div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>项目名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="projName" lay-verify="required" autocomplete="off" class="layui-input" placeholder="请输入">
+                        </div>
+                    </div>
+                    <div class="layui-inline hide">
+                        <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>项目编号</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="projNo" lay-verify="" autocomplete="off" class="layui-input" placeholder="请输入">
+                        </div>
+                    </div>
+                </div>
+                <!-- row2 -->
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span data-id="lblProjectLevel" data-name="scoreLevel" data-required="1" data-check-parent="0" data-label="">学分分类</span></label>
+                        <div class="layui-input-block">
+                            <div data-id=""></div>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span data-id="lblKnowledge" data-name="knowledgeId" data-required="1" data-check-parent="0" data-label="">学科</span></label>
+                        <div class="layui-input-block">
+                            <div data-id=""></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- row -->
+                <div class="layui-form-item">
+                    <!--<div class="layui-inline">-->
+                    <!--    <label class="layui-form-label"><span data-id="lblActivityWay" data-name="holdForm" data-required="1">活动方式</span></label>-->
+                    <!--    <div class="layui-input-block">-->
+                    <!--        <div data-id=""></div>-->
+                    <!--    </div>-->
+                    <!--</div>-->
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span data-id="lblProjectType" data-name="projType" data-required="1" data-ops="12" data-label="">项目类别</span></label>
+                        <div class="layui-input-block">
+                            <div data-id=""></div>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span data-id="lblActivityForm" data-name="holdType" data-required="1" data-multi="0">活动形式</span></label>
+                        <div class="layui-input-block">
+                            <div data-id=""></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- row7 -->
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span data-id="lblActivityContent" data-name="scoreType" data-required="1" data-label="">活动内容</span></label>
+                        <div class="layui-input-block">
+                            <div data-id=""></div>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span data-id="lblMedicalSystem" data-name="medicalType" data-required="1">所属医学体系</span></label>
+                        <div class="layui-input-block">
+                            <div data-id=""></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- row3 -->
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>拟开始日期</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="startDate" class="layui-input" id="startDateSelector" lay-verify="required" autocomplete="off" placeholder="yyyy-MM-dd">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>拟结束日期</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="endDate" class="layui-input" id="endDateSelector" lay-verify="required" placeholder="yyyy-MM-dd" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">拟举办天数</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="holdDay" autocomplete="off" class="layui-input layui-disabled" disabled>
+                        </div>
+                    </div>
+                </div>
+                <!-- row4 -->
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>举办地点</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="studyAddress" autocomplete="off" class="layui-input" lay-verify="required" placeholder="请输入">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>学分</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="score" min="0" lay-verify="required" autocomplete="off" class="layui-input number_ph" placeholder="请输入">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>总学时</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="period" min="0" lay-verify="required" autocomplete="off" class="layui-input number_ph" placeholder="请输入">
+                        </div>
+                    </div>
+                </div>
+                <!-- row8 -->
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>讲授理论学时数</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="theoryTime" min="0" lay-verify="required" autocomplete="off" class="layui-input number_ph" placeholder="请输入">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>实验（技术示范）时数</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="demoTime" min="0" autocomplete="off" class="layui-input number_ph" lay-verify="required" placeholder="请输入">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">拟授分人数</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="limitPerson" min="0" lay-verify="" autocomplete="off" class="layui-input number_ph" placeholder="请输入">
+                        </div>
+                    </div>
+                </div>
+                <!-- row9 -->
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>项目负责人</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="projManager" lay-verify="required" autocomplete="off" class="layui-input" placeholder="请输入">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>项目负责人联系电话</label>
+                        <div class="layui-input-block">
+                            <input type="number" min="0" name="projManagerTelephone" lay-verify="required|telephone" autocomplete="off" placeholder="请输入" class="layui-input number_ph">
+                        </div>
+                    </div>
+                    <div class="layui-inline hide">
+                        <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>培训对象</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="remark" autocomplete="off" class="layui-input" lay-verify="" placeholder="请输入">
+                        </div>
+                    </div>
+                    <!--<div class="layui-col-md4">-->
+                    <!--    <label class="layui-form-label"><span style="color: red; ">*&nbsp;</span>举办单位</label>-->
+                    <!--    <div class="layui-input-block">-->
+                    <!--        &lt;!&ndash; <input type="text" name="unitId" autocomplete="off" class="layui-input"> &ndash;&gt;-->
+                    <!--        <div id="unitIdSelector1" data-name=""></div>-->
+                    <!--    </div>-->
+                    <!--</div>-->
+                </div>
+                <!-- row11 -->
+                <div style="text-align: center;">
+                    <!-- <button class="layui-btn layui-btn-primary" lay-filter="tpfCancel" onclick="javascript:;">取消</button>-->
+                    <a class="layui-btn layui-btn-primary layui-layer-close" style="position: relative;" data-action="formCancel">取消</a>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    <button class="layui-btn" type="submit" lay-submit lay-filter="formSubmit">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="/js/constantPage/projectConstant.js"></script>
+<script type="text/javascript" src="/pages/mod/interim/modals/tmp.js"></script>
+<script type="text/javascript" src="/pages/mod/js/label_data.js"></script>
+<script>
+    if (_isHenan) {
+        if (_isGovProvince)
+            _label_data.scoreLevel = [
+                {'id': '05755cc7-5114-4445-a1a9-9e3e29d4dbbf', 'name': '继续医学教育项目', 'pid': null, 'listOrder': 1, 'versionYear': '2025'},
+                {'id': '2a2b677e-ac75-4442-b9ac-180ec3a188bf', 'name': '国家级继续医学教育项目', 'pid': '05755cc7-5114-4445-a1a9-9e3e29d4dbbf', 'listOrder': 1, 'versionYear': '2025'},
+                {'id': 'e0e93301-9479-4876-8fcc-a0bb93196954', 'name': '国家级继续医学教育推广项目', 'pid': '05755cc7-5114-4445-a1a9-9e3e29d4dbbf', 'listOrder': 1, 'versionYear': '2025'},
+                {'id': '0d93c670-e9de-11ef-b19f-fa163e2ff656', 'name': '省级继续医学教育项目', 'pid': '05755cc7-5114-4445-a1a9-9e3e29d4dbbf', 'listOrder': 1, 'versionYear': '2025'},
+                {'id': 'ceadc3bb-2c48-44d6-9eb6-15fc23e800ab', 'name': '省级继续医学教育推广项目', 'pid': '05755cc7-5114-4445-a1a9-9e3e29d4dbbf', 'listOrder': 1, 'versionYear': '2025'},
+                {'id': '46142f12-aa36-11f0-9c08-005056a64c01', 'name': '国家级中医继教项目', 'pid': '05755cc7-5114-4445-a1a9-9e3e29d4dbbf', 'listOrder': 1, 'versionYear': '2025'},
+                {'id': 'ddc04ee8-70d1-11f0-89b2-fa163e2ff656', 'name': '省级中医药继续教育推荐项目', 'pid': '05755cc7-5114-4445-a1a9-9e3e29d4dbbf', 'listOrder': 1, 'versionYear': '2025'},
+                {'id': '62775e18-aa36-11f0-9c08-005056a64c01', 'name': '省级中医药继续教育推广项目', 'pid': '05755cc7-5114-4445-a1a9-9e3e29d4dbbf', 'listOrder': 1, 'versionYear': '2025'},
+            ];
+        if (_isGovCity) _label_data.scoreLevel = [];
+        _label_data.scoreLevelContent = [{'scoreLevelContentId': '3ecc6eaa-cc0a-11ef-bf0d-005056a64c01', 'scoreLevelContentName': '专业课', 'value': 1}];
+    }
+    if (_isHainan) {
+        _label_data.scoreLevel = [
+            {'id': '709d9740-7881-41c9-937f-93970f13047c', 'name': '继续医学教育活动项目类', 'pid': null, 'listOrder': 1, 'versionYear': '2025'},
+            {'id': 'eb9983dd-7dfb-4338-a707-d98f83a7aa31', 'name': '国家级继续医学教育推荐项目', 'pid': '709d9740-7881-41c9-937f-93970f13047c', 'listOrder': 1, 'versionYear': '2025'},
+            {'id': 'fb631e4c-31f5-4e91-b0f7-fae2db17d66b', 'name': '国家级继续医学教育推广项目', 'pid': '709d9740-7881-41c9-937f-93970f13047c', 'listOrder': 1, 'versionYear': '2025'},
+            {'id': '3b5002bd-4508-4925-a23c-4aefe48dbadb', 'name': '省级继续医学教育推荐项目', 'pid': '709d9740-7881-41c9-937f-93970f13047c', 'listOrder': 1, 'versionYear': '2025'},
+            {'id': '8063fa96-a02f-4ce8-999a-4e478ff5300b', 'name': '省级继续医学教育推广项目', 'pid': '709d9740-7881-41c9-937f-93970f13047c', 'listOrder': 1, 'versionYear': '2025'},
+            {'id': 'e2b33968-f592-47ea-8c43-cb57a15510bc', 'name': '省级中医继续医学教育推荐项目', 'pid': '709d9740-7881-41c9-937f-93970f13047c', 'listOrder': 1, 'versionYear': '2025'},
+            {'id': '879c5393-d38f-4a05-9e98-b7e79b29f484', 'name': '省级中医继续医学教育推广项目', 'pid': '709d9740-7881-41c9-937f-93970f13047c', 'listOrder': 1, 'versionYear': '2025'},
+            {'id': 'fa803df1-4c1e-4b03-8ecf-dc0f66ff71a1', 'name': '继续医学教育项目公需课', 'pid': '709d9740-7881-41c9-937f-93970f13047c', 'listOrder': 1, 'versionYear': '2025'},
+            {'id': '329c1bfd-071e-47cb-9842-0aa492a40d1e', 'name': '有组织的继续医学教育实践活动', 'pid': null, 'listOrder': 1, 'versionYear': '2025'},
+            {'id': '057cd830-0b28-4f2b-9e5b-cf22f5098367', 'name': '市级组织的继续医学教育培训班', 'pid': '329c1bfd-071e-47cb-9842-0aa492a40d1e', 'listOrder': 1, 'versionYear': '2025'},
+            {'id': 'fa4a1489-8553-4b82-af7a-6505da7800cb', 'name': '市级组织适宜技术推广培训班', 'pid': '329c1bfd-071e-47cb-9842-0aa492a40d1e', 'listOrder': 1, 'versionYear': '2025'},
+            {'id': 'bd076e7d-23d4-4321-83f0-f4831db4d862', 'name': '市级组织专题讲座、学术研讨活动', 'pid': '329c1bfd-071e-47cb-9842-0aa492a40d1e', 'listOrder': 1, 'versionYear': '2025'},
+        ];
+    }
+    if (_isZhejiang) {
+        _label_data.scoreLevel = [
+            {'id': 'ae79aeb6-f3e2-4735-8f51-d9cc9b12aa69', 'name': '继续医学教育项目', 'pid': null, 'listOrder': 1, 'versionYear': '2025'},
+            {'id': 'acc0b6c2-4e0c-4190-98bd-689ef1ddb012', 'name': '推荐项目（国家）', 'pid': 'ae79aeb6-f3e2-4735-8f51-d9cc9b12aa69', 'listOrder': 1, 'versionYear': '2025'},
+            {'id': '874d523a-a292-4b4c-8a79-61b6b99228e3', 'name': '推荐项目（省）', 'pid': 'ae79aeb6-f3e2-4735-8f51-d9cc9b12aa69', 'listOrder': 2, 'versionYear': '2025'},
+            {'id': 'aa6067d7-be32-41dd-81c2-8129a54ef0ff', 'name': '推广项目（国家）', 'pid': 'ae79aeb6-f3e2-4735-8f51-d9cc9b12aa69', 'listOrder': 3, 'versionYear': '2025'},
+            {'id': '68033ab1-5282-4cfa-9c00-ed110b1e8a2c', 'name': '推广项目（省）', 'pid': 'ae79aeb6-f3e2-4735-8f51-d9cc9b12aa69', 'listOrder': 4, 'versionYear': '2025'},
+            {'id': '59f4ef52-dd6d-11f0-ba6d-005056a64c01', 'name': '市卫健委设立的继续医学教育项目', 'pid': 'ae79aeb6-f3e2-4735-8f51-d9cc9b12aa69', 'listOrder': 4, 'versionYear': '2025'},
+            {'id': 'dd8e3bcb-10bc-4ddb-a639-aaa2d670055d', 'name': '高级研修项目', 'pid': null, 'listOrder': 2, 'versionYear': '2025'},
+            {'id': 'b00b00e4-f85d-4e82-af28-433d85c399ea', 'name': '省级及以上人力社保部门批准的医学类高级研究项目', 'pid': 'dd8e3bcb-10bc-4ddb-a639-aaa2d670055d'},
+            {'id': 'ea2a201d-86d9-4656-9ff3-e72990eaff5d', 'name': '符合规定的其他方式及子分类', 'pid': null, 'listOrder': 3, 'versionYear': '2025'},
+            {'id': '57390d56-fa89-4577-a999-a0ce04c20e36', 'name': '符合规定的其他方式', 'pid': 'ea2a201d-86d9-4656-9ff3-e72990eaff5d'},
+        ];
+    }
+    if (_isGuangxi) {
+        if (_isGovProvince)
+            _label_data.scoreLevel = [
+                {'id': '1682d168-2cef-11f1-8d9a-005056a64c01', 'name': '国家级继续医学教育项目', 'pid': null, 'listOrder': 1, 'versionYear': '2026'},
+                {'id': '1682d2e4-2cef-11f1-8d9a-005056a64c01', 'name': '国家级继续医学教育推广项目', 'pid': null, 'listOrder': 1, 'versionYear': '2026'},
+                {'id': '1682d366-2cef-11f1-8d9a-005056a64c01', 'name': '省（自治区）级继续医学教育项目', 'pid': null, 'listOrder': 1, 'versionYear': '2026'},
+                {'id': '1682d3d4-2cef-11f1-8d9a-005056a64c01', 'name': '省（自治区）级继续医学教育推广项目', 'pid': null, 'listOrder': 1, 'versionYear': '2026'},
+            ];
+        if (_isGovCity) _label_data.scoreLevel = [
+		{'id': '1682d7e4-2cef-11f1-8d9a-005056a64c01', 'name': '地市、区、县继续医学教育活动', 'pid': null, 'listOrder': 1, 'versionYear': '2026'}
+        ];
+             
+    }
+</script>
+<script type="text/javascript" src="/pages/mod/libs/vendor.gq12mdzl.d3ec9qak.js"></script>
+<script type="text/javascript" src="https://testkjpt.wsglw.net/pages/mod/js/prod.tmp.js"></script>
+<style>
+    .layui-input {
+        width: 198px;
+    }
+    div[data-id] {
+        min-width: 198px !important;
+    }
+    .layui-disabled, .layui-disabled:hover {
+        color: rgb(104 104 104) !important;
+        cursor: not-allowed !important;
+    }
+    /* 去掉input上下箭头 */
+    input[name='projManagerTelephone']::-webkit-outer-spin-button,
+    input[name='projManagerTelephone']::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+    }
+    input[type="number"][name="projManagerTelephone"] {
+        -moz-appearance: textfield;
+    }
+</style>
+</html>

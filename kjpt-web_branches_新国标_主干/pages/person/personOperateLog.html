@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>人员信息变更日志</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+        media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="../../js/axios.min.js"></script>
+    <script type="text/javascript" src="../../js/auth.js"></script>
+    <!-- 工具 -->
+    <script type="text/javascript" src="../../js/base64.js"></script>
+
+    <style>
+        .layui-card-body.layui_body_box {
+            padding: 0 !important;
+        }
+
+        .layui-tab-content {
+            padding: 0 !important;
+        }
+
+        .layui-form.layui-border-box.layui-table-view {
+            margin: 0 !important;
+        }
+
+        .layui-icon-ok {
+            color: green;
+            font-weight: bold;
+        }
+
+        .layui-icon-close.notok,
+        .require,
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+
+        #keywordColum+div {
+            display: inline-block;
+            width: 85px;
+            position: relative;
+            bottom: 1.5px;
+        }
+
+        .layui-layer-content {
+            overflow: visible !important;
+        }
+
+        .layui_mess {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .layui-form-select .layui-input {
+            padding-right: 0;
+        }
+    </style>
+</head>
+
+<body class="body-area">
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+
+
+            <!-- 搜索框区域 -->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area">
+                <div class="layui_mess">
+                    <div class="layui_display">
+                        <div class="layui-inline layui-form" lay-filter="personStateSelectArea">
+                            <label class="layui-form-label">人员状态</label>
+                            <div class="layui-input-block">
+                                <select id="personStateSelect"></select>
+                            </div>
+                        </div>
+                        <div class="layui-inline tree-select" lay-filter="specSelectArea">
+                            <label class="layui-form-label">专业</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" disabled
+                                    lay-filter="specSelect" id="specSelect" placeholder="请选择">
+                            </div>
+                        </div>
+                        <div class="layui-inline tree-select" lay-filter="deptSelectArea">
+                            <label class="layui-form-label">所在科室</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" disabled
+                                    lay-filter="deptSelect" id="deptSelect" placeholder="请选择">
+                            </div>
+                            <input type="hidden" id="tab2_hidden_dept_id" />
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">当前职称</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" lay-filter="text_title_names"
+                                    id="text_title_names" placeholder="请选择">
+                                <input type="hidden" autocomplete="off" class="layui-input"
+                                    lay-filter="hidden_title_ids " id="hidden_title_ids">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">查询项</label>
+                            <div class="layui-input-block">
+                                <select id="keywordColum">
+                                    <option value="person_name">姓名</option>
+                                    <option value="cert_id">证件号</option>
+                                </select>
+                                <input type="text" id="keyword" placeholder="请输入关键字"
+                                    style="display: inline-block; width: calc(97.5% - 85px); position: relative; bottom: 2.5px;"
+                                    autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui_display">
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" id="searchBtn" onclick="loaderTable()"
+                                lay-filter="table-search" data-type="reload">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- 表格区域 -->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="comPerson" lay-filter="comPerson" style="margin: 0px 0px;">
+                </table>
+            </div>
+
+
+            <!-- 添加弹窗 -->
+            <!-- <div id="add-comPerson" style=" display:none;text-align: center">
+
+                <form class="layui-form" style="padding: 30px;" id="form-ComPerson" lay-filter="add-filter">
+                    <div class="layui-form-item" style="display: none">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">主键</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="comPersonId" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">人员编号
+                                10位，算法全国大派对，唯一，参考[HY_COMMON].[dbo].[create_yt_no_index]</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="personNo"
+                                    placeholder="人员编号 10位，算法全国大派对，唯一，参考[HY_COMMON].[dbo].[create_yt_no_index]"
+                                    autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">原IC卡卡号，好医生IC卡号废掉</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="otherNo" placeholder="原IC卡卡号，好医生IC卡号废掉" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">人员姓名</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="personName" placeholder="人员姓名" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">性别：默认从身份证中获得</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="sex" placeholder="性别：默认从身份证中获得" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">证件号（AES加密存储）--查询时比对密文</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="certId" placeholder="证件号（AES加密存储）--查询时比对密文" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">出生日期 :默认从身份证中获得</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="birthday" placeholder="出生日期 :默认从身份证中获得" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">民族：来源字典表com_dictionary中的kind_id=3</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="nation" placeholder="民族：来源字典表com_dictionary中的kind_id=3"
+                                    autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">政治面貌：来源字典表com_dictionary中的kind_id=4</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="party" placeholder="政治面貌：来源字典表com_dictionary中的kind_id=4"
+                                    autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">毕业院校</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="university" placeholder="毕业院校" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">联系电话</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="telephone" placeholder="联系电话" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">手机号(AES加密存储) ----查询时比对密文</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="mobile" placeholder="手机号(AES加密存储)  ----查询时比对密文" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">电子邮箱</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="email" placeholder="电子邮箱" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">专业（不能为空）：来源于人员专业表com_person_spec且spec_type= ‘03’</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="spec"
+                                    placeholder="专业（不能为空）：来源于人员专业表com_person_spec且spec_type= ‘03’" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">入职日期、职称聘任年度</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="jobDate" placeholder="入职日期、职称聘任年度" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">学历：字典表com_dictionary中的kind_id=1</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="education" placeholder="学历：字典表com_dictionary中的kind_id=1"
+                                    autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">学位：字典表com_dictionary中的kind_id=2</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="degree" placeholder="学位：字典表com_dictionary中的kind_id=2"
+                                    autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">执业资格证书号</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="profCertId" placeholder="执业资格证书号" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">院内职务:字典表com_dictionary中的kind_id=6</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="hospitalDuty" placeholder="院内职务:字典表com_dictionary中的kind_id=6"
+                                    autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">照片名称或路径+照片名称</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="photo" placeholder="照片名称或路径+照片名称" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">备注</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="remark" placeholder="备注" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">科室ID 来源于科室表com_dept表主键，所在省，单位</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="deptId" placeholder="科室ID 来源于科室表com_dept表主键，所在省，单位"
+                                    autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">添加时间</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="addTime" placeholder="添加时间" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">调动状态:0默认值,1处于调出状态,2:调入</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="transferState" placeholder="调动状态:0默认值,1处于调出状态,2:调入"
+                                    autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">证件类型：:字典表com_dictionary中的kind_id=11</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="certType" placeholder="证件类型：:字典表com_dictionary中的kind_id=11"
+                                    autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">是否制卡 ， 0是未制卡，1是已经制卡</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="isCreateCard" placeholder="是否制卡 ， 0是未制卡，1是已经制卡" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">内部编号</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="internals" placeholder="内部编号" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">修改时间取默认值</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="updateTime" placeholder="修改时间取默认值" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">制卡时间</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="createCardTime" placeholder="制卡时间" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">行政级别：字典表com_dictionary中的kind_id=9</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="administratorlevel" placeholder="行政级别：字典表com_dictionary中的kind_id=9"
+                                    autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">行政职务：字典表com_dictionary中的kind_id=10</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="administratorduty" placeholder="行政职务：字典表com_dictionary中的kind_id=10"
+                                    autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">服务费到期时间：河南，山东</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="endServiceTime" placeholder="服务费到期时间：河南，山东" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">是否有照片: 1有照片 2 无照片</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="hasPhoto" placeholder="是否有照片: 1有照片  2 无照片" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">科室调动状态 0：调出 1：调入</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="deptTransfer" placeholder="科室调动状态  0：调出 1：调入" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">在编状态 0：在编 , 1及其他代表非在编</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="isIntheseries" placeholder="在编状态 0：在编 , 1及其他代表非在编"
+                                    autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">审核状态0:默认值未审核 1：审核通过 4 驳回 注：单位只能查询或统计未审核和审核通过的记录</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="checkState"
+                                    placeholder="审核状态0:默认值未审核 1：审核通过  4 驳回  注：单位只能查询或统计未审核和审核通过的记录" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit lay-filter="submit">提交</button>
+                            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                        </div>
+                    </div>
+                </form>
+            </div> -->
+
+
+        </div>
+    </div>
+
+    <!--表格内数据编辑、删除按钮 -->
+    <script type="text/html" id="rowBar">
+        <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="detail">
+            <!-- <i class="layui-icon layui-icon-log"></i> -->
+            查看记录</a>
+    </script>
+    <!-- <script type="text/html" id="bar">
+        <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="add"><i class="layui-icon">&#xe654;</i>新增</a>
+    </script> -->
+    <script>
+        let unitId            = localStorage.getItem('unit-id'),
+            cmeStandardKindId = localStorage.getItem('standardkind-id'),
+            curDeptId         = '';
+
+
+        /* 获取科室 */ 
+        window.getDeptId = function () {
+            if (localStorage.getItem('user-type') == 13) {
+                let userId = localStorage.getItem('user-id');
+                $.ajax({
+                    async   : false,
+                    headers : {
+                        'Authorization' : localStorage.getItem('token'),
+                        'KJPT-USER-ID'  : localStorage.getItem('user-id')
+                    },
+                    url     : huayi_permission_url + 'comuser/detail',
+                    type    : 'get',
+                    data    : { userId: userId },
+                    success : function (res) {
+                        if (res.success == true) {
+                            if (res.data != null && res.data != undefined && res.data != '') {
+                                curDeptId = res.data.base.unitId;
+                            }
+                        }
+                    },
+                    error   : function () {
+                        layer.msg('发送信息失败');
+                    }
+                });
+            }
+        }
+
+
+        /* 获取配置 */
+        window.getConfig = function (config_name, scoreLevel) {
+            $.ajax({
+                async   : false,
+                type    : 'post',
+                url     : huayi_sjwh_url + 'cmeCommonConfig/getConfigByUnitFromRedis',
+                data    : { 
+                    unitId       : unitId, 
+                    configNames  : config_name,
+                    scoreLevelId : scoreLevel
+                },
+                success : function (res) {
+                    if (res.success == true) {
+                        window[config_name] = res.data[config_name];
+                    } else {
+                        layer.msg('获取配置失败');
+                    }
+                },
+                error   : function () {
+                    layer.msg('获取配置失败');
+                }
+            });
+        }
+        window.getConfig('fun_is_gl', '');
+        window.getConfig('fun_is_sk', '');
+
+
+        layui.config({
+            base: '../../js/layui/ext/'
+        }).extend({
+            treeSelect: 'treeSelect'
+        });
+
+
+        /* 全局配置及引入相关的模块 */
+        layui.use([ 'table', 'form', 'jquery', 'layer', 'treeSelect' ], function () {
+            let table       = layui.table,
+                form        = layui.form,
+                $           = layui.jquery,
+                layer       = layui.layer,
+                treeSelect  = layui.treeSelect;
+
+
+            /* 页面初始化 */
+            $(() => {
+
+                /* 查询项 */
+                // 人员状态
+                axios({
+                    method       : 'get',
+                    url          : huayi_sjwh_url + 'cmePersonState/getPersonStateListByCmeStandardKindId',
+                    responseType : 'json',
+                    params       : {
+                        cmeStandardKindId: cmeStandardKindId
+                    }
+                }).then(response => {
+                    if (response.status == 200 && response.data.status == 200) {
+                        let data           = response.data.data,
+                            personStateStr = '<option value="">全部</option>';
+                        for (let i = 0; i < data.length; i++) {
+                            personStateStr += '<option value="' + data[i].person_state_id + '">' +
+                                    data[i].person_state_name + '</option>';
+                        }
+                        $('#personStateSelect').html(personStateStr);
+                        form.render('select', 'personStateSelectArea');
+                    } else {
+                        console.log('人员状态选择初始化失败');
+                    }
+                }).catch(error => {
+                    console.log('人员状态选择初始化失败：' + error);
+                });
+
+                // 专业
+                let specTreeSelect = treeSelect.render({
+                    elem    : '#specSelect',
+                    data    : huayi_sjwh_url + 'comPersonSpec/tree',
+                    type    : 'get',
+                    search  : true,
+                    style   : {
+                        folder  : { // 父节点图标
+                            enable : true
+                        },
+                        line    : { // 连接线
+                            enable : true
+                        }
+                    }
+                });
+
+                // 科室
+                getDeptId();
+                if (curDeptId != null && curDeptId != undefined && curDeptId != '') {
+                    $('#tab2_hidden_dept_id').val(curDeptId);
+                    $('#deptSelect').val(localStorage.getItem('realname')).addClass('layui-disabled');
+                } else {
+                    let deptTreeSelect = treeSelect.render({
+                        elem    : '#deptSelect',
+                        data    : huayi_personorg_url + 'comdept/tree/unit?unitId=' + unitId,
+                        type    : 'get',
+                        search  : true,
+                        style   : {
+                            folder  : { // 父节点图标
+                                enable : true
+                            },
+                            line    : { // 连接线
+                                enable : true
+                            }
+                        },
+                        click   : function (data) {
+                            $('#tab2_hidden_dept_id').val(data.current.id);
+                        }
+                    });
+                }
+
+
+                // 职称
+                $('#text_title_names').click(function () {
+                    var titleIds = $("#hidden_title_ids").val();
+                    layer.open({
+                        type      : 2,
+                        content   : '../controls/selectTitle/selectTitles.html?titleIds=' + titleIds,
+                        area      : [ '610px', '445px' ],
+                        scrollbar : false
+                    });
+                });
+
+                // 初始化表格
+                loaderTable();
+
+            });
+
+
+            /* 表格相关操作 */
+            // 表格配置
+            window.loaderTable = function () {
+                table.render({
+                    elem            : '#comPerson',
+                    url             : huayi_personorg_url + 'comperson/list',
+                    headers         : {
+                        'Authorization' : localStorage.getItem('token'),
+                        'KJPT-USER-ID'  : localStorage.getItem('user-id')
+                    },
+                    title           : '用户表',
+                    defaultToolbar  : [],
+                    where           : {
+                        unitId          : unitId,
+                        keyword         : $('#keyword').val(),
+                        keywordColumn   : $('#keywordColum').val(),
+                        personStateId   : $('#personStateSelect').val(),
+                        spec            : $('#specSelect').val(),
+                        deptId          : $('#tab2_hidden_dept_id').val(),
+                        titleIds        : $('#hidden_title_ids').val()
+                    },
+                    cols            : [[
+                        { align: 'center', title: '操作', toolbar: '#rowBar', minWidth: 100, fixed: 'left' }, 
+                        { field: 'personName', title: '姓名', align: 'center', minWidth: 100, sort: true }, 
+                        { field: 'certId', title: '证件号码', align: 'center', minWidth: 160, sort: true }, 
+                        { field: 'sex', title: '性别', align: 'center', minWidth: 80, sort: true }, 
+                        { field: 'deptName', title: '科室', align: 'center', minWidth: 130, sort: true }, 
+                        { field: 'titleName', title: '当前职称', align: 'center', minWidth: 130, sort: true }, 
+                        { field: 'personSpecName', title: '专业', align: 'center', minWidth: 110, sort: true }, 
+                        { field: 'personStateName', title: '人员状态', align: 'center', minWidth: 100, sort: true }, 
+                        { field: 'isGl', title: '是否管理人员', align: 'center', minWidth: 130, sort: true,
+                            hide: 't' != window['fun_is_gl'],
+                            templet: function (d) {
+                                if (d.isGl != null && d.isGl == 1) {
+                                    return '<i class="layui-icon layui-icon-ok"></i>';
+                                } else {
+                                    return '<i class="layui-icon layui-icon-close notok"></i>';
+                                }
+                            }
+                        }, 
+                        { field: 'isSk', title: '是否社康人员', align: 'center', minWidth: 130, sort: true,
+                            hide: 't' != window['fun_is_sk'],
+                            templet: function (d) {
+                                if (d.isSk != null && d.isSk == 1) {
+                                    return '<i class="layui-icon layui-icon-ok"></i>';
+                                } else {
+                                    return '<i class="layui-icon layui-icon-close notok"></i>';
+                                }
+                            }
+                        }
+                    ]],
+                    // toolbar             : '#bar',
+                    cellMinWidth        : 100,
+                    id                  : 'comPerson',
+                    height              : 'full-170',
+                    page                : true,
+                    limit               : 10,
+                    limits              : [ 10, 50, 100, 150, 200 ],
+                    parseData           : function (res) {
+                        return {
+                            'code'  : res.status === 200 ? 0 : res.status, // 解析接口状态
+                            'msg'   : res.message, // 解析提示文本
+                            'count' : res.data.recordsTotal, // 解析数据长度
+                            'data'  : res.data.records, // 解析数据列表
+                            'page'  : res.data.pageNum, // 当前页
+                            'limit' : res.data.pageSize, // 每页条数
+                        }
+
+                    },
+                    request: {
+                        pageName  : 'pageNum', // 页码的参数名称，默认：page
+                        limitName : 'pageSize' // 每页数据量的参数名，默认：limit
+                    }
+                });
+            };
+
+            // 表头工具栏
+            table.on('toolbar(comPerson)', function (obj) {
+                let datas = obj.data;
+                document.getElementById('form-ComPerson').reset();
+                if (obj.event === 'add') {
+                    layer.open({
+                        type    : 1,
+                        title   : '新增',
+                        content : $('#add-comPerson'),
+                        skin    : '',
+                        area    : [ '400px', '400px' ],
+                    })
+                }
+            });
+
+            // 行工具栏
+            table.on('tool(comPerson)', function (obj) {
+                let datas = obj.data;
+                if (obj.event === 'edit') {
+                    form.val('add-filter', datas);
+                    layer.open({
+                        type    : 1,
+                        title   : '修改',
+                        content : $('#add-comPerson'),
+                        skin    : '',
+                        area    : [ '400px', '400px' ],
+                    });
+                } 
+                else if (obj.event === 'del') {
+                    layer.confirm('确认删除', { icon: 3, title: '提示' }, () => {
+                        $.ajax({
+                            type        : 'get',
+                            url         : kjpt_url + 'comPerson/deleted',
+                            data        : { comPersonId: datas.comPersonId },
+                            contentType : 'application/json;charset=UTF-8',
+                            dataType    : 'json',
+                            success     : res => {
+                                if (res.status === 200) {
+                                    layer.msg('删除成功', { icon: 1, time: 1500 });
+                                    table.reload('comPerson');
+                                } else layer.msg('删除失败', { icon: 2, time: 1500 });
+                            },
+                            error       : () => layer.msg('删除失败', { icon: 2, time: 1500 })
+                        });
+                    });
+                } 
+                else if (obj.event === 'detail') {
+                    let userInfoStr = '姓名：' + datas.personName +
+                            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
+                            '人员编号：' + datas.personNo +
+                            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
+                            '证件号码：' + datas.certId;
+                    layer.open({
+                        type    : 2,
+                        title   : '人员信息变更日志（详情）',
+                        content : 'personOperateLogDetail.html' +
+                                '?pid=' + Base64.encode(datas.comPersonId) +
+                                '&info=' + Base64.encode(userInfoStr),
+                        skin    : '',
+                        area    : [ '100%', '100%' ],
+                        // success : function(layero, index) {
+                        //     let $content = $(layero).find('iframe').contents();
+                        //     $content.find('#userInfo').html(userInfoStr);
+                        // }
+                    });
+                }
+            });
+
+
+            /* form表单相关 */
+            // 新增/修改表单提交
+            form.on('submit(submit)', function (data) {
+                // 用于判断是新增还是修改
+                let formTableId = $('#add-comPerson input[name="comPersonId"]').val(),
+                    datas       = JSON.stringify(data.field),
+                    URL;
+                if (formTableId === '' || formTableId === null) {
+                    // 新增
+                    URL = kjpt_url + 'comPerson/save';
+                } else {
+                    // 修改
+                    URL = kjpt_url + 'comPerson/update';
+                }
+                $.ajax({
+                    type        : 'post',
+                    url         : URL,
+                    data        : datas,
+                    contentType : 'application/json;charset=UTF-8',
+                    dataType    : 'json',
+                    success     : function (res) {
+                        layer.msg('修改成功');
+                    },
+                    error: function () {
+                        layer.msg('发送请求失败');
+                    }
+                })
+            });
+
+
+            // 鼠标悬停提示特效
+            $('#hint').hover(function () {
+                openMsg();
+            }, function () {
+                layer.close(subtips);
+            });
+
+            function openMsg() {
+                subtips = layer.tips('提示信息', '#hint', {
+                    tips: [ 1, '#ff6700' ],
+                    time: 30000
+                });
+            }
+
+        });
+
+
+        // 职称选择
+        function getChildTitles(hidden_title_ids, titleNames) {
+            $('#text_title_names').val(titleNames);
+            $('#hidden_title_ids').val(hidden_title_ids);
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>套标准管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <!-- 请求路径配置 -->
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <!-- ajax全局配置 -->
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="../../js/axios.min.js"></script>
+    <script type="text/javascript" src="../../js/auth.js"></script>
+
+    <style>
+        .layui-card-body.layui_body_box {
+            padding: 0 !important;
+        }
+        .layui-tab-content {
+            padding: 0 !important;
+        }
+        .layui-form.layui-border-box.layui-table-view {
+            margin: 0 !important;
+        }
+
+        #add-cmeStandardKind .layui-form-item {
+            text-align: left;
+        }
+        #add-cmeStandardKind .layui-inline {
+            width: 500px;
+        }
+        #add-cmeStandardKind .layui-form-label {
+            width: 120px;
+        }
+        #add-cmeStandardKind .layui-input-block {
+            margin-left: 150px;
+        }
+        /* .layui-anim.layui-anim-upbit, .xm-search {
+            text-align: left !important;
+        } */
+        .layui-form-select dl {
+            max-height:220px;
+        }
+        .margin-bottom-5 {
+            margin-bottom: 5px !important;
+        }
+        .layui-icon-ok {
+            color: green; font-weight: bold;
+        }
+        .layui-icon-close.notok, .require, .error {
+            color: red; font-weight: bold;
+        }
+    </style>
+</head>
+<body class="body-area">
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+
+
+            <!-- 搜索框区域 -->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area">
+                <!-- <blockquote class="layui-form layui-form-item layui-elem-quote one-btn" lay-filter="query-form"> -->
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">套关键字</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="description" id="description" placeholder="请输入关键字"
+                                autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <a class="layui-btn layui-btn-sm btn-search" id="searchBtn" onclick="loaderTable()"
+                        lay-filter="table-search" data-type="reload">
+                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                        </a>
+                    </div>
+
+                    <!-- <div class="layui-inline" style="float: right">
+                        <div class="layui-input-block">
+                            <a class="layui-icon" id="hint"><span class="require">&#xe60b;</span></a>
+                        </div>
+                    </div> -->
+
+                <!-- </blockquote> -->
+            </div>
+
+
+            <!-- 表格区域 -->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="cmeStandardKind" lay-filter="cmeStandardKind" style="margin: 0px 0px;">
+                </table>
+            </div>
+
+
+            <!-- 添加/编辑弹窗 -->
+            <div id="add-cmeStandardKind" style="display: none; text-align: center;">
+                <form class="layui-form" style="padding: 30px;" id="form-CmeStandardKind" lay-filter="add-filter">
+                    <div class="layui-form-item" style="display: none;">
+                        <div class="layui-inline">
+                            <label class="layui-form-label"></label>
+                            <div class="layui-input-block">
+                                <input type="text" name="cmeStandardKindId"
+                                        autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">
+                                <span class="require">* </span>套名称</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="description" placeholder="套名称"
+                                        autocomplete="off" class="layui-input" lay-verify="required">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">适用最高单位</label>
+                            <div class="layui-input-block">
+                                <div id="topUnitSelect" data-name=""></div>
+                                <!-- <input type="text" name="topUnitId" placeholder="适用最高单位"
+                                        autocomplete="off" class="layui-input" lay-verify="required"> -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">
+                                <span class="require">* </span>职称最高单位</label>
+                            <div class="layui-input-block">
+                                <div id="titleTopUnitSelect" data-name=""></div>
+                                <!-- <input type="text" name="titleTopUnit" placeholder="职称最高单位"
+                                        autocomplete="off" class="layui-input" lay-verify="required"> -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">
+                                <span class="require">* </span>达标情况描述</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="passName" placeholder="达标情况描述"
+                                        autocomplete="off" class="layui-input" lay-verify="required">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">
+                                <span class="require">* </span>人员状态套标准</label>
+                            <div class="layui-input-block">
+                                <select name="personStateStandardId" id="personStateStandardId"
+                                        lay-verify="required" class="layui-input-block">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">
+                                <span class="require">* </span>显示顺序</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="listOrder" placeholder="显示顺序"
+                                        autocomplete="off" class="layui-input" lay-verify="required">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item margin-bottom-5">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">是否计算达标</label>
+                            <div class="layui-input-block">
+                                <!-- 该套是否计算达标：0计算，1不计算。刚添加时默认为1，检查完后改为0 -->
+                                <input type="checkbox" name="computePassState" lay-filter="computePassState"
+                                        lay-skin="switch" value="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item margin-bottom-5">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">是否实时计算达标</label>
+                            <div class="layui-input-block">
+                                <!-- 是否实时计算达标 0不计算，1计算 -->
+                                <input type="checkbox" name="ifRealtimeComputePass" lay-filter="ifRealtimeComputePass"
+                                        lay-skin="switch" value="1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item" style="position: relative; top: 10px;">
+                        <div class="layui-inline">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-submit lay-filter="submit">提交</button>
+                                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+
+            <!-- 选项弹窗 -->
+            <!-- <div id="config-cmeStandardKind" style="display:none; text-align: center;">
+                <form class="layui-form" style="padding: 30px;" id="form-CmeStandardKind" lay-filter="add-filter">
+                </form>
+            </div> -->
+
+
+        </div>
+    </div>
+
+
+    <!-- 表头新增按钮 -->
+    <script type="text/html" id="bar">
+        <a class="layui-btn layui-btn-sm" lay-event="add">
+            <!-- <i class="layui-icon">&#xe654;</i> -->
+            新增</a>
+    </script>
+    <!-- 表格内数据编辑、删除按钮 -->
+    <script type="text/html" id="rowBar">
+        <a class="layui-btn layui-btn-xs btn-row" lay-event="edit">
+            <!-- <i class="layui-icon layui-icon-edit"></i> -->
+            编辑</a>
+        <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="config">
+            <!-- <i class="layui-icon layui-icon-slider"></i> -->
+            配置</a>
+        <!-- <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">
+            <i class="layui-icon layui-icon-delete"></i>删除</a> -->
+    </script>
+    <script>
+        layui.config({
+            base : '../../js/layui/ext/'
+        }).extend({
+            xmSelect : 'xm-select'
+        });
+
+        // 全局配置及引入相关的模块
+        layui.use(['table', 'form', 'jquery', 'layer', 'xmSelect'], function() {
+            var table   = layui.table,
+                form    = layui.form,
+                $       = layui.jquery,
+                layer   = layui.layer,
+                xmSelec = layui.xmSelect;
+
+
+            $(function(){
+                axios({
+                    method       : 'get',
+                    url          : huayi_sjwh_url + 'cmePersonStateStandard',
+                    responseType : 'json'
+                }).then(response => {
+                    if (response.status == 200 && response.data.status == 200) {
+                        let data = response.data.data;
+                        var optionStr = '<option value="">请选择</option>';
+                        for (let i = 0; i < data.length; i++) {
+                            optionStr += '<option value="' + data[i].personStateStandardId + '">' +
+                                    data[i].description +'</option>';
+                        }
+                        $('#personStateStandardId').html(optionStr);
+                    } else {
+                        layer.msg('获取人员状态套标准失败', { icon : 2, time: 1000 });
+                    }
+                }).catch(error => {
+                    layer.msg('获取人员状态套标准异常', { icon : 7, time: 1000 });
+                    console.log(error);
+                });
+
+                form.render('select');
+            });
+
+
+
+            /** 表格相关操作 */
+            // 表格配置
+            window.loaderTable = function () {
+                table.render({
+                    elem           : '#cmeStandardKind',
+                    url            : huayi_sjwh_url + 'cmestandardkind/list',
+                    headers        : {
+                        'Authorization' : localStorage.getItem('token'),
+                        'KJPT-USER-ID'  : localStorage.getItem('user-id')
+                    },
+                    title          : '用户表',
+                    defaultToolbar : [],
+                    where          : { description : $('#description').val() },
+                    cols           : [[
+                        {align: 'center', minWidth: 150, toolbar: '#rowBar', title: '操作', fixed: 'left'},
+                        {field: 'description', title: '套名称', sort: true, minWidth: 180, fixed: 'left'},
+                        {field: 'topUnitName', title: '适用最高单位', sort: true, minWidth: 180,
+                            templet: function(d) {
+                                if (d.topUnitName == null && d.topUnitId != null) {         // 未选择单位
+                                    return '<span style="color: red;">未知单位</span>';
+                                } else if (d.topUnitName == null && d.topUnitId == null) {  // 未查到选择单位
+                                    return '<span style="color: red;">未关联单位</span>';
+                                } else {
+                                    return d.topUnitName;
+                                }
+                            }
+                        },
+                        {field: 'titleTopUnitName', title: '职称最高单位', sort: true, minWidth: 180},
+                        {field: 'passName', title: '达标情况描述', sort: true, align: 'center', minWidth: 130},
+                        {field: 'personStateStandardDescription', title: '人员状态套标准', sort: true, minWidth: 180},
+                        {field: 'listOrder', title: '显示顺序', sort: true, align: 'center', minWidth: 110},
+                        {field: 'computePassState', title: '计算达标', sort: true, align: 'center', minWidth: 110,
+                            templet: function(d) {
+                                if (d.computePassState == 0) {          // 计算
+                                    return '<i class="layui-icon layui-icon-ok"></i>';
+                                } else if (d.computePassState == 1) {   // 不计算
+                                    return '<i class="layui-icon layui-icon-close notok"></i>';
+                                }
+                            }
+                        },
+                        {field: 'ifRealtimeComputePass', title: '实时计算达标', sort: true, align: 'center', minWidth: 130,
+                            templet: function(d) {
+                                if (d.ifRealtimeComputePass == 1) {          // 计算
+                                    return '<i class="layui-icon layui-icon-ok"></i>';
+                                } else if (d.ifRealtimeComputePass == 0) {   // 不计算
+                                    return '<i class="layui-icon layui-icon-close notok"></i>';
+                                }
+                            }
+                        }
+                    ]],
+                    toolbar        : '#bar',
+                    cellMinWidth   : 100,
+                    id             : 'cmeStandardKind',
+                    height         : 'full-120',
+                    page           : true,
+                    limit          : 10,
+                    limits         : [10, 50, 100, 150, 200],
+                    parseData      : function(res) {
+                        return {
+                            'code'  : res.status === 200 ? 0 : res.status,  // 解析接口状态
+                            'msg'   : res.message,                          // 解析提示文本
+                            'count' : res.data.recordsTotal,                // 解析数据长度
+                            'data'  : res.data.records,                     // 解析数据列表
+                            'page'  : res.data.pageNum,                     // 当前页
+                            'limit' : res.data.pageSize,                    // 每页条数
+                        }
+                    },
+                    request: {
+                        pageName  : 'pageNum',    // 页码的参数名称，默认：page
+                        limitName : 'pageSize'    // 每页数据量的参数名，默认：limit
+                    }
+                });
+            };
+
+            // 初始化表格
+            loaderTable();
+
+            // 单位选择初始化
+            var xmSelect_1 = xmSelect.render({
+                el           : '#topUnitSelect',
+                autoRow      : true,                // 是否开启自动换行(选项过多时)
+                name         : 'topUnitId',
+                // layVerify    : 'required',
+                radio        : true,
+                clickClose   : true,
+                filterable   : true,
+                remoteSearch : true,
+                remoteMethod : function(val, cb, show) {
+                    if (!val) {     // 如果 val 为空, 则不触发搜索
+                        return cb([]);
+                    }
+                    axios({
+                        method  : 'get',
+                        url     : huayi_personorg_url + 'comunit/search/top10',
+                        params  : { unitName : val }
+                    }).then(response => {
+                        var res = response.data;
+                        cb(res.data)
+                    }).catch(err => {
+                        cb([]);
+                    });
+                },
+                data: []
+            });
+            var xmSelect_2 = xmSelect.render({
+                el           : '#titleTopUnitSelect',
+                autoRow      : true,
+                name         : 'titleTopUnit',
+                layVerify    : 'required',
+                radio        : true,
+                clickClose   : true,
+                filterable   : true,
+                remoteSearch : true,
+                remoteMethod : function(val, cb, show) {
+                    axios({
+                        method  : 'get',
+                        url     : huayi_personorg_url + 'comunit/search/top10',
+                        params  : {
+                            unitName : val
+                        }
+                    }).then(response => {
+                        var res = response.data;
+                        cb(res.data)
+                    }).catch(err => {
+                        cb([]);
+                    });
+                },
+                data: []
+            });
+
+            // 监听头部新增按钮
+            table.on('toolbar(cmeStandardKind)', function(obj) {
+                var datas = obj.data;
+                document.getElementById("form-CmeStandardKind").reset();
+
+                if (obj.event === 'add') {
+                    xmSelect_1.setValue([]);
+                    xmSelect_2.setValue([]);
+                    xmSelect_1.update({ data: [], disabled: true, style: { background: 'lightgray' } });
+                    xmSelect_2.update({ data: [] });
+
+                    layer.open({
+                        type    : 1,
+                        title   : '新增套标准',
+                        content : $('#add-cmeStandardKind'),
+                        skin    : '',
+                        area    : ['600px', '605px'],
+                    });
+                }
+            });
+
+            // 监听行内按钮
+            table.on('tool(cmeStandardKind)', function(obj) {
+                var datas = obj.data;
+
+                if (obj.event === 'edit') {
+                    // 达标计算返显
+                    if (datas.computePassState == 0) {
+                        datas.computePassState = 1;
+                    } else {
+                        datas.computePassState = 0;
+                    }
+
+                    form.val('add-filter', datas);
+
+                    // 单位选择反显
+                    xmSelect_1.update({ data: [], disabled: true, disabled: true, style: { background: 'lightgray' } });
+                    xmSelect_2.update({ data: [] });
+                    if (datas.topUnitName == null && datas.topUnitId ==null) {                      // 未选择单位
+                        xmSelect_1.setValue([]);
+                    } else if (datas.topUnitName == null && datas.topUnitId != null) {    // 未查到选择单位
+                        xmSelect_1.setValue([ { name: '未知单位', value: datas.topUnitId } ]);
+                    } else {
+                        xmSelect_1.setValue([ { name: datas.topUnitName, value: datas.topUnitId } ]);
+                    }
+                    xmSelect_2.setValue([ { name: datas.titleTopUnitName, value: datas.titleTopUnit } ]);
+
+                    layer.open({
+                        type    : 1,
+                        title   : '编辑（' + datas.description + '）',
+                        content : $('#add-cmeStandardKind'),
+                        skin    : '',
+                        area    : ['600px', '605px'],
+                    });
+                }
+                else if (obj.event === 'config') {
+                    layer.open({
+                        type    : 1,
+                        title   : '配置（' + datas.description + '）',
+                        content : '<iframe src="cmeStandardKindConfig.html' +
+                                    '?id=' + datas.cmeStandardKindId +
+                                    '&unitId=' + datas.topUnitId +
+                                    '&unitName=' + datas.topUnitName + '" ' +
+                                    'style="width: 100%; height: calc(100% - 5px); border: 0;"></iframe>',
+                        // maxmin  : true,
+                        skin    : '',
+                        area    : ['100%', '100%'],
+                    });
+                }
+                // else if (obj.event === 'del') {
+                //     layer.confirm('确认删除', {icon: 3, title: '提示'}, function () {
+                //         $.ajax({
+                //             type: 'get',
+                //             url: huayi_sjwh_url + 'cmeStandardKind/deleted',
+                //             data: {
+                //                 cmeStandardKindId: datas.cmeStandardKindId
+                //             },
+                //             contentType: 'application/json;charset=UTF-8',
+                //             dataType: 'json',
+                //             success: function (res) {
+                //                 if (res.status === 200) {
+                //                     layer.msg('删除成功');
+                //                     table.reload('cmeStandardKind');
+                //                 }
+                //             }
+                //         });
+                //         layer.msg('删除成功');
+                //     })
+                // }
+            });
+
+
+
+            /** form 表单相关操作 */
+            // 新增/修改表单提交
+            form.on('submit(submit)', function(data) {
+
+                // 用于判断是新增还是修改
+                var formTableId = $('#add-cmeStandardKind input[name=\"cmeStandardKindId\"]').val();
+                var URL         = huayi_sjwh_url + 'cmestandardkind/';
+                var datas       = data.field;
+
+                // 开关默认值
+                if (datas.computePassState == null || datas.computePassState == '') {
+                    datas.computePassState = 1;
+                }
+                if (datas.ifRealtimeComputePass == null || datas.ifRealtimeComputePass == '') {
+                    datas.ifRealtimeComputePass = 0;
+                }
+
+                var flag = formTableId === null || formTableId === '';
+                if (flag) {     // 走新增逻辑
+                    URL += 'save';
+                } else {        // 走修改逻辑
+                    URL += 'update';
+                }
+                axios({
+                    method  : 'post',
+                    url     : URL,
+                    data    : JSON.stringify(datas),
+                    headers : { 'Content-Type' : 'application/json;charset=UTF-8' }
+                }).then(response => {
+                    if (response.status == 200 && response.data.status == 200) {
+                        layer.msg('添加成功');
+
+                        layer.closeAll();
+
+                        // 表格重载
+                        table.reload('cmeStandardKind', {
+                            // where : { description : $('#description').val() },
+                            page  : { curr : 1 }  // 重新从第 1 页开始
+                        });
+                    } else {
+                        layer.msg(response.data.msg);
+                    }
+                }).catch(err => {
+                    layer.msg('网络异常，请稍后再试');
+                });
+                return false;
+            });
+
+
+
+            // 鼠标悬停提示特效
+            $("#hint").hover(function () {
+                openMsg();
+            }, function () {
+                layer.close(subtips);
+            });
+            function openMsg() {
+                subtips = layer.tips('提示信息', '#hint', {tips: [1, '#ff6700'], time: 0});
+            }
+
+        });
+
+    </script>
+
+</body>
+</html>
+

@@ -1,0 +1,392 @@
+
+<!DOCTYPE html>
+<html >
+<head>
+	<meta charset="UTF-8">
+	<title>学分类别管理</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+	<link rel="stylesheet" href="/js/layui-v2.6.4/layui/css/layui.css" media="all">
+	<link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+
+	<script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+	<!-- layui-v2.4.5 -->
+	<script type="text/javascript" src="https://v8.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+	<!--<script src="/js/layui-v2.6.4/layui/layui.js"></script>-->
+	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+</head>
+<body>
+
+<div class="layui-fluid">
+	<div class="layui-card">
+		<div class="layui-form layui-card-header layuiadmin-card-header-auto">
+			<blockquote class="layui-form layui-form-item layui-elem-quote one-btn" lay-filter="query-form">
+				<!-- <div class="layui-inline">
+					<select name="cmeStandardKindId" id ="score-level-query-standard" lay-search lay-verify="notBlank">
+					</select>
+				</div> -->
+				<div class="layui-inline">
+					<input type="text" name="kindName" placeholder="请输入学分类别名称" autocomplete="off" class="layui-input">
+				</div>
+				<div class="layui-inline">
+					<a class="layui-btn layui-btn-sm" id="searchBtn"
+					   lay-submit onclick="loaderTable()"
+					   lay-filter="score_kind_query"
+					   data-type="reload">
+						<i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>查询
+					</a>
+				</div>
+			</blockquote>
+		</div>
+		<div class="layui-card-body layui_body_box">
+			<table class="layui-table" lay-filter= "table_score_kind" id="table_score_kind" style="margin: 0px 0px;">
+			</table>
+		</div>
+	</div>
+</div>
+
+<!--列表工具栏-->
+<script type="text/html" id="rawBar">
+	<a class="layui-btn layui-btn-xs" lay-event="score-kind-edit" style="min-width: 58px;  height: 26px;border-radius: 4px; background-color: #1f9fff"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+	<a class="layui-btn layui-btn-xs" lay-event="score-kind-del" style="min-width: 58px;  height: 26px;border-radius: 4px; background-color: #ff5723"><i class="layui-icon layui-icon-delete"></i>删除</a>
+</script>
+
+<!--头工具栏-->
+<script type="text/html" id="toolHeaderBar">
+	<a class="layui-btn layui-btn-xs" lay-event="score-kind-add" style="min-width: 58px;  height: 26px;border-radius: 4px;"><i class="layui-icon layui-icon-addition"></i>新增</a>
+	<span style="padding-left: 40%; color: blue;font-size: larger;">当前套: {{localStorage.getItem("choose-standard-name")}}</span>
+</script>
+
+<!-- 弹框内容 -->
+<div id="score-kind-alert" style=" display:none">
+	<form class="layui-form" style = "padding: 30px;" lay-filter = 'score_kind_form_alert' id ='score_kind_form_alert'>
+		<div class="layui-form-item">
+			<div class="layui-inline">
+				<label class="layui-form-label"><font color="red">*&nbsp;</font>类别名称</label>
+				<div class="layui-input-block">
+					<input type="text" name="kindName" id="kindName" lay-verify="notBlank" placeholder="请输入或选择类别名称" autocomplete="off" class="layui-input">
+				</div>
+				<div class="layui-input-block">
+					<select  lay-verify="notBlank" name="scoreKindSelect" lay-filter="scoreKind">
+						<option value="">请选择</option>
+						<option value="Ⅰ类学分">Ⅰ类学分</option>
+						<option value="中医药Ⅰ类">中医药Ⅰ类</option>
+						<option value="Ⅱ类学分">Ⅱ类学分</option>
+						<option value="中医药Ⅱ类">中医药Ⅱ类</option>
+						<option value="Ⅲ类学分">Ⅲ类学分</option>
+						<option value="其他学分">其他学分</option>
+					</select>
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-inline">
+				<label class="layui-form-label"><font color="red">*&nbsp;</font>显示顺序</label>
+				<div class="layui-input-block">
+					<input type="text" name="listOrder"  lay-verify="number|notBlank" placeholder="请输入排序值" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item" style=" display:none">
+			<div class="layui-inline">
+				<div class="layui-input-block">
+					<button type="submit" id = "score_kind_alert_confirm" class="layui-btn" lay-filter = 'score_kind_form_alert_submit' lay-submit >提交</button>
+					<input type="text" name="cmeStandardKindId" placeholder="套id" >
+					<input type="text" name="kindId" placeholder="类型id" >
+					<input type="text" name="optType" placeholder="操作类型" >
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+
+<script src="/js/constant.js"></script>
+<script type="text/javascript" src="/js/global_ajax_setting.js"></script>
+<script type="text/javascript" src="js/standard.js"></script>
+
+<script>
+
+	layui.config({
+            base: '/js/layui/ext/'
+        }).extend({
+            eleTree: 'eleTree'
+        }).use([ 'table', 'form', 'eleTree' ], function () {
+			var table   = layui.table,
+                form    = layui.form,
+                $       = layui.jquery,
+                layer   = layui.layer;
+
+			var format_url=/\\|\/$/gi;
+			var serverUrl =huayi_sjwh_url.replace(format_url,"");
+			var listUrl = serverUrl + '/cmecomscorekind/list';
+			var addUrl = serverUrl + '/cmecomscorekind/add';
+			var editUrl = serverUrl + '/cmecomscorekind/edit';
+			var delUrl = serverUrl + '/cmecomscorekind/del';
+			var standardKindListUrl = serverUrl + '/cmestandardkind/list/all';
+			var table;
+			var nextOrderIndex = 0;
+			var formSnapShot = null;
+			var tableHasLoaded = false;
+			//防止表单重复提交
+			var noRepeatLock = true;
+			var noRepeat = function(fun ){
+				if(noRepeatLock){
+					noRepeatLock = false;
+					try {
+						fun();
+					} catch (e) {
+						console.log(e);
+					}
+					setTimeout(function(){
+						noRepeatLock = true;
+					},3000);
+				}
+			}
+
+			var tao = null;
+			var getCurrentTao = function(){
+				return localStorage.getItem("choose-standard-id");
+			};
+
+			var formValue = function(formId){
+				var formObj = {};
+				var dataArr = $(formId).serializeArray();
+				if(dataArr == null || dataArr.length == 0){
+					return formObj;
+				}
+				for (var i = 0 ; i <  dataArr.length; i++){
+					formObj[dataArr[i].name] = dataArr[i].value;
+				}
+				return formObj;
+			}
+
+
+			 // 选择类别
+			 form.on('select(scoreKind)', function(data){
+				$("#kindName").val(data.value);
+			});
+
+			//加载table
+			window.loaderTable = function(){
+                if(!chooseStandard()) return;
+
+				layui.use(['table','layer','form'], function(){
+					var form = layui.form;
+					table = layui.table;
+					table.render({
+						elem: '#table_score_kind'
+						,height: 'full-155'
+						,url: listUrl, //数据接口
+						// ,data:[],
+						where:{"cmeStandardKindId":getCurrentTao()},
+						limit:200,
+						page: false //开启分页
+						,cols: [[ //表头
+							{type:'numbers', title: '序号',width:150},
+							{field: 'kindId', title: '学分类型id', width:150, sort: true, fixed: 'left', hide: true}
+							,{field: 'kindName', title: '类别名称', width:150}
+							,{field: 'cmeStandardKindId', title: '套', width:150, sort: true,hide: true}
+							,{field: 'listOrder', title: '显示顺序', width:150}
+							,{field: 'addTime', title: '添加时间', width: 300},
+							{align: 'center', width: 250, toolbar: '#rawBar', title: '操作'}
+						]],
+						defaultToolbar: [],
+						error:function(obj,content){
+							console.log(obj);
+						},
+						toolbar: '#toolHeaderBar' ,
+						parseData: function(res){ //res 即为原始返回的数据
+							return {
+								"code": res.status == 200? 0:res.status, //解析接口状态
+								"msg": res.msg, //解析提示文本
+								"data": res.data//解析数据列表
+							};
+						},
+						done: function(res){
+							if(res.data != null && res.data.length > 0){
+								nextOrderIndex = res.data[res.data.length-1].listOrder +1 ;
+							}else{
+								nextOrderIndex = 1;
+							}
+						}
+					});
+
+					//监听行按钮
+					table.on('tool(table_score_kind)',function(ev) {
+						var layer = layui.layer;
+						if(ev.event === 'score-kind-edit'){
+							//回显
+							form.val('score_kind_form_alert',{
+								'listOrder':ev.data.listOrder,
+								'kindName':ev.data.kindName,
+								'kindId':ev.data.kindId,
+								'cmeStandardKindId':getCurrentTao(),
+								'optType':'edit'
+							});
+
+							formSnapShot = JSON.stringify(formValue('#score_kind_form_alert'));
+							layer.open({
+								type:1,
+								title:'编辑',
+								area: ['400px','400px'],
+								content:$('#score-kind-alert'),
+								btn: ['确定', '取消'],
+								yes: function(index, layero){
+									var c = $('#score_kind_alert_confirm').click();
+								}
+							});
+						}else if(ev.event === 'score-kind-del'){
+							layer.confirm('您确认要删除【'+ev.data.kindName+'】吗？',
+								function(index){
+									// var c = $('#score_kind_alert_confirm').click();
+									$.ajax({
+										url:delUrl+'?scoreKindId='+ev.data.kindId,
+										type:'post',
+										dataType:'json',
+										contentType:'application/json;charset=UTF-8',
+										success:function(res){
+											if(res.status == 200){
+												layui.layer.msg('删除成功！', {
+													time: 1000, //1s后自动关闭
+													end:function(o){
+														layui.layer.closeAll();
+														$('#searchBtn').click();
+													}
+												});
+											}else{
+												layui.layer.msg(res.msg || '系统繁忙，请稍后重试', {
+													time: 1000, //1s后自动关闭
+													end:function(o){
+														layui.layer.closeAll();
+													}
+												});
+											}
+										},
+										error:function(req,msg){
+											layui.layer.msg('系统繁忙，请稍后重试', {
+												time: 1000, //1s后自动关闭
+												end:function(o){
+													layui.layer.closeAll();
+												}
+											});
+										}
+									});
+								}
+							);
+						}
+					});
+
+					//监听表头按钮
+					table.on('toolbar(table_score_kind)',function(ev) {
+
+						if(ev.event === 'score-kind-add'){
+							//回显
+							form.val('score_kind_form_alert',{
+								'listOrder':nextOrderIndex,
+								'kindName': '',
+								'optType':'add',
+								'scoreKindSelect': '',
+								'cmeStandardKindId':getCurrentTao()
+							});
+
+							var layer = layui.layer;
+							layer.open({
+								type:1,
+								title:'新增',
+								area: ['400px','400px'],
+								content:$('#score-kind-alert'),
+								btn: ['确定', '取消'],
+								yes: function(index, layero){
+									var c = $('#score_kind_alert_confirm').click();
+								}
+							});
+						}
+					});
+
+					//监听form新增、修改
+					form.on('submit(score_kind_form_alert_submit)', function(data){
+						noRepeat(function(){
+
+							var formParam =data.field;
+							if(formParam.optType == 'edit' && formSnapShot == JSON.stringify(formParam)){
+								layui.layer.msg('没有需要更新的内容！', {
+									time: 1000, //1s后自动关闭
+									end:function(o){
+										layui.layer.closeAll();
+									}
+								});
+							}else{
+								$.ajax({
+									url:formParam.optType == 'edit' ? editUrl:addUrl,
+									type:'post',
+									dataType:'json',
+									contentType:'application/json;charset=UTF-8',
+									data:JSON.stringify(formParam),
+									success:function(res){
+										if(res.status == 200){
+											layui.layer.msg('操作成功！', {
+												time: 1000, //1s后自动关闭
+												end:function(o){
+													layui.layer.closeAll();
+													$('#searchBtn').click();
+												}
+											});
+										}else{
+											layui.layer.msg(res.msg || '系统繁忙，请稍后重试', {
+												time: 1000, //1s后自动关闭
+												end:function(o){
+													layui.layer.closeAll();
+												}
+											});
+										}
+									},
+									error:function(req,msg){
+										layui.layer.msg('系统繁忙，请稍后重试', {
+											time: 1000, //1s后自动关闭
+											end:function(o){
+												layui.layer.closeAll();
+											}
+										});
+									}
+								});
+							}
+							formSnapShot = null;
+						});
+						return false;
+					});
+				});
+			};
+
+			layer.ready(function () {
+				// if(checkParam()){
+				// 	if(tableHasLoaded){
+				// 		layui.table.reload('table_score_kind',{where:{"cmeStandardKindId":getCurrentTao(),'kindName':data.field.kindName}});
+				// 	}else{
+				// 		loaderTable();
+				// 		tableHasLoaded = true;
+				// 	}
+				// }
+			})
+			//监听查询
+			// layui.use(['form','table'],function(){
+			// 	layui.form.on('submit(score_kind_query)', function(data){
+			// 		if(checkParam()){
+			// 			if(tableHasLoaded){
+			// 				layui.table.reload('table_score_kind',{where:{"cmeStandardKindId":getCurrentTao(),'kindName':data.field.kindName}});
+			// 			}else{
+			// 				loaderTable();
+			// 				tableHasLoaded = true;
+			// 			}
+			// 		}
+			// 		return false;
+			// 	});
+			// });
+	});
+	
+
+</script>
+</body>
+</html>

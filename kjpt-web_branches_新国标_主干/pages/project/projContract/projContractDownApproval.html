@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>合同书填报</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+    <link rel="stylesheet" href="../../../js/layui/ext/selectInput/selectInput.css" media="all">
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="/js/api/manage.js"></script>
+    <script type="text/javascript" src="/js/axios.min.js"></script>
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <script type="text/javascript" src="../../../js/tools/verification.js"></script>
+    <script type="text/javascript" src="../../../js/tools/urlTools.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../../../js/auth.js"></script>
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+
+
+    <style>
+        .btn-apply {
+            color: #70B603;
+        }
+
+        #implementationFeedback .layui-card {
+            margin-bottom: 0px;
+            width: 96%;
+            margin: auto;
+        }
+
+        #implementationFeedback .tab-default {
+            width: 55px;
+        }
+
+        #tabPage {
+            width: 96%;
+            margin: 0px auto 20px;
+            min-height: 380px;
+            border: 1px solid #e6e6e6;
+            border-top: 0px;
+            padding-top: 25px;
+        }
+
+        #implementationFeedback .project-form {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        #implementationFeedback .project-form .layui-form-item {
+            min-width: 300px;
+            max-width: 460px;
+            width: 45%;
+        }
+
+        #implementationFeedback .project-form .layui-form-item1 {
+            width: 88%;
+            margin-bottom: 15px;
+        }
+
+        #implementationFeedback .project-form .layui-input-block {
+            display: flex;
+            align-items: center;
+            text-align: left;
+        }
+
+        .js-project-image>div,
+        .js-project-textbook>div {
+            width: 90%;
+            margin: 0px auto 15px;
+            padding: 8px 0px;
+            border: 1px solid;
+            min-height: 70px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .js-project-textbook>div {
+            min-height: 350px;
+        }
+
+        .js-project-image span {
+            display: inline-block;
+            margin-right: 7px;
+        }
+
+        .meeting-notice>div,
+        .meeting-overrall-view>div,
+        .student-signin-table>div,
+        .exem-questions>div,
+        .feedback-table>div {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        #tabPage .meeting-notice::after {
+            content: "会议通知和议程";
+        }
+
+        #tabPage .meeting-overrall-view::after {
+            content: "会议全景照片";
+        }
+
+        #tabPage .student-signin-table::after {
+            content: "学员签到表";
+        }
+
+        #tabPage .exem-questions::after {
+            content: "考试考题";
+        }
+
+        #tabPage .feedback-table::after {
+            content: "执行情况反馈表";
+        }
+
+        .js-project-textbook>div::after {
+            content: "教材明细";
+        }
+
+        .js-project-image>div::after,
+        .js-project-textbook>div::after {
+            position: absolute;
+            padding: 0px 2px 0px 4px;
+            left: 0px;
+            top: -11px;
+            background: #FFF;
+        }
+
+        .meeting-notice>ul,
+        .meeting-overrall-view>ul,
+        .student-signin-table>ul,
+        .exem-questions>ul,
+        .feedback-table>ul {
+            margin: 0px auto;
+            width: 96%;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .meeting-notice>ul>li,
+        .meeting-overrall-view>ul>li,
+        .student-signin-table>ul>li,
+        .exem-questions>ul>li,
+        .feedback-table>ul>li {
+            width: 20%;
+            float: left;
+        }
+
+        .meeting-notice>ul>li>a:nth-child(1),
+        .meeting-overrall-view>ul>li>a:nth-child(1),
+        .student-signin-table>ul>li>a:nth-child(1),
+        .exem-questions>ul>li>a:nth-child(1),
+        .feedback-table>ul>li>a:nth-child(1) {
+            width: 150px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .meeting-notice>ul>li>a:nth-child(2),
+        .meeting-overrall-view>ul>li>a:nth-child(2),
+        .student-signin-table>ul>li>a:nth-child(2),
+        .exem-questions>ul>li>a:nth-child(2),
+        .feedback-table>ul>li>a:nth-child(2) {
+            margin-left: 0px;
+        }
+
+        .js-project-tab>div {
+            width: 90%;
+            margin: 0px auto;
+        }
+
+        .js-hidden,
+        .js-project-image>.js-hidden {
+            display: none;
+        }
+
+        .flow-detail-window {
+            padding: 10px;
+        }
+
+        .flow-detail-window>div {
+            font-weight: 900;
+            font-size: 20px;
+            text-align: center;
+            margin: 15px auto 35px;
+        }
+
+        .flow-detail-window>ul>li {
+            min-height: 60px;
+            position: relative;
+        }
+
+        .flow-detail-window>ul>li:not(:last-child)::before {
+            content: "";
+            border-left: 1px solid #3c3c3c;
+            position: absolute;
+            left: 105px;
+            height: 100%;
+        }
+
+        .flow-detail-window>ul>li::after {
+            content: "";
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1px solid #3c3c3c;
+            background: #FFF;
+            position: absolute;
+            left: 95px;
+        }
+
+        .flow-detail-window>ul>.approval-pass::after {
+            content: "";
+            border-radius: 50%;
+            border: 1px solid #70B603;
+            background: #70B603;
+            position: absolute;
+        }
+
+        .flow-detail-window>ul>.approval-pass:nth-child(n-1):before {
+            /* border-left: 1px solid #70B603; */
+            border-color: #70B603;
+        }
+
+        .flow-detail-window>ul>li>div {
+            display: block;
+            min-width: 65px;
+            max-width: 190px;
+            margin: 0px 20px;
+            float: left;
+            min-height: 10px;
+        }
+
+        div.modleBoder {
+            height: 100%;
+            padding: 5px 30px;
+            margin-bottom: 30px;
+            /* margin-top:50px; */
+            /* margin-left:150px; */
+            border: 2px solid #CCCCCC;
+            border-radius: 0.5em;
+        }
+
+        span.title {
+            display: block;
+            width: 150px;
+            /* height:50px; */
+            position: relative;
+            top: -15px;
+            text-align: center;
+            background: white;
+        }
+
+        span.title2 {
+            display: block;
+            width: 330px;
+            /* height:50px; */
+            position: relative;
+            top: -15px;
+            text-align: center;
+            background: white;
+        }
+
+        .file-title {
+            display: inline-block;
+            position: absolute;
+            padding: 0px 2px 0px 4px;
+            left: 30px;
+            top: -11px;
+            background: #FFF;
+        }
+
+        .js-upload-btn-box {
+            margin-left: 10px;
+        }
+
+        @media only screen and (max-width: 1200px) and (min-width:1000px) {
+
+            .meeting-notice>ul>li,
+            .meeting-overrall-view>ul>li,
+            .student-signin-table>ul>li,
+            .exem-questions>ul>li,
+            .feedback-table>ul>li {
+                width: 25%;
+            }
+        }
+
+        @media only screen and (max-width: 999px) and (min-width:650px) {
+
+            .meeting-notice>ul>li,
+            .meeting-overrall-view>ul>li,
+            .student-signin-table>ul>li,
+            .exem-questions>ul>li,
+            .feedback-table>ul>li {
+                width: 33%;
+            }
+        }
+
+        @media only screen and (max-width: 649px) {
+
+            .meeting-notice>ul>li,
+            .meeting-overrall-view>ul>li,
+            .student-signin-table>ul>li,
+            .exem-questions>ul>li,
+            .feedback-table>ul>li {
+                width: 50%;
+            }
+        }
+
+        #upload-tip {
+            padding-left: 10px;
+            font-style: normal;
+            font-size: 12px;
+            color: #f25643;
+        }
+
+        .tips_inp {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <!--表格区域-->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="projContractDown" lay-filter="projContractDown" style="margin: 0px 0px;">
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<!-- 照片查看 -->
+<div id="photoArea" style="display: none;margin:0px 0px; display: flex;justify-content: center; align-items: center; height: 100%;">
+    <img src="" style=" width:95%;height:auto;margin: 15px 15px;">
+</div>
+
+</html>
+
+
+
+
+<script type="text/html" id="barDemo">
+    <!-- 待审批，是机构号是自己的时候 -->
+    {{# if(d.canApproval == 1){ }}
+    <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row btn-approval" lay-event="pass">审核通过</a>
+    <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row btn-approval" lay-event="back">审核退回</a>
+    {{# }else{ }}
+    <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="detail">查看</a>
+    {{# } }}
+</script>
+
+
+<script type="text/html" id="viewBar">
+    {{# if(d.checkState !=null && d.checkState != 0) {  }}
+    <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="viewProgress">查看</a>
+    {{# } }}
+
+</script>
+
+<script>
+    const USERTYPE = localStorage.getItem("user-type");
+    const UNITUSERTYPE = localStorage.getItem("unit-user-type");
+    const USERNAME = localStorage.getItem("user-name");
+    const USERID = localStorage.getItem("user-id");
+    const UNITID = localStorage.getItem("unit-id");
+    const DEPTID = localStorage.getItem("dept-id");
+    const CMESTANDARDKINDID = localStorage.getItem("standardkind-id");
+</script>
+
+<script>
+    layui.config({
+        base: '/js/layui/ext/'
+    }).extend({
+
+    });
+    // 全局配置及引入相关的模块
+    layui.use(['table', 'layer', 'form', 'tool', 'upload'], function () {
+        var table = layui.table
+            , form = layui.form
+            , layer = layui.layer
+            , tool = layui.tool
+            , upload = layui.upload
+            , uploadRenderFlag = false;
+
+
+        //公共ajax
+        let commonAjax = function (type = "get", url, data, failFun, successFun) {
+            $.ajax({
+                async: false,
+                type: type,
+                url: url,
+                data: data,
+                success: function (res) {
+                    successFun(res);
+                },
+                error: function (res) {
+                    failFun();
+                }
+            });
+        }
+
+        //解析url参数
+        let getParamFromUrl = function (paramName) {
+            let urlStr = location.search;
+            if (urlStr.indexOf(paramName) < 0 || urlStr.indexOf("?") < 0) return;
+            let paramKV = urlStr.substr(1).split("&");
+            for (let i = 0; i < paramKV.length; i++) {
+                if (paramKV[i].indexOf(paramName) >= 0) {
+                    return paramKV[i].split("=")[1];
+                }
+            }
+        }
+        var ProjectId = getParamFromUrl("projectId");
+
+
+        window.loaderTable = function () {
+            table.render({
+                elem: '#projContractDown',
+                async: false,
+                url: huayi_projectscore_url + 'cmeProjContract/projContractDownList/' + ProjectId,
+                title: '项目批次',
+                defaultToolbar: [],
+                where: {
+                    userType: USERTYPE,
+                    unitUserType: UNITUSERTYPE,
+                    unitId: UNITID,
+                    deptId: DEPTID,
+                    projId: ProjectId
+                },
+                cols: [[
+                    { field: 'row', type: "numbers", width: 50, fixed: 'left', title: '序号' },
+                    { align: 'center', width: 200, toolbar: '#barDemo', title: '操作' },
+                    {
+                        title: '合同书', align: "center", minWidth: 130, templet: function (data) {
+                            return '<a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" ' +
+                                'lay-event="viewProjContractPDF">合同书查看</a>'
+                            // +
+                            // '<a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" ' +
+                            // 'lay-event="promisePhoto">承诺书查看</a>';
+                        }
+                    },
+                    {
+                        title: '举办前通知及议程查看', align: "center", minWidth: 180, templet: function (data) {
+                            if (data.noticeFileList != null && data.noticeFileList.length > 0) {
+                                return '<a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" ' +
+                                    'lay-event="noticePhoto">查看</a>';
+                            } else {
+                                return '';
+                            }
+                        }
+                    },
+                    { field: 'status', title: '审批步骤', align: 'center', toolbar: '#viewBar', width: 120 },
+                    {
+                        field: 'approvalContent', title: '审核意见', sort: true, align: "center", minWidth: 150,
+                        templet: function (data) {
+                            let textVal = '';
+                            if (data.checkState == 1 || data.checkState == 2) {
+                                if (data.checkMemo) {
+                                    textVal = data.checkMemo;
+                                } else if (data.approvalContent) {
+                                    textVal = data.approvalContent;
+                                }
+                            }
+                            return textVal;
+                        }
+                    },
+                    { field: 'downId', hide: true },
+                    { field: 'projContractId', hide: true },
+                    {
+                        field: 'batch', title: '举办批次', sort: true, align: "center", width: 120,
+                        templet: function (data) {
+                            unitUserType = data.unitUserType;
+                            return "第" + data.batch + "批次";
+                        }
+                    },
+
+                    { field: 'projNo', title: '项目编号', align: "center", minWidth: 220 },
+                    { field: 'projName', title: '项目名称', align: "center", minWidth: 180 },
+                    { field: 'projManagerName', title: '项目负责人', align: "center", minWidth: 100 },
+                    { field: 'startDt', title: '开始日期', align: "center", minWidth: 130 },
+                    { field: 'endDt', title: '结束日期', align: "center", minWidth: 130 },
+                    {
+                        field: 'status', title: '审核状态', align: 'center',
+                        templet: function (data) {
+                            if (!data.hasOwnProperty("checkState")) return "未申请";
+                            let state = data.checkState;
+                            if (tool.isEmpty(state)) return "未申请";
+                            if (state == 0) return "未上报";
+                            if (state == 1) return "已退回";
+                            if (state == 2) return "审批不通过";
+                            if (state == 3) return "审批通过";
+                            if (state == 4) return "审核中";
+                            return "未填报";
+                        }
+                    },
+                    // {
+                    //     field: 'isUpdateReport', title: '是否可修改后在上报', sort: true, align: "center", minWidth: 180,
+                    //     templet: function (data) {
+                    //         let isUpdateReportText;
+                    //         switch (data.isUpdateReport) {
+                    //             case 0:
+                    //                 isUpdateReportText = "否";
+                    //                 break;
+                    //             default:
+                    //                 isUpdateReportText = "是";
+                    //                 break;
+                    //         }
+                    //         return isUpdateReportText;
+                    //     }
+                    // },
+                ]],
+                toolbar: '#bar',
+                cellMinWidth: 100,
+                id: "projContractDown",
+                // height: 'full-167',
+                height: 'full-60',
+                parseData: function (res) {
+                    if (res.status != 200) {
+                        layer.msg(res.msg)
+                        return;
+                    }
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.msg, //解析提示文本
+                        "data": res.data, //解析数据列表
+                    }
+
+                },
+                request: {
+                    pageName: 'pageNum', //页码的参数名称，默认：page
+                    limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                }
+            });
+        };
+
+
+        window.reloadTable = function() {
+            table.reload("projContractDown");
+        }
+
+        window.viewFlowProgress = function (data) {
+            layer.open({
+                type: 2,
+                title: '',
+                content: '../projectProgress/projApplyBeforeHoldProgress.html?downId=' + data.downId,
+                area: ['560px', '380px'],
+            })
+        }
+
+        //审批通过，不通过，或者退回需要添加
+        window.approvalAjax = function (keyId, checkState, flowChainState, checkMemo) {
+
+
+            $.ajax({
+                type: 'post',
+                url: huayi_projectscore_url + 'cmeProjCycleApplication/approval',
+                data: {
+                    keyId: keyId,
+                    flowChainState: flowChainState,
+                    approvalContent: checkMemo,
+                    unitId: localStorage.getItem("unit-id"),
+                    standardkindId: CMESTANDARDKINDID
+                },
+                dataType: 'json',
+                success: function (res) {
+                    if (res.success) {
+                        layer.msg("审核成功", { icon: 1 });
+                        table.reload('projContractDown');
+
+                    } else {
+                        layer.msg(res.msg, { icon: 0 });
+                    }
+                },
+                error: function () {
+                    layer.msg("发送请求失败");
+                }
+            })
+            return false;
+        }
+
+
+
+        //单元格工具事件
+        table.on('tool(projContractDown)', function (obj) {
+            var data = obj.data;
+            var layEvent = obj.event;
+            var tr = obj.tr;
+
+            let projContractId = data.projContractId;
+            let downId = data.downId;
+
+            layui.sessionData("projContract", {
+                key: "main",
+                value: {
+                    'projNo': data.projNo,
+                    'projName': data.projName,
+                    'projManagerName': data.projManagerName,
+                    'projManagerTelephone': data.projManagerTelephone,
+                    'knowledgeId': data.knowledgeId,
+                    'knowledgeName': data.knowledgeName,
+                    'knowledgeTwoId': data.knowledgeTwoId,
+                    'knowledgeTwoName': data.knowledgeTwoName,
+                    'score': data.score,
+                    'period': data.period,
+                    'limitPerson': data.limitPerson,
+                    'startDt': data.startDt,
+                    'endDt': data.endDt,
+                    'studyAddress': data.studyAddress
+                }
+            });
+
+
+            if (layEvent === 'detail') {
+                let url = `projContractInput.html?projId=${ProjectId}&downId=${downId}`;
+                //如果直接写入url，projContractId==null的话，url会传递 projContractId为'null'
+                if (projContractId != null) {
+                    url = url + `&projContractId=${projContractId}`;
+                }
+                url = url + "&oper=details";
+
+                var index = layer.open({
+                    title: false,
+                    type: 2,
+                    area: ['100%', '100%'],
+                    maxmin: false,
+                    closeBtn: false,
+                    content: url,
+                    scrollbar: false
+                });
+            }
+
+            if (layEvent === 'noticePhoto') {
+                let arr = data.noticeFileList;
+                if (arr != null && arr.length > 0) {
+                    let valueArr = [];
+                    arr.forEach(obj => {
+
+                        valueArr.push({
+                            "fileName": obj.fileName,
+                            "filePath": obj.filePath
+                        })
+                    })
+                    layui.sessionData("projContract", {
+                        key: "noticeArr",
+                        value: valueArr
+                    });
+                    window.open("contractPdfView.html",'_blank');
+                }
+            }
+            if (layEvent === 'promisePhoto') {
+                var promisePhotoUrl = data.promisePhotoUrl;
+                $('#photoArea img').attr('src', promisePhotoUrl);
+                layer.open({
+                    type: 1,
+                    title: false,
+                    content: $('#photoArea'),
+                    area: ['1000px', '560px'],
+                    shadeClose: true
+                });
+            }
+
+            if (layEvent === 'viewProgress') {
+                viewFlowProgress(data);
+            }
+
+            if (layEvent === 'pass') {
+                let flowChainState = UNITUSERTYPE * 10 + 3;
+                approvalAjax(downId, 6, flowChainState, '');
+            }
+
+            if (layEvent === 'back') {
+                let flowChainState = unitUserType * 10 + 1;
+                let pIn = layer.prompt({
+                    formType: 2,
+                    title: '审核意见',
+                }, function (value, index, elem) {
+                    approvalAjax(downId, 4, flowChainState, value);
+                    layer.close(pIn);
+                });
+                return false;
+            }
+            if (layEvent === 'viewProjContractPDF') {
+                let url = huayi_projectscore_url + `cmeProjContract/getProjContractPdf/${projContractId}`;
+
+                let xhr = new XMLHttpRequest();
+                xhr.open("get", url, true);
+                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhr.setRequestHeader('Authorization', localStorage.getItem('token'));
+                xhr.setRequestHeader('KJPT-USER-ID', localStorage.getItem('user-id'));
+                xhr.responseType = "blob";
+                xhr.onload = function () {
+
+                    if (xhr.getResponseHeader("Content-type") == 'application/pdf') {
+                        let url = window.URL.createObjectURL(xhr.response);
+                        console.log(url);
+                        window.open(url, '_blank');
+                        // 清理创建的对象URL，防止内存泄漏
+                        window.URL.revokeObjectURL(url);
+                    } else {
+                        let reader = new FileReader();
+                        reader.addEventListener('loadend', function (e) {
+                            let data = JSON.parse(e.target.result);
+                            alert('查看pdf出现问题', "系统出错，错误信息为：" + data.description + ",请将该信息提供给代维人员寻求帮助");
+                        });
+                        reader.readAsText(xhr.response);
+                    }
+                };
+                xhr.send();
+
+            }
+
+        });
+
+
+
+
+        $(function () {
+            loaderTable();
+        });
+
+
+    });
+
+</script>

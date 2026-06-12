@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title> 项目举办周期表--新系统课程建立在举办周期上</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    
+     <!-- <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css"
+        media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script> -->
+
+    <link rel="stylesheet" href="/js/layui-v2.13.3/layui/css/layui.css" media="all">
+    <script src="/js/layui-v2.13.3/layui/layui.js"></script>
+
+    <link rel="stylesheet" href="../../../css/communal.css" media="all">
+
+    <!--    请求路径配置-->
+    <script type="text/javascript" src="../../../js/constant.js"></script>
+    <!--    ajax全局配置-->
+    <script type="text/javascript" src="../../../js/jquery-3.5.1.min.js"></script>
+    <script src="../../../js/common.js"></script>
+    <script type="text/javascript" src="../../../js/global_ajax_setting.js"></script>
+    <script type="text/javascript" src="../../../js/moment.min.js"></script>
+    <script type="text/javascript" src="js/attendSignInOutThreshold.js"></script>
+
+    <style>
+        .layui-input-block {
+            margin-left: 150px;
+        }
+
+        .layui-form-label {
+            width: 100px;
+        }
+
+        .layui-layer {
+            box-shadow: none !important;
+            border: #a5a5a5 solid 1px;
+        }
+
+        .color-select {
+            color: #1E9FFF;
+        }
+
+
+        /*头部*/
+        .layui-card-header>span {
+            font-weight: bold;
+            font-size: 18px;
+            color: #0C0C0C;
+        }
+
+        .div-img-logo {
+            height: 100px;
+            position: fixed;
+            left: 0;
+            right: 0;
+            padding-left: 30px;
+            padding-right: 30px;
+            top: 0;
+            z-index: 999;
+            background: #fff;
+            border-bottom: #dedede double 1px;
+            margin-bottom: 10px;
+        }
+
+        .div-img-logo>img {
+            margin-top: 30px;
+        }
+
+        .div-img-logo>span {
+            position: absolute;
+            display: inline-block;
+            margin-left: 20px;
+            padding: 4px;
+            margin-top: 58px;
+        }
+
+        .version-show {
+            margin-left: 6px;
+            color: #fff;
+        }
+
+        .version-show:hover {
+            color: #fff;
+            border-bottom: #dedede solid 1px;
+        }
+
+        /*码云 数据*/
+        .gitee-info a {
+            margin-right: 10px;
+
+        }
+
+        .gitee-info a:last-child {
+            color: #1E9FFF;
+        }
+
+        .gitee-info a:last-child:hover {
+            color: #333;
+
+        }
+
+        /*简介*/
+        .item-min-about {
+            border-left: #1E9FFF solid 6px;
+            margin-bottom: 20px;
+            background: #f7f7f7;
+            min-height: 70px;
+            height: auto;
+            padding: 5px 5px 5px 20px;
+        }
+
+        .item-min-about:last-child {
+            border-left: none;
+            border-radius: 0;
+        }
+
+        .item-min-about div {
+            width: 80%;
+            display: inline-block;
+            height: 25px;
+            line-height: 25px;
+        }
+
+        /*小标题*/
+        .item-min-title {
+            width: 100%;
+            display: inline-block;
+            height: 25px;
+            line-height: 25px;
+            color: #0C0C0C;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .item-min-value {
+            width: 100%;
+            display: inline-block;
+            height: 30px;
+            margin-left: 20px;
+            line-height: 30px;
+        }
+
+        .b-ic-group .item {
+            width: 60px;
+            display: inline-block;
+            text-align: center;
+            margin-right: 10px;
+            vertical-align: top;
+        }
+
+        .b-ic-group .item img {
+            width: 30px;
+            height: 30px;
+        }
+
+        .b-ic-group .item span {
+            display: inline-block;
+            margin-top: 4px;
+            width: 60px;
+            font-size: 12px;
+        }
+
+        /*内容主体*/
+        .value-group {
+            margin-top: 120px;
+            width: 100%;
+        }
+
+        /*定位导航 弹出层*/
+        #ul-location {
+            height: 260px;
+            overflow-y: scroll;
+            margin-top: 10px;
+            display: list-item;
+        }
+
+        #ul-location li {
+            margin-left: 5px;
+            margin-right: 5px;
+            height: 30px;
+            line-height: 30px;
+            list-style-type: disc !important;
+
+        }
+
+        #ul-location li a {
+            padding-left: 10px;
+            cursor: pointer;
+        }
+
+        .div-value-item:first-child {
+            margin-top: 0;
+        }
+
+        /*栗子 item*/
+        .div-value-item {
+            margin-top: 40px;
+        }
+
+        .span-hint {
+            height: 50px;
+            line-height: 50px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .div-value-item .item-child {
+            padding: 10px;
+            border: #dedede solid 1px;
+        }
+
+        .item-open-code .code-open {
+            width: 100%;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            color: #a5a5a5;
+            cursor: pointer;
+            background: #dedede;
+        }
+
+        .item-open-code .code-open:hover,
+        .code-group span:hover {
+            color: #1E9FFF;
+        }
+
+        .item-open-code .code-group {
+            display: none;
+        }
+
+        .code-group span {
+            display: block;
+            width: 100%;
+            text-align: center;
+            color: #a5a5a5;
+            cursor: pointer;
+        }
+
+        .code {
+            background-color: #f9fafc;
+            padding: 0 4px;
+            border: 1px solid #eaeefb;
+            border-radius: 4px
+        }
+
+        /*分辨率低的 重新调整页面搜索部分宽度空间*/
+        @media screen and (max-width: 768px) {
+            .div-img-logo {
+                height: 60px;
+            }
+
+            .div-img-logo img {
+                width: 130px;
+                margin-top: 18px;
+            }
+
+            .div-img-logo span {
+                margin-top: 22px;
+                height: 15px;
+                line-height: 15px;
+                font-size: 10px;
+            }
+
+            #layui-layer1 {
+                display: none !important;
+            }
+        }
+
+        /*	.opTable-open-td tr:hover {
+                background-color: #fff !important;
+            }*/
+        .span-href {
+            color: #1E9FFF;
+        }
+
+        .layui-form-item {
+            margin-bottom: 5px;
+        }
+
+        .layui-form-item .layui-input-inline {
+            width: calc(100% - 170px);
+            width: -moz-calc(100% - 170px);
+            width: -webkit-calc(100% - 170px);
+        }
+
+        /* WebKit browsers like Chrome and Safari */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Firefox */
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .my-table-input {
+            height: 38px;
+            margin-top: -5px;
+            border: 0px;
+            text-align: center;
+            width: 80%;
+        }
+
+        .my-shadow {
+            background-color: #f2f2f2;
+            /* 淡灰色背景 */
+            box-shadow: inset 3px 3px 4px rgba(0, 0, 0, 0.1),
+                /* 内部右下角阴影 */
+                inset -3px -3px 4px rgba(255, 255, 255, 0.6);
+            /* 内部左上角阴影 */
+        }
+
+        tr:hover input.my-shadow {
+            background-color: white;
+            /* 设置特定输入框背景为白色 */
+        }
+
+        /* 子表「操作」列：单行左对齐，删除与签到/签退拉开间距，防误点。
+           注意：layui 自带 `.layui-btn + .layui-btn { margin-left: 10px }` 特异度 (0,0,2,0)，
+           这里必须用 `.layui-btn + .layui-btn.proj-attend-batch-del` 提升特异度到 (0,0,3,0) 才能生效。 */
+        .layui-btn + .layui-btn.proj-attend-batch-del {
+            margin-left: 30px;
+        }
+
+        /* 子表下方「选择考勤机」嵌入区：直接复用 cmeProjPosDownloadList.html */
+        .attend-device-select-box {
+            margin-top: 12px;
+            background-color: #fff;
+        }
+
+        /* 初始给一个较小占位高度，渲染后由嵌入页 postMessage 通知后再自适应到实际内容 */
+        .attend-device-iframe {
+            width: 100%;
+            height: 80px;
+            border: 0;
+            display: block;
+            background-color: #fff;
+        }
+
+        .attend-device-empty {
+            color: #999;
+            line-height: 28px;
+            padding: 12px 16px;
+            border: 1px solid #e6e6e6;
+            background-color: #fff;
+        }
+
+        /* opTable 展开列：将默认的右/下箭头 SVG 改为「展开 / 收起」文字。
+           原始样式：.opTable-i-table-open 用 SVG 作背景，展开时加 .opTable-open-dow 旋转 90deg。
+           这里覆写背景与尺寸，用 ::before 输出文字；展开态文字切为「收起」并取消旋转。
+           注意：opTable 渲染用 <i> 标签承载图标，浏览器对 <i> 默认 italic，需要显式置回 normal。 */
+        .opTable-i-table-open {
+            width: auto !important;
+            height: auto !important;
+            background: none !important;
+            transform: none !important;
+            transition: none !important;
+            color: #000;
+            font-style: normal;            
+            font-size: 12px;
+            line-height: 18px;
+            padding: 0 2px;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+        .opTable-i-table-open::before {
+            content: '展开';
+        }
+        .opTable-i-table-open.opTable-open-dow {
+            transform: none !important;
+        }
+        .opTable-i-table-open.opTable-open-dow::before {
+            content: '收起';
+        }
+        /* 文字模式下不再需要图标占位块，避免文字被挤窄 */
+        .opTable-span-seize {
+            width: 4px;
+        }
+
+        /* 父表「展开/收起」首列加宽：opTable.js 内部把该列硬编码为 width:50，
+           文字模式下太窄；这里通过 lay-id 精确锁定父表（子表 lay-id 形如 child0），
+           并使用 > 直接子选择器逐层下钻，避免误命中嵌套在父表展开行内的子表节点。
+           注意：opTable 的展开行结构为 <tr><td class='opTable-open-td' colspan='N'>...</td></tr>，
+                 该 td 同样是 :first-child，必须用 :not(.opTable-open-td) 排除，否则会把
+                 子表内的 .layui-table-cell 一起拉宽，导致子表所有列变成定宽。 */
+        .layui-table-view[lay-id="cmeProjPosDownload"] > .layui-table-box > .layui-table-header > table > colgroup > col:first-child,
+        .layui-table-view[lay-id="cmeProjPosDownload"] > .layui-table-box > .layui-table-body > table > colgroup > col:first-child {
+            width: 60px !important;
+        }
+        .layui-table-view[lay-id="cmeProjPosDownload"] > .layui-table-box > .layui-table-header > table > thead > tr > th:first-child > .layui-table-cell,
+        .layui-table-view[lay-id="cmeProjPosDownload"] > .layui-table-box > .layui-table-body > table > tbody > tr > td:first-child:not(.opTable-open-td) > .layui-table-cell {
+            width: 60px !important;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+
+            <!--        表格区域-->
+            <div class="layui-card-body layui_body_box">
+                <table class="layui-table" id="cmeProjPosDownload" lay-filter="cmeProjPosDownload"
+                    style="margin: 0px 0px;">
+                </table>
+                <div align="center" style="margin-top: 15px;">
+                    <button class="layui-btn" onclick="closeParentAll()">返回</button>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <!--添加弹窗-->
+    <div id="appAttendConfig" style=" display:none;padding: 15px;">
+
+        <form class="layui-form"  id="form-attendanceConfig" lay-filter="attendanceConfig-filter">
+            <div class="layui-form-item projOrTeachNameDiv" >
+                <label class="layui-form-label">课程名称:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="teachName" id="teachName_id" autocomplete="off" class="layui-input layui-disabled"  disabled="disabled">
+                </div>
+            </div>
+            <div class="layui-form-item" id="attendType">
+                <!-- <label class="layui-form-label">考勤模式选择</label>
+                <div class="layui-input-inline">
+                    <input type="radio" lay-filter="attendanceType_filter" name="attendanceType" value="0"
+                        title="二维码考勤" checked>
+                    <input type="radio" lay-filter="attendanceType_filter" name="attendanceType" value="1"
+                        title="学员刷脸考勤">
+                    <input type="radio" lay-filter="attendanceType_filter" name="attendanceType" value="2"
+                        title="单位刷脸考勤" >
+                </div> -->
+            </div>
+            <div class="layui-form-item" id="settingOnline">
+                <label class="layui-form-label">设置考勤上限</label>
+                <div class="layui-input-inline">
+                    <input type="radio" lay-filter="attendanceOnline_filter" name="attendanceOnline" value="1" title="是">
+                    <input type="radio" lay-filter="attendanceOnline_filter" name="attendanceOnline" value="0" title="否" checked>
+                </div>
+            </div>
+            <div class="layui-form-item" style="display: none" id="online_id">
+                <label class="layui-form-label"><span style="color: red">*</span>上限</label>
+                <div class="layui-input-inline">
+                    <input type="number" name="online" id="online" oninput="if(value<=0)value=1" autocomplete="off" class="layui-input" lay-verify="required|number" >
+                    <div class="layui-form-mid layui-word-aux" name="limit_str"></div>
+                </div>
+                <!-- <div class="layui-form-mid layui-word-aux" id="tianChong"></div> -->
+            
+            </div>
+            <div class="layui-form-item" id="attendanceScope">
+                <!-- <label class="layui-form-label">设置考勤范围</label>
+                <div class="layui-input-inline">
+                    <input type="radio" lay-filter="attendanceScope_filter" name="attendanceScope" value="1" title="是">
+                    <input type="radio" lay-filter="attendanceScope_filter" name="attendanceScope" value="0" title="否" checked>
+                </div> -->
+            </div>
+            <div style="display: none" id="address_id">
+                <div class="layui-form-item" >
+                    <label class="layui-form-label"><span style="color: red">*</span>考勤地址</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="address" id="address" autocomplete="off" class="layui-input" onclick="openElectricFence()" lay-verify="required" >
+                    </div>
+                </div>
+                <div class="layui-form-item" >
+                    <label class="layui-form-label">考勤范围(米)</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="Scope" id="Scope" autocomplete="off" class="layui-input" onclick="openElectricFence()" disabled="disabled">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+    <!--按照项目考勤-->
+    <script type="text/html" id="batchRowBar">
+    <a class="layui-btn layui-btn-xs  layui-btn-normal btn-normal-row" lay-event="attendConfig">{{ window.attendConfigText || '考勤设置' }}</a>
+</script>
+    <!--按照项目考勤--设置考勤次数-->
+    <script type="text/html" id="attendBatchTime">
+    <input type="number"  class="my-table-input my-shadow" value="{{d.attendBatchTime}}" data-down-id="{{d.downId}}" data-lay-index="{{d.LAY_INDEX}}" onchange="batchCountChange(this)" onfocus="batchTimeFocus(this)" onmousedown="layui.stope(event)" onclick="layui.stope(event)" min="1" placeholder="预设考勤次数"/>
+</script>
+    <!--按照项目考勤--子表批次开始时间-->
+    <script type="text/html" id="batchStartDate">
+    <input type="text"  class="my-table-input" id="startDate_{{d.batchId}}" value="{{(d.startDate ?? '')}}" placeholder="开始时间" autocomplete="off" readonly="readonly"
+    title="{{ d.hasAttend ? '已产生考勤记录，不能修改时间' : '' }}"
+    {{# if(d.hasAttend){ }} disabled {{# } }} />
+</script>
+    <!--按照项目考勤--子表批次结束时间-->
+    <script type="text/html" id="batchEndDate">
+    <input type="text" class="my-table-input" id="endDate_{{d.batchId}}" value="{{d.endDate ?? ''}}"  placeholder="结束时间" autocomplete="off"  readonly="readonly"
+    title="{{ d.hasAttend ? '已产生考勤记录，不能修改时间' : '' }}"
+    {{# if(d.hasAttend){ }} disabled {{# } }} />
+</script>
+    <!-- 按照项目考勤--子表表头工具按钮 -->
+    <script type="text/html" id="projAttenBtns">
+    <div style="text-align:right;width:107%">
+        <span style='color:red;margin-right:10px;'>{{ window.projAttendTipText }}</span>
+        <a class="layui-btn layui-btn-sm" lay-event="saveProjAttend">{{ window.saveAttendPresetText || '保存考勤预设' }}</a>
+    </div>
+</script>
+    <!-- 按照项目考勤--子表表头工具按钮 -->
+    <script type="text/html" id="projAttendBatchRowBar">
+    <a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row" lay-event="signInQrCode">签到二维码</a>
+    <a class="layui-btn layui-btn-xs layui-btn-warm btn-warm-row" lay-event="signOutQrCode">签退二维码</a>
+    {{# if(d.batch > (minBatchCnt-1) && d.beLast != true && d.hasAttend){ }}
+    <a class="layui-btn layui-btn-xs btn-normal-row layui-disabled proj-attend-batch-del" disabled>删除</a>
+    {{# } }}
+    {{# if(d.batch > (minBatchCnt-1) && d.beLast != true && !d.hasAttend){ }}
+    <a class="layui-btn layui-btn-danger layui-btn-xs btn-danger-row proj-attend-batch-del" lay-event="del">删除</a>
+    {{# } }}
+</script> 
+
+<!--评价截止时间-->
+<script type="text/html" id="judgeEndDtBar">
+    {{# var _fs = d.feedbackCheckState; var _submitted = (_fs === 2 || _fs === 3 || _fs === 4);
+        var _lockEndDt = (window['fun_forbid_modify_end_dt_when_feedback_submit'] == '1') && _submitted; }}
+    <input class="layui-input {{= _lockEndDt ? '' : 'judgeEndDt' }}" placeholder="选择日期"  value="{{= d.judgeEndDt || '' }}"
+        {{# if(_lockEndDt){ }}readonly style="background-color:#f2f2f2;color:#999;cursor:not-allowed;"{{# } }}
+    />
+</script>
+<!-- 考试截止时间 -->
+<script type="text/html" id="examEndDtBar">
+    {{# var _fs2 = d.feedbackCheckState; var _submitted2 = (_fs2 === 2 || _fs2 === 3 || _fs2 === 4);
+        var _lockEndDt2 = (window['fun_forbid_modify_end_dt_when_feedback_submit'] == '1') && _submitted2; }}
+    <input class="layui-input {{= _lockEndDt2 ? '' : 'examEndDt' }}" placeholder="选择日期"  value="{{= d.examEndDt || '' }}"
+        {{# if(_lockEndDt2){ }}readonly style="background-color:#f2f2f2;color:#999;cursor:not-allowed;"{{# } }}
+    />
+</script>
+
+    <script type="text/html" id="toolbarForDownInfo">
+    <div style='color:red'>任选课程至少考勤一次即可授分，具体考勤频次以主办单位上级主管部门的要求为准</div>
+</script>
+    <script type="text/html" id="rowBarForDownId">
+    <span>第{{ d.batch }}批次</span>
+</script>
+    <script>
+        var pro_id = getUrlParam("pro_id");
+        // console.log(typeof Common);
+        let scoreLevel = getUrlParam('scoreLevel');
+        var projectType = '1';
+        var minBatchCnt  = 1;
+        // 全局配置及引入相关的模块
+        layui.config({
+            base: '../../../js'
+        }).extend({
+            opTable: '/opTable/opTable'
+        }).use(['table', 'form', 'opTable', 'laydate'], function () {
+            var table = layui.table;
+            var form = layui.form;
+            var laydate = layui.laydate;
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            // layui.data 持久化在本地，切换项目进入本页若不清空会沿用上一项目的考勤设置（teachName 等）
+            layui.data('attendanceInfo', null);
+            const standardkindId = localStorage.getItem("standardkind-id");
+            let scoreLevel = getUrlParam('scoreLevel');
+            const HUBEI = "73ba18db-33fd-4746-ab41-9beb009f69a1";
+            const GANSU = "7068a5c0-2cd3-471a-90b9-9bf100aec95a";
+            const ZHEJIANG = "190c480d-d43c-450b-8472-a6fd00a6729d";
+            const HAINAN = "6eec6713-670a-43cc-ad4d-9bd700a92928";
+            const GUANGDONG = "289bf0ca-52cb-4b19-b737-9bd200a69ce1";
+            const isGuangdong = standardkindId == GUANGDONG;
+            window.attendConfigText = isGuangdong ? '二维码考勤设置' : '考勤设置';
+            window.saveAttendPresetText = isGuangdong ? '保存考勤时间预设' : '保存考勤预设';
+            window.projAttendTipText = isGuangdong ? '请注意：请按照本省政策文件，每半天进行一次签到和签退，请合理设置考勤时间段' : '建议每半天设置一个考勤时间段';
+            
+
+            var projAttendBatchArrArray = new Array(20).fill([]);
+
+            // 浙江套，县级以下单位活动需要举办前申请审核通过后（区县审核）才能举办。
+            // 低级层级
+            let lowUnitPropertyIds = [
+                "d21466a1-1e38-4cbb-a05b-939320b44f4e",
+                "bae7ceaa-5274-4f95-a015-410fb3369e4d",
+                "be9477f0-c8d1-45e8-9bdd-ef1aedc68fcb",
+                "23b00081-503e-49a3-8d05-7f1f933a3282",
+            ];
+            let highUnitPropertyIds = [
+                "da63168c-5892-4495-a01a-6a933043e7c8",
+                "f97fa085-23cf-48a7-95af-01c5e163612f",
+                "a70fcf94-f90f-406d-9763-36ae8206a35c"
+            ];
+            let unitPropertyId = '';
+            //获取单位
+            window.getUnitId = function () {
+                var unitId = localStorage.getItem("unit-id");
+                return unitId;
+            }
+
+            window.getCmeStandardKindId = function () {
+                var cskId = localStorage.getItem("standardkind-id");
+                return cskId;
+            }
+
+            /* 获取配置 */
+            window.getConfig = function (configParams, scoreLevel) {
+                $.ajax({
+                    async: false,
+                    type: 'post',
+                    url: huayi_sjwh_url + `cmeCommonConfig/getConfigByUnitFromRedis?unitId=${window.getUnitId()}&scoreLevelId=${scoreLevel}` + configParams,
+                    success: function (res) {
+                        if (res.success == true) {
+                            configNames.forEach(e => {
+                                window[e] = res.data[e];
+                            });
+                        } else {
+                            layer.msg('获取配置失败');
+                        }
+                    },
+                    error: function () {
+                        layer.msg('获取配置失败');
+                    }
+                });
+            }
+
+            let configNames = ['fun_must_apply_before_hold', 'fun_scope_when_proj_attendance', 'fun_force_scope_when_proj_attendance',
+                'range_proj_AttendType', 'value_award_person_limit_in_groupproj', 'fun_weixin_attendance_toplimit_force',
+                'value_qrcode_attend_mode', AttendSignInOutThreshold.CONFIG_SIGN_IN_EARLY, AttendSignInOutThreshold.CONFIG_SIGN_OUT_LATE];
+            let configParams = '';
+            configNames.forEach(e => {
+                configParams += `&configNames=${e}`;
+            })
+            window.getConfig(configParams, scoreLevel);
+
+            window.getParentTableCols = function () {
+                let cols = [
+                    { align: 'center', title: '考勤',templet:function(d) {
+                            return `<a class="layui-btn layui-btn-xs layui-btn-normal btn-normal-row  
+                                ${d.holdQualification ? '' : 'layui-disabled'}" ${d.holdQualification ? 'lay-event="attendConfig"' : ''}>${window.attendConfigText}</a>`;
+                    } },
+                    { align: 'center',templet:'#attendBatchTime',title: '预设考勤次数' },
+                    { align: 'center', field: 'batch', toolbar: '#rowBarForDownId', title: '批次',width:100 },
+                    { field: 'downId', title: '下载ID 主键，也用于关联项目课程表', sort: true, hide: true },
+                    { field: 'startDt', title: '开始时间', sort: true },
+                    { field: 'endDt', title: '截止时间', sort: true },
+                    { align: 'center', field: 'judgeEndDt',templet:'#judgeEndDtBar',title: '评价截止时间' },
+                    { align: 'center',templet:'#examEndDtBar',title: '考试截止时间' },
+                ];
+
+                return [cols];
+            }
+
+            //按照项目考勤的子表格方法
+            window.getChildTableForProjAttend = function (itemData) {
+                let layIndex = itemData.LAY_INDEX;
+                let startDt = itemData.startDt;
+                let endDt = itemData.endDt;
+
+                $.ajax({
+                    async: false,
+                    type: 'get',
+                    url:  huayi_projectscore_url + 'cmeProjPosDownload/cmeProjAttendBatchList/'+itemData.downId,
+                    success: function (res) {
+                        if (res.success) {
+                            projAttendBatchArrArray[layIndex] = res.data;
+                        }
+                    },
+                    error: function (res) {
+                        layer.msg("发送数据失败", { icon: 2 });
+                    }
+                });
+
+                return {
+                    elem: '#child' + itemData.LAY_INDEX,
+                    id: 'child' + itemData.LAY_INDEX,
+                    data: projAttendBatchArrArray[layIndex],
+                    openVisible: false,
+                    openType: 0,
+                    toolbar: '#projAttenBtns', //开启头部工具栏，并为其绑定左侧模板
+                    defaultToolbar: false,
+                    cols: [[
+                        { field: 'batchId', hide: true, align: 'center' },
+                        { title: "操作", align: 'left', toolbar: "#projAttendBatchRowBar", minWidth: 200, width: 260 },
+                        { field: 'batch', title: "序号", align: 'center', width: 70 },
+                        { field: 'hasAttend', title: "考勤状态",  align: 'center',templet: function(d){
+                            return d.hasAttend ? '已考勤' : '未考勤';
+                        } },                  
+                        { templet:'#batchStartDate', title: '开始时间', align: 'center' },
+                        { templet:'#batchEndDate', title: '结束时间', align: 'center' }
+                    ]],
+                    cellMinWidth: 80,
+                    page: false,
+                    limit: 100,
+                    parseData: function (res) {
+                        return {
+                            "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                            "msg": res.msg, //解析提示文本
+                            "data": res.data, //解析数据列表
+                        }
+                    },
+                    request: {
+                        pageName: 'pageNum', //页码的参数名称，默认：page
+                        limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                    },
+                    done: function (res, curr, count) {
+                        // 浙江套，县级以下单位活动需要举办前申请审核通过后（区县审核）才能举办。
+                        // 乡镇卫生院、村卫生室、社区卫生服务中心、社区卫生服务站
+
+                        // 渲染考勤批次时间
+                        renderBatchDates(res, layIndex, startDt, endDt);
+                        // 渲染子表下方「选择考勤机」区域（按 downId 拉取）
+                        if(isGuangdong) {
+                            renderAttendDeviceSelectArea(layIndex, itemData.downId);
+                        }
+
+                        
+                        
+
+                        // 考勤批次时间表格工具栏事件
+                        layui.table.on('toolbar(' + 'child' + itemData.LAY_INDEX + ')', function (obj) {
+                            let arr = obj.config.data;
+
+                            let downStartDt = itemData.startDate;
+                            let downEndDt = itemData.endDate;
+                            arr.forEach(data => {
+                                data.projId = itemData.projId;
+                                data.downId = itemData.downId;
+                            });
+
+                            switch (obj.event) {
+                                case 'saveProjAttend':
+                                    let check = checkDateRight(arr, downStartDt, downEndDt);
+                                    if (check) {
+                                        let url = huayi_projectscore_url + "cmeProjPosDownload/saveCmeProjAttendBatchList";
+                                        //保存数据库
+                                        $.ajax({
+                                            async: false,
+                                            url: url,
+                                            type: "post",
+                                            data: JSON.stringify(arr),
+                                            contentType: "application/json",
+                                            success: function (res) {
+                                                if (res.success) {
+                                                    layer.msg("保存成功", { icon: 1, time: 1000 });
+                                                    reloadOptionTable(function () {
+                                                        batchTimeFocus(itemData.LAY_INDEX)
+                                                    });
+                                                } else {
+                                                    layer.msg(res.msg, { icon: 2, time: 1500 });
+                                                }
+
+                                            },
+                                            error: function (res) {
+                                                layer.msg("发送数据失败", { icon: 2, time: 1500 });
+                                            }
+                                        });
+                                    }
+                                    break;
+                            }
+                        });
+
+                        // 考勤批次时间表格行工具栏事件
+                        layui.table.on('tool(' + 'child' + itemData.LAY_INDEX + ')', function (obj) {
+                            let projAttendBatch = obj.data;
+                            console.log(obj);
+                            switch (obj.event) {
+                                // 删除考勤时间段
+                                case 'del':
+                                    deleteProjAttendBatchById(projAttendBatch.batchId).then(() => {
+                                        reloadOptionTable(function () {
+                                            batchTimeFocus(itemData.LAY_INDEX);
+                                        });
+                                    }).catch(function () {
+                                    });
+                                    break;
+                                      
+                                case 'signInQrCode':
+                                    if (!AttendSignInOutThreshold.validateSignInQrOpenWindow(projAttendBatch, standardkindId, layer)) {
+                                        return false;
+                                    }
+                                    layui.data('attendanceInfo', {
+                                        key: 'batchId',
+                                        value: projAttendBatch.batchId
+                                    });
+                                    openProjAttendanceCode(11);
+                                    break;
+                                case 'signOutQrCode':
+                                    if (!AttendSignInOutThreshold.validateSignOutQrOpenWindow(projAttendBatch, standardkindId, layer)) {
+                                        return false;
+                                    }
+                                    layui.data('attendanceInfo', {
+                                        key: 'batchId',
+                                        value: projAttendBatch.batchId
+                                    });
+                                    openProjAttendanceCode(12);
+                                    break;
+                            }
+                        });
+                    },
+                    onEdit: function (data) {
+                        
+                    }
+                }
+            }
+
+            // 在子表下方嵌入 cmeProjPosDownloadList.html，直接复用其考勤机选择 + 全选 + 保存逻辑。
+            // opTable 展开行结构：<tr><td class="opTable-open-td"><div>{table + layui-table-view}</div></td></tr>
+            // `#child{LAY_INDEX}` 是 <table>，其父级 <div> 是合适的追加容器。
+            // 嵌入页保存成功后回调本页 `window.reloadTable`，并通过 postMessage 通知本页自适应 iframe 高度。
+            window.renderAttendDeviceSelectArea = function (layIndex, downId) {
+                let $childElem = $('#child' + layIndex);
+                if (!$childElem.length) {
+                    return;
+                }
+                let $container = $childElem.parent();
+                if (!$container.length) {
+                    return;
+                }
+                // 已存在则先移除，避免子表重渲染后出现多份
+                $container.find('.attend-device-select-box').remove();
+
+                if (!downId) {
+                    $container.append('<div class="attend-device-select-box"><div class="attend-device-empty">缺少周期标识，无法加载考勤机</div></div>');
+                    return;
+                }
+
+                let iframeName = 'attendDeviceFrame_' + layIndex;
+                let frameSrc = '../cmeProjPosDownloadList.html?downId=' + encodeURIComponent(downId);
+                let html = ''
+                    + '<div class="attend-device-select-box" data-down-id="' + downId + '">'
+                    + '<iframe name="' + iframeName + '" src="' + frameSrc + '" frameborder="0" scrolling="auto" class="attend-device-iframe"></iframe>'
+                    + '</div>';
+                $container.append(html);
+            }
+
+            // 供 cmeProjPosDownloadList.html 嵌入页保存成功后回调，刷新本页周期表
+            window.reloadTable = function () {
+                if (typeof reloadOptionTable === 'function') {
+                    reloadOptionTable();
+                }
+            }
+
+            // 监听嵌入页发来的高度通知，自适应 iframe 高度，避免下方出现大片空白
+            // 防止 layui.use 在某些场景被多次回调时重复绑定
+            if (!window.__attendDeviceFrameMsgBound) {
+                window.__attendDeviceFrameMsgBound = true;
+                window.addEventListener('message', function (e) {
+                    let data = e && e.data;
+                    if (!data || data.type !== 'attend-device-frame-resize' || !data.name) {
+                        return;
+                    }
+                    let iframe = document.getElementsByName(data.name)[0];
+                    if (!iframe) {
+                        return;
+                    }
+                    let h = parseInt(data.height, 10);
+                    if (isNaN(h) || h <= 0) {
+                        return;
+                    }
+                    iframe.style.height = h + 'px';
+                });
+            }
+
+            // 删除项目考勤批次
+            window.deleteProjAttendBatchById = function (batchId) {
+                let url = huayi_projectscore_url + "cmeProjPosDownload/delCmeProjAttendBatchById/"+batchId;
+                return new Promise(function (resolve, reject) {
+                    $.ajax({
+                        async: false,
+                        url: url,
+                        type: "post",
+                        success: function (res) {
+                            if (res.success) {
+                                resolve(res);
+                            } else {
+                                layer.msg(res.msg, { icon: 2, time: 1500 });
+                                reject(res);
+                            }
+                        },
+                        error: function (res) {
+                            layer.msg("发送数据失败", { icon: 2, time: 1500 });
+                            reject(res);
+                        }
+                    });
+                });
+
+            }
+
+            // 兼容旧调用：广东套按签到阈值校验，非广东套为严格批次内
+            window.validateCurrentTimeInBatchRange = function (projAttendBatch) {
+                return AttendSignInOutThreshold.validateSignInQrOpenWindow(projAttendBatch, standardkindId, layer);
+            }
+
+            window.renderBatchDates = function (res, layIndex, startDt, endDt) {
+
+                let datas = res.data;
+
+                for (let i = 0; i < datas.length; i++) {
+                    let batch = datas[i];
+                    let batchId = batch.batchId;
+
+                    function getBatchRange() {
+                        // let range = {min: startDt,max: endDt};
+                        let range = { min: startDt.substring(0, 16) + ':00', max: endDt.substring(0, 16) + ':59' };
+                        if (standardkindId == ZHEJIANG || standardkindId == HAINAN) {
+                            if (i == 0) {
+                                if (startDt.substring(0, 11) != endDt.substring(0, 11)) {
+                                    range = { min: startDt.substring(0, 16) + ':00', max: startDt.substring(0, 11) + '23:59:59' };
+                                }
+                            }
+                            if (i == datas.length - 1) {
+                                if (startDt.substring(0, 11) != endDt.substring(0, 11)) {
+                                    range = { min: endDt.substring(0, 11) + '00:00:00', max: endDt.substring(0, 16) + ':59' };
+                                }
+                            }
+
+                        }
+                        return range;
+                    }
+
+                    let lockHenanStart = window.isHenan && batch.batch == 1;
+                    let lockHenanEnd = window.isHenan && batch.beLast;
+
+                    if (!lockHenanStart) {
+                        laydate.render({
+                            elem: '#startDate_' + batchId,
+                            type: 'datetime',
+                            format: 'yyyy-MM-dd HH:mm',
+                            fullPanel: true,
+                            btns: ['confirm'],
+                            trigger: 'click',
+                            min: getBatchRange().min,
+                            max: getBatchRange().max,
+                            done: function (value) {
+                                batch.startDate = value;
+                            }
+                        });
+                    }
+
+                    if (!lockHenanEnd) {
+                        laydate.render({
+                            elem: '#endDate_' + batchId,
+                            type: 'datetime',
+                            format: 'yyyy-MM-dd HH:mm',
+                            fullPanel: true,
+                            btns: ['confirm'],
+                            trigger: 'click',
+                            min: getBatchRange().min,
+                            max: getBatchRange().max,
+                            done: function (value) {
+                                batch.endDate = value;
+                            }
+                        });
+                    }
+
+                }
+            }
+            // 校验考勤批次时间数据是否合法（非空、格式、先后顺序、不交叉、在项目周期内）
+            window.checkDateRight = function (data, downStartDt, downEndDt) {
+                let batchArr = data;
+                let preEndDate;
+                let startDate;
+                let endDate;
+
+                for (let i = 0; i < batchArr.length; i++) {
+                    startDate = batchArr[i].startDate;
+                    endDate = batchArr[i].endDate;
+                    if (startDate == "" || startDate == null) {
+                        layer.msg("请输入第" + batchArr[i].batch + "次的开始时间", { icon: 2 });
+                        return false;
+                    }
+                    if (endDate == "" || endDate == null) {
+                        layer.msg("请输入第" + batchArr[i].batch + "次的结束时间", { icon: 2 });
+                        return false;
+                    }
+                }
+
+                for (let i = 0; i < batchArr.length; i++) {
+                    let startDate = batchArr[i].startDate;
+                    let endDate = batchArr[i].endDate;
+                    if (endDate <= startDate) {
+                        layer.msg("第" + batchArr[i].batch + "次的结束时间应该大于开始时间", { icon: 2 });
+                        return false;
+                    }
+                }
+
+                for (let i = 0; i < batchArr.length; i++) {
+                    let startDate = batchArr[i].startDate;
+                    let endDate = batchArr[i].endDate;
+                    for (let j = 0; j < batchArr.length; j++) {
+                        if (j != i) {
+                            if (batchArr[j].startDate < startDate && startDate < batchArr[j].endDate) {
+                                layer.msg("各个考勤批次的时间范围不能有交叉", { icon: 2 });
+                                return false;
+                            }
+                            if (batchArr[j].startDate < endDate && endDate < batchArr[j].endDate) {
+                                layer.msg("各个考勤批次的时间范围不能有交叉", { icon: 2 });
+                                return false;
+                            }
+                            if (batchArr[j].startDate == startDate && batchArr[j].endDate == endDate) {
+                                layer.msg("各个考勤批次的时间范围不能有交叉", { icon: 2 });
+                                return false;
+                            }
+
+                        }
+
+                    }
+                }
+
+
+                for (let i = 0; i < batchArr.length; i++) {
+                    startDate = batchArr[i].startDate;
+                    endDate = batchArr[i].endDate;
+                    if (startDate != "" && startDate != null && endDate != "" && endDate != null) {
+                        if (new Date(startDate) < new Date(downStartDt) || new Date(startDate) > new Date(downEndDt)) {
+                            layer.msg("第" + batchArr[i].batch + "次的开始时间应该在项目周期的时间范围内", { icon: 2 });
+                            return false;
+                        }
+                        if (new Date(endDate) < new Date(downStartDt) || new Date(endDate) > new Date(downEndDt)) {
+                            layer.msg("第" + batchArr[i].batch + "次的结束时间应该在项目周期的时间范围内", { icon: 2 });
+                            return false;
+                        }
+                    }
+                }
+
+
+                return true;
+            }
+            // 考勤次数改变事件
+            window.batchCountChange = function (obj) {
+                let downId = $(obj).attr("data-down-id");
+                let index = parseInt($(obj).attr("data-lay-index"), 10);
+
+                let batchCount = $(obj).val();
+
+                if (batchCount != parseInt(batchCount)) {
+                    layer.msg("考勤次数应该是正整数", { icon: 2 });
+                    return;
+                }
+                if (batchCount > 20) {
+                    layer.msg("考勤次数最多为20次", { icon: 2 });
+                    return;
+                }
+                if (parseInt(batchCount) < minBatchCnt) {
+                    $(obj).val("");
+                    layer.msg("考勤次数应该大于" + minBatchCnt, { icon: 2 });
+                    return;
+                }
+
+                $.ajax({
+                    async: false,
+                    type: "post",
+                    url:  huayi_projectscore_url + "cmeProjPosDownload/setAttendBatchCount",
+                    data: { cmeStandardKindId: getCmeStandardKindId(), projId: pro_id, downId: downId,batchCount: batchCount },
+                    success: function (res) {
+                        if (res.success) {
+                            reloadOptionTable(function () {
+                                batchTimeFocus(index)
+                            });
+                        } else {
+                            layer.msg(res.msg, { icon: 2 });
+                        }
+                    },
+                    error: () => { layer.msg("发送数据失败", { icon: 2 }); }
+
+                });
+
+
+            }
+            // 考勤批次时间聚焦事件
+            window.batchTimeFocus = function (target) {
+                let openIndex;
+                if (typeof target === "number") {
+                    openIndex = target - 1;
+                } else {
+                    openIndex = parseInt($(target).closest("tr").attr("data-index"), 10);
+                    if (isNaN(openIndex)) {
+                        let layIndex = parseInt($(target).attr("data-lay-index"), 10);
+                        openIndex = layIndex - 1;
+                    }
+                }
+                if (isNaN(openIndex)) {
+                    return;
+                }
+                setTimeout(function () {
+                    myOptable.closeAll();
+                    myOptable.openIndex(openIndex);
+                }, 0);
+            }
+
+            // 考勤批次时间表格渲染
+            var myOptable = layui.opTable.render({
+                elem: '#cmeProjPosDownload',
+                url: huayi_projectscore_url + 'cmeProjPosDownload',
+                title: '周期表',
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'KJPT-USER-ID' : localStorage.getItem('user-id')
+                },
+                where: {
+                    projId: pro_id,
+                    projectType: projectType,
+                    unitId: getUnitId(),
+                    cmeStandardKindId: getCmeStandardKindId(),
+                },
+                cols: getParentTableCols(),
+                toolbar: (standardkindId == HUBEI) ? "#toolbarForDownInfo" : false,
+                defaultToolbar: false,
+                openType: 0,
+                openIcon: { '1': '展开' },
+                cellMinWidth: 100,
+                id: "cmeProjPosDownload",
+                height: 'full-105',
+                page: false,
+                limit: 10,
+                limits: [10, 50, 100, 150, 200],
+                parseData: function (res) {
+                    return {
+                        "code": res.status === 200 ? 0 : res.status, //解析接口状态
+                        "msg": res.msg, //解析提示文本
+                        "data": res.data, //解析数据列表
+                    }
+                },
+                request: {
+                    pageName: 'pageNum', //页码的参数名称，默认：page
+                    limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                },
+                openTable: function (itemData) {
+                    // 渲染考勤批次时间表格
+                    return getChildTableForProjAttend(itemData);
+                },
+                done: function (res, curr, count) {
+                    if(res.data.length>0) {
+                        minBatchCnt = calMinBatchCnt(res.data[0].realPeriod);
+                    }
+                    dateInit();
+                   
+                    myOptable.openAll();
+                    // for (let i = 0; i < res.data.length; i++) {
+                    //     let down = res.data[i];
+                    //     if (down.currentIn) {
+                    //         myOptable.openIndex(i);
+                    //     }
+                    // }
+                }
+            });
+
+            let dateInit = function() {
+                $('.judgeEndDt').each(function(){
+                    var that = this;
+                    laydate.render({
+                        elem: that,
+                        type: 'datetime',
+                        fullPanel: true,
+                        done: function(value, date, endDate){
+                            var data = table.getRowData("cmeProjPosDownload", that);
+                            data.judgeEndDt = value;
+                            updateEndDt({downId: data.downId, judgeEndDt: value, examEndDt: data.examEndDt});
+                        }
+                    }); 
+                });
+
+                // 评价截止时间
+                $('.examEndDt').each(function(){
+                    var that = this;
+                    laydate.render({
+                        elem: that,
+                        type: 'datetime',
+                        fullPanel: true,
+                        done: function(value, date, endDate){
+                            var data = table.getRowData("cmeProjPosDownload", that);
+                            data.examEndDt = value;
+                            updateEndDt({downId: data.downId, examEndDt: value, judgeEndDt: data.judgeEndDt});
+                        }
+                    }); 
+                });
+            }
+
+            // 获取当前行数据 - 自定义方法
+            table.getRowData = function(tableId, elem){
+                var index = $(elem).closest('tr').data('index');
+                return table.cache[tableId][index] || {};
+            };
+            window.updateEndDt = function(data){
+                // 更新数据
+                $.ajax({
+                    async: false,
+                    type: "post",
+                    url:  huayi_projectscore_url + "cmeProjPosDownload/updateEndDt",
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    success: function(res) {
+                        if(res.success) {
+                            layer.msg('修改成功',{icon:1});
+                        } else {
+                            layer.msg(res.msg,{icon:2});
+                        }
+                    },
+                    error: () => { layer.msg("发送数据失败",{icon:2}); }
+
+                });
+            }
+
+            window.calMinBatchCnt = function(period) {
+                var hour = parseFloat(period);
+                if (isNaN(hour) || hour <= 0) {
+                    return minBatchCnt;
+                }
+                return Math.ceil(hour / 3);
+            }
+
+
+            window.reloadOptionTable = function (doneFun) {
+                myOptable.reload({
+                    page: false,
+                    openTable: function (itemData) {
+                        return getChildTableForProjAttend(itemData);
+                    },
+                    done: function (res, curr, count) {
+                        dateInit();
+                        let attendBatchList = JSON.parse(res.data[0].attendBatchListJson);
+                        layui.data('attendanceInfo',{key: "attendBatches", value: attendBatchList});
+                        doneFun && doneFun();
+                    }
+                });
+            }
+
+            function parseAttendTimeToMillis(timeValue) {
+                if (timeValue === null || timeValue === undefined || timeValue === '') {
+                    return timeValue;
+                }
+                if (/^\d+$/.test(String(timeValue))) {
+                    return parseInt(timeValue, 10);
+                }
+                let m = moment(timeValue);
+                return m.isValid() ? m.valueOf() : NaN;
+            }
+
+            // 用分钟级格式比较页面输入和数据库保存值，避免秒/时间戳格式差异造成误判。
+            function formatAttendTimeForCompare(timeValue) {
+                if (timeValue === null || timeValue === undefined || timeValue === '') {
+                    return '';
+                }
+                let millis = parseAttendTimeToMillis(timeValue);
+                if (isNaN(millis)) {
+                    return String(timeValue);
+                }
+                return moment(millis).format('YYYY-MM-DD HH:mm');
+            }
+
+            // attendBatchListJson 是后续二维码/考勤机实际依赖的数据，解析失败时不能继续举办。
+            function parseAttendBatchListFromDownInfo(downInfo) {
+                if (!downInfo || !downInfo.attendBatchListJson) {
+                    layer.msg("考勤时间段数据异常，请先" + window.saveAttendPresetText, { icon: 2, time: 2000 });
+                    return null;
+                }
+                try {
+                    return JSON.parse(downInfo.attendBatchListJson);
+                } catch (e) {
+                    layer.msg("考勤时间段数据格式异常，请刷新页面重试", { icon: 2, time: 2000 });
+                    return null;
+                }
+            }
+
+            // 关键操作前重新查库，避免只校验页面缓存导致“录入正确但数据库未保存”的问题。
+            function getLatestDownInfoFromDb(downId) {
+                let latestDownInfo = null;
+                $.ajax({
+                    async: false,
+                    type: 'get',
+                    url: huayi_projectscore_url + 'cmeProjPosDownload',
+                    data: {
+                        projId: pro_id,
+                        projectType: projectType,
+                        unitId: getUnitId(),
+                        cmeStandardKindId: getCmeStandardKindId()
+                    },
+                    success: function (res) {
+                        if (res && res.status == 200 && res.data) {
+                            let list = res.data || [];
+                            for (let i = 0; i < list.length; i++) {
+                                if (list[i] && String(list[i].downId) === String(downId)) {
+                                    latestDownInfo = list[i];
+                                    break;
+                                }
+                            }
+                        } else {
+                            layer.msg((res && res.msg) || "获取考勤时间段失败", { icon: 2, time: 2000 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg("获取考勤时间段失败", { icon: 2, time: 2000 });
+                    }
+                });
+                return latestDownInfo;
+            }
+
+            // 子表已展开时，若输入框值和数据库值不一致，说明用户改了但还没保存。
+            function hasUnsavedBatchDateChange(batchData) {
+                for (let i = 0; i < batchData.length; i++) {
+                    let item = batchData[i];
+                    let $startInput = $("#startDate_" + item.batchId);
+                    let $endInput = $("#endDate_" + item.batchId);
+                    if (!$startInput.length || !$endInput.length) {
+                        continue;
+                    }
+                    let savedStartDate = formatAttendTimeForCompare(item.startDate);
+                    let savedEndDate = formatAttendTimeForCompare(item.endDate);
+                    let inputStartDate = formatAttendTimeForCompare($startInput.val());
+                    let inputEndDate = formatAttendTimeForCompare($endInput.val());
+                    if (savedStartDate !== inputStartDate || savedEndDate !== inputEndDate) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            // 考勤设置、考勤机绑定共用：先拦截未保存输入，再只按数据库保存值校验。
+            function getValidatedSavedDownInfoForHold(downId) {
+                if (!downId) {
+                    layer.msg("缺少批次标识", { icon: 2, time: 2000 });
+                    return null;
+                }
+                let latestDownInfo = getLatestDownInfoFromDb(downId);
+                if (!latestDownInfo) {
+                    layer.msg("未找到对应下载批次，请刷新页面重试", { icon: 2, time: 2000 });
+                    return null;
+                }
+                let batchData = parseAttendBatchListFromDownInfo(latestDownInfo);
+                if (!batchData) {
+                    return null;
+                }
+                if (hasUnsavedBatchDateChange(batchData)) {
+                    layer.msg("考勤时间段已修改，请先" + window.saveAttendPresetText, { icon: 2, time: 2000 });
+                    return null;
+                }
+                if (!validateBatchDatesFieldsForHold(latestDownInfo)) {
+                    return null;
+                }
+                return latestDownInfo;
+            }
+
+            // 仅校验数据库已保存的批次时间段填写与规则（非空、格式、先后、不交叉、在项目周期内）；不含「当前是否已超过最后批次」
+            function validateBatchDatesFieldsForHold(downInfo) {
+                let batchData = parseAttendBatchListFromDownInfo(downInfo);
+                if (batchData == null || batchData.length == 0) {
+                    layer.msg("数据出现问题", { icon: 2 });
+                    return false;
+                }
+                let validateBatchData = batchData.map(item => {
+                    return {
+                        ...item,
+                        startDate: parseAttendTimeToMillis(item.startDate),
+                        endDate: parseAttendTimeToMillis(item.endDate)
+                    };
+                });
+                let downStartDate = parseAttendTimeToMillis(downInfo.startDt);
+                let downEndDate = parseAttendTimeToMillis(downInfo.endDt);
+                if (isNaN(downStartDate) || isNaN(downEndDate)) {
+                    layer.msg("项目周期时间格式不正确", { icon: 2 });
+                    return false;
+                }
+                if (validateBatchData.some(item => isNaN(item.startDate) || isNaN(item.endDate))) {
+                    layer.msg("开始时间或结束时间格式不正确", { icon: 2 });
+                    return false;
+                }
+                if (!checkDateRight(validateBatchData, downStartDate, downEndDate)) {
+                    return false;
+                }
+                var lastBatchForHold = validateBatchData.filter(function (item) { return item.beLast; })[0]
+                    || validateBatchData[validateBatchData.length - 1];
+                if (AttendSignInOutThreshold.isBeyondLastBatchHoldWindow(lastBatchForHold, standardkindId)) {
+                    layer.msg("当前时间已超出最后的考勤批次时间范围", { icon: 2 });
+                    return false;
+                }
+                return true;
+            }
+
+
+            // 供嵌入页 cmeProjPosDownloadList.html 在勾选考勤机前调用：按 downId 校验本周期各考勤时间段是否填写正确
+            function getCmeProjPosDownloadListForValidate() {
+                let list = [];
+                if (table && typeof table.getData === 'function') {
+                    try {
+                        list = table.getData('cmeProjPosDownload') || [];
+                    } catch (e) {
+                        list = [];
+                    }
+                }
+                if ((!list || !list.length) && table && table.cache) {
+                    list = table.cache['cmeProjPosDownload'] || [];
+                }
+                return (list || []).filter(function (item) {
+                    return item && !Array.isArray(item) && item.downId != null;
+                });
+            }
+
+            window.validateAttendBatchTimesForEmbed = function (downId) {
+                // 勾选考勤机前必须确认时间段已经保存到数据库，不能只相信当前页面输入。
+                return !!getValidatedSavedDownInfoForHold(downId);
+            };
+
+            // 校验举办前申请状态是否允许举办
+            function checkHoldPermission(itemData) {
+                let checkState = itemData.projCycleApplicationCheckState;
+                if ('t' == window['fun_must_apply_before_hold']) {
+                    if ('0' == checkState || null == checkState) {
+                        layer.alert('请先提交举办前申请，待审核通过后方可举办');
+                        return false;
+                    }
+                    if ('4' == checkState) {
+                        layer.alert('您提交的举办前申请还没有审核通过');
+                        return false;
+                    }
+                    if ('2' == checkState) {
+                        layer.alert('您提交的举办前申请审核不通过，无法举办该项目，审核不通过原因为：' + itemData.checkMemo);
+                        return false;
+                    }
+                    if ('1' == checkState) {
+                        layer.alert('举办前申请被退回，原因：' + itemData.checkMemo + '。请重新上报并审核通过后方可举办');
+                        return false;
+                    }
+                }
+                if ('h' == window['fun_must_apply_before_hold']) {
+                    if ('0' == checkState || null == checkState) {
+                        layer.alert('请先提交举办前申请，待审核通过后方可举办');
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            //查看考勤人员上限条件是否满足
+            window.validatePersonMax = function () {
+                //是否开启考勤上限
+                let isOpenOnline= $('input[name="attendanceOnline"]:checked').val();
+                //不开启考勤上限，无需验证考勤人数是否满足上限
+                if (isOpenOnline == 0) {
+                    return true;
+                }
+                //判断是否设置人数上限
+                let tempMax = $("#online").val();
+                if (null == tempMax || "" == tempMax) {
+                    layer.msg("请设置人数上限");
+                    return false;
+                }
+
+                let batchId = layui.data("attendanceInfo").batchId;
+                let canContinue = false;
+                if (batchId != null) {
+                    //判断设置的考勤人数是否已经超过已考勤人数
+                    $.ajax({
+                        async: false,
+                        type: 'post',
+                        url: huayi_projectscore_url + 'attendance/getAttendancePersonNum',
+                        data: {
+                            batchId: batchId
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                let attNum = res.data;
+                                if (attNum != 0 && tempMax < attNum) {
+                                    let tempMsg = `本考勤批次已考勤${attNum}人，设置考勤人数不能小于已考勤人数`;
+                                    layer.msg(tempMsg, { icon: 2 });
+                                    return;
+                                }
+                                canContinue = true;
+                            } else {
+                                layer.msg('程序出现问题', { icon: 2 });
+                            }
+
+                        },
+                        error: function () {
+                            layer.msg('请求失败', { icon: 2 });
+                        }
+                    });
+                }
+                if (canContinue) {
+                    return true;
+                }
+                return false;
+            }
+
+            // 校验考勤范围设置
+            window.validateAttendanceScope = function () {
+                let attendanceType = $('input[name="attendanceType"]:checked').val();
+                let attendanceScope = $('input[name="attendanceScope"]:checked').val();
+                if (attendanceScope != null && attendanceScope != '0' && attendanceType != 2) {
+                    if ($('input[name="Scope"]').val() === "" || $('input[name="Scope"]').val() === "") {
+                        layer.msg("请选择考勤地址");
+                        return false;
+                    }
+                }
+                return true;
+            }
+            
+            //处理考勤请求数据
+            window.handlerReqData = function (attendanceType) {
+                let faceRecognition = (attendanceType == "1") ? "1" : "0";
+                layui.data('attendanceInfo', {
+                    key: 'faceRecognition',
+                    value: faceRecognition
+                })
+                // 是否开启考勤上限
+                layui.data('attendanceInfo', {
+                    key: 'attendanceOnline',
+                    value: $('input[name="attendanceOnline"]:checked').val()
+                })
+                // 如果关闭上线，则需要清空上线数据
+                // 考勤上限
+                let tempOnline = $('input[name="attendanceOnline"]:checked').val();
+                let tempOnlineValue = (tempOnline == '0') ? "" : $("#online").val();
+                layui.data('attendanceInfo', {
+                    key: 'online',
+                    value: tempOnlineValue
+                })
+
+                // 是否设置考勤范围
+                layui.data('attendanceInfo', {
+                    key: 'attendanceScope',
+                    value: $('input[name="attendanceScope"]:checked').val()
+                })
+
+                if ($('input[name="attendanceScope"]:checked').val() === '0') {
+                    // 考勤范围
+                    layui.data('attendanceInfo', {
+                        key: 'scope',
+                        value: '0'
+                    })
+                    // 考勤地址
+                    layui.data('attendanceInfo', {
+                        key: 'address',
+                        value: ''
+                    })
+                    // 纬度
+                    layui.data('attendanceInfo', {
+                        key: 'lat',
+                        value: null
+                    })
+                    // 经度
+                    layui.data('attendanceInfo', {
+                        key: 'lng',
+                        value: null
+                    })
+                    document.getElementById('address').value = null
+                    document.getElementById('Scope').value = null
+                } else {
+                    // 考勤范围
+                    layui.data('attendanceInfo', {
+                        key: 'scope',
+                        value: $('input[name="Scope"]').val()
+                    })
+                    // 考勤地址
+                    layui.data('attendanceInfo', {
+                        key: 'address',
+                        value: $('input[name="address"]').val()
+                    })
+                }
+                // 课程或者项目名称：为了和之前的兼容，teachName 没改
+                layui.data('attendanceInfo', {
+                    key: 'teachName',
+                    value: $('input[name="teachName"]').val()
+                })
+
+                layui.data('attendanceInfo', {
+                    key: 'cmeStandardKindId',
+                    value: localStorage.getItem("standardkind-id") == '{}' ? null : localStorage.getItem("standardkind-id")
+                })
+            }
+
+            //打开考勤页面 signType:21 院内活动签到 22：院内活动签退
+            window.openProjAttendanceCode = function (signType) {
+                // 校验考勤配置是否设置
+                console.log('teachName:');
+                console.log(layui.data('attendanceInfo').teachName );
+                if(layui.data('attendanceInfo').teachName == null) {
+                    layer.msg("请先完成" + window.attendConfigText, { icon: 2 });
+                    return;
+                }
+                layui.data('attendanceInfo', {
+                    key: 'projectType',
+                    value: signType
+                });
+                console.log(layui.data('attendanceInfo').projectType);
+                
+                
+                // 填充课程相关信息，经纬度，是否开启人脸识别，以及考勤人数限制
+                // 发送请求存储课程考勤的设置内容
+                $.ajax({
+                    type: 'post',
+                    url: huayi_projectscore_url + 'attendance/setAttendanceInfoForProj',
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    data: JSON.stringify({
+                        projectType: projectType, // 项目类型
+                        teachId: layui.data('attendanceInfo').batchId, // 课程id
+                        scope: layui.data('attendanceInfo').scope, // 考勤范围
+                        isFaceOpen: layui.data('attendanceInfo').faceRecognition === '1' ? true : false,  // 是否开启人脸识别
+                        longitude: layui.data('attendanceInfo').lng,  // 经度
+                        latitude: layui.data('attendanceInfo').lat,    // 纬度
+                        studyAddress: layui.data('attendanceInfo').address, // 授课地点
+                        attendanceLimit: layui.data('attendanceInfo').online // 考勤上线
+                    }),
+                    success: function (res) {
+                        parent.layer.open({
+                            type: 2,
+                            title: false,                            
+                            content: `../../../pages/project/attendanceForProj/attendanceByCode.html?downId=${layui.data('attendanceInfo').downId}&batchId=${layui.data('attendanceInfo').batchId}&scoreLevelId=`+scoreLevel,
+                            skin: '',
+                            area: ['100%', '100%'],
+                            cancel: (index, layero) => {
+                                reloadOptionTable(() => {
+                                    myOptable.openAll();
+                                });
+                                
+                            }
+                        })
+                    },
+                    error: function (res) {
+                        layer.msg("发送请求失败")
+                    }
+                })
+            }
+
+    
+            // 打开考勤设置弹窗
+            function openAttendConfigDialog(downInfo) {
+
+                // todo: 将参数设置到appAttendConfig.html中，以后再改
+                // let params = '';
+                // let projName = encodeURIComponent(downInfo.groupProjName);
+                // if(projName != null && projName != '') {
+                //     params += 'projName=' + projName;
+                // }
+                // let limitPerson = downInfo.limitPerson;
+                // if(limitPerson != null && limitPerson != '') {
+                //     params += '&limitPerson=' + limitPerson;
+                // }
+                // let scoreLevel = downInfo.scoreLevel;
+                // if(scoreLevel != null && scoreLevel != '') {
+                //     params += '&scoreLevel=' + scoreLevel;
+                // }
+
+                layer.open({
+                    type: 1,
+                    title: window.attendConfigText,
+                    // content: 'appAttendConfig.html?' + params,
+                    content: $('#appAttendConfig'),
+                    skin: '',
+                    area: ['500px', '500px'],
+                    btn: ['确定', '取消'],
+                    btnAlign: 'c',
+                    yes: function (index, layero) {
+                        // 校验考勤范围设置
+                        if (!validateAttendanceScope()) {
+                            return;
+                        }
+                        // 校验考勤人数是否满足上限
+                        if (!validatePersonMax()) {
+                            return;
+                        }
+                        
+                        // 查找考勤模式
+                        let attendanceType = $('input[name="attendanceType"]:checked').val();
+                        // 处理考勤请求数据
+                        handlerReqData(attendanceType);
+
+                        // 扫码考勤 和 学员刷脸考勤（扫码后人脸认证），都是打开二维码考勤页面
+                        // if (attendanceType != 2 ) {
+                        //     openProjAttendanceCode();
+                        // }
+                        // 单位管理员刷脸考勤
+                        if(attendanceType == 2){
+                            let managerAttendanceUrl = `/pages/project/attendancePhotoWall/attendanceGroupPhotoWall.html?downId=${layui.data('attendanceInfo').downId}&attendMode=2&batchId=${layui.data('attendanceInfo').batchId}`;
+                            window.parent.layer.open({
+                                type: 2,
+                                title: false,
+                                content: managerAttendanceUrl,
+                                skin: '',
+                                area: ['100%', '100%'],
+                            })
+                        }
+
+                        layer.close(index);
+
+                    },
+                    btn2: function (index, layero) {
+                        layer.close(index);
+                    },
+                    success: function (layero, index) {
+                        $(".projOrTeachNameDiv").find("label").text("项目名称: ");
+                        $(".projOrTeachNameDiv").find("input:text").val(downInfo.projName);
+                        if(downInfo.limitPerson!=null   && downInfo.limitPerson > 0 ) {
+                            $("[name='limit_str']").text('该项目拟授分' + downInfo.limitPerson + '人');
+                        } else {
+                            $("[name='limit_str']").text('');
+                        }
+                    }
+                });
+            }
+
+            layui.table.on('tool(cmeProjPosDownload)', function (obj) {
+                let downInfo = obj.data;
+                //点击考勤设置按钮
+                if(obj.event == 'attendConfig'){
+                    // 先确认页面无未保存时间改动，再按数据库已保存的考勤时间段校验
+                    let latestDownInfo = getValidatedSavedDownInfoForHold(downInfo.downId);
+                    if (!latestDownInfo) {
+                        return false;
+                    }
+                    // 校验举办前申请状态是否允许举办
+                    if (!checkHoldPermission(latestDownInfo)) {
+                        return;
+                    }
+                    if (latestDownInfo.attendBatchTime == 0) {
+                        layer.msg("请先设置考勤时间", { icon: 2 });
+                        return;
+                    }
+                     // 重置 attendanceInfo
+                     layui.data('attendanceInfo', null);
+                    layui.data('attendanceInfo', { key: "downId", value: latestDownInfo.downId });
+                    let attendBatchList = parseAttendBatchListFromDownInfo(latestDownInfo);
+                    layui.data('attendanceInfo', { key: "attendBatches",value: attendBatchList });
+                    
+
+                    let curBatchId = AttendSignInOutThreshold.resolveCurrentBatchIdForAttendConfig(attendBatchList, standardkindId);
+                    layui.data('attendanceInfo', { key: 'batchId', value: curBatchId });
+
+                    //打开考勤设置弹窗
+                    openAttendConfigDialog(latestDownInfo);
+                }
+
+            });
+
+            window.closeParentAll = function () {
+                window.parent.layer.closeAll();
+            }
+            // 查询单位信息
+            let getUnitInfo = function () {
+                let unitId = localStorage.getItem('unit-id');
+                $.ajax({
+                    url: huayi_personorg_url + '/comunit/detail?unitId=' + unitId,
+                    type: 'get',
+                    dataType: 'json',
+                    contentType: 'application/json;charset=UTF-8',
+                    async: false,
+                    success: res => {
+                        if (res.status == 200) {
+                            unitPropertyId = res.data.unitPropertyId;
+                        }
+                        else {
+                            layui.layer.msg(res.msg || '系统繁忙，请稍后重试', {
+                                time: 1000, // 1s后自动关闭
+                                end: o => layui.layer.closeAll()
+                            });
+                        }
+                    },
+                    error: (req, msg) => {
+                        layui.layer.msg('系统繁忙，请稍后重试', {
+                            time: 1000, // 1s后自动关闭
+                            end: o => layer.closeAll()
+                        });
+                    }
+                });
+            }
+
+            // 查询批次举办前申请状态
+            let getBatchApplyStatus = function (downId) {
+                let checkState = '';
+                $.ajax({
+                    async: false,
+                    type: 'get',
+                    url: huayi_projectscore_url + 'cmeGroupProjCycleApplication/down/' + downId,
+                    success: function (res) {
+                        if (res && '200' == res.status && res.data) {
+                            // 0: 未审核 1: 审核被退回  2: 终审不通过  3: 终审通过  4: 审核中 
+                            checkState = res.data.checkState;
+                        }
+                    },
+                    error: function () {
+                        layer.msg('获取周期举办前申请状态失败');
+                    }
+                });
+                return checkState;
+            }
+
+        
+            // 以下是考勤设置弹窗的脚本
+            //设置考勤上限
+            form.on('radio(attendanceOnline_filter)', function (data) {
+                if (data.value === '1') {
+                    $('#online_id').show();
+                } else {
+                    $('#online_id').hide();
+                }
+            });
+            //选择考勤方式
+            form.on('radio(attendanceType_filter)', function (data) {
+                if (data.value === '2') {
+                    $('#attendanceScope').hide();
+                    $("#address_id").hide();
+                    $('#settingOnline').hide();
+                    $('#online_id').hide();
+                } else {
+                    //考勤方式是扫脸考勤
+                    $('#attendanceScope').show();
+                    //考勤范围，选择该方式时不设置考勤范围
+                    $("#address_id").hide();
+                    $('[name=attendanceScope]').each(function (i, item) {
+                        if (item.checked) {
+                            if ($(item).val() == '0') {
+                                //更改选中值
+                                $(item).prop('checked', true);
+                                //重新渲染
+                                layui.use('form', function () {
+                                    var form = layui.form;
+                                    form.render();
+                                });
+                            } else {
+                                $('#address_id').show();
+                            }
+                        }
+                    });
+                    $('#settingOnline').show();
+                    if ($("input[name='attendanceOnline']:checked").val() == "1") {
+                        $('#online_id').show();
+                    }
+
+                }
+            });
+            //设置考勤范围
+            form.on('radio(attendanceScope_filter)', function (data) {
+                if (data.value === '1') {
+                    $('#address_id').show();
+                } else {
+                    $('#address_id').hide();
+                }
+            });
+
+            //创建是否有定位
+            window.createScope = function () {
+                let htmlText = "";
+                let unitId = localStorage.getItem('unit-id');
+                //如果开通了设置考勤范围的功能
+                if (window["fun_scope_when_proj_attendance"] == 1) {
+                    let checked = (window["fun_force_scope_when_proj_attendance"] == 1) ? true : false;
+                    if (checked) {
+                        $("#address_id").show();
+                    }
+                    htmlText = `<label class="layui-form-label">设置考勤范围</label>
+                    <div class="layui-input-inline">
+                        <input type="radio" lay-filter="attendanceScope_filter" name="attendanceScope" value="1" title="是" ${(checked) ? 'checked' : ''}>
+                        <input type="radio" lay-filter="attendanceScope_filter" name="attendanceScope" value="0" title="否" ${(!checked) ? 'checked' : "disabled='disabled'"}>
+                    </div> `;
+                }
+                $("#attendanceScope").html(htmlText);
+            }
+
+            //创建考勤模式，根据tao的id进行测试
+            window.createAttendType = function () {
+
+                let attendTypes = window["range_proj_AttendType"].split(',');
+                let htmlInputs = `<label class="layui-form-label">考勤模式选择</label>
+                    <div class="layui-input-inline">`;
+                let min = 1000000;
+                attendTypes.forEach(e => {
+                    if (e < min) {
+                        min = e;
+                    }
+                });
+                attendTypes.forEach(e => {
+                    let inputStr = ``;
+                    let checked = (e == min) ? "checked" : "";
+                    switch (e) {
+                        case "0":
+                            inputStr = `<input type="radio" lay-filter="attendanceType_filter" name="attendanceType" value="0" title="二维码考勤"  ${checked}>`;
+                            break;
+                        case "1":
+                            inputStr = `<input type="radio" lay-filter="attendanceType_filter" name="attendanceType" value="1" title="学员刷脸考勤" ${checked}>`;
+                            break;
+                        case "2":
+                            inputStr = `<input type="radio" lay-filter="attendanceType_filter" name="attendanceType" value="2" title="单位刷脸考勤" ${checked}>`;
+                            break;
+                    }
+                    htmlInputs += inputStr;
+                });
+                htmlInputs += `</div>`;
+                $("#attendType").html(`${htmlInputs}`);
+            }
+
+            // 打开电子围栏
+            window.openElectricFence = function() {
+                layer.open({
+                    type: 2,
+                    title: '电子围栏',
+                    content: "MapTest.html?scoreLevel=" + scoreLevel,
+                    skin: '',
+                    area: ['800px', '600px'],
+                })
+            }
+
+            // 填充电子围栏信息
+            window.getBaiduMapAddress = function getBaiduMapAddress(obj) {
+                
+                // 经度
+                layui.data('attendanceInfo',{
+                    key: 'lat',
+                    value: obj.lat
+                })
+                // 纬度
+                layui.data('attendanceInfo',{
+                    key: 'lng',
+                    value: obj.lng
+                })
+                document.getElementById('address').value=obj.address
+                document.getElementById('Scope').value=obj.fanwei
+                layer.closeAll('iframe');
+            
+            }
+
+            //初始化
+            let htmlInit = function () {
+                // 清空考勤本地缓存，避免上一次进入页面残留数据影响本次流程
+                layui.data('attendanceInfo', null);
+                createAttendType();//考勤模式
+                createScope();//考勤范围
+                form.render();
+                getUnitInfo();
+            }
+
+            htmlInit();
+
+        });
+
+    </script>
+
+    <!-- 考勤设置弹窗脚本 -->
+    <script>
+
+    
+
+    </script>
+
+
+</body>
+
+</html>

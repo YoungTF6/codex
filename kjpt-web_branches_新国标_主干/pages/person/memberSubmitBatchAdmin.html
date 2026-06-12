@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>人员上报查看</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+    <script type="text/javascript" src="../../js/constant.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery/jquery3.6.0/jquery-migrate-3.4.0.js"></script>
+    <script type="text/javascript" src="../../js/auth.js"></script>
+    <script type="text/javascript" src="../../js/global_ajax_setting.js"></script>
+    <style>
+        body {
+            background: #f5f7fb;
+        }
+        .admin-page {
+            padding: 12px;
+        }
+        .admin-card {
+            border: 1px solid #e8edf5;
+            box-shadow: none;
+        }
+        .condition-area {
+            padding: 12px 14px 6px;
+            border-bottom: 1px solid #edf1f7;
+        }
+        .condition-grid {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .condition-fields {
+            flex: 1;
+        }
+        .condition-fields .layui-inline {
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        .condition-fields .layui-form-label {
+            width: 86px;
+        }
+        .condition-fields .layui-input-block {
+            width: 150px;
+            margin-left: 116px;
+        }
+        .condition-actions {
+            white-space: nowrap;
+            padding-top: 1px;
+        }
+        .toolbar-row {
+            display: flex;
+            justify-content: flex-end;
+            padding: 10px 14px;
+            border-bottom: 1px solid #edf1f7;
+            background: #fff;
+        }
+        .status-tag {
+            display: inline-block;
+            min-width: 54px;
+            padding: 0 8px;
+            height: 24px;
+            line-height: 24px;
+            border-radius: 3px;
+            font-size: 12px;
+            text-align: center;
+        }
+        .status-submit {
+            color: #0f6b57;
+            background: #e8f7f1;
+        }
+        .status-receive {
+            color: #2454a6;
+            background: #eaf1ff;
+        }
+        .detail-dialog {
+            padding: 12px;
+            background: #f5f7fb;
+            box-sizing: border-box;
+            height: 100%;
+        }
+        .detail-panel {
+            background: #fff;
+            border: 1px solid #e8edf5;
+            height: 100%;
+            box-sizing: border-box;
+        }
+        .detail-query {
+            padding: 10px 12px 2px;
+            border-bottom: 1px solid #edf1f7;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: nowrap;
+        }
+        .detail-query .layui-inline {
+            display: flex;
+            align-items: center;
+            margin: 0;
+        }
+        .detail-query .layui-form-label {
+            flex: 0 0 70px;
+            width: 70px;
+            padding-left: 0;
+            padding-right: 6px;
+            box-sizing: border-box;
+        }
+        .detail-query .layui-input-block {
+            flex: 0 0 150px;
+            width: 150px;
+            margin-left: 0;
+        }
+        .detail-query-spacer {
+            flex: 1;
+            min-width: 12px;
+        }
+        .detail-query .layui-btn {
+            flex: 0 0 auto;
+            margin-left: 0;
+        }
+        .detail-table-wrap {
+            padding: 10px 12px 12px;
+        }
+        .detail-table-wrap .layui-table-view {
+            margin: 0;
+        }
+    </style>
+</head>
+<body class="body-area">
+<div class="layui-fluid admin-page">
+    <div class="layui-card admin-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto condition-area">
+            <div class="condition-grid">
+                <div class="condition-fields">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">上报年度</label>
+                        <div class="layui-input-block">
+                            <select id="queryYear"></select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">上报单位</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="queryApplyUnit" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">接收情况</label>
+                        <div class="layui-input-block">
+                            <select id="queryReceiveFlag">
+                                <option value="">全部</option>
+                                <option value="0">已上报</option>
+                                <option value="1">已接收</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">开始时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="queryStartDate" readonly autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">结束时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="queryEndDate" readonly autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">人员编号</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="queryPersonNo" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">人员姓名</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="queryPersonName" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="condition-actions">
+                    <a class="layui-btn layui-btn-sm" id="searchBtn">
+                        <i class="layui-icon layui-icon-search"></i>查询
+                    </a>
+                    <a class="layui-btn layui-btn-primary layui-btn-sm" id="resetBtn">重置</a>
+                </div>
+            </div>
+        </div>
+        <div class="toolbar-row">
+            <a class="layui-btn layui-btn-sm" id="exportBtn">
+                <i class="layui-icon layui-icon-download-circle"></i>导出Excel
+            </a>
+        </div>
+        <div class="layui-card-body" style="padding:0;">
+            <table class="layui-table" id="adminBatchTable" lay-filter="adminBatchTable"></table>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="batchRowBar">
+    <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="viewPersons">查看</a>
+</script>
+
+<script type="text/html" id="statusTpl">
+    {{# var cls = d.receiveFlag === 1 ? 'status-receive' : 'status-submit'; }}
+    <span class="status-tag {{ cls }}">{{ d.receiveStatusName || '' }}</span>
+</script>
+
+<script type="text/html" id="personDetailDialogTpl">
+    <div class="detail-dialog">
+        <div class="detail-panel">
+            <div class="layui-form detail-query">
+                <div class="layui-inline">
+                    <label class="layui-form-label">人员编号</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="detailPersonNo" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">人员姓名</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="detailPersonName" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <a class="layui-btn layui-btn-sm" id="detailSearchBtn">
+                    <i class="layui-icon layui-icon-search"></i>查询
+                </a>
+                <a class="layui-btn layui-btn-primary layui-btn-sm" id="detailResetBtn">重置</a>
+                <span class="detail-query-spacer"></span>
+                <a class="layui-btn layui-btn-sm" id="detailExportBtn">
+                    <i class="layui-icon layui-icon-download-circle"></i>导出Excel
+                </a>
+            </div>
+            <div class="detail-table-wrap">
+                <table class="layui-table" id="detailPersonTable" lay-filter="detailPersonTable"></table>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script>
+    layui.use(['table', 'form', 'laydate', 'jquery', 'layer'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var laydate = layui.laydate;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var currentYear = new Date().getFullYear();
+        var exporting = false;
+        var detailExporting = false;
+
+        function headers() {
+            return {
+                'Authorization': localStorage.getItem('token'),
+                'KJPT-USER-ID': localStorage.getItem('user-id')
+            };
+        }
+
+        function renderYearOptions() {
+            var html = '';
+            for (var i = currentYear; i >= currentYear - 2; i--) {
+                html += '<option value="' + i + '">' + i + '</option>';
+            }
+            $('#queryYear').html(html).val(currentYear);
+            form.render('select');
+        }
+
+        function queryParams() {
+            return {
+                year: $('#queryYear').val(),
+                applyUnitKeyword: $('#queryApplyUnit').val(),
+                receiveFlag: $('#queryReceiveFlag').val(),
+                startDate: $('#queryStartDate').val(),
+                endDate: $('#queryEndDate').val(),
+                personNo: $('#queryPersonNo').val(),
+                personName: $('#queryPersonName').val()
+            };
+        }
+
+        function parsePage(res) {
+            var data = res.data || {};
+            return {
+                code: res.status === 200 ? 0 : res.status,
+                msg: res.msg,
+                count: data.recordsTotal || 0,
+                data: data.records || []
+            };
+        }
+
+        function renderDatePickers() {
+            laydate.render({ elem: '#queryStartDate', trigger: 'click' });
+            laydate.render({ elem: '#queryEndDate', trigger: 'click' });
+        }
+
+        function renderBatchTable() {
+            table.render({
+                elem: '#adminBatchTable',
+                url: huayi_personorg_url + 'memberSubmit/batch/admin/list',
+                headers: headers(),
+                where: queryParams(),
+                id: 'adminBatchTable',
+                height: 'full-178',
+                page: true,
+                limit: 10,
+                limits: [10, 20, 50, 100],
+                request: { pageName: 'pageNum', limitName: 'pageSize' },
+                parseData: parsePage,
+                cols: [[
+                    { title: '操作', toolbar: '#batchRowBar', width: 90, align: 'center', fixed: 'left' },
+                    { field: 'applyId', title: '批次号', width: 100, align: 'center' },
+                    { field: 'applyUnitName', title: '上报单位', minWidth: 220, align: 'center' },
+                    { field: 'personCount', title: '上报人数', width: 100, align: 'center' },
+                    { field: 'receiveStatusName', title: '接收情况', width: 110, align: 'center', templet: '#statusTpl' },
+                    { field: 'applyDate', title: '上报时间', width: 170, align: 'center' },
+                    { field: 'addTime', title: '添加时间', width: 170, align: 'center' }
+                ]]
+            });
+        }
+
+        function reloadBatchTable() {
+            table.reload('adminBatchTable', {
+                where: queryParams(),
+                page: { curr: 1 }
+            });
+        }
+
+        function setExportButtonDisabled(disabled) {
+            $('#exportBtn')
+                .toggleClass('layui-btn-disabled', disabled)
+                .attr('aria-disabled', disabled ? 'true' : 'false');
+        }
+
+        function showExportError(xhr) {
+            var blob = xhr && xhr.response;
+            if (blob && blob.type && blob.type.indexOf('json') > -1) {
+                var reader = new FileReader();
+                reader.onload = function () {
+                    var message = '导出失败';
+                    try {
+                        var result = JSON.parse(reader.result);
+                        message = result.msg || result.message || message;
+                    } catch (e) {}
+                    layer.msg(message, { icon: 7, time: 1500 });
+                };
+                reader.readAsText(blob);
+                return;
+            }
+            layer.msg('导出失败', { icon: 7, time: 1500 });
+        }
+
+        function downloadBlob(blob, fileName) {
+            var href = window.URL.createObjectURL(blob);
+            var downloadElement = document.createElement('a');
+            downloadElement.href = href;
+            downloadElement.download = fileName;
+            document.body.appendChild(downloadElement);
+            downloadElement.click();
+            document.body.removeChild(downloadElement);
+            window.URL.revokeObjectURL(href);
+        }
+
+        function exportAdminBatches() {
+            if (exporting) {
+                return;
+            }
+            exporting = true;
+            setExportButtonDisabled(true);
+            var loadIndex = layer.load(2);
+            $.ajax({
+                type: 'GET',
+                url: huayi_personorg_url + 'memberSubmit/batch/admin/export',
+                headers: headers(),
+                data: queryParams(),
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function (blob) {
+                    if (blob && blob.type && blob.type.indexOf('json') > -1) {
+                        showExportError({ response: blob });
+                        return;
+                    }
+                    downloadBlob(blob, '会员上报批次.xlsx');
+                },
+                error: function (xhr) {
+                    showExportError(xhr);
+                },
+                complete: function () {
+                    layer.close(loadIndex);
+                    exporting = false;
+                    setExportButtonDisabled(false);
+                }
+            });
+        }
+
+        function setDetailExportButtonDisabled(disabled) {
+            $('#detailExportBtn')
+                .toggleClass('layui-btn-disabled', disabled)
+                .attr('aria-disabled', disabled ? 'true' : 'false');
+        }
+
+        function exportBatchPersons(applyId) {
+            if (detailExporting) {
+                return;
+            }
+            detailExporting = true;
+            setDetailExportButtonDisabled(true);
+            var loadIndex = layer.load(2);
+            $.ajax({
+                type: 'GET',
+                url: huayi_personorg_url + 'memberSubmit/batch/persons/export',
+                headers: headers(),
+                data: {
+                    applyId: applyId,
+                    personNo: $('#detailPersonNo').val(),
+                    personName: $('#detailPersonName').val()
+                },
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function (blob) {
+                    if (blob && blob.type && blob.type.indexOf('json') > -1) {
+                        showExportError({ response: blob });
+                        return;
+                    }
+                    downloadBlob(blob, '会员上报人员明细.xlsx');
+                },
+                error: function (xhr) {
+                    showExportError(xhr);
+                },
+                complete: function () {
+                    layer.close(loadIndex);
+                    detailExporting = false;
+                    setDetailExportButtonDisabled(false);
+                }
+            });
+        }
+
+        function openPersonDetailDialog(row) {
+            layer.open({
+                type: 1,
+                title: '批次人员明细',
+                area: ['920px', '600px'],
+                content: $('#personDetailDialogTpl').html(),
+                btn: ['关闭'],
+                success: function () {
+                    table.render({
+                        elem: '#detailPersonTable',
+                        url: huayi_personorg_url + 'memberSubmit/batch/persons',
+                        headers: headers(),
+                        where: { applyId: row.applyId },
+                        id: 'detailPersonTable',
+                        height: 390,
+                        page: true,
+                        limit: 10,
+                        limits: [10, 20, 50],
+                        request: { pageName: 'pageNum', limitName: 'pageSize' },
+                        parseData: parsePage,
+                        cols: [[
+                            { field: 'personNo', title: '人员编号', width: 130, align: 'center' },
+                            { field: 'personName', title: '姓名', width: 100, align: 'center' },
+                            { field: 'sex', title: '性别', width: 70, align: 'center' },
+                            { field: 'deptName', title: '科室', minWidth: 160, align: 'center' },
+                            { field: 'titleName', title: '职称', minWidth: 130, align: 'center' }
+                        ]]
+                    });
+                    $('#detailSearchBtn').on('click', function () {
+                        table.reload('detailPersonTable', {
+                            where: {
+                                applyId: row.applyId,
+                                personNo: $('#detailPersonNo').val(),
+                                personName: $('#detailPersonName').val()
+                            },
+                            page: { curr: 1 }
+                        });
+                    });
+                    $('#detailResetBtn').on('click', function () {
+                        $('#detailPersonNo').val('');
+                        $('#detailPersonName').val('');
+                        table.reload('detailPersonTable', {
+                            where: {
+                                applyId: row.applyId,
+                                personNo: '',
+                                personName: ''
+                            },
+                            page: { curr: 1 }
+                        });
+                    });
+                    $('#detailExportBtn').on('click', function () {
+                        exportBatchPersons(row.applyId);
+                    });
+                }
+            });
+        }
+
+        table.on('tool(adminBatchTable)', function (obj) {
+            if (obj.event === 'viewPersons') {
+                openPersonDetailDialog(obj.data);
+            }
+        });
+
+        $('#searchBtn').on('click', reloadBatchTable);
+        $('#resetBtn').on('click', function () {
+            $('#queryApplyUnit').val('');
+            $('#queryReceiveFlag').val('');
+            $('#queryStartDate').val('');
+            $('#queryEndDate').val('');
+            $('#queryPersonNo').val('');
+            $('#queryPersonName').val('');
+            form.render('select');
+            reloadBatchTable();
+        });
+        $('#exportBtn').on('click', exportAdminBatches);
+
+        renderYearOptions();
+        renderDatePickers();
+        renderBatchTable();
+    });
+</script>
+</body>
+</html>

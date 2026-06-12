@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <title>单位信息维护</title>
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.91huayi.com/hywupload/common/layui/v121/std/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../css/communal.css" media="all">
+    <script type="text/javascript" src="https://cdn.91huayi.com/hywupload/common/layui/v121/std/layui/layui.js"></script>
+
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            /* background-color: white; */
+        }
+        .layui-card-body {
+            margin: 0 auto;
+            padding: 25px 45px 35px 45px;
+        }
+        .layui-form + .layui-form {
+            margin-top: 35px;
+        }
+        .layui-form-item {
+            margin-bottom: unset;
+        }
+        .layui-form-item .layui-inline {
+            margin-right: unset;
+            margin-bottom: 15px;
+        }
+        .layui-elem-field {
+            margin-top: 10px;
+            padding: 30px;
+        }
+        .layui-elem-field legend {
+            color:rgba(235, 39, 39, 0.514);
+            text-align: left;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .layui-form-label {
+            width: 90px;
+        }
+        .layui-input-block {
+            margin-left: 120px;
+        }
+        .layui-disabled, .layui-disabled:hover {
+            background-color: #efefef !important;
+            color: #666666 !important;
+        }
+        .xm-select-disabled {
+            background-color: #cccccc !important;
+            color: #666666 !important;
+        }
+        .layui-btn-container {
+            margin-top: 10px;
+        }
+        .admin-office-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .admin-office-input {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+        .admin-action {
+            flex: 0 0 auto;
+        }
+        @media screen and (max-width: 767px) {
+            .admin-office-group {
+                display: block;
+            }
+            .admin-action {
+                margin-top: 10px;
+            }
+        }
+
+        #frame-unitInfo {
+            width: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="layui-fluid" >
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="layui-form" lay-filter="form-admin" id="form-admin">
+                    <fieldset class="layui-elem-field">
+                        <legend>管理员信息</legend>
+                        <!-- <div class="layui-form-item">
+                            <input type="hidden" name='managerId'/>
+                            <div class="layui-inline layui-col-xs12 layui-col-sm6 layui-col-md4">
+                                <label class="layui-form-label"><i class="required-item"></i>姓名</label>
+                                <div class="layui-input-block" >
+                                    <input type="text" class="layui-input"  name="userRealName" autocomplete="off"
+                                            placeholder="请输入管理员姓名" lay-verify="required">
+                                </div>
+                            </div>
+                            <div class="layui-inline layui-col-xs12 layui-col-sm6 layui-col-md4">
+                                <label class="layui-form-label"><i class="required-item"></i>手机号</label>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input"  name="userPhone" autocomplete="off"
+                                            placeholder="请输入管理员手机号" lay-verify="required|mobile">
+                                </div>
+                            </div>
+                            <div class="layui-inline layui-col-xs12 layui-col-sm6 layui-col-md4">
+                                <label class="layui-form-label">办公电话</label>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input"  name="userOfficePhone" autocomplete="off"
+                                            placeholder="请输入管理员办公电话" lay-verify="adminPhone">
+                                </div>
+                            </div>
+                        </div> -->
+
+                        <div class="layui-btn-container text-r hide">
+                            <button class="layui-btn layui-btn-normal" id="btn-unitInfo-add">添加</button>
+                            <button class="layui-btn" type="submit" lay-submit lay-filter="btn-admin-save" id="btn-admin-save">保存</button>
+                            <!-- <button class="layui-btn layui-btn-primary" id="btn-admin-reset">重置</button> -->
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="layui-form" lay-filter='form-unitInfo' id='form-unitInfo' style="display:none;">
+                    <fieldset class="layui-elem-field">
+                        <legend>单位信息</legend>
+                        <div class="layui-form-item">
+                            <div class="layui-inline layui-col-xs12 layui-col-sm6 layui-col-md4">
+                                <label class="layui-form-label"><i class="required-item"></i>单位类别</label>
+                                <div id="unitCategorySelect" class="layui-input-block"></div>
+                            </div>
+                            <div class="layui-inline layui-col-xs12 layui-col-sm6 layui-col-md4">
+                                <label class="layui-form-label"><i class="required-item hide" id="unitLevelRequired"></i>医院等级</label>
+                                <div id="unitLevelSelect" class="layui-input-block"></div>
+                            </div>
+                            <div class="layui-inline layui-col-xs12 layui-col-sm6 layui-col-md4">
+                                <label class="layui-form-label"><i class="required-item"></i>单位层级</label>
+                                <div id="unitPropertySelect" class="layui-input-block"></div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline layui-col-xs12 layui-col-sm6 layui-col-md4">
+                                <label class="layui-form-label"><i class="required-item"></i>社会信用代码</label>
+                                <div class="layui-input-block" >
+                                    <input type="text" class="layui-input" id="unitCode" name="unitCode" autocomplete="off"
+                                            placeholder="请输入统一社会信用代码" lay-verify="required|unitCode" >
+                                </div>
+                            </div>
+                            <div class="layui-inline layui-col-xs12 layui-col-sm6 layui-col-md4">
+                                <label class="layui-form-label">电子邮箱</label>
+                                <div class="layui-input-block" >
+                                    <input type="text" class="layui-input" id="email" name="email" autocomplete="off"
+                                            placeholder="请输入单位邮箱" lay-verify="mail" >
+                                </div>
+                            </div>
+                            <div class="layui-inline layui-col-xs12 layui-col-sm6 layui-col-md4">
+                                <label class="layui-form-label">邮编</label>
+                                <div class="layui-input-block" >
+                                    <input type="text" class="layui-input" id="postcode" name="postcode" autocomplete="off" placeholder="请输入单位邮编" >
+                                </div>
+                            </div>
+                            <div class="layui-inline layui-col-xs12 layui-col-sm12 layui-col-md12">
+                                <label class="layui-form-label">详细地址</label>
+                                <div class="layui-input-block" >
+                                    <input type="text" class="layui-input" id="address" name="address" autocomplete="off"
+                                            placeholder="请输入详细地址"  >
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="layui-btn-container text-r hide">
+                            <button class="layui-btn" type="submit" lay-submit id="btn-unitInfo-save" lay-filter='btn-unitInfo-save'>保存</button>
+                            <!-- <button class="layui-btn layui-btn-primary" id="btn-unitInfo-reset">重置</button> -->
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript" src="../../js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript">
+        $.each([
+            '../../js/constant.js',
+            '../../js/global_ajax_setting.js',
+            '../../js/axios.min.js',
+            '../../js/auth.js',
+            '../../js/base64.js',
+            '../../js/common.js',
+            '../../js/tools/dict_tool.js',
+            '../../js/tools/urlTools.js',
+            'js/info-integrity.js'
+        ], (i, url) => document.write('<script type="text/javascript" src="' + url + '?time=' + new Date().getTime() + '"><\/script>'));
+    </script>
+    <script type="text/javascript">
+        const   standardkindId      = localStorage.getItem('standardkind-id'),
+                unitId              = getQueryString('unitId') || localStorage.getItem('unit-id'),
+                userId              = localStorage.getItem("user-id");
+                format_url          = /\\|\/$/gi,
+                sjwhUrl             = huayi_sjwh_url.replace(format_url, ''),
+                personorgUrl        = huayi_personorg_url.replace(format_url, ''),
+                unitDetailUrl       = personorgUrl + '/comunit/detail',
+                unitDictUrl         = sjwhUrl + '/comdictionary/unit/dict',
+                unitTop10Url        = personorgUrl + '/comunit/search/top10',
+                unitAreaUrl         = personorgUrl + '/comunit/areaTreeMemory',
+                standardKindListUrl = sjwhUrl + '/cmestandardkind/list/all',
+                opt                 = getQueryString('opt'),
+                required            = 't' == getQueryString('required');
+
+
+        layui.config({
+            base: '../../../js/layui/ext/'
+        }).extend({
+            xmSelect: 'xm-select'
+        });
+
+        layui.use([ 'form', 'layer', 'xmSelect' ], () => {
+            let { form, layer, xmSelect } = layui;
+
+
+            $(() => {
+                formAdminFill(userId);
+                formUnitInfoFill(unitId);
+                if (!opt) {
+                    $('.layui-btn-container').show();
+                    required && infoIntegrityCheck(true) && window != parent.window && parent.layui.layer.closeAll();
+                }
+                else if (opt == 'details') {
+                    $('#form-admin').find('input').addClass('layui-disabled').prop('disabled', true).prop('placeholder', '');
+                    xmSelectProperty.update({ disabled: true, tips: '' });
+                    xmSelectCategory.update({ disabled: true, tips: '' });
+                    xmSelectLevel.update({ disabled: true, tips: '' });
+                    $('.layui-btn-container').hide();
+                }
+
+                (localStorage.getItem("user-type") == 12) && $("#form-unitInfo").show();
+            });
+
+
+            form.verify({
+                adminPhone: (value, item) => {
+                    if (value != '' && !new RegExp('^(\\d{3,4}-){0,1}\\d{4,12}$').test(value)) return '请输入正确的办公电话';
+                },
+                mobile: (value, item) => {
+                    if (value != '' && !new RegExp('^1\\d{10}$').test(value)) return '请输入正确的手机号';
+                },
+                mail: (value, item) => {
+                    if (!new RegExp('^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$').test(value) && value != "") return '请输入正确的邮箱';
+                },
+                unitCode: (value,item) => {
+                    if (!new RegExp('^[0-9A-HJ-NPQRTUWXY]{2}\\d{6}[0-9A-HJ-NPQRTUWXY]{10}$').test(value)) return '请输入正确的统一社会信用代码';
+                }
+            });
+
+
+
+            window.goToBack = () => {
+                window.history.back();
+                return false;
+            };
+
+            /** 防止表单重复提交 */
+            let noRepeatLock = true;
+            window.noRepeat = fun => {
+                if (noRepeatLock) {
+                    noRepeatLock = false;
+                    try { fun(); }
+                    catch (e) { console.log(e); }
+                    setTimeout(() => noRepeatLock = true, 3000);
+                }
+            };
+
+
+
+            /** 管理员（start） */
+
+            window.getPerAdminHtml = (admin) => {
+                return  `<div class="layui-form-item">
+                            <input type="hidden" name='managerId' value='${admin.managerId || ''}'/>
+                            <div class="layui-inline layui-col-xs12 layui-col-sm4 layui-col-md4">
+                                <label class="layui-form-label"><i class="required-item"></i>姓名</label>
+                                <div class="layui-input-block" >
+                                    <input type="text" class="layui-input" name="userRealName" value='${admin.userRealName || ''}' autocomplete="off"
+                                            placeholder="请输入姓名" lay-verify="required">
+                                </div>
+                            </div>
+                            <div class="layui-inline layui-col-xs12 layui-col-sm4 layui-col-md4">
+                                <label class="layui-form-label"><i class="required-item"></i>手机号</label>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" name="userPhone"  value='${admin.userPhone || ''}' autocomplete="off"
+                                            placeholder="请输入手机号" lay-verify="required|mobile">
+                                </div>
+                            </div>
+                            <div class="layui-inline layui-col-xs12 layui-col-sm4 layui-col-md4">
+                                <label class="layui-form-label">办公电话</label>
+                                <div class="layui-input-block admin-office-group">
+                                    <div class="admin-office-input">
+                                        <input type="text" class="layui-input" name="userOfficePhone"  value='${admin.userOfficePhone || ''}' autocomplete="off"
+                                            placeholder="请输入办公电话" lay-verify="adminPhone">
+                                    </div>
+                                    <div class="admin-action">
+                                        <input type="button" class="layui-btn layui-btn-danger layui-btn-sm" onclick="removeAdminInfo('${admin.managerId || ''}',this)" value="删除">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>`;
+            }
+
+            window.formAdminFill = userId => {
+                let admins = getAdminInfo(userId);
+                if(admins != null && admins.length > 0) {
+                    admins.forEach(admin => {
+                        let html = getPerAdminHtml(admin);
+                        $("#form-admin > fieldset > legend").after(html);
+                    })
+                }
+                if($("#form-admin .layui-form-item").length >= 10) {
+                    $('#btn-unitInfo-add').hide();
+                }
+            };
+
+            form.on('submit(btn-admin-save)', data => {
+
+                let admins = [];
+                $("#form-admin").find(".layui-form-item").each((index,item) => {
+                    let managerId        = $(item).find('input[name="managerId"]').val();
+                    let userRealName     = $(item).find('input[name="userRealName"]').val();
+                    let userPhone        = $(item).find('input[name="userPhone"]').val();
+                    let userOfficePhone  = $(item).find('input[name="userOfficePhone"]').val();
+                    admins.push({managerId: managerId,userId: localStorage.getItem("user-id"),userName:localStorage.getItem("user-name"), userRealName:userRealName ,userPhone:userPhone, userOfficePhone:userOfficePhone});
+                });
+                noRepeat(() => saveAdminInfo(admins));
+                return false;
+            });
+
+            $('#btn-admin-reset').click(() => form.val('form-admin', {
+                'admin1Name'    : '',
+                'admin1Phone'   : '',
+                'admin1Mobile'  : '',
+                'admin2Name'    : '',
+                'admin2Phone'   : '',
+                'admin2Mobile'  : '',
+                'unitAddress'   : '',
+                'unitMail'      : '',
+                'unitPostcode'  : ''
+            }));
+
+            $('#btn-unitInfo-add').click(() => {
+                let admin = { managerId:'', userRealName:'', userPhone: '', userOfficePhone:'' };
+                let html = getPerAdminHtml(admin);
+                $("#form-admin .layui-btn-container").before(html);
+
+                if($("#form-admin .layui-form-item").length >= 10) {
+                    $('#btn-unitInfo-add').hide();
+                }
+            });
+
+            /** 管理员（end） */
+
+
+
+            /** 单位（start） */
+
+            window.xmSelectLevelChange = flag => {
+                xmSelectLevel.setValue([]).update({
+                    disabled    : !flag,
+                    layVerify   : flag ? 'required' : '',
+                });
+                $('#unitLevelRequired').css('display', flag ? 'inline' : 'none');
+            }
+            $.ajax({
+                url         : unitDictUrl,
+                type        : 'get',
+                async       : false,
+                dataType    : 'json',
+                contentType : 'application/json;charset=UTF-8',
+                success     : res => {
+                    if (res.status == 200) {
+                        // 单位层级
+                        window.xmSelectProperty = xmSelect.render({
+                            el          : '#unitPropertySelect',
+                            radio       : true,
+                            layVerify   : 'required',
+                            autoRow     : true,
+                            name        : 'unitPropertyId',
+                            data        : res.data.property,
+                        });
+
+                        // 单位类别
+                        window.xmSelectCategory = xmSelect.render({
+                            el          : '#unitCategorySelect',
+                            radio       : true,
+                            layVerify   : 'required',
+                            autoRow     : true,
+                            name        : 'unitCategoryId',
+                            data        : res.data.category,
+                            on          : data => {
+                                let arr     = data.arr,
+                                    flag    = arr[0] && '3b5c5808-23fc-11f0-b030-005056a64c01' == arr[0].value;
+                                xmSelectLevelChange(flag);
+                            },
+                        });
+
+                        // 医院等级
+                        window.xmSelectLevel = xmSelect.render({
+                            el          : '#unitLevelSelect',
+                            radio       : true,
+                            autoRow     : true,
+                            name        : 'unitLevelId',
+                            data        : res.data.level,
+                            disabled    : true,
+                        });
+                    }
+                    else {
+                        layer.msg(res.msg || '系统繁忙，请稍后重试', {
+                            time    : 1500,
+                            end     : o => layer.closeAll()
+                        });
+                    }
+                },
+                error       : (req, msg) => {
+                    layer.msg('系统繁忙，请稍后重试', {
+                        time    : 1500,
+                        end     : o => layer.closeAll()
+                    });
+                }
+            });
+
+            window.formUnitInfoFill = unitId => {
+                window.unitInfo = getUnitInfo(unitId);
+                if (unitInfo) {
+                    form.val('form-unitInfo', unitInfo);
+                    xmSelectProperty.setValue([ unitInfo.unitPropertyId || '' ]);
+                    xmSelectCategory.setValue([ unitInfo.unitCategoryId || '' ]);
+                    xmSelectLevelChange(UnitCategory.MEDICAL_UNIT == unitInfo.unitCategoryId);
+                    xmSelectLevel.setValue([ unitInfo.unitLevelId || '' ]);
+                    // xmSelectProperty.update({ disabled: unitInfo.unitPropertyId != null });
+                }
+            }
+
+            form.on('submit(btn-unitInfo-save)', data => {
+                noRepeat(() => saveUnitInfo({ ...window.unitInfo, ...data.field}));
+                return false;
+            });
+
+
+
+            $('#btn-unitInfo-reset').click(() => {
+                xmSelectProperty.setValue([]);
+                xmSelectCategory.setValue([]);
+                xmSelectLevel.setValue([]).update({ disabled: true });
+                $('#unitLevelRequired').css('display', 'none');
+            });
+
+            /** 单位（end） */
+
+        });
+    </script>
+</body>
+</html>
